@@ -51,13 +51,78 @@ spriteset (d_g1_t_spriteset, "src/d-1960-1961.png")
   [372, 57, 42, 42, -22, -22]
 } 
 
-
-switch (FEAT_TRAINS, SELF, get_d_g1_spriteset,
-  position_in_consist % 2)
+spriteset (d_g1_n_spriteset, "src/sprite43-3.png")
 {
-  0: d_g1_spriteset;
+  [1, 1, 1, 1, 0, 0]
+/*  [1, 1, 1, 1, 0, 0]
+  [1, 1, 1, 1, 0, 0]
+  [1, 1, 1, 1, 0, 0]
+  [1, 1, 1, 1, 0, 0]
+  [1, 1, 1, 1, 0, 0]
+  [1, 1, 1, 1, 0, 0]
+  [1, 1, 1, 1, 0, 0]*/
+} 
+
+spriteset (d_g1_spriteset_cut, "src/d-1960-1961.png")
+{
+  [4, 57, 12, 31, -5, -18]
+  [57, 57, 21, 42, -34+21, -13]
+  [116, 57, 32, 16, -47+32, -11]
+  [185, 57, 21, 42, -26+21,-34]
+  [212, 88, 12, 31, -5, -49+31]
+  [244, 57, 21, 42, -14, -33]
+  [292, 57, 32, 16, -15, -11]
+  [372, 57, 21, 42, -6, -14]
+} 
+
+spriteset (d_g1_t_spriteset_cut, "src/d-1960-1961.png")
+{
+  [4, 88, 12, 31, -5, -34+31]
+  [36, 57, 21, 42, -18, -20-1]
+  [84, 57, 32, 16, -15, -11]
+  [164, 57, 21, 42, -10,-26]
+  [212, 57, 12, 31, -5, -33]
+  [265, 57, 21, 42, -30+21, -25]
+  [324, 57, 32, 16, -48+32, -11]
+  [393, 57, 21, 42, -22+21, -22]
+} 
+
+
+switch (FEAT_TRAINS, SELF, get_d_g1_spriteset_test_head,
+  var[0x62, 0, 0xFF, 0xFF])
+{
+  0: d_g1_n_spriteset;
   d_g1_t_spriteset;
 }
+
+switch (FEAT_TRAINS, SELF, get_d_g1_spriteset_test_tail,
+  var[0x62, 0, 0xFF, 1])
+{
+  0: d_g1_n_spriteset;
+  d_g1_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g1_spriteset_tail,
+  curv_info_prev_cur)
+{
+  0: d_g1_t_spriteset_cut;
+  d_g1_n_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g1_spriteset,
+  position_in_vehid_chain % 2)
+{
+  0: d_g1_spriteset_cut;
+  d_g1_t_spriteset_cut;
+}
+/*
+switch (FEAT_TRAINS, SELF, get_d_g1_spriteset,
+  vehicle_is_hidden)
+{
+  1: d_g1_n_spriteset;
+  get_d_g1_spriteset0;
+}
+*/
 
 switch (FEAT_TRAINS, SELF, d_g1_articulated_part,
   extra_callback_info1)
@@ -67,7 +132,7 @@ switch (FEAT_TRAINS, SELF, d_g1_articulated_part,
 }
 
 switch (FEAT_TRAINS, SELF, d_g1_shorten_vehicle,
-  position_in_consist % 2)
+  position_in_vehid_chain % 2)
 {
   0: return SHORTEN_TO_8_8;
   return SHORTEN_TO_7_8;
