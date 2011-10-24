@@ -1,0 +1,80 @@
+ // xussr
+grf
+{
+  grfid: "AKA\08";
+  name: string(STR_GRF_NAME);
+  desc: string(STR_GRF_DESC);
+  version: 1;
+  min_compatible_version: 1;
+}
+
+// debug: disable all original trains
+debug_mode = 1;
+if (debug_mode)
+{
+  // 0..26  engines
+  // 27..53 vagons
+  disable_item(FEAT_TRAINS, 0, 26);
+}
+
+//
+railtypetable {
+    RAIL, ELRL, MONO, MGLV,
+}
+
+//
+
+spriteset (d_g1_spriteset, "src/d-1960-1961.png")
+{
+  [4, 57, 12, 62, -5, -18]
+  [36, 57, 42, 42, -34, -13]
+  [84, 57, 64, 16, -47, -11]
+  [164, 57, 42, 42, -26,-34]
+  [212, 57, 12, 62, -5, -49]
+  [244, 57, 42, 42, -14, -33]
+  [292, 57, 64, 16, -15, -11]
+  [372, 57, 42, 42, -6, -14]
+} 
+
+item(FEAT_TRAINS, d_g1) 
+{
+    property {
+        name: string(STR_D_G1_NAME);
+        climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL); // not available in toyland
+        introduction_date: date(1983, 1, 1);
+        model_life: VEHICLE_NEVER_EXPIRES;
+        vehicle_life: 30;
+        reliability_decay: 20;
+        refittable_cargo_classes: bitmask(CC_PASSENGERS);
+        loading_speed: 6; // It's an intercity train, loading is relatively slow
+        cost_factor: 45;
+        running_cost_factor: 100; // Changed by callback
+        sprite_id: SPRITE_ID_NEW_TRAIN;
+        speed: 141 km/h; // actually 140, but there are rounding errors
+        misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+        refit_cost: 0;
+        // callback flags are not set manually
+        track_type: RAIL; // from rail type table
+        ai_special_flag: AI_FLAG_PASSENGER;
+        power: 1260 kW; // Changed by CB
+        running_cost_base: RUNNING_COST_DIESEL;
+        dual_headed: 1;
+        cargo_capacity: 36; // lower than in real world, for gameplay
+        weight: 144 ton; // Total weight, changed by callback
+        ai_engine_rank: 0; // not intended to be used by the ai
+        engine_class: ENGINE_CLASS_DIESEL;
+        extra_power_per_wagon: 0 kW;
+        tractive_effort_coefficient: 0.1; // Changed by callback
+        air_drag_coefficient: 0.06;
+//        shorten_vehicle: SHORTEN_TO_8_8;
+        /* Overridden by callback to disable for non-powered wagons */
+//        visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, DISABLE_WAGON_POWER);
+        extra_weight_per_wagon: 0 ton;
+        bitmask_vehicle_info: 0;
+    }
+    /* Define graphics and callbacks
+     * Setting all callbacks is not needed, only define what is used */
+    graphics {
+        default: d_g1_spriteset;
+    }
+}
