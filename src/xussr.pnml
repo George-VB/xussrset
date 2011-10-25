@@ -14,7 +14,7 @@ if (debug_mode)
 {
   // 0..26  engines
   // 27..53 vagons
-  disable_item(FEAT_TRAINS, 0, 26);
+//  disable_item(FEAT_TRAINS, 0, 26);
 }
 
 //
@@ -27,6 +27,11 @@ railtypetable {
 // 32 - eq 8
 // 60 - ?
 // 28 - eq 7
+spriteset (d_g4_spriteset_purchase, "src/d-1960-1961.png")
+{
+  [292, 57, 64, 16, -15, -11]
+}
+
 spriteset (d_g1_spriteset, "src/d-1960-1961.png")
 {
   [4, 57, 12, 62, -5, -18]
@@ -152,6 +157,49 @@ switch (FEAT_TRAINS, SELF, get_d_g1_spriteset,
   1: d_g1_spriteset_cut2;
   d_g1_spriteset_cut3;
 }
+
+switch (FEAT_TRAINS, SELF, get_d_g2_spriteset,
+  position_in_vehid_chain % 2)
+{
+  0: d_g1_spriteset_cut;
+  d_g1_t_spriteset_cut;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g3_spriteset_tail,
+  curv_info_prev_cur)
+{
+  0: d_g1_t_spriteset;
+  d_g1_n_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g3_spriteset,
+  position_in_vehid_chain % 2)
+{
+  0: d_g1_spriteset;
+  get_d_g3_spriteset_tail;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g4_spriteset1,
+  position_in_vehid_chain % 3)
+{
+  1: d_g1_t_spriteset;
+  d_g1_n_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g4_spriteset0,
+  position_in_vehid_chain % 3)
+{
+  0: d_g1_spriteset;
+  d_g1_n_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g4_spriteset,
+  vehicle_is_in_depot)
+{
+  1: get_d_g4_spriteset0;
+  get_d_g4_spriteset1;
+}
+
 /*
 switch (FEAT_TRAINS, SELF, get_d_g1_spriteset,
   vehicle_is_hidden)
@@ -168,6 +216,27 @@ switch (FEAT_TRAINS, SELF, d_g1_articulated_part,
   return 0xFF;
 }
 
+switch (FEAT_TRAINS, SELF, d_g2_articulated_part,
+  extra_callback_info1)
+{
+  1: return d_g2;
+  return 0xFF;
+}
+
+switch (FEAT_TRAINS, SELF, d_g3_articulated_part,
+  extra_callback_info1)
+{
+  1: return d_g3;
+  return 0xFF;
+}
+
+switch (FEAT_TRAINS, SELF, d_g4_articulated_part,
+  extra_callback_info1)
+{
+  1..2: return d_g4;
+  return 0xFF;
+}
+
 switch (FEAT_TRAINS, SELF, d_g1_shorten_vehicle,
   position_in_vehid_chain % 3)
 {
@@ -176,6 +245,12 @@ switch (FEAT_TRAINS, SELF, d_g1_shorten_vehicle,
 //  return SHORTEN_TO_8_8;
 }
 
+switch (FEAT_TRAINS, SELF, d_g2_shorten_vehicle,
+  position_in_vehid_chain % 2)
+{
+  0: return SHORTEN_TO_8_8;
+  return SHORTEN_TO_7_8;
+}
 
 item (FEAT_TRAINS, d_g1) 
 {
@@ -219,5 +294,203 @@ item (FEAT_TRAINS, d_g1)
     default: get_d_g1_spriteset;
     articulated_part: d_g1_articulated_part;
     shorten_vehicle: d_g1_shorten_vehicle;
+  }
+}
+
+item (FEAT_TRAINS, d_g2) 
+{
+  property {
+    name: string(STR_D_G2_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL); // not available in toyland
+    introduction_date: date(1983, 1, 1);
+    model_life: VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 6; // It's an intercity train, loading is relatively slow
+    cost_factor: 2;
+    running_cost_factor: 100; // Changed by callback
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 141 km/h; // actually 140, but there are rounding errors
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    // callback flags are not set manually
+    track_type: RAIL; // from rail type table
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1260 kW; // Changed by CB
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 36; // lower than in real world, for gameplay
+    weight: 144 ton; // Total weight, changed by callback
+    ai_engine_rank: 0; // not intended to be used by the ai
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1; // Changed by callback
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    /* Overridden by callback to disable for non-powered wagons */
+//    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, DISABLE_WAGON_POWER);
+    extra_weight_per_wagon: 0 ton;
+    bitmask_vehicle_info: 0;
+  }
+  /* Define graphics and callbacks
+   * Setting all callbacks is not needed, only define what is used */
+  graphics {
+    default: get_d_g2_spriteset;
+    articulated_part: d_g2_articulated_part;
+    shorten_vehicle: d_g2_shorten_vehicle;
+  }
+}
+
+item (FEAT_TRAINS, d_g3) 
+{
+  property {
+    name: string(STR_D_G3_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL); // not available in toyland
+    introduction_date: date(1983, 1, 1);
+    model_life: VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 6; // It's an intercity train, loading is relatively slow
+    cost_factor: 2;
+    running_cost_factor: 100; // Changed by callback
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 141 km/h; // actually 140, but there are rounding errors
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    // callback flags are not set manually
+    track_type: RAIL; // from rail type table
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1260 kW; // Changed by CB
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 36; // lower than in real world, for gameplay
+    weight: 144 ton; // Total weight, changed by callback
+    ai_engine_rank: 0; // not intended to be used by the ai
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1; // Changed by callback
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    /* Overridden by callback to disable for non-powered wagons */
+//    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, DISABLE_WAGON_POWER);
+    extra_weight_per_wagon: 0 ton;
+    bitmask_vehicle_info: 0;
+  }
+  /* Define graphics and callbacks
+   * Setting all callbacks is not needed, only define what is used */
+  graphics {
+    default: get_d_g3_spriteset;
+    articulated_part: d_g3_articulated_part;
+    shorten_vehicle: d_g2_shorten_vehicle;
+  }
+}
+
+item (FEAT_TRAINS, d_g4)
+{
+  property {
+    name: string(STR_D_G4_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL); // not available in toyland
+    introduction_date: date(1983, 1, 1);
+    model_life: VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 6; // It's an intercity train, loading is relatively slow
+    cost_factor: 2;
+    running_cost_factor: 100; // Changed by callback
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 141 km/h; // actually 140, but there are rounding errors
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    // callback flags are not set manually
+    track_type: RAIL; // from rail type table
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1260 kW; // Changed by CB
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 36; // lower than in real world, for gameplay
+    weight: 144 ton; // Total weight, changed by callback
+    ai_engine_rank: 0; // not intended to be used by the ai
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1; // Changed by callback
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    /* Overridden by callback to disable for non-powered wagons */
+//    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, DISABLE_WAGON_POWER);
+    extra_weight_per_wagon: 0 ton;
+    bitmask_vehicle_info: 0;
+  }
+  /* Define graphics and callbacks
+   * Setting all callbacks is not needed, only define what is used */
+  graphics {
+    default: get_d_g4_spriteset;
+    articulated_part: d_g4_articulated_part;
+    shorten_vehicle: d_g1_shorten_vehicle;
+    purchase: d_g4_spriteset_purchase;
+  }
+}
+
+switch (FEAT_TRAINS, SELF, get_d_g5_spriteset,
+  position_in_vehid_chain % 2)
+{
+  0: d_g1_spriteset;
+  d_g1_n_spriteset;
+}
+
+
+switch (FEAT_TRAINS, SELF, d_g5_articulated_part,
+  extra_callback_info1)
+{
+  1: return d_g5;
+  return 0xFF;
+}
+
+
+item (FEAT_TRAINS, d_g5)
+{
+  property {
+    name: string(STR_D_G5_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL); // not available in toyland
+    introduction_date: date(1983, 1, 1);
+    model_life: VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 6; // It's an intercity train, loading is relatively slow
+    cost_factor: 2;
+    running_cost_factor: 100; // Changed by callback
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 141 km/h; // actually 140, but there are rounding errors
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    // callback flags are not set manually
+    track_type: RAIL; // from rail type table
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1260 kW; // Changed by CB
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 1;
+    cargo_capacity: 36; // lower than in real world, for gameplay
+    weight: 144 ton; // Total weight, changed by callback
+    ai_engine_rank: 0; // not intended to be used by the ai
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1; // Changed by callback
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    /* Overridden by callback to disable for non-powered wagons */
+//    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, DISABLE_WAGON_POWER);
+    extra_weight_per_wagon: 0 ton;
+    bitmask_vehicle_info: 0;
+  }
+  /* Define graphics and callbacks
+   * Setting all callbacks is not needed, only define what is used */
+  graphics {
+    default: get_d_g5_spriteset;
+    articulated_part: d_g5_articulated_part;
+    shorten_vehicle: d_g2_shorten_vehicle;
+//    purchase: d_g4_spriteset_purchase;
   }
 }
