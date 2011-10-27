@@ -1097,7 +1097,7 @@ sort (FEAT_TRAINS, [d8g, d8p]);
 
 // 9 solid -------------------------------------------------
 // 1 id per vehicle
-/*
+
 spriteset (d9e_spriteset, "src/sprite43-3.png")
 {
   [1, 1, 1, 1, 0, 0]
@@ -1134,119 +1134,53 @@ spritegroup d9g_spritegroup
   loaded: d9g_traveling_spriteset;
 }
 
-//!!!
+//
 
-switch (FEAT_TRAINS, SELF, d8g_get_spriteset6,
-  position_in_consist_from_end-1)
+switch (FEAT_TRAINS, SELF, d9g_get_spriteset2,
+  position_in_vehid_chain == 0 ? 0 : 
+  position_in_vehid_chain_from_end - 1 == 0 ? 1 : 2
+)
 {
-  4: d8g2_spriteset;
-  d8g_spritegroup;
+  0: d9g_spritegroup;
+  1: d9g2_spriteset;
+  d9p_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, d8g_get_spriteset5,
-  position_in_consist)
+switch (FEAT_TRAINS, SELF, d9g_get_spriteset,
+  position_in_vehid_chain % 2)
 {
-  4: d8g_spritegroup;
-  d8g_get_spriteset6;
-}
-
-switch (FEAT_TRAINS, SELF, d8g_get_spriteset4,
-  position_in_consist_from_end-1)
-{
-  2: d8g_spritegroup;
-  d8g_get_spriteset5;
-}
-
-switch (FEAT_TRAINS, SELF, d8g_get_spriteset3,
-  position_in_consist)
-{
-  2: d8g2_spriteset;
-  d8g_get_spriteset4;
-}
-
-switch (FEAT_TRAINS, SELF, d8g_get_spriteset2,
-  position_in_consist_from_end-1)
-{
-  0: d8g2_spriteset;
-  d8g_get_spriteset3;
-}
-
-switch (FEAT_TRAINS, SELF, d8g_get_spriteset,
-  position_in_consist)
-{
-  0: d8g_spritegroup;
-  d8g_get_spriteset2;
+  0: d9g_get_spriteset2;
+  d9e_spriteset;
 }
 //---------------
 switch (FEAT_TRAINS, SELF, d9g2_articulated_part,
   extra_callback_info1)
 {
-  1: return d8e;
+  1..3: return d9g2;
   return 0xFF;
-}
-
-switch (FEAT_TRAINS, SELF, d9g2_shorten_vehicle,
-  position_in_vehid_chain % 2)
-{
-  0: return SHORTEN_TO_8_8;
-  return SHORTEN_TO_7_8;
 }
 
 switch (FEAT_TRAINS, SELF, d9g3_articulated_part,
   extra_callback_info1)
 {
-  1: return d8e;
+  1..5: return d9g3;
   return 0xFF;
 }
 
-switch (FEAT_TRAINS, SELF, d9g3_shorten_vehicle,
+switch (FEAT_TRAINS, SELF, d9g_shorten_vehicle,
   position_in_vehid_chain % 2)
 {
   0: return SHORTEN_TO_8_8;
   return SHORTEN_TO_7_8;
 }
 //---------------
-switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon_1,
-  num_vehs_in_consist)
-{
-  2: return CB_RESULT_ATTACH_ALLOW;
-  return CB_RESULT_ATTACH_DISALLOW;
-}
 
 switch (FEAT_TRAINS, SELF, d9g_can_attach_wagon,
   vehicle_type_id)
 {
-  d8g: return CB_RESULT_ATTACH_ALLOW;
-  d8p: return CB_RESULT_ATTACH_ALLOW;
+  d9g2: return CB_RESULT_ATTACH_ALLOW;
+  d9g3: return CB_RESULT_ATTACH_ALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
-}
-
-item (FEAT_TRAINS, d9e) 
-{
-  property
-  {
-    climates_available: NO_CLIMATE; // no manual buy
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
-  }
-  graphics
-  {
-    default: d9e_spriteset;
-  }
-}
-
-item (FEAT_TRAINS, d9e2) 
-{
-  property
-  {
-    climates_available: NO_CLIMATE; // no manual buy
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 0, DISABLE_WAGON_POWER);
-  }
-  graphics
-  {
-    default: d9e_spriteset;
-  }
 }
 
 item (FEAT_TRAINS, d9g2)
@@ -1278,7 +1212,7 @@ item (FEAT_TRAINS, d9g2)
     ai_engine_rank: 0; // not intended to be used by the ai
     engine_class: ENGINE_CLASS_DIESEL;
     extra_power_per_wagon: 0 kW;
-    tractive_effort_coefficient: 0.1; // Changed by callback
+    tractive_effort_coefficient: 0.15; // Changed by callback
     air_drag_coefficient: 0.06;
     shorten_vehicle: SHORTEN_TO_8_8;
     visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 0, DISABLE_WAGON_POWER);
@@ -1289,7 +1223,7 @@ item (FEAT_TRAINS, d9g2)
     default: d9g_get_spriteset;
     purchase: d9g_purchase_spriteset;
     articulated_part: d9g2_articulated_part;
-    shorten_vehicle: d9g2_shorten_vehicle;
+    shorten_vehicle: d9g_shorten_vehicle;
     can_attach_wagon: d9g_can_attach_wagon;
   }
 }
@@ -1318,12 +1252,12 @@ item (FEAT_TRAINS, d9g3)
     power: 1000*0.7355 kW; // Changed by CB
     running_cost_base: RUNNING_COST_DIESEL;
     dual_headed: 0;
-    cargo_capacity: 282; // lower than in real world, for gameplay
+    cargo_capacity: 255; //282 !!! // lower than in real world, for gameplay
     weight: 168 ton; // Total weight, changed by callback
     ai_engine_rank: 0; // not intended to be used by the ai
     engine_class: ENGINE_CLASS_DIESEL;
     extra_power_per_wagon: 0 kW;
-    tractive_effort_coefficient: 0.1; // Changed by callback
+    tractive_effort_coefficient: 0.15; // Changed by callback
     air_drag_coefficient: 0.06;
     shorten_vehicle: SHORTEN_TO_8_8;
     visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 0, DISABLE_WAGON_POWER);
@@ -1334,8 +1268,8 @@ item (FEAT_TRAINS, d9g3)
     default: d9g_get_spriteset;
     purchase: d9g_purchase_spriteset;
     articulated_part: d9g3_articulated_part;
-    shorten_vehicle: d9g3_shorten_vehicle;
+    shorten_vehicle: d9g_shorten_vehicle;
     can_attach_wagon: d9g_can_attach_wagon;
+    cargo_capacity: return 282;
   }
 }
-*/
