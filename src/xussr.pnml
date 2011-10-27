@@ -1136,21 +1136,26 @@ spritegroup d9g_spritegroup
 
 //
 
-switch (FEAT_TRAINS, SELF, d9g_get_spriteset2,
-  position_in_vehid_chain == 0 ? 0 : 
-  position_in_vehid_chain_from_end - 1 == 0 ? 1 : 2
+switch (FEAT_TRAINS, SELF, d9g3_get_spriteset,
+  position_in_vehid_chain % 2 != 0 ? 0 :
+  (position_in_vehid_chain / 2) % 3 == 0 ? 1 :
+  (position_in_vehid_chain / 2) % 3 == 2 ? 2 : 3
 )
 {
-  0: d9g_spritegroup;
-  1: d9g2_spriteset;
+  0: d9e_spriteset;
+  1: d9g_spritegroup;
+  2: d9g2_spriteset;
   d9p_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, d9g_get_spriteset,
-  position_in_vehid_chain % 2)
+switch (FEAT_TRAINS, SELF, d9g2_get_spriteset,
+  position_in_vehid_chain % 2 != 0 ? 0 :
+  (position_in_vehid_chain / 2) % 2 == 0 ? 1 : 2
+)
 {
-  0: d9g_get_spriteset2;
-  d9e_spriteset;
+  0: d9e_spriteset;
+  1: d9g_spritegroup;
+  d9g2_spriteset;
 }
 //---------------
 switch (FEAT_TRAINS, SELF, d9g2_articulated_part,
@@ -1182,6 +1187,21 @@ switch (FEAT_TRAINS, SELF, d9g_can_attach_wagon,
   d9g3: return CB_RESULT_ATTACH_ALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
 }
+
+/*item (FEAT_TRAINS, d9e) 
+{
+  property
+  {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    shorten_vehicle: SHORTEN_TO_7_8;
+  }
+  graphics
+  {
+    default: d9e_spriteset;
+  }
+}*/
 
 item (FEAT_TRAINS, d9g2)
 {
@@ -1220,7 +1240,7 @@ item (FEAT_TRAINS, d9g2)
     bitmask_vehicle_info: 0;
   }
   graphics {
-    default: d9g_get_spriteset;
+    default: d9g2_get_spriteset;
     purchase: d9g_purchase_spriteset;
     articulated_part: d9g2_articulated_part;
     shorten_vehicle: d9g_shorten_vehicle;
@@ -1265,7 +1285,7 @@ item (FEAT_TRAINS, d9g3)
     bitmask_vehicle_info: 0;
   }
   graphics {
-    default: d9g_get_spriteset;
+    default: d9g3_get_spriteset;
     purchase: d9g_purchase_spriteset;
     articulated_part: d9g3_articulated_part;
     shorten_vehicle: d9g_shorten_vehicle;
