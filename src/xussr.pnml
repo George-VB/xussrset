@@ -811,10 +811,37 @@ template d_tl_15_purchase_template(x, y, shift)
   [x, y, 64, 16, -15-4*shift, -11]
 }
 
-spriteset (d8e_spriteset, "src/sprite43-3.png")
+template d_tl_15_e_template(x, y, shift)
 {
-  [1, 1, 1, 1, 0, 0]
+  [x, y, 1, 1, 0, 0]
+  [x, y, 1, 1, 0, 0]
+  [x+80,  y, 64, 16, -47+4*shift, -11]
+  [x, y, 1, 1, 0, 0]
+  [x, y, 1, 1, 0, 0]
+  [x, y, 1, 1, 0, 0]
+  [x+288, y, 64, 16, -15-4*shift, -11]
+  [x, y, 1, 1, 0, 0]
+}
+
+spriteset (d8ge_spriteset, "src/d-1960-1961.png")
+{
+  d_tl_15_e_template(4, 57, 0)
 } 
+
+spriteset (d8g2e_spriteset, "src/d-1960-1961.png")
+{
+  d_tl_15_e_template(4, 144, 1)
+} 
+
+spriteset (d8pe_spriteset, "src/d-1960-1961.png")
+{
+  d_tl_15_e_template(4, 231, 0)
+} 
+
+spriteset (d8e_spriteset, "src/d-1960-1961.png")
+{
+  [4, 57, 1, 1, 0, 0]
+}
 
 spriteset (d8g_purchase_spriteset, "src/d-1960-1961.png")
 {
@@ -910,11 +937,22 @@ spritegroup d8g_spritegroup
 // (var[0x62, 7, 1, 1] == 0) ? 1 : 0
 //
 
+switch (FEAT_TRAINS, SELF, d8p_get_spriteset,
+  var[0x62, 7, 1, 1])
+{
+  0: d8p_spriteset;
+  d8pe_spriteset;
+}
+
 switch (FEAT_TRAINS, SELF, d8g_get_spriteset1,
-  (last_computed_result - count_veh_id(d8g)) % 2)
+  ((last_computed_result - count_veh_id(d8g)) % 2) +
+  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+)
 {
   0: d8g_spritegroup;
-  d8g2_spriteset;
+  1: d8g2_spriteset;
+  2: d8ge_spriteset;
+  d8g2e_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, d8g_get_spriteset,
@@ -1060,7 +1098,7 @@ item (FEAT_TRAINS, d8p)
   /* Define graphics and callbacks
    * Setting all callbacks is not needed, only define what is used */
   graphics {
-    default: d8p_spriteset;
+    default: d8p_get_spriteset;
     purchase: d8p_purchase_spriteset;
     articulated_part: d8g_articulated_part;
     shorten_vehicle: d8g_shorten_vehicle;
