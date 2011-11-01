@@ -794,6 +794,18 @@ template d_tl_15_template(x, y, shift)
   [x+368, y, 42, 42, -6-2*shift,  -14-shift]
 }
 
+template d_tl_15a_template(x, y, shift)
+{
+  [x,     y, 12, 62, -5,          -18-2*shift]
+  [x+32,  y, 42, 42, -34+2*shift, -13-shift]
+  [x+80,  y, 64, 16, -47+4*shift, -11]
+  [x+160, y, 42, 42+1, -26+2*shift, -34+shift]
+  [x+208, y, 12, 62, -5,          -49+2*shift]
+  [x+240, y, 42, 42+1, -14-2*shift, -33+shift]
+  [x+288, y, 64, 16, -15-4*shift, -11]
+  [x+368, y, 42, 42, -6-2*shift,  -14-shift]
+}
+
 template dr_tl_15_template(x, y, shift)
 {
   [x,     y, 12, 62, -5,          -18-2*shift]
@@ -933,6 +945,46 @@ spritegroup d8g_spritegroup
   loaded: d8g_traveling_spriteset;
 }
 
+////
+
+spriteset (d8ge2_spriteset, "src/d-1962-1964.png")
+{
+  d_tl_15_e_template(4, 57, 0)
+} 
+
+spriteset (d8g2e2_spriteset, "src/d-1962-1964.png")
+{
+  d_tl_15_e_template(4, 144, 1)
+} 
+
+spriteset (d8g_purchase2_spriteset, "src/d-1962-1964.png")
+{
+  d_tl_15_purchase_template(292, 57, 4)
+}
+
+spriteset (d8g_loading2_spriteset, "src/d-1962-1964.png")
+{
+  d_tl_15a_template(4, 57, 0)
+} 
+
+spriteset (d8g_traveling2_spriteset, "src/d-1962-1964.png")
+{
+  d_tl_15a_template(458, 57, 0)
+} 
+
+spriteset (d8g22_spriteset, "src/d-1962-1964.png")
+{
+  dr_tl_15_template(4, 144, 0)
+} 
+
+spritegroup d8g2_spritegroup
+{
+  loading: d8g_loading2_spriteset;
+  loaded: d8g_traveling2_spriteset;
+}
+
+////
+
 //
 // (var[0x62, 7, 1, 1] == 0) ? 1 : 0
 //
@@ -946,13 +998,19 @@ switch (FEAT_TRAINS, SELF, d8p_get_spriteset,
 
 switch (FEAT_TRAINS, SELF, d8g_get_spriteset1,
   ((last_computed_result - count_veh_id(d8g)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0) +
+  (cargo_subtype * 4)
 )
 {
   0: d8g_spritegroup;
   1: d8g2_spriteset;
   2: d8ge_spriteset;
-  d8g2e_spriteset;
+  3: d8g2e_spriteset;
+
+  4: d8g2_spritegroup;
+  5: d8g22_spriteset;
+  6: d8ge2_spriteset;
+  d8g2e2_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, d8g_get_spriteset,
@@ -1056,6 +1114,29 @@ switch (FEAT_TRAINS, PARENT, d8g_visual_effect_and_powered,
   d8g_visual_effect_and_powered1;
 }
 
+switch (FEAT_TRAINS, SELF, d8g_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: string(STR_D_1960);
+//  1: string(STR_D_1962);
+  return 0xFF;
+}
+
+switch (FEAT_TRAINS, SELF, d8g_cargo_subtype_text1,
+  cargo_subtype)
+{
+  0: string(STR_D_1960);
+  1: string(STR_D_1962);
+  return 0xFF;
+}
+
+switch (FEAT_TRAINS, SELF, d8g_cargo_subtype_text,
+  current_year >= 1962)
+{
+  1: d8g_cargo_subtype_text1;
+  d8g_cargo_subtype_text2;
+}
+
 item (FEAT_TRAINS, d8e) 
 {
   property
@@ -1123,6 +1204,7 @@ item (FEAT_TRAINS, d8g)
     can_attach_wagon: d8g_can_attach_wagon;
     start_stop: d8g_start_stop;
     visual_effect_and_powered: d8g_visual_effect_and_powered;
+    cargo_subtype_text: d8g_cargo_subtype_text;
   }
 }
 
