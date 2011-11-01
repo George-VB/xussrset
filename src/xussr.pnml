@@ -975,31 +975,54 @@ switch (FEAT_TRAINS, SELF, d8g_shorten_vehicle,
   return SHORTEN_TO_7_8;
 }
 
-/*
-switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon3,
+
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon6,
 [
-  STORE_TEMP(num_vehs_in_consist - 1, 0x10F),
-  var[0x61, 0, 0xFFFF, 0xC6],
-  LOAD_TEMP(0x10E)
+  STORE_TEMP(num_vehs_in_consist-4, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
 ])
 {
   d8g: return CB_RESULT_ATTACH_ALLOW;
   d8p: return CB_RESULT_ATTACH_DISALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
 }
-*/
 
-switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon2,
-  ((count_veh_id(d8g) + (1*(count_veh_id(d8g) % 2)))/2) > count_veh_id(d8p))
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon5,
+  num_vehs_in_consist)
 {
-  1: return CB_RESULT_ATTACH_ALLOW; // d8g_can_attach_wagon3;
+  4: return CB_RESULT_ATTACH_ALLOW;
+  d8g_can_attach_wagon6;
+}
+
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon4,
+[
+  STORE_TEMP(num_vehs_in_consist-2, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  d8g: return CB_RESULT_ATTACH_ALLOW;
+  d8p: d8g_can_attach_wagon5; // return CB_RESULT_ATTACH_DISALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
 }
+
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon3,
+  num_vehs_in_consist)
+{
+  2: return CB_RESULT_ATTACH_ALLOW;
+  d8g_can_attach_wagon4;
+}
+
+/*switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon2,
+  ((count_veh_id(d8g) + 1)/2) > count_veh_id(d8p))
+{
+  1: d8g_can_attach_wagon3; // return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}*/
 
 switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon1,
   count_veh_id(d8g) % 2)
 {
-  1: d8g_can_attach_wagon2;
+  1: d8g_can_attach_wagon3;
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
@@ -1009,6 +1032,28 @@ switch (FEAT_TRAINS, SELF, d8g_can_attach_wagon,
   d8g: return CB_RESULT_ATTACH_ALLOW;
   d8p: d8g_can_attach_wagon1;
   return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, d8g_start_stop,
+  count_veh_id(d8g) % 2)
+{
+  0: return 0xFF;
+  return string(STR_CANNOT_START);
+}
+
+switch (FEAT_TRAINS, SELF, d8g_visual_effect_and_powered1,
+  (last_computed_result - count_veh_id(d8g)) % 2)
+{
+  0: return visual_effect_and_powered(VISUAL_EFFECT_DIESEL, -2,
+    DISABLE_WAGON_POWER);
+  return visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 7,
+    DISABLE_WAGON_POWER);
+}
+
+switch (FEAT_TRAINS, PARENT, d8g_visual_effect_and_powered,
+  count_veh_id(d8g))
+{
+  d8g_visual_effect_and_powered1;
 }
 
 item (FEAT_TRAINS, d8e) 
@@ -1076,6 +1121,8 @@ item (FEAT_TRAINS, d8g)
     articulated_part: d8g_articulated_part;
     shorten_vehicle: d8g_shorten_vehicle;
     can_attach_wagon: d8g_can_attach_wagon;
+    start_stop: d8g_start_stop;
+    visual_effect_and_powered: d8g_visual_effect_and_powered;
   }
 }
 
