@@ -975,10 +975,31 @@ switch (FEAT_TRAINS, SELF, d8g_shorten_vehicle,
   return SHORTEN_TO_7_8;
 }
 
-switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon_1,
-  num_vehs_in_consist)
+/*
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon3,
+[
+  STORE_TEMP(num_vehs_in_consist - 1, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6],
+  LOAD_TEMP(0x10E)
+])
 {
-  2: return CB_RESULT_ATTACH_ALLOW;
+  d8g: return CB_RESULT_ATTACH_ALLOW;
+  d8p: return CB_RESULT_ATTACH_DISALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+*/
+
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon2,
+  ((count_veh_id(d8g) + (1*(count_veh_id(d8g) % 2)))/2) > count_veh_id(d8p))
+{
+  1: return CB_RESULT_ATTACH_ALLOW; // d8g_can_attach_wagon3;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, d8g_can_attach_wagon1,
+  count_veh_id(d8g) % 2)
+{
+  1: d8g_can_attach_wagon2;
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
@@ -986,7 +1007,7 @@ switch (FEAT_TRAINS, SELF, d8g_can_attach_wagon,
   vehicle_type_id)
 {
   d8g: return CB_RESULT_ATTACH_ALLOW;
-  d8p: return CB_RESULT_ATTACH_ALLOW;
+  d8p: d8g_can_attach_wagon1;
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
@@ -1359,7 +1380,7 @@ item (FEAT_TRAINS, d9g3)
   }
 }
 
-/*
+
 item (FEAT_TRAINS, d9e)
 {
   property
@@ -1374,4 +1395,4 @@ item (FEAT_TRAINS, d9e)
     default: d9e_spriteset;
   }
 }
-*/
+
