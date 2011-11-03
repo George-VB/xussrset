@@ -5,7 +5,7 @@
 #define IMAGEFILE  "src/d/d-1960-1961.png"
 
 // head-trailer-reverse_head
-// для скрытия с карты, в меню видны
+// для сокрытия с карты, в меню видны
 spriteset (d_h_hidden_spriteset, IMAGEFILE)
 {
   s15_hidden_template(4, 57, 0)
@@ -113,6 +113,7 @@ switch (FEAT_TRAINS, SELF, d_t_get_spriteset,
   d_t_hidden_spriteset;
 }
 
+// Если год постройки >= 1962, используем метельник
 switch (FEAT_TRAINS, SELF, d_h_get_spriteset1,
   ((last_computed_result - count_veh_id(d_h)) % 2) +
   ((var[0x62, 7, 1, 1] != 0) ? 2 : 0) +
@@ -205,6 +206,20 @@ switch (FEAT_TRAINS, PARENT, d_h_visual_effect_and_powered,
   d_h_visual_effect_and_powered1;
 }
 
+// ограничиваем скорость через 20 лет работы
+switch (FEAT_TRAINS, SELF, d_speed,
+  age_in_days >= (20*365+5))
+{
+  1: return 100;
+  return 120;
+}
+
+switch (FEAT_TRAINS, SELF, d_purchase_speed,
+  0)
+{
+  return 120;
+}
+
 item (FEAT_TRAINS, d_h) 
 {
   property
@@ -247,6 +262,8 @@ item (FEAT_TRAINS, d_h)
     can_attach_wagon: d_h_can_attach_wagon;
     start_stop: d_h_start_stop;
     visual_effect_and_powered: d_h_visual_effect_and_powered;
+    speed: d_speed;
+    purchase_speed: d_purchase_speed;
   }
 }
 
@@ -288,5 +305,7 @@ item (FEAT_TRAINS, d_t)
     purchase: d_t_purchase_spriteset;
     articulated_part: d_h_articulated_part;
     shorten_vehicle: d_h_shorten_vehicle;
+    speed: d_speed;
+    purchase_speed: d_purchase_speed;
   }
 }
