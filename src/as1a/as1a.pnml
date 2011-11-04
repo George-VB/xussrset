@@ -4,12 +4,6 @@
 
 #define IMAGEFILE  "src/as1a/as1a.png"
 
-// для сокрытия с карты, в меню видны
-spriteset (as1a_hidden_spriteset, IMAGEFILE)
-{
-  s5_hidden_template(0, 5, 0)
-} 
-
 // покупка
 spriteset (as1a_purchase_spriteset, IMAGEFILE)
 {
@@ -22,17 +16,26 @@ spriteset (as1a_spriteset, IMAGEFILE)
   s5_template(0, 5, 0)
 } 
 
+spriteset (as1a_2_spriteset, IMAGEFILE)
+{
+  s5_template(0, 51, 0)
+} 
+
 #undef IMAGEFILE
 
-//
-
-switch (FEAT_TRAINS, SELF, as1a_can_attach_wagon,
-  vehicle_type_id)
+// Присоединяем не более одной
+switch (FEAT_TRAINS, SELF, as1a_can_attach_wagon1,
+  (vehicle_type_id == as1a) && (last_computed_result <= 1))
 {
-  as1a: return CB_RESULT_ATTACH_ALLOW;
+  1: return CB_RESULT_ATTACH_ALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
+switch (FEAT_TRAINS, PARENT, as1a_can_attach_wagon,
+  num_vehs_in_consist)
+{
+  as1a_can_attach_wagon1;
+}
 
 
 item (FEAT_TRAINS, as1a) 
@@ -59,11 +62,11 @@ item (FEAT_TRAINS, as1a)
     running_cost_base: RUNNING_COST_DIESEL;
     dual_headed: 0;
     cargo_capacity: 24; // пассажиров
-    weight: 65 ton;
+    weight: 9 ton;
     ai_engine_rank: 0;
     engine_class: ENGINE_CLASS_DIESEL;
     extra_power_per_wagon: 0 kW;
-    tractive_effort_coefficient: 0.10;
+    tractive_effort_coefficient: 0.12;
     air_drag_coefficient: 0.06;
     shorten_vehicle: SHORTEN_TO_5_8;
     extra_weight_per_wagon: 0;
