@@ -23,6 +23,13 @@ spriteset (as1a_2_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, as1a_get_spriteset,
+  cargo_subtype)
+{
+  0: as1a_spriteset;
+  as1a_2_spriteset;
+}
+
 // Присоединяем не более одной
 switch (FEAT_TRAINS, SELF, as1a_can_attach_wagon1,
   (vehicle_type_id == as1a) && (last_computed_result <= 1))
@@ -37,6 +44,13 @@ switch (FEAT_TRAINS, PARENT, as1a_can_attach_wagon,
   as1a_can_attach_wagon1;
 }
 
+switch (FEAT_TRAINS, SELF, as1a_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_AS1A_V1);
+  1: string(STR_AS1A_V2);
+  return 0xFF;
+}
 
 item (FEAT_TRAINS, as1a) 
 {
@@ -73,9 +87,10 @@ item (FEAT_TRAINS, as1a)
     bitmask_vehicle_info: 0;
   }
   graphics {
-    default: as1a_spriteset;
+    default: as1a_get_spriteset;
     purchase: as1a_purchase_spriteset;
     can_attach_wagon: as1a_can_attach_wagon;
+    cargo_subtype_text: as1a_cargo_subtype_text;
   }
 }
 
