@@ -1,0 +1,260 @@
+ // dr1
+
+// Спрайты
+
+#define IMAGEFILE  "src/dr1/dr1-baltika-1963-1966.png"
+
+// head-trailer-reverse_head
+// для сокрытия с карты, в меню видны
+spriteset (dr1_h_hidden_spriteset, IMAGEFILE)
+{
+  s15_hidden_template(4, 0, 0)
+} 
+
+spriteset (dr1_rh_hidden_spriteset, IMAGEFILE)
+{
+  s15_hidden_template(4, 41, 1)
+} 
+
+spriteset (dr1_t_hidden_spriteset, IMAGEFILE)
+{
+  s15_hidden_template(4, 82, 0)
+} 
+
+// покупка
+spriteset (dr1_h_purchase_spriteset, IMAGEFILE)
+{
+  s15_purchase_template(292, 0, 4)
+}
+
+spriteset (dr1_t_purchase_spriteset, IMAGEFILE)
+{
+  s15_purchase_template(292, 82, 4)
+}
+
+// головной
+spriteset (dr1_h_spriteset, IMAGEFILE)
+{
+  s15_template(4, 0, 0)
+} 
+
+// развёрнутая голова
+spriteset (dr1_rh_spriteset, IMAGEFILE)
+{
+  s15r_template(4, 41, 0)
+} 
+
+// прицепной
+spriteset (dr1_t_spriteset, IMAGEFILE)
+{
+  s15_template(4, 82, 0)
+} 
+
+#undef IMAGEFILE
+
+//
+switch (FEAT_TRAINS, SELF, dr1_t_get_spriteset,
+  var[0x62, 7, 1, 1])
+{
+  0: dr1_t_spriteset;
+  dr1_t_hidden_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_get_spriteset1,
+  ((last_computed_result - count_veh_id(dr1_h)) % 2) +
+  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+)
+{
+  0: dr1_h_spriteset;
+  1: dr1_rh_spriteset;
+  2: dr1_h_hidden_spriteset;
+  dr1_rh_hidden_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_get_spriteset,
+  count_veh_id(dr1_h))
+{
+  dr1_h_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy;
+  return 0xFF;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon6,
+[
+  STORE_TEMP(num_vehs_in_consist-4, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1_t: return CB_RESULT_ATTACH_DISALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon5,
+  num_vehs_in_consist)
+{
+  4: return CB_RESULT_ATTACH_ALLOW;
+  dr1_h_can_attach_wagon6;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon4,
+[
+  STORE_TEMP(num_vehs_in_consist-2, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1_t: dr1_h_can_attach_wagon5;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon3,
+  num_vehs_in_consist)
+{
+  2: return CB_RESULT_ATTACH_ALLOW;
+  dr1_h_can_attach_wagon4;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon1,
+  count_veh_id(dr1_h) % 2)
+{
+  1: dr1_h_can_attach_wagon3;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_can_attach_wagon,
+  vehicle_type_id)
+{
+  dr1_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1_t: dr1_h_can_attach_wagon1;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_start_stop,
+  count_veh_id(dr1_h) % 2)
+{
+  0: return 0xFF;
+  return string(STR_CANNOT_START);
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_visual_effect_and_powered1,
+  (last_computed_result - count_veh_id(dr1_h)) % 2)
+{
+  0: return visual_effect_and_powered(VISUAL_EFFECT_DIESEL, -2,
+    DISABLE_WAGON_POWER);
+  return visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 7,
+    DISABLE_WAGON_POWER);
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_visual_effect_and_powered,
+  count_veh_id(dr1_h))
+{
+  dr1_h_visual_effect_and_powered1;
+}
+
+// ограничиваем скорость через 20 лет работы
+switch (FEAT_TRAINS, SELF, dr1_speed,
+  age_in_days >= (20*365+5))
+{
+  1: return 110;
+  return 120;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_purchase_speed,
+  0)
+{
+  return 120;
+}
+
+item (FEAT_TRAINS, dr1_h) 
+{
+  property
+  {
+    name: string(STR_DR1_H_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1963, 1, 1);
+    model_life: 25; // VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 25; // срок службы
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 121 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 750 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 80;
+    weight: 53.5 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.15;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+  }
+  graphics {
+    default: dr1_h_get_spriteset;
+    purchase: dr1_h_purchase_spriteset;
+    articulated_part: dr1_h_articulated_part;
+    can_attach_wagon: dr1_h_can_attach_wagon;
+    start_stop: dr1_h_start_stop;
+    visual_effect_and_powered: dr1_h_visual_effect_and_powered;
+    speed: dr1_speed;
+    purchase_speed: dr1_purchase_speed;
+  }
+}
+
+item (FEAT_TRAINS, dr1_t) 
+{
+  property
+  {
+    name: string(STR_DR1_T_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1963, 1, 1);
+    model_life: 25; // VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 25;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 12;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 121 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 128;
+    weight: 33.7 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+  }
+  graphics {
+    default: dr1_t_get_spriteset;
+    purchase: dr1_t_purchase_spriteset;
+    articulated_part: dr1_h_articulated_part;
+    speed: dr1_speed;
+    purchase_speed: dr1_purchase_speed;
+  }
+}
