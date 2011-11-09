@@ -21,6 +21,16 @@ spriteset (dr1a_c_hidden_spriteset, IMAGEFILE)
   s15_hidden_template(38, 1414, 0)
 } 
 
+spriteset (dr1a_hn_hidden_spriteset, IMAGEFILE)
+{
+  s15_hidden_template(38, 862, 0)
+} 
+
+spriteset (dr1a_rhn_hidden_spriteset, IMAGEFILE)
+{
+  s15_hidden_template(38, 1138, 0)
+} 
+
 // покупка
 spriteset (dr1a_h_purchase_spriteset, IMAGEFILE)
 {
@@ -30,6 +40,11 @@ spriteset (dr1a_h_purchase_spriteset, IMAGEFILE)
 spriteset (dr1a_c_purchase_spriteset, IMAGEFILE)
 {
   s15_purchase_template(326, 1414, 4)
+}
+
+spriteset (dr1a_hn_purchase_spriteset, IMAGEFILE)
+{
+  s15_purchase_template(326, 862, 4)
 }
 
 // головной
@@ -67,6 +82,29 @@ spritegroup dr1a_h_2_spritegroup
   loaded: dr1a_h_2_traveling_spriteset;
 }
 
+// головной немоторный: погрузка/перемещение
+spriteset (dr1a_hn_loading_spriteset, IMAGEFILE)
+{
+  s15_template(38, 862, 0)
+} 
+
+spriteset (dr1a_hn_traveling_spriteset, IMAGEFILE)
+{
+  s15_template(497, 862, 0)
+} 
+
+spritegroup dr1a_hn_spritegroup
+{
+  loading: dr1a_hn_loading_spriteset;
+  loaded: dr1a_hn_traveling_spriteset;
+}
+
+// головной немоторный развёрнутый
+spriteset (dr1a_rhn_spriteset, IMAGEFILE)
+{
+  s15_template(38, 1138, 0)
+} 
+
 #undef IMAGEFILE
 
 //
@@ -94,6 +132,23 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_get_spriteset,
   dr1a_h_get_spriteset1;
 }
 
+switch (FEAT_TRAINS, SELF, dr1a_hn_get_spriteset1,
+  ((last_computed_result - count_veh_id(dr1a_h) - count_veh_id(dr1a_hn)) % 2) +
+  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+)
+{
+  0: dr1a_hn_spritegroup;
+  1: dr1a_rhn_spriteset;
+  2: dr1a_hn_hidden_spriteset;
+  dr1a_rhn_hidden_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_hn_get_spriteset,
+  count_veh_id(dr1a_h) + count_veh_id(dr1a_hn))
+{
+  dr1a_hn_get_spriteset1;
+}
+
 switch (FEAT_TRAINS, SELF, dr1a_h_articulated_part,
   extra_callback_info1)
 {
@@ -108,6 +163,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon10,
 ])
 {
   dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_ALLOW;
   dr1a_c: return CB_RESULT_ATTACH_DISALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
 }
@@ -126,6 +182,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon8,
 ])
 {
   dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_ALLOW;
   dr1a_c: dr1a_h_can_attach_wagon9;
   return CB_RESULT_ATTACH_DISALLOW;
 }
@@ -144,6 +201,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon6,
 ])
 {
   dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_ALLOW;
   dr1a_c: dr1a_h_can_attach_wagon7;
   return CB_RESULT_ATTACH_DISALLOW;
 }
@@ -162,6 +220,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon4,
 ])
 {
   dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_ALLOW;
   dr1a_c: dr1a_h_can_attach_wagon5;
   return CB_RESULT_ATTACH_DISALLOW;
 }
@@ -174,29 +233,97 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon3,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon1,
-  count_veh_id(dr1a_h) % 2)
+  (count_veh_id(dr1a_h) + count_veh_id(dr1a_hn)) % 2)
 {
   1: dr1a_h_can_attach_wagon3;
   return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon16,
+[
+  STORE_TEMP(num_vehs_in_consist-10, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_DISALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon15,
+[
+  STORE_TEMP(num_vehs_in_consist-8, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_DISALLOW;
+  dr1a_c: dr1a_h_can_attach_wagon16;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon14,
+[
+  STORE_TEMP(num_vehs_in_consist-6, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_DISALLOW;
+  dr1a_c: dr1a_h_can_attach_wagon15;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon13,
+[
+  STORE_TEMP(num_vehs_in_consist-4, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_DISALLOW;
+  dr1a_c: dr1a_h_can_attach_wagon14;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon12,
+[
+  STORE_TEMP(num_vehs_in_consist-2, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: return CB_RESULT_ATTACH_DISALLOW;
+  dr1a_c: dr1a_h_can_attach_wagon13;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+// количество голов чётное?
+switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon11,
+  (count_veh_id(dr1a_h) + count_veh_id(dr1a_hn)) % 2)
+{
+  0: return CB_RESULT_ATTACH_ALLOW; // да
+  dr1a_h_can_attach_wagon12; // нет, проверяем последнюю на соответствие dr1b_h
 }
 
 switch (FEAT_TRAINS, SELF, dr1a_h_can_attach_wagon,
   vehicle_type_id)
 {
   dr1a_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1a_hn: dr1a_h_can_attach_wagon11;
   dr1a_c: dr1a_h_can_attach_wagon1;
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_h_start_stop,
-  count_veh_id(dr1a_h) % 2)
+  (count_veh_id(dr1a_h) + count_veh_id(dr1a_hn)) % 2)
 {
   0: return 0xFF;
   return string(STR_CANNOT_START);
 }
 
 switch (FEAT_TRAINS, SELF, dr1a_h_visual_effect_and_powered1,
-  (last_computed_result - count_veh_id(dr1a_h)) % 2)
+  (last_computed_result - count_veh_id(dr1a_h) - count_veh_id(dr1a_hn)) % 2)
 {
   0: return visual_effect_and_powered(VISUAL_EFFECT_DIESEL, -2,
     DISABLE_WAGON_POWER);
@@ -205,7 +332,7 @@ switch (FEAT_TRAINS, SELF, dr1a_h_visual_effect_and_powered1,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_h_visual_effect_and_powered,
-  count_veh_id(dr1a_h))
+  count_veh_id(dr1a_h) + count_veh_id(dr1a_hn))
 {
   dr1a_h_visual_effect_and_powered1;
 }
@@ -268,6 +395,49 @@ item (FEAT_TRAINS, dr1a_h)
     speed: dr1a_speed;
     purchase_speed: dr1a_purchase_speed;
     additional_text: return string(STR_DR1A_H_PURCHASE_HINT);
+  }
+}
+
+item (FEAT_TRAINS, dr1a_hn) 
+{
+  property
+  {
+    name: string(STR_DR1A_HN_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1990), 1, 1);
+    model_life: 25; // VEHICLE_NEVER_EXPIRES;
+    vehicle_life: 25;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    loading_speed: 12;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_2CC, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 124;
+    weight: 38 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+  }
+  graphics {
+    default: dr1a_hn_get_spriteset;
+    purchase: dr1a_hn_purchase_spriteset;
+    articulated_part: dr1a_h_articulated_part;
+    can_attach_wagon: dr1a_h_can_attach_wagon;
+    start_stop: dr1a_h_start_stop;
+    power: return 0; // сам тянуть составы не может
+    additional_text: return string(STR_DR1A_HN_PURCHASE_HINT);
   }
 }
 
