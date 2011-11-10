@@ -84,6 +84,49 @@ switch (FEAT_TRAINS, SELF, dr1_h_articulated_part,
   return 0xFF;
 }
 
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon11,
+[
+  STORE_TEMP(num_vehs_in_consist-8, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1_c: return CB_RESULT_ATTACH_DISALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon10,
+  num_vehs_in_consist)
+{
+  8: return CB_RESULT_ATTACH_ALLOW;
+  dr1_h_can_attach_wagon11;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon9,
+[
+  STORE_TEMP(num_vehs_in_consist-6, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  dr1_h: return CB_RESULT_ATTACH_ALLOW;
+  dr1_c: dr1_h_can_attach_wagon10;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon8,
+  num_vehs_in_consist)
+{
+  6: return CB_RESULT_ATTACH_ALLOW;
+  dr1_h_can_attach_wagon9;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_can_attach_wagon7,
+  current_year >= 1968)
+{
+  1: dr1_h_can_attach_wagon8;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon6,
 [
   STORE_TEMP(num_vehs_in_consist-4, 0x10F),
@@ -91,7 +134,7 @@ switch (FEAT_TRAINS, PARENT, dr1_h_can_attach_wagon6,
 ])
 {
   dr1_h: return CB_RESULT_ATTACH_ALLOW;
-  dr1_c: return CB_RESULT_ATTACH_DISALLOW;
+  dr1_c: dr1_h_can_attach_wagon7;
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
