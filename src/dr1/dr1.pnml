@@ -4,23 +4,7 @@
 
 #define IMAGEFILE  "src/dr1/dr1-1963-1969.png"
 
-// head-trailer-reverse_head
-// для сокрытия с карты, в меню видны
-spriteset (dr1_m_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 35, 0)
-} 
-
-spriteset (dr1_rm_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 104, 0)
-} 
-
-spriteset (dr1_c_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 173, 0)
-} 
-
+// Вариант 0 (1963-66, Балтика)
 // покупка
 spriteset (dr1_m_purchase_spriteset, IMAGEFILE)
 {
@@ -61,30 +45,93 @@ spriteset (dr1_c_spriteset, IMAGEFILE)
   s15_template(38, 173, 0)
 } 
 
-#undef IMAGEFILE
-
-//
-switch (FEAT_TRAINS, SELF, dr1_c_get_spriteset,
-  var[0x62, 7, 1, 1])
+// Вариант 1 (1966-69), Дырка
+// покупка
+spriteset (dr1_m_2_purchase_spriteset, IMAGEFILE)
 {
-  0: dr1_c_spriteset;
-  dr1_c_hidden_spriteset;
+  s15_purchase_template(326, 262, 4)
 }
 
-switch (FEAT_TRAINS, SELF, dr1_m_get_spriteset1,
+spriteset (dr1_c_2_purchase_spriteset, IMAGEFILE)
+{
+  s15_purchase_template(326, 400, 4)
+}
+
+// головной: погрузка/перемещение
+spriteset (dr1_m_2_loading_spriteset, IMAGEFILE)
+{
+  s15_template(38, 262, 0)
+} 
+
+spriteset (dr1_m_2_traveling_spriteset, IMAGEFILE)
+{
+  s15_template(497, 262, 0)
+} 
+
+spritegroup dr1_m_2_spritegroup
+{
+  loading: dr1_m_2_loading_spriteset;
+  loaded: dr1_m_2_traveling_spriteset;
+}
+
+// развёрнутая голова
+spriteset (dr1_rm_2_spriteset, IMAGEFILE)
+{
+  s15_template(38, 331, 0)
+} 
+
+// прицепной
+spriteset (dr1_c_2_spriteset, IMAGEFILE)
+{
+  s15_template(38, 400, 0)
+} 
+
+#undef IMAGEFILE
+
+// Если год постройки >= 1966, используем "дырку"
+switch (FEAT_TRAINS, SELF, dr1_c_get_spriteset1,
+  build_year >= 1966)
+{
+  1: dr1_c_2_spriteset;
+  dr1_c_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1_c_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  dr1_c_get_spriteset1;
+}
+
+// Определяем необходимость разворота моторного вагона по чётности его позиции
+// от начала состава
+// Если год постройки >= 1966, используем "дырку"
+switch (FEAT_TRAINS, SELF, dr1_m_get_spriteset2,
   ((last_computed_result - count_veh_id(dr1_m)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+  ((build_year >= 1966) * 2)
 )
 {
   0: dr1_m_spritegroup;
   1: dr1_rm_spriteset;
-  2: dr1_m_hidden_spriteset;
-  dr1_rm_hidden_spriteset;
+
+  2: dr1_m_2_spritegroup;
+  dr1_rm_2_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1_m_get_spriteset,
+switch (FEAT_TRAINS, PARENT, dr1_m_get_spriteset1,
   count_veh_id(dr1_m))
 {
+  dr1_m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   dr1_m_get_spriteset1;
 }
 
@@ -211,6 +258,19 @@ switch (FEAT_TRAINS, SELF, dr1_m_additional_text,
   return string(STR_DR1_M_PURCHASE_HINT);
 }
 
+switch (FEAT_TRAINS, SELF, dr1_m_purchase,
+  build_year >= 1966)
+{
+  1: dr1_m_2_purchase_spriteset;
+  dr1_m_purchase_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_c_purchase,
+  build_year >= 1966)
+{
+  1: dr1_c_2_purchase_spriteset;
+  dr1_c_purchase_spriteset;
+}
 
 item (FEAT_TRAINS, dr1_m) 
 {
@@ -248,7 +308,7 @@ item (FEAT_TRAINS, dr1_m)
   }
   graphics {
     default: dr1_m_get_spriteset;
-    purchase: dr1_m_purchase_spriteset;
+    purchase: dr1_m_purchase;
     articulated_part: articulated_part_one_dummy;
     can_attach_wagon: dr1_m_can_attach_wagon;
     start_stop: dr1_m_start_stop;
@@ -293,7 +353,7 @@ item (FEAT_TRAINS, dr1_c)
   }
   graphics {
     default: dr1_c_get_spriteset;
-    purchase: dr1_c_purchase_spriteset;
+    purchase: dr1_c_purchase;
     articulated_part: articulated_part_one_dummy;
   }
 }
