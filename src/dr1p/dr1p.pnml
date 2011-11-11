@@ -4,23 +4,6 @@
 
 #define IMAGEFILE  "src/dr1p/dr1p-1970-1976.png"
 
-// head-trailer-reverse_head
-// для сокрытия с карты, в меню видны
-spriteset (dr1p_m_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 27, 0)
-} 
-
-spriteset (dr1p_rm_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 96, 0)
-} 
-
-spriteset (dr1p_c_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 165, 0)
-} 
-
 // покупка
 spriteset (dr1p_m_purchase_spriteset, IMAGEFILE)
 {
@@ -32,11 +15,22 @@ spriteset (dr1p_c_purchase_spriteset, IMAGEFILE)
   s15_purchase_template(326, 165, 4)
 }
 
-// головной
-spriteset (dr1p_m_spriteset, IMAGEFILE)
+// головной: погрузка/перемещение
+spriteset (dr1p_m_loading_spriteset, IMAGEFILE)
 {
   s15_template(38, 27, 0)
 } 
+
+spriteset (dr1p_m_traveling_spriteset, IMAGEFILE)
+{
+  s15_template(497, 27, 0)
+} 
+
+spritegroup dr1p_m_spritegroup
+{
+  loading: dr1p_m_loading_spriteset;
+  loaded: dr1p_m_traveling_spriteset;
+}
 
 // развёрнутая голова
 spriteset (dr1p_rm_spriteset, IMAGEFILE)
@@ -50,47 +44,39 @@ spriteset (dr1p_c_spriteset, IMAGEFILE)
   s15_template(38, 165, 0)
 } 
 
-// головной: погрузка/перемещение
-spriteset (dr1p_m_2_loading_spriteset, IMAGEFILE)
-{
-  s15_template(38, 27, 0)
-} 
-
-spriteset (dr1p_m_2_traveling_spriteset, IMAGEFILE)
-{
-  s15_template(497, 27, 0)
-} 
-
-spritegroup dr1p_m_2_spritegroup
-{
-  loading: dr1p_m_2_loading_spriteset;
-  loaded: dr1p_m_2_traveling_spriteset;
-}
-
 #undef IMAGEFILE
 
-//
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
 switch (FEAT_TRAINS, SELF, dr1p_c_get_spriteset,
-  var[0x62, 7, 1, 1])
+  is_drawn_in_viewport() && is_hidden_at(1))
 {
-  0: dr1p_c_spriteset;
-  dr1p_c_hidden_spriteset;
+  1: dummy_spriteset;
+  dr1p_c_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, dr1p_m_get_spriteset1,
-  ((last_computed_result - count_veh_id(dr1p_m)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+// Определяем необходимость разворота моторного вагона по чётности его позиции
+// от начала состава
+switch (FEAT_TRAINS, SELF, dr1p_m_get_spriteset2,
+  (last_computed_result - count_veh_id(dr1p_m)) % 2  
 )
 {
-  0: dr1p_m_2_spritegroup;
-  1: dr1p_rm_spriteset;
-  2: dr1p_m_hidden_spriteset;
-  dr1p_rm_hidden_spriteset;
+  0: dr1p_m_spritegroup;
+  dr1p_rm_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1p_m_get_spriteset,
+switch (FEAT_TRAINS, PARENT, dr1p_m_get_spriteset1,
   count_veh_id(dr1p_m))
 {
+  dr1p_m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1p_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   dr1p_m_get_spriteset1;
 }
 
