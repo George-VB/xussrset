@@ -4,33 +4,6 @@
 
 #define IMAGEFILE  "src/dr1b/dr1b.png"
 
-// head-trailer-reverse_head
-// для сокрытия с карты, в меню видны
-spriteset (dr1b_m_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(82, 35, 0)
-} 
-
-spriteset (dr1b_rm_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(82, 104, 0)
-} 
-
-spriteset (dr1b_c_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(82, 311, 0)
-} 
-
-spriteset (dr1b_n_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(82, 173, 0)
-} 
-
-spriteset (dr1b_rn_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(82, 242, 0)
-} 
-
 // покупка
 spriteset (dr1b_m_purchase_spriteset, IMAGEFILE)
 {
@@ -101,45 +74,62 @@ spriteset (dr1b_rn_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-//
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
 switch (FEAT_TRAINS, SELF, dr1b_c_get_spriteset,
-  var[0x62, 7, 1, 1])
+  is_drawn_in_viewport() && is_hidden_at(1))
 {
-  0: dr1b_c_spriteset;
-  dr1b_c_hidden_spriteset;
+  1: dummy_spriteset;
+  dr1b_c_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, dr1b_m_get_spriteset1,
-  ((last_computed_result - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+// Определяем необходимость разворота моторного вагона по чётности его позиции
+// от начала состава
+switch (FEAT_TRAINS, SELF, dr1b_m_get_spriteset2,
+  (last_computed_result - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2  
 )
 {
   0: dr1b_m_spritegroup;
-  1: dr1b_rm_spriteset;
-  2: dr1b_m_hidden_spriteset;
-  dr1b_rm_hidden_spriteset;
+  dr1b_rm_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1b_m_get_spriteset,
+switch (FEAT_TRAINS, PARENT, dr1b_m_get_spriteset1,
   count_veh_id(dr1b_m) + count_veh_id(dr1b_n))
 {
+  dr1b_m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1b_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   dr1b_m_get_spriteset1;
 }
 
-switch (FEAT_TRAINS, SELF, dr1b_n_get_spriteset1,
-  ((last_computed_result - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+// Определяем необходимость разворота немоторного вагона по чётности его позиции
+// от начала состава
+switch (FEAT_TRAINS, SELF, dr1b_n_get_spriteset2,
+  (last_computed_result - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2  
 )
 {
   0: dr1b_n_spritegroup;
-  1: dr1b_rn_spriteset;
-  2: dr1b_n_hidden_spriteset;
-  dr1b_rn_hidden_spriteset;
+  dr1b_rn_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1b_n_get_spriteset,
+switch (FEAT_TRAINS, PARENT, dr1b_n_get_spriteset1,
   count_veh_id(dr1b_m) + count_veh_id(dr1b_n))
 {
+  dr1b_n_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1b_n_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   dr1b_n_get_spriteset1;
 }
 
