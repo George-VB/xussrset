@@ -4,23 +4,6 @@
 
 #define IMAGEFILE  "src/d/d-1960-1961.png"
 
-// head-trailer-reverse_head
-// для сокрытия с карты, в меню видны
-spriteset (d_m_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(4, 57, 0)
-} 
-
-spriteset (d_rm_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(4, 144, 1)
-} 
-
-spriteset (d_c_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(4, 231, 0)
-} 
-
 // покупка
 spriteset (d_m_purchase_spriteset, IMAGEFILE)
 {
@@ -32,7 +15,7 @@ spriteset (d_c_purchase_spriteset, IMAGEFILE)
   s15_purchase_template(292, 231, 4)
 }
 
-// головной: погрузка/перемещение
+// моторный: погрузка/перемещение
 spriteset (d_m_loading_spriteset, IMAGEFILE)
 {
   s15_template(4, 57, 0)
@@ -50,7 +33,7 @@ spritegroup d_m_spritegroup
 }
 
 
-// развёрнутая голова
+// развёрнутый моторный
 spriteset (d_rm_spriteset, IMAGEFILE)
 {
   s15r_template(4, 144, 0)
@@ -63,25 +46,22 @@ spriteset (d_c_spriteset, IMAGEFILE)
 } 
 
 #undef IMAGEFILE
+
+/// С метельником (cowcatcher)
 #define IMAGEFILE "src/d/d-1962-1964.png"
 
-// То же с метельником (cowcatcher)
-
-spriteset (d_m_cc_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(4, 57, 0)
-} 
-
-spriteset (d_rm_cc_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(4, 144, 1)
-} 
-
+// покупка
 spriteset (d_m_cc_purchase_spriteset, IMAGEFILE)
 {
   s15_purchase_template(292, 57, 4)
 }
 
+spriteset (d_c_cc_purchase_spriteset, IMAGEFILE)
+{
+  s15_purchase_template(292, 231, 4)
+}
+
+// моторный
 spriteset (d_m_cc_loading_spriteset, IMAGEFILE)
 {
   s15a_template(4, 57, 0)
@@ -98,42 +78,64 @@ spritegroup d_m_cc_spritegroup
   loaded: d_m_cc_traveling_spriteset;
 }
 
+// развёрнутый моторный
 spriteset (d_rm_cc_spriteset, IMAGEFILE)
 {
   s15r_template(4, 144, 0)
 } 
 
+// прицепной
+spriteset (d_c_cc_spriteset, IMAGEFILE)
+{
+  s15_template(4, 231, 0)
+} 
+
 #undef IMAGEFILE
 
-//
-switch (FEAT_TRAINS, SELF, d_c_get_spriteset,
-  var[0x62, 7, 1, 1])
+// Если год постройки >= 1962, используем метельник
+switch (FEAT_TRAINS, SELF, d_c_get_spriteset1,
+  build_year >= 1962)
 {
-  0: d_c_spriteset;
-  d_c_hidden_spriteset;
+  1: d_c_cc_spriteset;
+  d_c_spriteset;
 }
 
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, d_c_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  d_c_get_spriteset1;
+}
+
+// Определяем необходимость разворота моторного вагона по чётности его позиции
+// от начала состава
 // Если год постройки >= 1962, используем метельник
-switch (FEAT_TRAINS, SELF, d_m_get_spriteset1,
+switch (FEAT_TRAINS, SELF, d_m_get_spriteset2,
   ((last_computed_result - count_veh_id(d_m)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0) +
-  ((build_year >= 1962) * 4)
+  ((build_year >= 1962) * 2)
 )
 {
   0: d_m_spritegroup;
   1: d_rm_spriteset;
-  2: d_m_hidden_spriteset;
-  3: d_rm_hidden_spriteset;
 
-  4: d_m_cc_spritegroup;
-  5: d_rm_cc_spriteset;
-  6: d_m_cc_hidden_spriteset;
-  d_rm_cc_hidden_spriteset;
+  2: d_m_cc_spritegroup;
+  d_rm_cc_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, d_m_get_spriteset,
+switch (FEAT_TRAINS, PARENT, d_m_get_spriteset1,
   count_veh_id(d_m))
 {
+  d_m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, d_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   d_m_get_spriteset1;
 }
 
@@ -148,6 +150,7 @@ switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon4,
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
+// Если в составе один локомотив, можно присоединить
 switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon3,
   num_vehs_in_consist)
 {
@@ -155,6 +158,7 @@ switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon3,
   d_m_can_attach_wagon4;
 }
 
+// Нельзя присоединить к чётному моторному, только к нечётному
 switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon1,
   count_veh_id(d_m) % 2)
 {
@@ -162,6 +166,7 @@ switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon1,
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
+// Что присоединяем?
 switch (FEAT_TRAINS, SELF, d_m_can_attach_wagon,
   vehicle_type_id)
 {
@@ -170,6 +175,7 @@ switch (FEAT_TRAINS, SELF, d_m_can_attach_wagon,
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
+// Кол-во моторных чётное?
 switch (FEAT_TRAINS, PARENT, d_m_start_stop,
   count_veh_id(d_m) % 2)
 {
@@ -190,6 +196,20 @@ switch (FEAT_TRAINS, PARENT, d_m_visual_effect_and_powered,
   count_veh_id(d_m))
 {
   d_m_visual_effect_and_powered1;
+}
+
+switch (FEAT_TRAINS, SELF, d_m_purchase,
+  build_year >= 1962)
+{
+  1: d_m_cc_purchase_spriteset;
+  d_m_purchase_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, d_c_purchase,
+  build_year >= 1962)
+{
+  1: d_c_cc_purchase_spriteset;
+  d_c_purchase_spriteset;
 }
 
 item (FEAT_TRAINS, d_m) 
@@ -229,7 +249,7 @@ item (FEAT_TRAINS, d_m)
   }
   graphics {
     default: d_m_get_spriteset;
-    purchase: d_m_purchase_spriteset;
+    purchase: d_m_purchase;
     articulated_part: articulated_part_one_dummy;
     can_attach_wagon: d_m_can_attach_wagon;
     start_stop: d_m_start_stop;
@@ -275,7 +295,7 @@ item (FEAT_TRAINS, d_c)
   }
   graphics {
     default: d_c_get_spriteset;
-    purchase: d_c_purchase_spriteset;
+    purchase: d_c_purchase;
     articulated_part: articulated_part_one_dummy;
   }
 }
