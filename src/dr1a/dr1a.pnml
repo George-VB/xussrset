@@ -4,33 +4,6 @@
 
 #define IMAGEFILE  "src/dr1a/dr1a-1976-2009.png"
 
-// head-trailer-reverse_head
-// для сокрытия с карты, в меню видны
-spriteset (dr1a_m_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 34, 0)
-} 
-
-spriteset (dr1a_rm_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 448, 0)
-} 
-
-spriteset (dr1a_c_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 1414, 0)
-} 
-
-spriteset (dr1a_n_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 862, 0)
-} 
-
-spriteset (dr1a_rn_hidden_spriteset, IMAGEFILE)
-{
-  s15_hidden_template(38, 1138, 0)
-} 
-
 // покупка
 spriteset (dr1a_m_purchase_spriteset, IMAGEFILE)
 {
@@ -47,11 +20,22 @@ spriteset (dr1a_n_purchase_spriteset, IMAGEFILE)
   s15_purchase_template(326, 862, 4)
 }
 
-// головной
-spriteset (dr1a_m_spriteset, IMAGEFILE)
+// головной: погрузка/перемещение
+spriteset (dr1a_m_loading_spriteset, IMAGEFILE)
 {
   s15_template(38, 34, 0)
 } 
+
+spriteset (dr1a_m_traveling_spriteset, IMAGEFILE)
+{
+  s15_template(497, 34, 0)
+} 
+
+spritegroup dr1a_m_spritegroup
+{
+  loading: dr1a_m_loading_spriteset;
+  loaded: dr1a_m_traveling_spriteset;
+}
 
 // развёрнутая голова
 spriteset (dr1a_rm_spriteset, IMAGEFILE)
@@ -64,23 +48,6 @@ spriteset (dr1a_c_spriteset, IMAGEFILE)
 {
   s15_template(38, 1414, 0)
 } 
-
-// головной: погрузка/перемещение
-spriteset (dr1a_m_2_loading_spriteset, IMAGEFILE)
-{
-  s15_template(38, 34, 0)
-} 
-
-spriteset (dr1a_m_2_traveling_spriteset, IMAGEFILE)
-{
-  s15_template(497, 34, 0)
-} 
-
-spritegroup dr1a_m_2_spritegroup
-{
-  loading: dr1a_m_2_loading_spriteset;
-  loaded: dr1a_m_2_traveling_spriteset;
-}
 
 // головной немоторный: погрузка/перемещение
 spriteset (dr1a_n_loading_spriteset, IMAGEFILE)
@@ -107,45 +74,62 @@ spriteset (dr1a_rn_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-//
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
 switch (FEAT_TRAINS, SELF, dr1a_c_get_spriteset,
-  var[0x62, 7, 1, 1])
+  is_drawn_in_viewport() && is_hidden_at(1))
 {
-  0: dr1a_c_spriteset;
-  dr1a_c_hidden_spriteset;
+  1: dummy_spriteset;
+  dr1a_c_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, dr1a_m_get_spriteset1,
-  ((last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+// Определяем необходимость разворота моторного вагона по чётности его позиции
+// от начала состава
+switch (FEAT_TRAINS, SELF, dr1a_m_get_spriteset2,
+  (last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2  
 )
 {
-  0: dr1a_m_2_spritegroup;
-  1: dr1a_rm_spriteset;
-  2: dr1a_m_hidden_spriteset;
-  dr1a_rm_hidden_spriteset;
+  0: dr1a_m_spritegroup;
+  dr1a_rm_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1a_m_get_spriteset,
+switch (FEAT_TRAINS, PARENT, dr1a_m_get_spriteset1,
   count_veh_id(dr1a_m) + count_veh_id(dr1a_n))
 {
+  dr1a_m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1a_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   dr1a_m_get_spriteset1;
 }
 
-switch (FEAT_TRAINS, SELF, dr1a_n_get_spriteset1,
-  ((last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2) +
-  ((var[0x62, 7, 1, 1] != 0) ? 2 : 0)
+// Определяем необходимость разворота немоторного вагона по чётности его позиции
+// от начала состава
+switch (FEAT_TRAINS, SELF, dr1a_n_get_spriteset2,
+  (last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2  
 )
 {
   0: dr1a_n_spritegroup;
-  1: dr1a_rn_spriteset;
-  2: dr1a_n_hidden_spriteset;
-  dr1a_rn_hidden_spriteset;
+  dr1a_rn_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1a_n_get_spriteset,
+switch (FEAT_TRAINS, PARENT, dr1a_n_get_spriteset1,
   count_veh_id(dr1a_m) + count_veh_id(dr1a_n))
 {
+  dr1a_n_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dr1a_n_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   dr1a_n_get_spriteset1;
 }
 
