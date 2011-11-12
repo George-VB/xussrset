@@ -54,7 +54,7 @@ spriteset (dr1a_m_v1_purchase_spriteset, IMAGEFILE)
 
 spriteset (dr1a_c_v1_purchase_spriteset, IMAGEFILE)
 {
-  s15_purchase_template(326, 1414, 4)
+  s15_purchase_template(326, 1483, 4)
 }
 
 spriteset (dr1a_n_v1_purchase_spriteset, IMAGEFILE)
@@ -291,23 +291,49 @@ spriteset (dr1a_rn_v4_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
+// 2 диапазона: 1976-90, 1990-96 по году постройки
+// [0][1 2 3 4]
+switch (FEAT_TRAINS, SELF, dr1a_c_get_spriteset1,
+//  (build_year >= 1990) +
+  cargo_subtype
+)
+{
+  0: dr1a_c_spriteset;
+  1: dr1a_c_v1_spriteset;
+  2: dr1a_c_v2_spriteset;
+  3: dr1a_c_v3_spriteset;
+  dr1a_c_v4_spriteset;
+}
+
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
 switch (FEAT_TRAINS, SELF, dr1a_c_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  dr1a_c_spriteset;
+  dr1a_c_get_spriteset1;
 }
 
 // Определяем необходимость разворота моторного вагона по чётности его позиции
 // от начала состава
+// 2 диапазона: 1976-90, 1990-96 по году постройки
+// [0 1][2 3 4 5 6 7 8 9]
 switch (FEAT_TRAINS, SELF, dr1a_m_get_spriteset2,
-  (last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2  
+  ((last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2) +
+//  ((build_year >= 1990) * 2) +
+  cargo_subtype * 2
 )
 {
   0: dr1a_m_spritegroup;
-  dr1a_rm_spriteset;
+  1: dr1a_rm_spriteset;
+  2: dr1a_m_v1_spritegroup;
+  3: dr1a_rm_v1_spriteset;
+  4: dr1a_m_v2_spritegroup;
+  5: dr1a_rm_v2_spriteset;
+  6: dr1a_m_v3_spritegroup;
+  7: dr1a_rm_v3_spriteset;
+  8: dr1a_m_v4_spritegroup;
+  dr1a_rm_v4_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_m_get_spriteset1,
@@ -327,12 +353,23 @@ switch (FEAT_TRAINS, SELF, dr1a_m_get_spriteset,
 
 // Определяем необходимость разворота немоторного вагона по чётности его позиции
 // от начала состава
+// 2 диапазона: 1976-90, 1990-96 по году постройки
+// [0 1][2 3 4 5 6 7 8 9]
 switch (FEAT_TRAINS, SELF, dr1a_n_get_spriteset2,
-  (last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2  
+  ((last_computed_result - count_veh_id(dr1a_m) - count_veh_id(dr1a_n)) % 2) +
+  cargo_subtype * 2
 )
 {
   0: dr1a_n_v1_spritegroup;
-  dr1a_rn_v1_spriteset;
+  1: dr1a_rn_v1_spriteset;
+  2: dr1a_n_v1_spritegroup;
+  3: dr1a_rn_v1_spriteset;
+  4: dr1a_n_v2_spritegroup;
+  5: dr1a_rn_v2_spriteset;
+  6: dr1a_n_v3_spritegroup;
+  7: dr1a_rn_v3_spriteset;
+  8: dr1a_n_v4_spritegroup;
+  dr1a_rn_v4_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_n_get_spriteset1,
@@ -531,6 +568,45 @@ switch (FEAT_TRAINS, PARENT, dr1a_m_visual_effect_and_powered,
   dr1a_m_visual_effect_and_powered1;
 }
 
+switch (FEAT_TRAINS, SELF, dr1a_n_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_DR1A_REFIT_V0);
+  1: string(STR_DR1A_REFIT_V1);
+  2: string(STR_DR1A_REFIT_V2);
+  3: string(STR_DR1A_REFIT_V3);
+  4: string(STR_DR1A_REFIT_V4);
+  return 0xFF;
+}
+
+// С 1990 года +4 варианта
+switch (FEAT_TRAINS, SELF, dr1a_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: string(STR_DR1A_REFIT_V0);
+  1: string(STR_DR1A_REFIT_V1);
+  2: string(STR_DR1A_REFIT_V2);
+  3: string(STR_DR1A_REFIT_V3);
+  4: string(STR_DR1A_REFIT_V4);
+  return 0xFF;
+}
+
+// Только 1 вариант
+switch (FEAT_TRAINS, SELF, dr1a_cargo_subtype_text1,
+  cargo_subtype)
+{
+  0: string(STR_DR1A_REFIT_V0);
+  return 0xFF;
+}
+
+switch (FEAT_TRAINS, SELF, dr1a_cargo_subtype_text,
+  (current_year >= 1990)
+)
+{
+  0: dr1a_cargo_subtype_text1;
+  dr1a_cargo_subtype_text2;
+}
+
 item (FEAT_TRAINS, dr1a_m) 
 {
   property
@@ -575,6 +651,7 @@ item (FEAT_TRAINS, dr1a_m)
     speed: speed_120_to_110;
     purchase_speed: purchase_speed_120;
     additional_text: return string(STR_DR1A_M_PURCHASE_HINT);
+    cargo_subtype_text: dr1a_cargo_subtype_text;
   }
 }
 
@@ -618,6 +695,7 @@ item (FEAT_TRAINS, dr1a_n)
     start_stop: dr1a_m_start_stop;
     power: return 0; // сам тянуть составы не может
     additional_text: return string(STR_DR1A_N_PURCHASE_HINT);
+    cargo_subtype_text: dr1a_n_cargo_subtype_text;
   }
 }
 
@@ -657,5 +735,6 @@ item (FEAT_TRAINS, dr1a_c)
     default: dr1a_c_get_spriteset;
     purchase: dr1a_c_purchase_spriteset;
     articulated_part: articulated_part_one_dummy;
+    cargo_subtype_text: dr1a_cargo_subtype_text;
   }
 }
