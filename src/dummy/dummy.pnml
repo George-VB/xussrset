@@ -5,6 +5,17 @@ spriteset (dummy_spriteset, "src/d/d-1960-1961.png")
   dummy_template(4, 57)
 } 
 
+// Смотрим кто перед ним
+switch (FEAT_TRAINS, SELF, dummy_get_spriteset,
+[
+  STORE_TEMP(-1, 0x10F),
+  var[0x61, 0, 0xFFFF, 0xC6]
+])
+{
+  l_e: l_t_spriteset;
+  dummy_spriteset;
+}
+
 // Возвращаем размер в зависимости от локомотива
 // а не предыдущего в цепочке. Важно!
 switch (FEAT_TRAINS, PARENT, dummy_shorten_vehicle,
@@ -18,6 +29,7 @@ switch (FEAT_TRAINS, PARENT, dummy_shorten_vehicle,
   dr1a_n: return SHORTEN_TO_7_8;
   dr1b_m: return SHORTEN_TO_7_8;
   dr1b_n: return SHORTEN_TO_7_8;
+  l_e: return SHORTEN_TO_5_8;
   return SHORTEN_TO_8_8;
 }
 
@@ -28,13 +40,14 @@ item (FEAT_TRAINS, dummy)
   {
     climates_available: NO_CLIMATE;
     sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_2CC);
     model_life: VEHICLE_NEVER_EXPIRES;
     visual_effect_and_powered: 
       visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
   }
   graphics
   {
-    default: dummy_spriteset;
+    default: dummy_get_spriteset;
     shorten_vehicle: dummy_shorten_vehicle;
   }
 }
