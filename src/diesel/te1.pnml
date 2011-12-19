@@ -1,0 +1,138 @@
+ // te1
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/da-te1.png"
+
+// покупка
+spriteset (te1_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(3, 90, 2)
+}
+
+// обычный
+spriteset (te1_spriteset, IMAGEFILE)
+{
+  s10_template(3, 90, 0)
+} 
+
+// развёрнутый
+spriteset (te1_r_spriteset, IMAGEFILE)
+{
+  s10_template(3, 134, 0)
+} 
+
+// обычный 2
+spriteset (te1_2_spriteset, IMAGEFILE)
+{
+  s10_template(3, 179, 0)
+} 
+
+// развёрнутый 2
+spriteset (te1_r2_spriteset, IMAGEFILE)
+{
+  s10_template(3, 223, 0)
+} 
+
+// обычный 3
+spriteset (te1_3_spriteset, IMAGEFILE)
+{
+  s10_template(3, 266, 0)
+} 
+
+// развёрнутый 3
+spriteset (te1_r3_spriteset, IMAGEFILE)
+{
+  s10_template(3, 310, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, te1_get_spriteset1,
+  cargo_subtype
+)
+{
+  0: te1_spriteset;
+  1: te1_2_spriteset;
+  te1_3_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, te1_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  te1_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, te1_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Кол-во моторных чётное?
+switch (FEAT_TRAINS, PARENT, te1_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, te1_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_TE1_REFIT_V0);
+  1: string(STR_TE1_REFIT_V1);
+  2: string(STR_TE1_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, te1) 
+{
+  property
+  {
+    name: string(STR_TE1_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1947, 1, 1);
+    vehicle_life: 35; // срок службы
+    model_life: 35; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 93 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 710 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 124 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1291968;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 5, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: te1_get_spriteset;
+    purchase: te1_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: te1_can_attach_wagon;
+    start_stop: te1_start_stop;
+    additional_text: return string(STR_TE1_PURCHASE_HINT);
+    cargo_subtype_text: te1_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}
