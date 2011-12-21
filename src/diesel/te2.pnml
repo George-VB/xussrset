@@ -1,0 +1,239 @@
+ // te2
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/te2.png"
+
+// покупка
+spriteset (te2_purchase_spriteset, IMAGEFILE)
+{
+  s7w_purchase_template(73, 48, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (te2_loading_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 48, 0)
+} 
+
+spriteset (te2_traveling_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 92, 0)
+} 
+
+spritegroup te2_spritegroup
+{
+  loading: te2_loading_spriteset;
+  loaded: te2_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (te2_r_spriteset, IMAGEFILE)
+{
+  s7w_template(323, 48, 0)
+} 
+
+// 2: покупка
+spriteset (te2_v2_purchase_spriteset, IMAGEFILE)
+{
+  s7w_purchase_template(73, 136, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (te2_v2_loading_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 136, 0)
+} 
+
+spriteset (te2_v2_traveling_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 180, 0)
+} 
+
+spritegroup te2_v2_spritegroup
+{
+  loading: te2_v2_loading_spriteset;
+  loaded: te2_v2_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (te2_r_v2_spriteset, IMAGEFILE)
+{
+  s7w_template(323, 136, 0)
+} 
+
+// 3: покупка
+spriteset (te2_v3_purchase_spriteset, IMAGEFILE)
+{
+  s7w_purchase_template(73, 224, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (te2_v3_loading_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 224, 0)
+} 
+
+spriteset (te2_v3_traveling_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 268, 0)
+} 
+
+spritegroup te2_v3_spritegroup
+{
+  loading: te2_v3_loading_spriteset;
+  loaded: te2_v3_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (te2_r_v3_spriteset, IMAGEFILE)
+{
+  s7w_template(323, 224, 0)
+} 
+
+// 4: покупка
+spriteset (te2_v4_purchase_spriteset, IMAGEFILE)
+{
+  s7w_purchase_template(73, 400, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (te2_v4_loading_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 400, 0)
+} 
+
+spriteset (te2_v4_traveling_spriteset, IMAGEFILE)
+{
+  s7w_template(73, 444, 0)
+} 
+
+spritegroup te2_v4_spritegroup
+{
+  loading: te2_v4_loading_spriteset;
+  loaded: te2_v4_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (te2_r_v4_spriteset, IMAGEFILE)
+{
+  s7w_template(323, 400, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, te2_get_spriteset2,
+  ((last_computed_result - count_veh_id(te2)) % 2) +
+  ((build_year >= 1950) * 2) +
+  ((build_year >= 1960) * 2) +
+  ((build_year >= 1972) * 2)
+)
+{
+  0: te2_spritegroup;
+  1: te2_r_spriteset;
+  2: te2_v2_spritegroup;
+  3: te2_r_v2_spriteset;
+  4: te2_v3_spritegroup;
+  5: te2_r_v3_spriteset;
+  6: te2_v4_spritegroup;
+  te2_r_v4_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, te2_get_spriteset1,
+  count_veh_id(te2))
+{
+  te2_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, te2_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  te2_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, te2_get_purchase_spriteset,
+  (build_year >= 1950) +
+  (build_year >= 1960) +
+  (build_year >= 1972)
+)
+{
+  0: te2_purchase_spriteset;
+  1: te2_v2_purchase_spriteset;
+  2: te2_v3_purchase_spriteset;
+  te2_v4_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, te2_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Кол-во моторных чётное?
+switch (FEAT_TRAINS, PARENT, te2_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// С 1956 года увеличиваем скорость
+switch (FEAT_TRAINS, SELF, te2_speed,
+  current_year >= 1956
+)
+{
+  1: return 95;
+  return 93;
+}
+
+
+item (FEAT_TRAINS, te2) 
+{
+  property
+  {
+    name: string(STR_TE2_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1949, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 93 km/h;
+//    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 690 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 85 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1296518607;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_7_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: te2_get_spriteset;
+    purchase: te2_get_purchase_spriteset;
+    can_attach_wagon: te2_can_attach_wagon;
+    start_stop: te2_start_stop;
+    additional_text: return string(STR_TE2_PURCHASE_HINT);
+    speed: te2_speed;
+    cargo_capacity: return 0;
+  }
+}
