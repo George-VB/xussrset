@@ -1,0 +1,132 @@
+ // tg102
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/tg102.png"
+
+// покупка
+spriteset (tg102_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(5, 6, 1)
+}
+
+// обычный: погрузка/перемещение
+spriteset (tg102_spriteset, IMAGEFILE)
+{
+  s9_template(5, 6, 0)
+} 
+
+// развёрнутый
+spriteset (tg102_r_spriteset, IMAGEFILE)
+{
+  s9_template(5, 77, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (tg102_v2_spriteset, IMAGEFILE)
+{
+  s11_template(5, 142, 0)
+} 
+
+// развёрнутый
+spriteset (tg102_r_v2_spriteset, IMAGEFILE)
+{
+  s11_template(5, 213, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tg102_get_spriteset2,
+  ((last_computed_result - count_veh_id(tg102)) % 2) +
+  cargo_subtype * 2
+)
+{
+  0: tg102_spriteset;
+  1: tg102_r_spriteset;
+  2: tg102_v2_spriteset;
+  tg102_r_v2_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, tg102_get_spriteset1,
+  count_veh_id(tg102))
+{
+  tg102_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tg102_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tg102_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, tg102_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, tg102_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_TG102_REFIT_V1);
+  1: string(STR_TG102_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, tg102) 
+{
+  property
+  {
+    name: string(STR_TG102_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1959, 1, 1);
+    vehicle_life: 15; // срок службы
+    model_life: 15; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3010 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 168 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.19375607;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: tg102_get_spriteset;
+    purchase: tg102_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    can_attach_wagon: tg102_can_attach_wagon;
+    start_stop: tg102_start_stop;
+    additional_text: return string(STR_TG102_PURCHASE_HINT);
+    cargo_subtype_text: tg102_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}

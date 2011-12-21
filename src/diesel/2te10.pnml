@@ -1,0 +1,231 @@
+ // 2te10
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/2te10-1960.png"
+
+// покупка
+spriteset (_2te10_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(4, 14, 2)
+}
+
+// обычный: погрузка/перемещение
+spriteset (_2te10_loading_spriteset, IMAGEFILE)
+{
+  s11_template(4, 14, 0)
+} 
+
+spriteset (_2te10_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(4, 80, 0)
+} 
+
+spritegroup _2te10_spritegroup
+{
+  loading: _2te10_loading_spriteset;
+  loaded: _2te10_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2te10_r_spriteset, IMAGEFILE)
+{
+  s11_template(423, 14, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_2te10_v2_loading_spriteset, IMAGEFILE)
+{
+  s11_template(4, 151, 0)
+} 
+
+spriteset (_2te10_v2_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(4, 217, 0)
+} 
+
+spritegroup _2te10_v2_spritegroup
+{
+  loading: _2te10_v2_loading_spriteset;
+  loaded: _2te10_v2_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2te10_r_v2_spriteset, IMAGEFILE)
+{
+  s11_template(423, 151, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_2te10_v3_loading_spriteset, IMAGEFILE)
+{
+  s11_template(4, 288, 0)
+} 
+
+spriteset (_2te10_v3_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(4, 354, 0)
+} 
+
+spritegroup _2te10_v3_spritegroup
+{
+  loading: _2te10_v3_loading_spriteset;
+  loaded: _2te10_v3_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2te10_r_v3_spriteset, IMAGEFILE)
+{
+  s11_template(423, 288, 0)
+} 
+
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/2te10-1972.png"
+
+// 4: покупка
+spriteset (_2te10_v4_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(4, 14, 2)
+}
+
+// обычный: погрузка/перемещение
+spriteset (_2te10_v4_loading_spriteset, IMAGEFILE)
+{
+  s11_template(4, 14, 0)
+} 
+
+spriteset (_2te10_v4_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(4, 80, 0)
+} 
+
+spritegroup _2te10_v4_spritegroup
+{
+  loading: _2te10_v4_loading_spriteset;
+  loaded: _2te10_v4_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2te10_r_v4_spriteset, IMAGEFILE)
+{
+  s11_template(423, 14, 0)
+} 
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _2te10_get_spriteset2,
+  ((last_computed_result - count_veh_id(_2te10)) % 2) +
+  ((current_year >= 1972) * 6) +
+  cargo_subtype * 2 * (current_year < 1972)
+)
+{
+  0: _2te10_spritegroup;
+  1: _2te10_r_spriteset;
+  2: _2te10_v2_spritegroup;
+  3: _2te10_r_v2_spriteset;
+  4: _2te10_v3_spritegroup;
+  5: _2te10_r_v3_spriteset;
+  6: _2te10_v4_spritegroup;
+  _2te10_r_v4_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, _2te10_get_spriteset1,
+  count_veh_id(_2te10))
+{
+  _2te10_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _2te10_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _2te10_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, _2te10_get_purchase_spriteset,
+  (current_year >= 1972)
+)
+{
+  0: _2te10_purchase_spriteset;
+  _2te10_v4_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, _2te10_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, _2te10_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _2te10_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: string(STR_2TE10_REFIT_V1);
+  1: string(STR_2TE10_REFIT_V2);
+  2: string(STR_2TE10_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _2te10_cargo_subtype_text,
+  current_year >= 1972)
+{
+  0: _2te10_cargo_subtype_text2;
+  return CB_RESULT_NO_TEXT;
+//  CB_FAILED;
+}
+
+item (FEAT_TRAINS, _2te10) 
+{
+  property
+  {
+    name: string(STR_2TE10_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1960, 1, 1);
+    vehicle_life: 25; // срок службы
+    model_life: 25; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2300 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 129 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.20961873;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: _2te10_get_spriteset;
+    purchase: _2te10_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy3;
+    can_attach_wagon: _2te10_can_attach_wagon;
+    start_stop: _2te10_start_stop;
+    additional_text: return string(STR_2TE10_PURCHASE_HINT);
+    cargo_subtype_text: _2te10_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}
