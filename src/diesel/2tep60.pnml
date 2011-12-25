@@ -1,0 +1,266 @@
+ // 2tep60
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/2tep60.png"
+
+// 1965
+// покупка
+spriteset (_2tep60_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(0, 47, -6)
+}
+
+// обычный: погрузка/перемещение
+spriteset (_2tep60_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 47, 0)
+} 
+
+spriteset (_2tep60_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 112, 0)
+} 
+
+spritegroup _2tep60_spritegroup
+{
+  loading: _2tep60_loading_spriteset;
+  loaded: _2tep60_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2tep60_r_spriteset, IMAGEFILE)
+{
+  s11_template(440, 47, 0)
+} 
+
+// 1966-69, 2 варианта
+// покупка
+spriteset (_2tep60_v2_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(0, 184, -6)
+}
+
+// обычный: погрузка/перемещение
+spriteset (_2tep60_v2_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 184, 0)
+} 
+
+spriteset (_2tep60_v2_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 249, 0)
+} 
+
+spritegroup _2tep60_v2_spritegroup
+{
+  loading: _2tep60_v2_loading_spriteset;
+  loaded: _2tep60_v2_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2tep60_r_v2_spriteset, IMAGEFILE)
+{
+  s11_template(440, 184, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_2tep60_v3_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 321, 0)
+} 
+
+spriteset (_2tep60_v3_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 386, 0)
+} 
+
+spritegroup _2tep60_v3_spritegroup
+{
+  loading: _2tep60_v3_loading_spriteset;
+  loaded: _2tep60_v3_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2tep60_r_v3_spriteset, IMAGEFILE)
+{
+  s11_template(440, 321, 0)
+} 
+
+// с 1970, 2 варианта
+// покупка
+spriteset (_2tep60_v4_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(0, 458, -6)
+}
+
+// обычный: погрузка/перемещение
+spriteset (_2tep60_v4_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 458, 0)
+} 
+
+spriteset (_2tep60_v4_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 523, 0)
+} 
+
+spritegroup _2tep60_v4_spritegroup
+{
+  loading: _2tep60_v4_loading_spriteset;
+  loaded: _2tep60_v4_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2tep60_r_v4_spriteset, IMAGEFILE)
+{
+  s11_template(440, 458, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_2tep60_v5_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 595, 0)
+} 
+
+spriteset (_2tep60_v5_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 660, 0)
+} 
+
+spritegroup _2tep60_v5_spritegroup
+{
+  loading: _2tep60_v5_loading_spriteset;
+  loaded: _2tep60_v5_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2tep60_r_v5_spriteset, IMAGEFILE)
+{
+  s11_template(440, 595, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _2tep60_get_spriteset2,
+  ((last_computed_result - count_veh_id(_2tep60)) % 2) +
+  ((build_year >= 1966) * 2) +
+  ((build_year >= 1970) * 4) +
+  cargo_subtype * 2
+)
+{
+  0: _2tep60_spritegroup;
+  1: _2tep60_r_spriteset;
+  2: _2tep60_v2_spritegroup; //--
+  3: _2tep60_r_v2_spriteset;
+  4: _2tep60_v3_spritegroup;
+  5: _2tep60_r_v3_spriteset;
+  6: _2tep60_v4_spritegroup; //--
+  7: _2tep60_r_v4_spriteset;
+  8: _2tep60_v5_spritegroup;    
+  _2tep60_r_v5_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, _2tep60_get_spriteset1,
+  count_veh_id(_2tep60))
+{
+  _2tep60_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _2tep60_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _2tep60_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, _2tep60_get_purchase_spriteset,
+  (current_year >= 1966) +
+  (current_year >= 1970)
+)
+{
+  0: _2tep60_purchase_spriteset;
+  1: _2tep60_v2_purchase_spriteset;
+  _2tep60_v4_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, _2tep60_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, _2tep60_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: string(STR_2TEP60_REFIT_V1);
+  1: string(STR_2TEP60_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text,
+  (build_year >= 1966)
+)
+{
+  1: _2tep60_cargo_subtype_text2;
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, _2tep60) 
+{
+  property
+  {
+    name: string(STR_2TEP60_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1965, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2310 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 127 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.09882693;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: _2tep60_get_spriteset;
+    purchase: _2tep60_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy3;
+    can_attach_wagon: _2tep60_can_attach_wagon;
+    start_stop: _2tep60_start_stop;
+    additional_text: return string(STR_2TEP60_PURCHASE_HINT);
+    speed: speed_after20_160to130;
+    cargo_subtype_text: _2tep60_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}
