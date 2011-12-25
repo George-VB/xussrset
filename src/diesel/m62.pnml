@@ -1,0 +1,175 @@
+ // m62
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/m62.png"
+
+// покупка
+spriteset (m62_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(127, 36, -4)
+}
+
+// обычный: погрузка/перемещение
+spriteset (m62_loading_spriteset, IMAGEFILE)
+{
+  s10_template(127, 36, 0)
+} 
+
+spriteset (m62_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(127, 102, 0)
+} 
+
+spritegroup m62_spritegroup
+{
+  loading: m62_loading_spriteset;
+  loaded: m62_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (m62_r_loading_spriteset, IMAGEFILE)
+{
+  s10_template(587, 36, 0)
+} 
+
+spriteset (m62_r_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(587, 102, 0)
+} 
+
+spritegroup m62_r_spritegroup
+{
+  loading: m62_r_loading_spriteset;
+  loaded: m62_r_traveling_spriteset;
+}
+
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, m62_get_spriteset2,
+  ((last_computed_result - count_veh_id(m62)) % 2) //+
+//  ((current_year >= 1985) * 4) +
+//  cargo_subtype * 2
+)
+{
+  0: m62_spritegroup;
+  m62_r_spritegroup;
+/*  2: m62_v2_spritegroup;
+  3: m62_r_v2_spriteset;
+  4: m62_v3_spritegroup;
+  5: m62_r_v3_spriteset;
+  6: m62_v4_spritegroup;
+  7: m62_r_v4_spriteset;
+  8: m62_v5_spritegroup;
+  m62_r_v5_spriteset;*/
+}
+
+switch (FEAT_TRAINS, PARENT, m62_get_spriteset1,
+  count_veh_id(m62))
+{
+  m62_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, m62_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  m62_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, m62_get_purchase_spriteset,
+  (current_year >= 1970)
+)
+{
+  0: m62_purchase_spriteset;
+  m62_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, m62_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, m62_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, m62_cargo_subtype_text3,
+  cargo_subtype)
+{
+  0: string(STR_M62_REFIT_V1);
+  1: string(STR_M62_REFIT_V2);
+  2: string(STR_M62_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, m62_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: string(STR_M62_REFIT_V1);
+  1: string(STR_M62_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, m62_cargo_subtype_text,
+  current_year >= 1970)
+{
+  0: m62_cargo_subtype_text2;
+  m62_cargo_subtype_text3;
+}
+
+item (FEAT_TRAINS, m62) 
+{
+  property
+  {
+    name: string(STR_M62_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1964, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1480 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 116 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.1724137931;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: m62_get_spriteset;
+    purchase: m62_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: m62_can_attach_wagon;
+    start_stop: m62_start_stop;
+    additional_text: return string(STR_M62_PURCHASE_HINT);
+    cargo_subtype_text: m62_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}
