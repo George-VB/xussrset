@@ -1,0 +1,130 @@
+ // te109
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/te109.png"
+
+// покупка
+spriteset (te109_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(0, 31, -6)
+}
+
+// обычный: погрузка/перемещение
+spriteset (te109_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 31, 0)
+} 
+
+spriteset (te109_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 98, 0)
+} 
+
+spritegroup te109_spritegroup
+{
+  loading: te109_loading_spriteset;
+  loaded: te109_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (te109_r_loading_spriteset, IMAGEFILE)
+{
+  s11_template(450, 31, 0)
+} 
+
+spriteset (te109_r_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(450, 98, 0)
+} 
+
+spritegroup te109_r_spritegroup
+{
+  loading: te109_r_loading_spriteset;
+  loaded: te109_r_traveling_spriteset;
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, te109_get_spriteset2,
+  ((last_computed_result - count_veh_id(te109)) % 2)
+)
+{
+  0: te109_spritegroup;
+  te109_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, te109_get_spriteset1,
+  count_veh_id(te109))
+{
+  te109_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, te109_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  te109_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, te109_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, te109_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, te109) 
+{
+  property
+  {
+    name: string(STR_TE109_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1977, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2200 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+//    cargo_capacity: 1;
+    weight: 120 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.204931972;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: te109_get_spriteset;
+    purchase: te109_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: te109_can_attach_wagon;
+    start_stop: te109_start_stop;
+    additional_text: return string(STR_TE109_PURCHASE_HINT);
+//    cargo_capacity: return 0;
+  }
+}
