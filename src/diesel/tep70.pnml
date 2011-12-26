@@ -1,0 +1,283 @@
+ // tep70
+
+// Спрайты
+// До 1978 года один набор, с 1978 года два набора
+
+#define IMAGEFILE  "src/diesel/tep70-1973-1977.png"
+
+// покупка
+spriteset (tep70_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(0, 27, -8)
+}
+
+// обычный: погрузка/перемещение
+spriteset (tep70_loading_spriteset, IMAGEFILE)
+{
+  s12_template(0, 27, 0)
+} 
+
+spriteset (tep70_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(0, 94, 0)
+} 
+
+spritegroup tep70_spritegroup
+{
+  loading: tep70_loading_spriteset;
+  loaded: tep70_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tep70_r_loading_spriteset, IMAGEFILE)
+{
+  s12_template(449, 27, 0)
+} 
+
+spriteset (tep70_r_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(449, 94, 0)
+} 
+
+spritegroup tep70_r_spritegroup
+{
+  loading: tep70_r_loading_spriteset;
+  loaded: tep70_r_traveling_spriteset;
+}
+
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/tep70-1978-2006.png"
+
+// покупка
+spriteset (tep70_v2_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(120, 32, -10)
+}
+
+// обычный: погрузка/перемещение
+spriteset (tep70_v2_loading_spriteset, IMAGEFILE)
+{
+  s13_template(120, 32, 0)
+} 
+
+spriteset (tep70_v2_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(120, 99, 0)
+} 
+
+spritegroup tep70_v2_spritegroup
+{
+  loading: tep70_v2_loading_spriteset;
+  loaded: tep70_v2_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tep70_r_v2_loading_spriteset, IMAGEFILE)
+{
+  s13_template(575, 32, 0)
+} 
+
+spriteset (tep70_r_v2_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(575, 99, 0)
+} 
+
+spritegroup tep70_r_v2_spritegroup
+{
+  loading: tep70_r_v2_loading_spriteset;
+  loaded: tep70_r_v2_traveling_spriteset;
+}
+
+// обычный: погрузка/перемещение
+spriteset (tep70_v3_loading_spriteset, IMAGEFILE)
+{
+  s13_template(120, 166, 0)
+} 
+
+spriteset (tep70_v3_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(120, 233, 0)
+} 
+
+spritegroup tep70_v3_spritegroup
+{
+  loading: tep70_v3_loading_spriteset;
+  loaded: tep70_v3_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tep70_r_v3_loading_spriteset, IMAGEFILE)
+{
+  s13_template(575, 166, 0)
+} 
+
+spriteset (tep70_r_v3_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(575, 233, 0)
+} 
+
+spritegroup tep70_r_v3_spritegroup
+{
+  loading: tep70_r_v3_loading_spriteset;
+  loaded: tep70_r_v3_traveling_spriteset;
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tep70_get_spriteset2,
+  ((last_computed_result - count_veh_id(tep70)) % 2) +
+  ((build_year >= 1978) * 2) +
+  cargo_subtype * 2
+)
+{
+  0: tep70_spritegroup;
+  1: tep70_r_spritegroup;
+  2: tep70_v2_spritegroup;
+  3: tep70_r_v2_spritegroup;
+  4: tep70_v3_spritegroup;
+  tep70_r_v3_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tep70_get_spriteset1,
+  count_veh_id(tep70))
+{
+  tep70_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tep70_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tep70_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, tep70_get_purchase_spriteset,
+  (current_year >= 1978)
+)
+{
+  0: tep70_purchase_spriteset;
+  tep70_v2_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, tep70_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, tep70_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_cargo_subtype_text2,
+  build_year >= 1978)
+{
+  1: string(STR_TEP70_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_TEP70_REFIT_V1);
+  1: tep70_cargo_subtype_text2;
+  return CB_RESULT_NO_TEXT;
+}
+
+// ограничиваем скорость через 7 лет работы 160 --> 140
+// Для выпущенных с 1978 через 25 160 --> 140
+switch (FEAT_TRAINS, SELF, tep70_speed,
+  ((age_in_days >= (7*365+5)) && (build_year < 1978)) ||
+  ((age_in_days >= (25*365+5)) && (build_year >= 1978))
+)
+{
+  1: return 140;
+  return 160;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_power,
+  build_year >= 1978)
+{
+  1: return 3145;
+  return 3020;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_weight,
+  build_year >= 1978)
+{
+  1: return 135;
+  return 129;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_tractive_effort_coefficient,
+  build_year >= 1978)
+{
+  1: return 32; // 32.314436885
+  return 34; // 33.81743395
+}
+
+switch (FEAT_TRAINS, SELF, tep70_articulated_part,
+  build_year >= 1978)
+{
+  1: articulated_part_dummy5;
+  articulated_part_dummy4;
+}
+
+item (FEAT_TRAINS, tep70)
+{
+  property
+  {
+    name: string(STR_TEP70_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1973, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    cargo_allow_refit: [GEAR];
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3145 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 129 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.132099351;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: tep70_get_spriteset;
+    purchase: tep70_get_purchase_spriteset;
+    can_attach_wagon: tep70_can_attach_wagon;
+    start_stop: tep70_start_stop;
+    additional_text: return string(STR_TEP70_PURCHASE_HINT);
+    cargo_subtype_text: tep70_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: tep70_speed;
+    power: tep70_power;
+    weight: tep70_weight;
+    tractive_effort_coefficient: tep70_tractive_effort_coefficient;
+    articulated_part: tep70_articulated_part;
+  }
+}
