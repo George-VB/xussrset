@@ -1,0 +1,132 @@
+ // tep70u
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/tep70u.png"
+
+// покупка
+spriteset (tep70u_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(0, 31, -10)
+}
+
+// обычный: погрузка/перемещение
+spriteset (tep70u_loading_spriteset, IMAGEFILE)
+{
+  s13_template(0, 31, 0)
+} 
+
+spriteset (tep70u_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(0, 98, 0)
+} 
+
+spritegroup tep70u_spritegroup
+{
+  loading: tep70u_loading_spriteset;
+  loaded: tep70u_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tep70u_r_loading_spriteset, IMAGEFILE)
+{
+  s13_template(455, 31, 0)
+} 
+
+spriteset (tep70u_r_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(455, 98, 0)
+} 
+
+spritegroup tep70u_r_spritegroup
+{
+  loading: tep70u_r_loading_spriteset;
+  loaded: tep70u_r_traveling_spriteset;
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tep70u_get_spriteset2,
+  ((last_computed_result - count_veh_id(tep70u)) % 2)
+)
+{
+  0: tep70u_spritegroup;
+  tep70u_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tep70u_get_spriteset1,
+  count_veh_id(tep70u))
+{
+  tep70u_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tep70u_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tep70u_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, tep70u_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, tep70u_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, tep70u)
+{
+  property
+  {
+    name: string(STR_TEP70U_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(2006, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+//    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    cargo_allow_refit: [GEAR];
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3020 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    dual_headed: 0;
+//    cargo_capacity: 1;
+    weight: 135 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.126228269;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DIESEL, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: tep70u_get_spriteset;
+    purchase: tep70u_purchase_spriteset;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: tep70u_can_attach_wagon;
+    start_stop: tep70u_start_stop;
+    additional_text: return string(STR_TEP70U_PURCHASE_HINT);
+//    cargo_capacity: return 0;
+    speed: speed_after25_160to140;
+  }
+}
