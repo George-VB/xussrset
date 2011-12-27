@@ -1,0 +1,117 @@
+ // 3es5k
+
+// Спрайты
+// Частично используются из 2es5k.pnml, второй вариант
+
+#define IMAGEFILE  "src/electric/2es5k-3es5k.png"
+
+// покупка
+spriteset (_3es5k_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(152, 226, -4)
+}
+
+// бустерная секция (средняя)
+spriteset (_3es5k_c_spriteset, IMAGEFILE)
+{
+  s10_template(152, 427, 0)
+} 
+
+spriteset (_3es5k_cr_spriteset, IMAGEFILE)
+{
+  s10_template(610, 427, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2,
+  ((LOAD_TEMP(0) - count_veh_id(_3es5k)) % 3) +
+  // x км/ч * 0.2778 == value
+  ((LOAD_TEMP(1) > 13) * 3) // 50 км/ч --> 13.89
+)
+{
+  0: _2es5k_v2_spritegroup;
+  1: _3es5k_cr_spriteset;
+  2: _2es5k_b_v2_spriteset;
+  3: _2es5k_v2_speedover50_spriteset;
+  4: _3es5k_cr_spriteset;
+  _2es5k_b_v2_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, _3es5k_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(_3es5k), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  _3es5k_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _3es5k_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, _3es5k_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, _3es5k_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, _3es5k)
+{
+  property
+  {
+    name: string(STR_3ES5K_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(2006, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+//    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 110 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 4066 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+//    cargo_capacity: 1;
+    weight: 96 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.22463151;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: _3es5k_get_spriteset;
+    purchase: _3es5k_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: _3es5k_can_attach_wagon;
+    start_stop: _3es5k_start_stop;
+    additional_text: return string(STR_3ES5K_PURCHASE_HINT);
+//    cargo_capacity: return 0;
+  }
+}
