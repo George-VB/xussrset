@@ -1,0 +1,149 @@
+ // 3vl23
+
+// Спрайты
+
+#define IMAGEFILE  "src/electric/3vl23.png"
+
+// покупка
+spriteset (_3vl23_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(0, 16, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (_3vl23_loading_spriteset, IMAGEFILE)
+{
+  s10_template(0, 16, 0)
+} 
+
+spriteset (_3vl23_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(0, 82, 0)
+} 
+
+spritegroup _3vl23_spritegroup
+{
+  loading: _3vl23_loading_spriteset;
+  loaded: _3vl23_traveling_spriteset;
+}
+
+spriteset (_3vl23_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(0, 148, 0)
+} 
+
+// секции Б, В: погрузка/перемещение
+spriteset (_3vl23_bc_loading_spriteset, IMAGEFILE)
+{
+  s10_template(419, 16, 0)
+} 
+
+spriteset (_3vl23_bc_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(419, 82, 0)
+} 
+
+spritegroup _3vl23_bc_spritegroup
+{
+  loading: _3vl23_bc_loading_spriteset;
+  loaded: _3vl23_bc_traveling_spriteset;
+}
+
+spriteset (_3vl23_bc_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(419, 148, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _3vl23_get_spriteset2,
+  ((LOAD_TEMP(0) - count_veh_id(_3vl23)) % 3) +
+  // x км/ч * 0.2778 == value
+  ((LOAD_TEMP(1) > 13) * 3) // 50 км/ч --> 13.89
+)
+{
+  0: _3vl23_spritegroup;
+  1: _3vl23_bc_spritegroup;
+  2: _3vl23_bc_spritegroup;
+  3: _3vl23_speedover50_spriteset;
+  4: _3vl23_bc_speedover50_spriteset;
+  _3vl23_bc_speedover50_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, _3vl23_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(_3vl23), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  _3vl23_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _3vl23_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _3vl23_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, _3vl23_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, _3vl23_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, _3vl23)
+{
+  property
+  {
+    name: string(STR_3VL23_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1987, 1, 1);
+    vehicle_life: 8; // срок службы
+    model_life: 8; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 11100 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 411 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.16535;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: _3vl23_get_spriteset;
+    purchase: _3vl23_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: _3vl23_can_attach_wagon;
+    start_stop: _3vl23_start_stop;
+    additional_text: return string(STR_3VL23_PURCHASE_HINT);
+    cargo_capacity: return 0;
+  }
+}
