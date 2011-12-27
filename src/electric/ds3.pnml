@@ -1,0 +1,158 @@
+ // ds3
+
+// Спрайты
+
+#define IMAGEFILE  "src/electric/ds3.png"
+
+// покупка
+spriteset (ds3_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(0, 19, -12)
+}
+
+// обычный: погрузка/перемещение
+spriteset (ds3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(0, 19, 0)
+} 
+
+spriteset (ds3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(0, 86, 0)
+} 
+
+spritegroup ds3_spritegroup
+{
+  loading: ds3_loading_spriteset;
+  loaded: ds3_traveling_spriteset;
+}
+
+spriteset (ds3_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(0, 153, 0)
+} 
+
+// развёрнутый: погрузка/перемещение
+spriteset (ds3_r_loading_spriteset, IMAGEFILE)
+{
+  s10_template(443, 19, 0)
+} 
+
+spriteset (ds3_r_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(443, 86, 0)
+} 
+
+spritegroup ds3_r_spritegroup
+{
+  loading: ds3_r_loading_spriteset;
+  loaded: ds3_r_traveling_spriteset;
+}
+
+spriteset (ds3_r_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(443, 153, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ds3_get_spriteset2,
+  ((LOAD_TEMP(0) - count_veh_id(ds3)) % 2) +
+  // x км/ч * 0.2778 == value
+  ((LOAD_TEMP(1) > 13) * 2)  // 50 км/ч --> 13.89
+)
+{
+  0: ds3_spritegroup;
+  1: ds3_r_spritegroup;
+  2: ds3_speedover50_spriteset;
+  ds3_r_speedover50_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, ds3_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(ds3), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  ds3_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, ds3_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  ds3_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, ds3_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ds3_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+/*
+switch (FEAT_TRAINS, SELF, ds3_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_DS3_REFIT_V1);
+  1: string(STR_DS3_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+*/
+
+item (FEAT_TRAINS, ds3)
+{
+  property
+  {
+    name: string(STR_DS3_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(2002, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+//    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 5800 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+//    cargo_capacity: 1;
+    weight: 90 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.15873;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: ds3_get_spriteset;
+    purchase: ds3_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: ds3_can_attach_wagon;
+    start_stop: ds3_start_stop;
+    additional_text: return string(STR_DS3_PURCHASE_HINT);
+//    cargo_subtype_text: ds3_cargo_subtype_text;
+//    cargo_capacity: return 0;
+  }
+}
