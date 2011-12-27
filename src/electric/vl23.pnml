@@ -334,9 +334,9 @@ spriteset (vl23_r_v7_speedover50_spriteset, IMAGEFILE)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl23_get_spriteset2,
-  ((last_computed_result - count_veh_id(vl23)) % 2) +
+  ((LOAD_TEMP(0) - count_veh_id(vl23)) % 2) +
   // x км/ч * 0.2778 == value
-  ((current_speed > 13) * 2) +  // 50 км/ч --> 13.89
+  ((LOAD_TEMP(1) > 13) * 2) +  // 50 км/ч --> 13.89
   ((build_year >= 1958) * 8) +
   ((current_year >= 1972) * 8) +
   (((current_year >= 1972) && (build_year < 1958)) * 8) +
@@ -374,7 +374,10 @@ switch (FEAT_TRAINS, SELF, vl23_get_spriteset2,
 }
 
 switch (FEAT_TRAINS, PARENT, vl23_get_spriteset1,
-  count_veh_id(vl23))
+[
+  STORE_TEMP(count_veh_id(vl23), 0),
+  STORE_TEMP(current_speed, 1)
+])
 {
   vl23_get_spriteset2;
 }

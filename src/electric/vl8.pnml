@@ -4,9 +4,9 @@
 // определены в n8.pnml
 
 switch (FEAT_TRAINS, SELF, vl8_get_spriteset2,
-  ((last_computed_result - count_veh_id(vl8)) % 2) +
+  ((LOAD_TEMP(0) - count_veh_id(vl8)) % 2) +
   // x км/ч * 0.2778 == value
-  ((current_speed > 13) * 2) +  // 50 км/ч --> 13.89
+  ((LOAD_TEMP(1) > 13) * 2) +  // 50 км/ч --> 13.89
   cargo_subtype * 4
 )
 {
@@ -21,7 +21,10 @@ switch (FEAT_TRAINS, SELF, vl8_get_spriteset2,
 }
 
 switch (FEAT_TRAINS, PARENT, vl8_get_spriteset1,
-  count_veh_id(vl8))
+[
+  STORE_TEMP(count_veh_id(vl8), 0),
+  STORE_TEMP(current_speed, 1)
+])
 {
   vl8_get_spriteset2;
 }
