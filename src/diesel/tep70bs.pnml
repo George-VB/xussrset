@@ -120,9 +120,9 @@ switch (FEAT_TRAINS, PARENT, tep70bs_start_stop,
 }
 
 switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text2,
-  build_year >= 1978)
+  build_year >= 2008)
 {
-  1: string(STR_TEP70BS_REFIT_V2);
+  1: string(STR_TEP70BS_REFIT_V3);
   return CB_RESULT_NO_TEXT;
 }
 
@@ -130,8 +130,25 @@ switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text,
   cargo_subtype)
 {
   0: string(STR_TEP70BS_REFIT_V1);
-  1: tep70bs_cargo_subtype_text2;
+  1: string(STR_TEP70BS_REFIT_V2);
+  2: tep70bs_cargo_subtype_text2;
+  3: string(STR_TEP70BS_REFIT_V4);
   return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tep70bs_speed2,
+  cargo_subtype)
+{
+  0..1: speed_after25_160to140;
+  return 120;
+}
+
+// меняем скорость при переоборудовании после 2008 года
+switch (FEAT_TRAINS, SELF, tep70bs_speed,
+  build_year >= 2008)
+{
+  1: tep70bs_speed2;
+  speed_after25_160to140;
 }
 
 item (FEAT_TRAINS, tep70bs)
@@ -180,6 +197,6 @@ item (FEAT_TRAINS, tep70bs)
     additional_text: return string(STR_TEP70BS_PURCHASE_HINT);
     cargo_subtype_text: tep70bs_cargo_subtype_text;
     cargo_capacity: return 0;
-    speed: speed_after25_160to140;
+    speed: tep70bs_speed;
   }
 }
