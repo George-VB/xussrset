@@ -1,0 +1,180 @@
+ // vl8m
+
+// Спрайты
+
+#define IMAGEFILE  "src/electric/vl8m.png"
+
+// покупка
+spriteset (vl8m_purchase_spriteset, IMAGEFILE)
+{
+  s8_purchase_template(4, 16, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (vl8m_loading_spriteset, IMAGEFILE)
+{
+  s8_template(4, 16, 0)
+} 
+
+spriteset (vl8m_traveling_spriteset, IMAGEFILE)
+{
+  s8_template(4, 51, 0)
+} 
+
+spritegroup vl8m_spritegroup
+{
+  loading: vl8m_loading_spriteset;
+  loaded: vl8m_traveling_spriteset;
+}
+
+spriteset (vl8m_speedover50_spriteset, IMAGEFILE)
+{
+  s8_template(4, 86, 0)
+} 
+
+// развёрнутый
+spriteset (vl8m_r_spriteset, IMAGEFILE)
+{
+  s8_template(291, 51, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl8m_v2_loading_spriteset, IMAGEFILE)
+{
+  s8_template(4, 126, 0)
+} 
+
+spriteset (vl8m_v2_traveling_spriteset, IMAGEFILE)
+{
+  s8_template(4, 161, 0)
+} 
+
+spritegroup vl8m_v2_spritegroup
+{
+  loading: vl8m_v2_loading_spriteset;
+  loaded: vl8m_v2_traveling_spriteset;
+}
+
+spriteset (vl8m_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s8_template(4, 196, 0)
+} 
+
+// развёрнутый
+spriteset (vl8m_r_v2_spriteset, IMAGEFILE)
+{
+  s8_template(291, 161, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl8m_get_spriteset2,
+  ((last_computed_result - count_veh_id(vl8m)) % 2) +
+  // x км/ч * 0.2778 == value
+  ((current_speed > 13) * 2) +  // 50 км/ч --> 13.89
+  cargo_subtype * 4
+)
+{
+  0: vl8m_spritegroup;
+  1: vl8m_r_spriteset;
+  2: vl8m_speedover50_spriteset;
+  3: vl8m_r_spriteset;
+  4: vl8m_v2_spritegroup;
+  5: vl8m_r_v2_spriteset;
+  6: vl8m_v2_speedover50_spriteset;
+  vl8m_r_v2_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, vl8m_get_spriteset1,
+  count_veh_id(vl8m))
+{
+  vl8m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl8m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  vl8m_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, vl8m_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, vl8m_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl8m_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_VL8M_REFIT_V1);
+  1: string(STR_VL8M_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+// меняем скорость: 95 для купленных до 1990, 90 - после
+switch (FEAT_TRAINS, SELF, vl8m_speed,
+  (build_year >= 1990)
+)
+{
+  0: return 95;
+  return 90;
+}
+
+item (FEAT_TRAINS, vl8m) 
+{
+  property
+  {
+    name: string(STR_VL8M_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1976, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 95 km/h;
+//    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 4970 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 180 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.16836734693;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: vl8m_get_spriteset;
+    purchase: vl8m_purchase_spriteset;
+//    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: vl8m_can_attach_wagon;
+    start_stop: vl8m_start_stop;
+    additional_text: return string(STR_VL8M_PURCHASE_HINT);
+    cargo_subtype_text: vl8m_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: vl8m_speed;
+  }
+}
