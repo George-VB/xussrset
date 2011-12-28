@@ -1,0 +1,204 @@
+ // chs4z
+
+// Спрайты
+// с 2002: 3 окраски
+
+#define IMAGEFILE  "src/electric/chs4z.png"
+
+// покупка
+spriteset (chs4z_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(0, 128, -8)
+}
+
+// нет тока
+spriteset (chs4z_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(0, 61, 0)
+} 
+
+// аверс: погрузка/перемещение
+spriteset (chs4z_loading_spriteset, IMAGEFILE)
+{
+  s12_template(0, 128, 0)
+} 
+
+spriteset (chs4z_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(0, 195, 0)
+} 
+
+spritegroup chs4z_spritegroup
+{
+  loading: chs4z_loading_spriteset;
+  loaded: chs4z_traveling_spriteset;
+}
+
+spriteset (chs4z_speedover50_spriteset, IMAGEFILE)
+{
+  s12_template(0, 262, 0)
+} 
+
+// 2: нет тока
+spriteset (chs4z_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(0, 354, 0)
+} 
+
+// 2: обычный: погрузка/перемещение
+spriteset (chs4z_v2_loading_spriteset, IMAGEFILE)
+{
+  s12_template(0, 421, 0)
+} 
+
+spriteset (chs4z_v2_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(0, 488, 0)
+} 
+
+spritegroup chs4z_v2_spritegroup
+{
+  loading: chs4z_v2_loading_spriteset;
+  loaded: chs4z_v2_traveling_spriteset;
+}
+
+spriteset (chs4z_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s12_template(0, 555, 0)
+} 
+
+// 3: нет тока
+spriteset (chs4z_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(0, 647, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (chs4z_v3_loading_spriteset, IMAGEFILE)
+{
+  s12_template(0, 714, 0)
+} 
+
+spriteset (chs4z_v3_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(0, 781, 0)
+} 
+
+spritegroup chs4z_v3_spritegroup
+{
+  loading: chs4z_v3_loading_spriteset;
+  loaded: chs4z_v3_traveling_spriteset;
+}
+
+spriteset (chs4z_v3_speedover50_spriteset, IMAGEFILE)
+{
+  s12_template(0, 848, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, chs4z_get_spriteset2,
+  // x км/ч * 0.2778 == value
+  // 50 км/ч --> 13.89
+  // поправка на нет тока
+  ((last_computed_result > 13) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
+  cargo_subtype * 3
+)
+{
+  0: chs4z_notpowered_spriteset;
+  1: chs4z_spritegroup;
+  2: chs4z_speedover50_spriteset;
+  3: chs4z_v2_notpowered_spriteset;
+  4: chs4z_v2_spritegroup;
+  5: chs4z_v2_speedover50_spriteset;
+  6: chs4z_v3_notpowered_spriteset;
+  7: chs4z_v3_spritegroup;
+  chs4z_v3_speedover50_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, chs4z_get_spriteset1,
+  current_speed)
+{
+  chs4z_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, chs4z_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  chs4z_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, chs4z_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, chs4z_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, chs4z_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_CHS4Z_REFIT_V1);
+  1: string(STR_CHS4Z_REFIT_V2);
+  2: string(STR_CHS4Z_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, chs4z) 
+{
+  property
+  {
+    name: string(STR_CHS4Z_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(2002, 1, 1);
+    vehicle_life: 15; // срок службы
+    model_life: 15; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 6710 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+    cargo_capacity: 1;
+    weight: 123 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.136884;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: chs4z_get_spriteset;
+    purchase: chs4z_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: chs4z_can_attach_wagon;
+    start_stop: chs4z_start_stop;
+    additional_text: return string(STR_CHS4Z_PURCHASE_HINT);
+    cargo_subtype_text: chs4z_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: speed_after10_160to140;
+  }
+}
