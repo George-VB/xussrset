@@ -2,23 +2,23 @@
 
 // Спрайты
 
-#define IMAGEFILE  "src/electric/vl61-1954.png"
+#define IMAGEFILE  "src/electric/vl61.png"
 
 // покупка
 spriteset (vl61_purchase_spriteset, IMAGEFILE)
 {
-  s9_purchase_template(4, 4, -2)
+  s10_purchase_template(5, 105, -4)
 }
 
 // обычный: погрузка/перемещение
 spriteset (vl61_loading_spriteset, IMAGEFILE)
 {
-  s9_template(4, 4, 0)
+  s10_template(5, 105, 0)
 } 
 
 spriteset (vl61_traveling_spriteset, IMAGEFILE)
 {
-  s9_template(4, 70, 0)
+  s10_template(5, 172, 0)
 } 
 
 spritegroup vl61_spritegroup
@@ -29,18 +29,49 @@ spritegroup vl61_spritegroup
 
 spriteset (vl61_speedover50_spriteset, IMAGEFILE)
 {
-  s9_template(4, 136, 0)
+  s10_template(5, 239, 0)
+} 
+
+// 2: покупка
+spriteset (vl61_v2_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(5, 335, -4)
+}
+
+// обычный: погрузка/перемещение
+spriteset (vl61_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(5, 335, 0)
+} 
+
+spriteset (vl61_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(5, 402, 0)
+} 
+
+spritegroup vl61_v2_spritegroup
+{
+  loading: vl61_v2_loading_spriteset;
+  loaded: vl61_v2_traveling_spriteset;
+}
+
+spriteset (vl61_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(5, 469, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl61_get_spriteset2,
   // x км/ч * 0.2778 == value
-  (last_computed_result > 13)  // 50 км/ч --> 13.89
+  (last_computed_result > 13) + // 50 км/ч --> 13.89
+  ((current_year >= 1972) * 2)
 )
 {
   0: vl61_spritegroup;
-  vl61_speedover50_spriteset;
+  1: vl61_speedover50_spriteset;
+  2: vl61_v2_spritegroup;
+  vl61_v2_speedover50_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, vl61_get_spriteset1,
@@ -56,6 +87,15 @@ switch (FEAT_TRAINS, SELF, vl61_get_spriteset,
 {
   1: dummy_spriteset;
   vl61_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, vl61_get_purchase_spriteset,
+  (current_year >= 1972)
+)
+{
+  0: vl61_purchase_spriteset;
+  vl61_v2_purchase_spriteset;
 }
 
 // Что присоединяем?
@@ -118,8 +158,8 @@ item (FEAT_TRAINS, vl61)
   }
   graphics {
     default: vl61_get_spriteset;
-    purchase: vl61_purchase_spriteset;
-    articulated_part: articulated_part_dummy1;
+    purchase: vl61_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
     can_attach_wagon: vl61_can_attach_wagon;
     start_stop: vl61_start_stop;
     additional_text: return string(STR_VL61_PURCHASE_HINT);
