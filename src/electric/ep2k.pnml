@@ -1,0 +1,165 @@
+ // ep2k
+
+// Спрайты
+
+#define IMAGEFILE  "src/electric/ep2k.png"
+
+// покупка
+spriteset (ep2k_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(0, 37, -10)
+}
+
+// нет тока
+spriteset (ep2k_notpowered_spriteset, IMAGEFILE)
+{
+  s13_template(0, 37, 0)
+} 
+
+// аверс: погрузка/перемещение
+spriteset (ep2k_loading_spriteset, IMAGEFILE)
+{
+  s13_template(0, 104, 0)
+} 
+
+spriteset (ep2k_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(0, 171, 0)
+} 
+
+spritegroup ep2k_spritegroup
+{
+  loading: ep2k_loading_spriteset;
+  loaded: ep2k_traveling_spriteset;
+}
+
+spriteset (ep2k_speedover50_spriteset, IMAGEFILE)
+{
+  s13_template(0, 238, 0)
+} 
+
+// нет тока
+spriteset (ep2k_b_notpowered_spriteset, IMAGEFILE)
+{
+  s13_template(452, 37, 0)
+} 
+
+// аверс: погрузка/перемещение
+spriteset (ep2k_b_loading_spriteset, IMAGEFILE)
+{
+  s13_template(452, 104, 0)
+} 
+
+spriteset (ep2k_b_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(452, 171, 0)
+} 
+
+spritegroup ep2k_b_spritegroup
+{
+  loading: ep2k_b_loading_spriteset;
+  loaded: ep2k_b_traveling_spriteset;
+}
+
+spriteset (ep2k_b_speedover50_spriteset, IMAGEFILE)
+{
+  s13_template(452, 238, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ep2k_get_spriteset2,
+  (((LOAD_TEMP(0) - count_veh_id(ep2k)) % 2) * 3) +
+  // x км/ч * 0.2778 == value
+  // 50 км/ч --> 13.89
+  // поправка на нет тока
+  ((LOAD_TEMP(1) > 13) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))
+)
+{
+  0: ep2k_notpowered_spriteset;
+  1: ep2k_spritegroup;
+  2: ep2k_speedover50_spriteset;
+  3: ep2k_b_notpowered_spriteset;
+  4: ep2k_b_spritegroup;
+  5: ep2k_b_speedover50_spriteset;
+  align_13_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, ep2k_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(ep2k), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  ep2k_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, ep2k_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  ep2k_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, ep2k_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ep2k_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, ep2k) 
+{
+  property
+  {
+    name: string(STR_EP2K_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(2006, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+//    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 5745 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+//    cargo_capacity: 1;
+    weight: 135 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.126228268;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: ep2k_get_spriteset;
+    purchase: ep2k_purchase_spriteset;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep2k_can_attach_wagon;
+    start_stop: ep2k_start_stop;
+    additional_text: return string(STR_EP2K_PURCHASE_HINT);
+//    cargo_capacity: return 0;
+  }
+}
