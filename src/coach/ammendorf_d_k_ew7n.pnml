@@ -1,0 +1,127 @@
+ // ammendorf_d_k_ew7n
+
+/// Вагон
+// "Шоколадный" Ammendorf Typ 47 D/k-EW7N - мягкий 19-местный вагон СВ
+// без кондиционера с отделкой салона под дерево темно-коричневым пластиком
+// (самая первая "шоколадка" 1972 года).
+/// Ammendorf D-k-EW7N
+// soft compartment
+
+#define IMAGEFILE  "src/coach/ammendorf-d-k-ew7n.png"
+
+// покупка
+spriteset (ammendorf_d_k_ew7n_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(0, 41, -12)
+}
+
+// вид 1
+spriteset (ammendorf_d_k_ew7n_spriteset, IMAGEFILE)
+{
+  s14_template(0, 41, 0)
+}
+
+// вид 2
+spriteset (ammendorf_d_k_ew7n_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 113, 0)
+}
+
+// вид 3
+spriteset (ammendorf_d_k_ew7n_v3_spriteset, IMAGEFILE)
+{
+  s14_template(0, 185, 0)
+}
+
+// Реверс: (458, y, 0)
+
+// Хвост: вид 1
+spriteset (ammendorf_d_k_ew7n_tail_spriteset, IMAGEFILE)
+{
+  s14_template(0, 257, 0)
+}
+
+// вид 2
+spriteset (ammendorf_d_k_ew7n_tail_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 329, 0)
+}
+
+// вид 3
+spriteset (ammendorf_d_k_ew7n_tail_v3_spriteset, IMAGEFILE)
+{
+  s14_template(0, 401, 0)
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_k_ew7n_get_spriteset1,
+  cargo_subtype
+)
+{
+  0: ammendorf_d_k_ew7n_spriteset;
+  1: ammendorf_d_k_ew7n_v2_spriteset;
+  2: ammendorf_d_k_ew7n_v3_spriteset;
+  align_12_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, ammendorf_d_k_ew7n_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  ammendorf_d_k_ew7n_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_k_ew7n_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_AMMENDORF_D_K_EW7N_REFIT_V1);
+  1: string(STR_AMMENDORF_D_K_EW7N_REFIT_V2);
+  2: string(STR_AMMENDORF_D_K_EW7N_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+
+item (FEAT_TRAINS, ammendorf_d_k_ew7n) 
+{
+  property
+  {
+    name: string(STR_AMMENDORF_D_K_EW7N_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1972), 1, 1);
+    model_life: 28;
+    vehicle_life: 28;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0;
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 19;
+    weight: 52 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: ammendorf_d_k_ew7n_get_spriteset;
+    purchase: ammendorf_d_k_ew7n_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_AMMENDORF_D_K_EW7N_PURCHASE_HINT);
+    cargo_subtype_text: ammendorf_d_k_ew7n_cargo_subtype_text;
+  }
+}
