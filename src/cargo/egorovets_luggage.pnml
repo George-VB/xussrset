@@ -1,0 +1,98 @@
+ // egorovets_luggage
+
+/// Вагон
+// Егоровец 20,2 м багажный (1929-1941)
+// luggage
+
+#define IMAGEFILE  "src/coach/egorovets-luggage-1929-1941.png"
+
+// покупка
+spriteset (egorovets_luggage_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(7, 30, -8)
+}
+
+// вид 1
+spriteset (egorovets_luggage_spriteset, IMAGEFILE)
+{
+  s12_template(7, 30, 0)
+}
+
+// вид 2
+spriteset (egorovets_luggage_v2_spriteset, IMAGEFILE)
+{
+  s12_template(7, 100, 0)
+}
+
+// Реверс: (438, y, 0)
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, egorovets_luggage_get_spriteset1,
+  cargo_subtype
+)
+{
+  0: egorovets_luggage_spriteset;
+  1: egorovets_luggage_v2_spriteset;
+  align_12_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, egorovets_luggage_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  egorovets_luggage_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, egorovets_luggage_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_EGOROVETS_SC1_REFIT_V1);
+  1: string(STR_EGOROVETS_SC1_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+
+item (FEAT_TRAINS, egorovets_luggage) 
+{
+  property
+  {
+    name: string(STR_EGOROVETS_LUGGAGE_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1929), 1, 1);
+    model_life: 28;
+    vehicle_life: 28;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: bitmask(CC_EXPRESS, CC_ARMOURED);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 5;
+    cargo_capacity: 20;
+    weight: 32 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: egorovets_luggage_get_spriteset;
+    purchase: egorovets_luggage_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    additional_text: return string(STR_EGOROVETS_LUGGAGE_PURCHASE_HINT);
+    cargo_subtype_text: egorovets_luggage_cargo_subtype_text;
+  }
+}
