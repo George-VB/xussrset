@@ -1,0 +1,112 @@
+ // boxcar_11_066
+
+/// Вагон
+// boxcar 11-066
+// 1960-1978 один вид, 1979-1982 другой
+
+#define IMAGEFILE  "src/cargo/boxcar-11-066-1960-1978.png"
+
+// покупка
+spriteset (boxcar_11_066_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(0, 38, -2)
+}
+
+// вид 1
+spriteset (boxcar_11_066_spriteset, IMAGEFILE)
+{
+  s9_template(0, 38, 0)
+}
+
+// Реверс: (441, y, 0)
+
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cargo/boxcar-11-066-1979-1982.png"
+
+// покупка
+spriteset (boxcar_11_066_v2_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(0, 38, -2)
+}
+
+// вид 1
+spriteset (boxcar_11_066_v2_spriteset, IMAGEFILE)
+{
+  s9_template(0, 38, 0)
+}
+
+// Реверс: (441, y, 0)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_get_spriteset1,
+  build_year >= 1979)
+{
+  0: boxcar_11_066_spriteset;
+  1: boxcar_11_066_v2_spriteset;
+  align_9_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, boxcar_11_066_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  boxcar_11_066_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_get_purchase_spriteset,
+  build_year >= 1979)
+{
+  0: boxcar_11_066_purchase_spriteset;
+  boxcar_11_066_v2_purchase_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_cargo_capacity,
+  build_year >= 1979)
+{
+  0: return 64;
+  return 68;
+}
+
+item (FEAT_TRAINS, boxcar_11_066) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_066_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1960), 1, 1);
+    model_life: 32;
+    vehicle_life: 32;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: bitmask(CC_BULK);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0;
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 110 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 16;
+    cargo_capacity: 64;
+    weight: 22 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_066_get_spriteset;
+    purchase: boxcar_11_066_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_BOXCAR_11_066_PURCHASE_HINT);
+    cargo_capacity: boxcar_11_066_cargo_capacity;
+  }
+}
