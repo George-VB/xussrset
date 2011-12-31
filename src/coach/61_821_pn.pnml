@@ -1,0 +1,115 @@
+ // 61_821_pn
+
+/// Вагон
+// 61-821. Плацкартный вагон Калининского завода (1983-1988).
+// Уже "длинные" тамбуры без наружных угольных ящиков, сплошная окраска
+// торцов во всю высоту.
+/// 61-821 ПН (1983-1988)
+
+#define IMAGEFILE  "src/coach/61-821-pn-1983-1988.png"
+
+// покупка
+spriteset (_61_821_pn_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(10, 75, -12)
+}
+
+// вид 1
+spriteset (_61_821_pn_spriteset, IMAGEFILE)
+{
+  s14_template(10, 75, 0)
+}
+
+// вид 2
+spriteset (_61_821_pn_v2_spriteset, IMAGEFILE)
+{
+  s14_template(10, 152, 0)
+}
+
+// Реверс: (469, y, 0)
+
+// Хвост: вид 1
+spriteset (_61_821_pn_tail_spriteset, IMAGEFILE)
+{
+  s14_template(10, 258, 0)
+}
+
+// вид 2
+spriteset (_61_821_pn_tail_v2_spriteset, IMAGEFILE)
+{
+  s14_template(10, 335, 0)
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, _61_821_pn_get_spriteset1,
+  (position_in_consist_from_end == 1) + // последний вагон?
+  (cargo_subtype * 2)
+)
+{
+  0: _61_821_pn_spriteset;
+  1: _61_821_pn_tail_spriteset;
+  2: _61_821_pn_v2_spriteset;
+  3: _61_821_pn_tail_v2_spriteset;
+  align_14_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _61_821_pn_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _61_821_pn_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _61_821_pn_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_61_181_CMVO_66_REFIT_V1);
+  1: string(STR_61_181_CMVO_66_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+
+item (FEAT_TRAINS, _61_821_pn) 
+{
+  property
+  {
+    name: string(STR_61_821_PN_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1983), 1, 1);
+    model_life: 28;
+    vehicle_life: 28;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0;
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 14;
+    cargo_capacity: 54;
+    weight: 51 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _61_821_pn_get_spriteset;
+    purchase: _61_821_pn_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_61_821_PN_PURCHASE_HINT);
+    cargo_subtype_text: _61_821_pn_cargo_subtype_text;
+  }
+}
