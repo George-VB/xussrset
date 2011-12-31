@@ -1,0 +1,104 @@
+ // 15_871_tanker
+
+/// Вагон
+// 15-871 8-осная цистерна для бензина (1974-1987)
+// tanker petrol
+
+#define IMAGEFILE  "src/cargo/15-871-8axis-tanker-petrol-1974-1987.png"
+
+// покупка
+spriteset (_15_871_tanker_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(0, 25, -8)
+}
+
+// вид 1
+spriteset (_15_871_tanker_spriteset, IMAGEFILE)
+{
+  s12_template(0, 25, 0)
+}
+
+// вид 2
+spriteset (_15_871_tanker_v2_spriteset, IMAGEFILE)
+{
+  s12_template(0, 92, 0)
+}
+
+// вид 3
+spriteset (_15_871_tanker_v3_spriteset, IMAGEFILE)
+{
+  s12_template(0, 159, 0)
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, _15_871_tanker_get_spriteset1,
+  cargo_subtype
+)
+{
+  0: _15_871_tanker_spriteset;
+  1: _15_871_tanker_v2_spriteset;
+  2: _15_871_tanker_v3_spriteset;
+  align_12_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _15_871_tanker_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _15_871_tanker_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _15_871_tanker_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_15_871_TANKER_REFIT_V1);
+  1: string(STR_15_871_TANKER_REFIT_V2);
+  2: string(STR_15_871_TANKER_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+
+item (FEAT_TRAINS, _15_871_tanker) 
+{
+  property
+  {
+    name: string(STR_15_871_TANKER_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1974), 1, 1);
+    model_life: 32;
+    vehicle_life: 32;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: bitmask(CC_LIQUID);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+//    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 30;
+    cargo_capacity: 120;
+    weight: 49 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _15_871_tanker_get_spriteset;
+    purchase: _15_871_tanker_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    additional_text: return string(STR_15_871_TANKER_PURCHASE_HINT);
+    cargo_subtype_text: _15_871_tanker_cargo_subtype_text;
+  }
+}
