@@ -1,0 +1,141 @@
+ // 23_4000_flatbed_wood
+
+/// Вагон
+// 23-4000 платформа для лесоматериалов (1979-)
+// flatbed
+
+#define IMAGEFILE  "src/cargo/23-4000-flatbed-wood-1979.png"
+
+// покупка
+spriteset (_23_4000_flatbed_wood_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(0, 52, -12)
+}
+
+// вид 1
+spriteset (_23_4000_flatbed_wood_empty_spriteset, IMAGEFILE)
+{
+  s14_template(0, 52, 0)
+}
+
+spriteset (_23_4000_flatbed_wood_full_spriteset, IMAGEFILE)
+{
+  s14_template(440, 52, 0)
+}
+
+spritegroup _23_4000_flatbed_wood_spritegroup
+{
+  loading: _23_4000_flatbed_wood_empty_spriteset;
+  loaded: [_23_4000_flatbed_wood_empty_spriteset,
+    _23_4000_flatbed_wood_full_spriteset];
+}
+
+// вид 2
+spriteset (_23_4000_flatbed_wood_empty_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 119, 0)
+}
+
+spriteset (_23_4000_flatbed_wood_full_v2_spriteset, IMAGEFILE)
+{
+  s14_template(440, 119, 0)
+}
+
+spritegroup _23_4000_flatbed_wood_v2_spritegroup
+{
+  loading: _23_4000_flatbed_wood_empty_v2_spriteset;
+  loaded: [_23_4000_flatbed_wood_empty_v2_spriteset,
+    _23_4000_flatbed_wood_full_v2_spriteset];
+}
+
+// вид 3
+spriteset (_23_4000_flatbed_wood_empty_v3_spriteset, IMAGEFILE)
+{
+  s14_template(0, 186, 0)
+}
+
+spriteset (_23_4000_flatbed_wood_full_v3_spriteset, IMAGEFILE)
+{
+  s14_template(440, 186, 0)
+}
+
+spritegroup _23_4000_flatbed_wood_v3_spritegroup
+{
+  loading: _23_4000_flatbed_wood_empty_v3_spriteset;
+  loaded: [_23_4000_flatbed_wood_empty_v3_spriteset,
+    _23_4000_flatbed_wood_full_v3_spriteset];
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, _23_4000_flatbed_wood_get_spriteset1,
+  cargo_subtype
+)
+{
+  0: _23_4000_flatbed_wood_spritegroup;
+  1: _23_4000_flatbed_wood_v2_spritegroup;
+  2: _23_4000_flatbed_wood_v3_spritegroup;
+  align_14_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _23_4000_flatbed_wood_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _23_4000_flatbed_wood_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _23_4000_flatbed_wood_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_23_4000_FLATBED_WOOD_REFIT_V1);
+  1: string(STR_23_4000_FLATBED_WOOD_REFIT_V2);
+  2: string(STR_23_4000_FLATBED_WOOD_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+
+item (FEAT_TRAINS, _23_4000_flatbed_wood) 
+{
+  property
+  {
+    name: string(STR_23_4000_FLATBED_WOOD_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1979), 1, 1);
+    model_life: 32;
+    vehicle_life: 32;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: NO_CARGO_CLASS; // bitmask(CC_PIECE_GOODS);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+//    refittable_cargo_types: 0; //bitmask(WOOD);
+    cargo_allow_refit: [WOOD];
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+//    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 14;
+    cargo_capacity: 56;
+    weight: 34 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _23_4000_flatbed_wood_get_spriteset;
+    purchase: _23_4000_flatbed_wood_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_23_4000_FLATBED_WOOD_PURCHASE_HINT);
+    cargo_subtype_text: _23_4000_flatbed_wood_cargo_subtype_text;
+  }
+}
