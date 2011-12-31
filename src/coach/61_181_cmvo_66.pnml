@@ -1,0 +1,114 @@
+ // 61_181_cmvo_66
+
+/// Вагон
+// 61-181. Тип ЦМВО-66 - вагон открытого типа (плацкартный).
+// Массово выпускался Калининским заводом в 1966-1975 гг.
+/// 61-181 ЦМВО-66
+
+#define IMAGEFILE  "src/coach/61-181-cmvo-66.png"
+
+// покупка
+spriteset (_61_181_cmvo_66_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(10, 75, -12)
+}                       
+
+// вид 1
+spriteset (_61_181_cmvo_66_spriteset, IMAGEFILE)
+{
+  s14_template(10, 75, 0)
+}
+
+// вид 2
+spriteset (_61_181_cmvo_66_v2_spriteset, IMAGEFILE)
+{
+  s14_template(10, 152, 0)
+}
+
+// Реверс: (469, y, 0)
+
+// Хвост: вид 1
+spriteset (_61_181_cmvo_66_tail_spriteset, IMAGEFILE)
+{
+  s14_template(10, 258, 0)
+}
+
+// вид 2
+spriteset (_61_181_cmvo_66_tail_v2_spriteset, IMAGEFILE)
+{
+  s14_template(10, 335, 0)
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_get_spriteset1,
+  (position_in_consist_from_end == 1) + // последний вагон?
+  (cargo_subtype * 2)
+)
+{
+  0: _61_181_cmvo_66_spriteset;
+  1: _61_181_cmvo_66_tail_spriteset;
+  2: _61_181_cmvo_66_v2_spriteset;
+  3: _61_181_cmvo_66_tail_v2_spriteset;
+  align_14_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _61_181_cmvo_66_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_61_181_CMVO_66_REFIT_V1);
+  1: string(STR_61_181_CMVO_66_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+
+item (FEAT_TRAINS, _61_181_cmvo_66) 
+{
+  property
+  {
+    name: string(STR_61_181_CMVO_66_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1966), 1, 1);
+    model_life: 28;
+    vehicle_life: 28;
+    reliability_decay: 20;
+    // Разрешить пассажиры (и туристы)
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0;
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 14;
+    cargo_capacity: 54;
+    weight: 50 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _61_181_cmvo_66_get_spriteset;
+    purchase: _61_181_cmvo_66_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_61_181_CMVO_66_PURCHASE_HINT);
+    cargo_subtype_text: _61_181_cmvo_66_cargo_subtype_text;
+  }
+}
