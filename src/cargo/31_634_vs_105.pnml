@@ -1,0 +1,69 @@
+ // 31_634_vs_105
+
+/// Вагон
+// 31-634 6-осный думпкар типа ВС-105
+// dumpcar
+
+#define IMAGEFILE  "src/cargo/31-634-6axis-dumpcar-vs-105.png"
+
+// покупка
+spriteset (_31_634_vs_105_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(0, 18, 0)
+}
+
+// вид 1
+spriteset (_31_634_vs_105_spriteset, IMAGEFILE)
+{
+  s9_template(0, 18, 0)
+}
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _31_634_vs_105_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _31_634_vs_105_spriteset;
+}
+
+item (FEAT_TRAINS, _31_634_vs_105) 
+{
+  property
+  {
+    name: string(STR_31_634_VS_105_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1967), 1, 1);
+    model_life: 22;
+    vehicle_life: 22;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_BULK); // Разрешить
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 23;
+    cargo_capacity: 90;
+    weight: 49 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _31_634_vs_105_get_spriteset;
+    purchase: _31_634_vs_105_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_31_634_VS_105_PURCHASE_HINT);
+  }
+}
