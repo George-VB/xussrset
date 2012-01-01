@@ -1,0 +1,139 @@
+ // rs5
+
+/// Вагон
+// РС-5 рефрижераторная секция 5-вагонная (1986-2000)
+
+#define IMAGEFILE  "src/cargo/rs5-refrigerator-section-1986-2000.png"
+
+// покупка
+spriteset (rs5_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(112, 64, -10)
+}
+
+// грузовой вагон
+spriteset (rs5_cargo_spriteset, IMAGEFILE)
+{
+  s13_template(112, 64, 0)
+}
+
+// дизельный вагон
+spriteset (rs5_diesel_spriteset, IMAGEFILE)
+{
+  s10_template(112, 131, 0)
+}
+
+// Реверс: (552, y, 0)
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, rs5_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  rs5_cargo_spriteset;
+}
+
+// секция из 5-ти вагонов
+switch (FEAT_TRAINS, SELF, rs5_articulated_part,
+  extra_callback_info1)
+{
+  1..9: return rs5int;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs5int_shorten_vehicle,
+  position_in_vehid_chain)
+{
+//  0: return SHORTEN_TO_8_8;
+  0: return SHORTEN_TO_5_8;
+  1: return SHORTEN_TO_8_8;
+  2: return SHORTEN_TO_5_8;
+  3: return SHORTEN_TO_8_8;
+  4: return SHORTEN_TO_2_8;
+  5: return SHORTEN_TO_8_8;
+  6: return SHORTEN_TO_5_8;
+  7: return SHORTEN_TO_8_8;
+  8: return SHORTEN_TO_5_8;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs5int_get_spriteset1,
+  position_in_vehid_chain)
+{
+  1: rs5_cargo_spriteset;
+  3: rs5_diesel_spriteset;
+  5: rs5_cargo_spriteset;
+  7: rs5_cargo_spriteset;
+  dummy_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, rs5int_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  rs5int_get_spriteset1;
+}
+
+// Для задания нужных размеров частей и их рисования
+item (FEAT_TRAINS, rs5int)
+{
+  property
+  {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    model_life: VEHICLE_NEVER_EXPIRES;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+  }
+  graphics
+  {
+    default: rs5int_get_spriteset;
+    shorten_vehicle: rs5int_shorten_vehicle;
+  }
+}
+
+// Сама секция
+item (FEAT_TRAINS, rs5) 
+{
+  property
+  {
+    name: string(STR_RS5_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1986), 1, 1);
+    model_life: 25;
+    vehicle_life: 25;
+    reliability_decay: 20;
+    // Продукты, рыба
+    refittable_cargo_classes: bitmask(CC_REFRIGERATED); // Разрешить
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить
+    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 25;
+    cargo_capacity: 188;
+    weight: 215 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: rs5_get_spriteset;
+    purchase: rs5_purchase_spriteset;
+    articulated_part: rs5_articulated_part;
+    additional_text: return string(STR_RS5_PURCHASE_HINT);
+  }
+}
