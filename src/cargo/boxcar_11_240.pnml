@@ -1,0 +1,72 @@
+ // boxcar_11_240
+
+/// Вагон
+// 11-240 крытый двухъярусный вагон для скота (1975-1979)
+// boxcar 11-240
+
+#define IMAGEFILE  "src/cargo/boxcar-11-240-for-livestock-1975-1979.png"
+
+// покупка
+spriteset (boxcar_11_240_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(0, 38, -2)
+}
+
+// вид 1
+spriteset (boxcar_11_240_spriteset, IMAGEFILE)
+{
+  s9_template(0, 38, 0)
+}
+
+// Реверс: (441, y, 0)
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, boxcar_11_240_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  boxcar_11_240_spriteset;
+}
+
+item (FEAT_TRAINS, boxcar_11_240) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_240_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1975), 1, 1);
+    model_life: 30;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    
+    refittable_cargo_classes: bitmask(CC_PIECE_GOODS); // Разрешить
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0;
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 7;
+    cargo_capacity: 26;
+    weight: 25 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_240_get_spriteset;
+    purchase: boxcar_11_240_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_BOXCAR_11_240_PURCHASE_HINT);
+  }
+}
