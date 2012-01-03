@@ -5,6 +5,18 @@
 
 :: задаём переменные окружения
 call config setup
+
+:: определяем текущую ревизию
+for /F %%i in ('hg id -n') do set REPO_REVISION=%%i
+
+:: убираем +, если он есть
+if "%REPO_REVISION:~-1%" == "+" set REPO_REVISION=%REPO_REVISION:~0,-1%
+
+:: создаём файл custom_tags
+echo VERSION  :%REPO_REVISION%>%CUSTOM_TAGS%
+echo TITLE    :xUSSR Railway Set 1.0.%REPO_REVISION% Alpha>>%CUSTOM_TAGS%
+echo FILENAME :xussr.grf>>%CUSTOM_TAGS%
+
 :: собираем
 :: -E            Stop after the preprocessing stage;
 ::               do not run the compiler proper.
@@ -14,7 +26,8 @@ call config setup
 :: -x c          считаем исходные файлы написанными на Си
 :: -o filename   результат записываем в файл
 :: -D amacro=defn Define macro amacro as defn.
-gcc -E -C -P -x c -o %NMLNAME%.nml src/%NMLNAME%.pnml
+gcc -D REPO_REVISION=%REPO_REVISION% ^
+  -E -C -P -x c -o %NMLNAME%.nml src/%NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
 nmlc --nfo=%NMLNAME%.nfo --grf=%NMLNAME%.grf ^

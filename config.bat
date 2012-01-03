@@ -11,3 +11,4 @@ goto :EOF
 set PATH=C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\DOSUtil\Nml3;%PATH%
 set NMLNAME=xussr
 set GRFFOLDER=%USERPROFILE%\Documents\OpenTTD\content_download\data\my\ecs
+set CUSTOM_TAGS=custom_tags.txt
