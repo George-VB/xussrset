@@ -18,7 +18,8 @@ gcc -E -C -P -x c -o %NMLNAME%.nml src/%NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
 nmlc --nfo=%NMLNAME%.nfo --grf=%NMLNAME%.grf ^
-  --nml=%NMLNAME%_optimized.nml -M --MF=%NMLNAME%_dep.txt %NMLNAME%.nml
+  -M --MF=%NMLNAME%_dep.txt %NMLNAME%.nml
+:: --nml=%NMLNAME%_optimized.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем
 xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
