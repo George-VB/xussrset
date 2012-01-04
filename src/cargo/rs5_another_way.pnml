@@ -1,0 +1,232 @@
+ // rs5_another_way
+
+/// Вагон
+// РС-5 рефрижераторная секция 5-вагонная (1986-2000)
+
+// Графика из rs5.pnml
+// Ёмкость 188 / 4 == 47т
+// Масса 215 == 4*A + B == 4*40 + 55 == 4*33 + 82 (!)
+
+#define IMAGEFILE  "src/cargo/rs5-refrigerator-section-1986-2000.png"
+
+// покупка
+spriteset (rs5dc_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(112, 131, -4)
+}
+
+// R дизельный вагон
+spriteset (rs5_diesel_flipped_spriteset, IMAGEFILE)
+{
+  s10_template(552, 131, 2)
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, rs5cc_get_spriteset1,
+  is_flipped())
+{
+  1: align_13_spriteset;
+  rs5_cargo_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, rs5cc_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  rs5cc_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, rs5dc_get_spriteset1,
+  is_flipped())
+{
+  1: rs5_diesel_flipped_spriteset; //align_10_spriteset;
+  rs5_diesel_spriteset;
+}
+
+//switch (FEAT_TRAINS, SELF, rs5dc_get_spriteset,
+//  is_drawn_in_viewport() && is_hidden_at(1))
+//{
+//  1: dummy_spriteset;
+//  rs5dc_get_spriteset1;
+//}
+
+/// cargo
+
+switch (FEAT_TRAINS, SELF, rs5cc_can_attach_wagon,
+  0)
+{
+//  dr1a_m: return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, rs5cc_start_stop,
+  0)
+{
+//  0: return CB_RESULT_NO_TEXT;
+  return string(STR_CANNOT_START);
+}
+
+/// diesel
+switch (FEAT_TRAINS, SELF, rs5dc_can_attach_wagon,
+  0)
+{
+//  dr1a_m: return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, rs5dc_start_stop,
+  0)
+{
+//  0: return CB_RESULT_NO_TEXT;
+  return string(STR_CANNOT_START);
+}
+
+// Грузовой вагон
+item (FEAT_TRAINS, rs5cc) 
+{
+  property
+  {
+    name: string(STR_RS5CC_NAME);
+    climates_available: enable_debug_car ? get_climates_available()
+      : NO_CLIMATE;
+    introduction_date: date(get_car_year(1986), 1, 1);
+    model_life: 25;
+    vehicle_life: 25;
+    reliability_decay: 20;
+    // Продукты, рыба
+    refittable_cargo_classes: bitmask(CC_REFRIGERATED); // Разрешить
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить
+    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 47;
+    weight: 33 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: rs5cc_get_spriteset;
+    purchase: rs5_purchase_spriteset;
+    articulated_part: articulated_part_dummy5;
+    additional_text: return string(STR_RS5CC_PURCHASE_HINT);
+    can_attach_wagon: rs5cc_can_attach_wagon;
+    start_stop: rs5cc_start_stop;
+  }
+}
+
+// Дизельный вагон
+item (FEAT_TRAINS, rs5dc)
+{
+  property
+  {
+    name: string(STR_RS5DC_NAME);
+    climates_available: enable_debug_car ? get_climates_available()
+      : NO_CLIMATE;
+    introduction_date: date(get_car_year(1986), 1, 1);
+    model_life: 25;
+    vehicle_life: 25;
+    reliability_decay: 20;
+    // Продукты, рыба
+//    refittable_cargo_classes: bitmask(CC_REFRIGERATED); // Разрешить
+//    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить
+//    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+//    loading_speed: 25;
+//    cargo_capacity: 0; // 47;
+    weight: 82 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: rs5dc_get_spriteset1;
+    purchase: rs5dc_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    additional_text: return string(STR_RS5DC_PURCHASE_HINT);
+    can_attach_wagon: rs5dc_can_attach_wagon;
+    start_stop: rs5dc_start_stop;
+  }
+}
+
+// секция из 5-ти вагонов
+switch (FEAT_TRAINS, SELF, rs5all_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;
+  2: return rs5all;
+  3: return dummy5;
+//  4: return (rs5dc | CB_RESULT_REVERSED_VEHICLE);
+  4: return rs5dc;
+  5: return dummy2;
+  6: return rs5all;
+  7: return dummy5;
+  8: return rs5all;
+  9: return dummy5;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+// Сама секция
+item (FEAT_TRAINS, rs5all) 
+{
+  property
+  {
+    name: string(STR_RS5ALL_NAME);
+    climates_available: enable_debug_car ? get_climates_available()
+      : NO_CLIMATE;
+    introduction_date: date(get_car_year(1986), 1, 1);
+    model_life: 25;
+    vehicle_life: 25;
+    reliability_decay: 20;
+    // Продукты, рыба
+    refittable_cargo_classes: bitmask(CC_REFRIGERATED); // Разрешить
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить
+    refittable_cargo_types: 0; // bitmask(GOOD, VALU);
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 47;
+    weight: 215 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: rs5cc_get_spriteset;
+    purchase: rs5_purchase_spriteset;
+    articulated_part: rs5all_articulated_part;
+    additional_text: return string(STR_RS5ALL_PURCHASE_HINT);
+  }
+}
