@@ -1,0 +1,82 @@
+ // boxcar_11_835
+
+/// Вагон
+// 11-835 крытый для автомобилей (Rautaruukki, 1986-1990)
+// boxcar 11-835
+
+#define IMAGEFILE  "src/cargo/boxcar-11-835-auto-1986-1990.png"
+
+// покупка
+spriteset (boxcar_11_835_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(0, 26, -12)
+}
+
+// пустой
+spriteset (boxcar_11_835_empty_spriteset, IMAGEFILE)
+{
+  s14_template(0, 26, 0)
+}
+
+// с грузом
+spriteset (boxcar_11_835_full_spriteset, IMAGEFILE)
+{
+  s14_template(0, 93, 0)
+}
+
+spritegroup boxcar_11_835_spritegroup
+{
+  loading: [boxcar_11_835_empty_spriteset, boxcar_11_835_full_spriteset];
+  loaded: [boxcar_11_835_empty_spriteset, boxcar_11_835_full_spriteset];
+}
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, boxcar_11_835_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  boxcar_11_835_spritegroup;
+}
+
+item (FEAT_TRAINS, boxcar_11_835) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_835_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(get_car_year(1986), 1, 1);
+    model_life: 30;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    // Разрешить
+    refittable_cargo_classes: bitmask(CC_PIECE_GOODS, CC_OVERSIZED);
+    non_refittable_cargo_classes: NO_CARGO_CLASS; // Запретить другие
+    refittable_cargo_types: 0;
+    refit_cost: 0;
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 5;
+    cargo_capacity: 15;
+    weight: 35 ton;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    visual_effect_and_powered: 
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 0, DISABLE_WAGON_POWER);
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_835_get_spriteset;
+    purchase: boxcar_11_835_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_BOXCAR_11_835_PURCHASE_HINT);
+  }
+}
