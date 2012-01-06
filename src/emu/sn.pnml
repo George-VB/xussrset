@@ -1,0 +1,292 @@
+ // sn
+
+// CН (1954-1956), электросекция постоянного тока.
+// Спрайты
+
+#define IMAGEFILE  "src/emu/sn-1954-1956.png"
+
+// покупка
+spriteset (sn_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(103, 83, -8)
+}
+
+// обычный: погрузка/перемещение
+spriteset (sn_loading_spriteset, IMAGEFILE)
+{
+  s12_template(103, 83, 0)
+} 
+
+spriteset (sn_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(103, 150, 0)
+} 
+
+spritegroup sn_spritegroup
+{
+  loading: sn_loading_spriteset;
+  loaded: sn_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (sn_r_loading_spriteset, IMAGEFILE)
+{
+  s12_template(543, 83, 0)
+} 
+
+spriteset (sn_r_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(543, 150, 0)
+} 
+
+spritegroup sn_r_spritegroup
+{
+  loading: sn_r_loading_spriteset;
+  loaded: sn_r_traveling_spriteset;
+}
+
+// моторный
+spriteset (sn_b_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(103, 500, 0)
+} 
+
+spriteset (sn_b_spriteset, IMAGEFILE)
+{
+  s12_template(103, 567, 0)
+} 
+
+// 2: обычный: погрузка/перемещение
+spriteset (sn_v2_loading_spriteset, IMAGEFILE)
+{
+  s12_template(103, 217, 0)
+} 
+
+spriteset (sn_v2_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(103, 284, 0)
+} 
+
+spritegroup sn_v2_spritegroup
+{
+  loading: sn_v2_loading_spriteset;
+  loaded: sn_v2_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (sn_r_v2_loading_spriteset, IMAGEFILE)
+{
+  s12_template(543, 217, 0)
+} 
+
+spriteset (sn_r_v2_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(543, 284, 0)
+} 
+
+spritegroup sn_r_v2_spritegroup
+{
+  loading: sn_r_v2_loading_spriteset;
+  loaded: sn_r_v2_traveling_spriteset;
+}
+
+// моторный
+spriteset (sn_b_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(103, 634, 0)
+} 
+
+spriteset (sn_b_v2_spriteset, IMAGEFILE)
+{
+  s12_template(103, 701, 0)
+} 
+
+// 3: обычный: погрузка/перемещение
+spriteset (sn_v3_loading_spriteset, IMAGEFILE)
+{
+  s12_template(103, 351, 0)
+} 
+
+spriteset (sn_v3_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(103, 418, 0)
+} 
+
+spritegroup sn_v3_spritegroup
+{
+  loading: sn_v3_loading_spriteset;
+  loaded: sn_v3_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (sn_r_v3_loading_spriteset, IMAGEFILE)
+{
+  s12_template(543, 351, 0)
+} 
+
+spriteset (sn_r_v3_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(543, 418, 0)
+} 
+
+spritegroup sn_r_v3_spritegroup
+{
+  loading: sn_r_v3_loading_spriteset;
+  loaded: sn_r_v3_traveling_spriteset;
+}
+
+// моторный
+spriteset (sn_b_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(103, 768, 0)
+} 
+
+spriteset (sn_b_v3_spriteset, IMAGEFILE)
+{
+  s12_template(103, 835, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, sn_get_spriteset2,
+  ((LOAD_TEMP(0) - count_veh_id(sn)) % 2) +
+  (cargo_subtype * 2)
+)
+{
+  0: sn_spritegroup;
+  1: sn_r_spritegroup;
+  2: sn_v2_spritegroup;
+  3: sn_r_v2_spritegroup;
+  4: sn_v3_spritegroup;
+  5: sn_r_v3_spritegroup;
+  align_12_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, sn_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(sn), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  sn_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, sn_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  sn_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, sn_b_get_spriteset1,
+[
+  STORE_TEMP(-2, 0x10F),
+  (var[0x61, 0, 0xFFFF, 0xF2] * 2) + // cargo_subtype
+  (!(vehicle_is_not_powered || vehicle_is_in_depot))
+])
+{
+  0: sn_b_notpowered_spriteset;
+  1: sn_b_spriteset;
+  2: sn_b_v2_notpowered_spriteset;
+  3: sn_b_v2_spriteset;
+  4: sn_b_v3_notpowered_spriteset;
+  5: sn_b_v3_spriteset;
+  align_12_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, sn_b_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  sn_b_get_spriteset1;
+}
+
+// Можно ли ещё присоединить?
+switch (FEAT_TRAINS, SELF, sn_can_attach_wagon2,
+  ((vehicle_type_id == sn) && (last_computed_result < 3)))
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+// считаем уже имеющиеся вагоны
+
+switch (FEAT_TRAINS, PARENT, sn_can_attach_wagon,
+  count_veh_id(sn)/2)
+{
+  sn_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, sn_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_SN_REFIT_V1);
+  1: string(STR_SN_REFIT_V2);
+  2: string(STR_SN_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, sn_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return tender;
+  3: return dummy4;
+  4: return sn;
+  5: return dummy4;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item (FEAT_TRAINS, sn) 
+{
+  property
+  {
+    name: string(STR_SN_NAME);
+    climates_available: bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+    introduction_date: date(1954, 1, 1);
+    vehicle_life: 10; // срок службы
+    model_life: 10; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+//    loading_speed: 12; // скорость погрузки/выгрузки, пассажиров
+    cost_factor: 2;
+    running_cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 921 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: (296/2);
+    weight: 148 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 hpM;
+    tractive_effort_coefficient: 0.027578599;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 10;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: sn_get_spriteset;
+    purchase: sn_purchase_spriteset;
+    articulated_part: sn_articulated_part;
+    can_attach_wagon: sn_can_attach_wagon;
+    additional_text: return string(STR_SN_PURCHASE_HINT);
+    cargo_subtype_text: sn_cargo_subtype_text;
+  }
+  livery_override(tender)
+  {
+    shorten_vehicle: return SHORTEN_TO_8_8;
+    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 1, DISABLE_WAGON_POWER);
+    sn_b_get_spriteset;
+
+  }
+}
