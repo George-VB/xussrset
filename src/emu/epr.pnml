@@ -1,0 +1,223 @@
+ // epr
+
+// Электропоезд переменного тока ЭПг - Stadler FLIRT для городских линий Минска
+// ЭПг (Stadler FLIRT)
+// Спрайты
+
+#define IMAGEFILE  "src/emu/epr-stadler-flirt.png"
+
+// покупка
+spriteset (epr_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(200, 252, -6)
+}
+
+// обычный: погрузка/перемещение
+spriteset (epr_loading_spriteset, IMAGEFILE)
+{
+  s11_template(200, 252, 0)
+} 
+
+spriteset (epr_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(200, 319, 0)
+} 
+
+spritegroup epr_spritegroup
+{
+  loading: epr_loading_spriteset;
+  loaded: epr_traveling_spriteset;
+}
+
+// обычный развёрнутый: погрузка/перемещение
+spriteset (epr_r_spriteset, IMAGEFILE)
+{
+  s11_template(640, 252, 0)
+} 
+
+// промежуточный 1
+spriteset (epr_b_spriteset, IMAGEFILE)
+{
+  s10_template(200, 401, 0)
+} 
+
+// промежуточный 2: погрузка/перемещение
+spriteset (epr_c_loading_spriteset, IMAGEFILE)
+{
+  s10_template(640, 401, 0)
+} 
+
+spriteset (epr_c_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(640, 468, 0)
+} 
+
+spritegroup epr_c_spritegroup
+{
+  loading: epr_c_loading_spriteset;
+  loaded: epr_c_traveling_spriteset;
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, epr_get_spriteset2,
+  (LOAD_TEMP(0) - count_veh_id(epr)) % 2)
+{
+  0: epr_spritegroup;
+  1: epr_r_spriteset;
+  align_11_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, epr_get_spriteset1,
+  STORE_TEMP(count_veh_id(epr), 0))
+{
+  epr_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, epr_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  epr_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, epr_b_get_spriteset1,
+  !(vehicle_is_not_powered || vehicle_is_in_depot))
+{
+  0..1: epr_b_spriteset; // нет визуальной разницы
+  align_10_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, epr_b_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  epr_b_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, epr_c_get_spriteset2,
+  !(vehicle_is_not_powered || vehicle_is_in_depot
+    || last_computed_result != epr))
+{
+  0: epr_c_loading_spriteset; // нет тяги
+  1: epr_c_spritegroup;
+  align_10_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, epr_c_get_spriteset1,
+  vehicle_type_id)
+{
+  epr_c_get_spriteset2;
+}
+
+switch (FEAT_TRAINS, SELF, epr_c_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  epr_c_get_spriteset1;
+}
+
+// Можно ли ещё присоединить? (1..3 секции)
+switch (FEAT_TRAINS, SELF, epr_can_attach_wagon2,
+  ((vehicle_type_id == epr) && (last_computed_result < 3)))
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+// считаем уже имеющиеся вагоны
+
+switch (FEAT_TRAINS, PARENT, epr_can_attach_wagon,
+  count_veh_id(epr)/2)
+{
+  epr_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, epr_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy3;
+  2: return tender;
+  3: return dummy2;
+  4: return tender2;
+  5: return dummy2;
+  6: return epr;
+  7: return dummy3;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+// даём тягу, если локомотив epr
+switch (FEAT_TRAINS, PARENT, epr_power,
+  vehicle_type_id == epr)
+{
+  1: return 2719-37; // Поправка, чтобы показывалось 2719
+  return 0;
+}
+
+// показываем визуальные эффекты, если локомотив epr
+switch (FEAT_TRAINS, PARENT, epr_c_visual_effect_and_powered,
+  vehicle_type_id == epr)
+{
+  1: return electric_visual_effect_and_powered(0);
+  return disable_visual_effect_and_powered();
+}
+
+item (FEAT_TRAINS, epr) 
+{
+  property
+  {
+    name: string(STR_EPR_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(2011, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_PASSENGERS);
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2719 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    loading_speed: (217/2/4);
+    cargo_capacity: (217/2);
+    weight: 132 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 hpM;
+    tractive_effort_coefficient: 0.115955473;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered:
+      visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 1, DISABLE_WAGON_POWER);
+  }
+  graphics {
+    default: epr_get_spriteset;
+    purchase: epr_purchase_spriteset;
+    articulated_part: epr_articulated_part;
+    can_attach_wagon: epr_can_attach_wagon;
+    additional_text: return string(STR_EPR_PURCHASE_HINT);
+    power: epr_power;
+  }
+  livery_override(tender)
+  {
+    shorten_vehicle: return SHORTEN_TO_8_8;
+    epr_b_get_spriteset;
+
+  }
+  livery_override(tender2)
+  {
+    shorten_vehicle: return SHORTEN_TO_8_8;
+    visual_effect_and_powered: epr_c_visual_effect_and_powered;
+    epr_c_get_spriteset;
+
+  }
+}
