@@ -60,27 +60,13 @@ spritegroup epg_c_spritegroup
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, epg_get_spriteset2,
-  (LOAD_TEMP(0) - count_veh_id(epg)) % 2)
-{
-  0: epg_spritegroup;
-  1: epg_r_spriteset;
-  align_11_spriteset;
-}
-
-switch (FEAT_TRAINS, PARENT, epg_get_spriteset1,
-  STORE_TEMP(count_veh_id(epg), 0))
-{
-  epg_get_spriteset2;
-}
-
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
 switch (FEAT_TRAINS, SELF, epg_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  epg_get_spriteset1;
+  epg_spritegroup;
 }
 
 switch (FEAT_TRAINS, SELF, epg_b_get_spriteset1,
@@ -119,6 +105,13 @@ switch (FEAT_TRAINS, SELF, epg_c_get_spriteset,
   epg_c_get_spriteset1;
 }
 
+switch (FEAT_TRAINS, SELF, epg_d_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  epg_r_spriteset;
+}
+
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
   ((vehicle_type_id == epg) && (last_computed_result < 3)))
@@ -143,7 +136,7 @@ switch (FEAT_TRAINS, SELF, epg_articulated_part,
   3: return dummy2;
   4: return unitc;
   5: return dummy2;
-  6: return epg;
+  6: return unitd;
   7: return dummy3;
   return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -185,8 +178,8 @@ item (FEAT_TRAINS, epg)
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 2719 hpM;
     running_cost_base: RUNNING_COST_ELECTRIC;
-    loading_speed: (260/2/4);
-    cargo_capacity: (260/2);
+    loading_speed: (260/8);
+    cargo_capacity: 260;
     weight: 132 ton;
     ai_engine_rank: 0;
     engine_class: ENGINE_CLASS_ELECTRIC;
@@ -218,6 +211,12 @@ item (FEAT_TRAINS, epg)
     shorten_vehicle: return SHORTEN_TO_8_8;
     visual_effect_and_powered: epg_c_visual_effect_and_powered;
     epg_c_get_spriteset;
+
+  }
+  livery_override(unitd)
+  {
+    shorten_vehicle: return SHORTEN_TO_8_8;
+    epg_d_get_spriteset;
 
   }
 }
