@@ -12,8 +12,13 @@ for /F %%i in ('hg id -n') do set REPO_REVISION=%%i
 :: убираем +, если он есть
 if "%REPO_REVISION:~-1%" == "+" set REPO_REVISION=%REPO_REVISION:~0,-1%
 
+:: если MIN_COMPATIBLE_REVISION == 0, используем REPO_REVISION
+if "%MIN_COMPATIBLE_REVISION%" == "0" ^
+  set MIN_COMPATIBLE_REVISION=%REPO_REVISION%
+
 :: создаём файл custom_tags
 echo VERSION  :%REPO_REVISION%>%CUSTOM_TAGS%
+echo MIN_COMPATIBLE_REVISION:%MIN_COMPATIBLE_REVISION%>>%CUSTOM_TAGS%
 echo TITLE    :xUSSR Railway Set 1.0.%REPO_REVISION% Alpha>>%CUSTOM_TAGS%
 echo FILENAME :xussr.grf>>%CUSTOM_TAGS%
 
@@ -27,6 +32,7 @@ echo FILENAME :xussr.grf>>%CUSTOM_TAGS%
 :: -o filename   результат записываем в файл
 :: -D amacro=defn Define macro amacro as defn.
 gcc -D REPO_REVISION=%REPO_REVISION% ^
+  -D MIN_COMPATIBLE_REVISION=%MIN_COMPATIBLE_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml src/%NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
