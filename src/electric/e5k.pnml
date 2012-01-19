@@ -1,0 +1,151 @@
+ // e5k
+
+// Спрайты
+// Э5К "Ермак" - односекционный грузопассажирский электровоз переменного тока.
+
+#define IMAGEFILE  "src/electric/e5k.png"
+
+// покупка
+spriteset (e5k_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(0, 42, -6)
+}
+
+// нет тока
+spriteset (e5k_notpowered_spriteset, IMAGEFILE)
+{
+  s11_template(0, 42, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (e5k_loading_spriteset, IMAGEFILE)
+{
+  s11_template(0, 109, 0)
+} 
+
+spriteset (e5k_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(0, 176, 0)
+} 
+
+spritegroup e5k_spritegroup
+{
+  loading: e5k_loading_spriteset;
+  loaded: e5k_traveling_spriteset;
+}
+
+spriteset (e5k_speedover50_spriteset, IMAGEFILE)
+{
+  s11_template(0, 243, 0)
+} 
+
+// развёрнутый: погрузка/перемещение
+spriteset (e5k_r_loading_spriteset, IMAGEFILE)
+{
+  s11_template(440, 109, 0)
+} 
+
+spriteset (e5k_r_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(440, 176, 0)
+} 
+
+/*
+// временно не используется
+spritegroup e5k_r_spritegroup
+{
+  loading: e5k_r_loading_spriteset;
+  loaded: e5k_r_traveling_spriteset;
+}
+*/
+
+spriteset (e5k_r_speedover50_spriteset, IMAGEFILE)
+{
+  s11_template(440, 243, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, e5k_get_spriteset2,
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
+)
+{
+  0: e5k_notpowered_spriteset;
+  1: e5k_spritegroup;
+  2: e5k_speedover50_spriteset;
+  align_11_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, e5k_get_spriteset1,
+[
+  STORE_TEMP(current_speed, 1)
+])
+{
+  e5k_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, e5k_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  e5k_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, e5k_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, e5k_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, e5k)
+{
+  property
+  {
+    name: string(STR_E5K_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(2007, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: get_electric_cost_factor();
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 110 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: ELRL;
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 4065 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    dual_headed: 0;
+    weight: 100 ton;
+    ai_engine_rank: 0;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: 0.21632653;
+    air_drag_coefficient: 0.06;
+    shorten_vehicle: SHORTEN_TO_8_8;
+    extra_weight_per_wagon: 0;
+    bitmask_vehicle_info: 0;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: e5k_get_spriteset;
+    purchase: e5k_purchase_spriteset;
+    articulated_part: articulated_part_dummy3;
+    can_attach_wagon: e5k_can_attach_wagon;
+    start_stop: e5k_start_stop;
+    additional_text: return string(STR_E5K_PURCHASE_HINT);
+  }
+}
