@@ -8,33 +8,36 @@
 // покупка
 spriteset (_3es5k_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(152, 226, -4)
+  s10_purchase_template(152, 294, -4)
 }
 
 // бустерная секция (средняя)
 spriteset (_3es5k_c_spriteset, IMAGEFILE)
 {
-  s10_template(152, 427, 0)
+  s10_template(152, 562, 0)
 } 
 
 spriteset (_3es5k_cr_spriteset, IMAGEFILE)
 {
-  s10_template(610, 427, 0)
+  s10_template(610, 562, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(_3es5k)) % 3) +
-  ((LOAD_TEMP(1) > threshold_of_speed()) * 3)
+  (((LOAD_TEMP(0) - count_veh_id(_3es5k)) % 3) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
 )
 {
-  0: _2es5k_v2_spritegroup;
-  1: _3es5k_cr_spriteset;
-  2: _2es5k_b_v2_spriteset;
-  3: _2es5k_v2_speedover50_spriteset;
-  4: _3es5k_cr_spriteset;
-  _2es5k_b_v2_spriteset;
+  0: _2es5k_v2_notpowered_spriteset;
+  1: _2es5k_v2_spritegroup;
+  2: _2es5k_v2_speedover50_spriteset;
+  3..5: _3es5k_cr_spriteset;
+  6: _2es5k_b_v2_notpowered_spriteset;
+  7..8: _2es5k_b_v2_spriteset;
+  align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, _3es5k_get_spriteset1,

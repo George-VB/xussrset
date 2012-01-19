@@ -7,18 +7,24 @@
 // покупка
 spriteset (_2es5k_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(152, 25, -4)
+  s10_purchase_template(152, 26, -4)
 }
+
+// нет тока
+spriteset (_2es5k_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(152, 26, 0)
+} 
 
 // обычный: погрузка/перемещение
 spriteset (_2es5k_loading_spriteset, IMAGEFILE)
 {
-  s10_template(152, 25, 0)
+  s10_template(152, 93, 0)
 } 
 
 spriteset (_2es5k_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(152, 92, 0)
+  s10_template(152, 160, 0)
 } 
 
 spritegroup _2es5k_spritegroup
@@ -29,24 +35,36 @@ spritegroup _2es5k_spritegroup
 
 spriteset (_2es5k_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(152, 159, 0)
+  s10_template(152, 227, 0)
+} 
+
+// нет тока
+spriteset (_2es5k_b_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(610, 26, 0)
 } 
 
 // секция Б: погрузка
 spriteset (_2es5k_b_spriteset, IMAGEFILE)
 {
-  s10_template(610, 25, 0)
+  s10_template(610, 93, 0)
+} 
+
+// нет тока
+spriteset (_2es5k_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(152, 294, 0)
 } 
 
 // обычный: погрузка/перемещение
 spriteset (_2es5k_v2_loading_spriteset, IMAGEFILE)
 {
-  s10_template(152, 226, 0)
+  s10_template(152, 361, 0)
 } 
 
 spriteset (_2es5k_v2_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(152, 293, 0)
+  s10_template(152, 428, 0)
 } 
 
 spritegroup _2es5k_v2_spritegroup
@@ -57,31 +75,45 @@ spritegroup _2es5k_v2_spritegroup
 
 spriteset (_2es5k_v2_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(152, 360, 0)
+  s10_template(152, 495, 0)
+} 
+
+// нет тока
+spriteset (_2es5k_b_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(610, 294, 0)
 } 
 
 // секция Б: погрузка
 spriteset (_2es5k_b_v2_spriteset, IMAGEFILE)
 {
-  s10_template(610, 226, 0)
+  s10_template(610, 361, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(_2es5k)) % 2) +
-  ((LOAD_TEMP(1) > threshold_of_speed()) * 2) +
-  ((build_year >= 2006) * 4)
+  (((LOAD_TEMP(0) - count_veh_id(_2es5k)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((build_year >= 2006) * 6)
 )
 {
-  0: _2es5k_spritegroup;
-  1: _2es5k_b_spriteset;
+  0: _2es5k_notpowered_spriteset;
+  1: _2es5k_spritegroup;
   2: _2es5k_speedover50_spriteset;
-  3: _2es5k_b_spriteset;
-  4: _2es5k_v2_spritegroup;
-  5: _2es5k_b_v2_spriteset;
-  6: _2es5k_v2_speedover50_spriteset;
-  _2es5k_b_v2_spriteset;
+  3: _2es5k_b_notpowered_spriteset;
+  4: _2es5k_b_spriteset;
+  5: _2es5k_b_spriteset;
+
+  6: _2es5k_v2_notpowered_spriteset;
+  7: _2es5k_v2_spritegroup;
+  8: _2es5k_v2_speedover50_spriteset;
+  9: _2es5k_b_v2_notpowered_spriteset;
+  10: _2es5k_b_v2_spriteset;
+  11: _2es5k_b_v2_spriteset;
+  align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, _2es5k_get_spriteset1,
