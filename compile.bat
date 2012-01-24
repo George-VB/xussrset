@@ -37,8 +37,7 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
 nmlc --nfo=%NMLNAME%.nfo --grf=%NMLNAME%.grf ^
-  -M --MF=%NMLNAME%_dep.txt %NMLNAME%.nml
-:: --nml=%NMLNAME%_optimized.nml
+  --nml=%NMLNAME%_optimized.nml -M --MF=%NMLNAME%_dep.txt %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем
 xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
