@@ -1,5 +1,5 @@
 @echo off
-set PATH=C:\MinGW\msys\1.0\bin;%PATH%
+set PATH=C:\MinGW\msys\1.0\bin;C:\Program Files\7-Zip;%PATH%
 :: определяем текущую ревизию
 for /F %%i in ('hg id -n') do set REPO_REVISION=%%i
 
