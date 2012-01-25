@@ -7,18 +7,24 @@
 // покупка
 spriteset (_2vl23_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(4, 16, -4)
+  s10_purchase_template(0, 24, -4)
 }
+
+// нет тока
+spriteset (_2vl23_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(0, 24, 0)
+} 
 
 // обычный: погрузка/перемещение
 spriteset (_2vl23_loading_spriteset, IMAGEFILE)
 {
-  s10_template(4, 16, 0)
+  s10_template(0, 90, 0)
 } 
 
 spriteset (_2vl23_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(4, 82, 0)
+  s10_template(0, 156, 0)
 } 
 
 spritegroup _2vl23_spritegroup
@@ -29,18 +35,24 @@ spritegroup _2vl23_spritegroup
 
 spriteset (_2vl23_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(4, 148, 0)
+  s10_template(0, 222, 0)
+} 
+
+// нет тока
+spriteset (_2vl23_r_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(419, 24, 0)
 } 
 
 // развёрнутый: погрузка/перемещение
 spriteset (_2vl23_r_loading_spriteset, IMAGEFILE)
 {
-  s10_template(423, 16, 0)
+  s10_template(419, 90, 0)
 } 
 
 spriteset (_2vl23_r_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(423, 82, 0)
+  s10_template(419, 156, 0)
 } 
 
 spritegroup _2vl23_r_spritegroup
@@ -51,18 +63,24 @@ spritegroup _2vl23_r_spritegroup
 
 spriteset (_2vl23_r_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(423, 148, 0)
+  s10_template(419, 222, 0)
+} 
+
+// нет тока
+spriteset (_2vl23_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(0, 293, 0)
 } 
 
 // обычный: погрузка/перемещение
 spriteset (_2vl23_v2_loading_spriteset, IMAGEFILE)
 {
-  s10_template(4, 219, 0)
+  s10_template(0, 359, 0)
 } 
 
 spriteset (_2vl23_v2_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(4, 285, 0)
+  s10_template(0, 425, 0)
 } 
 
 spritegroup _2vl23_v2_spritegroup
@@ -73,18 +91,24 @@ spritegroup _2vl23_v2_spritegroup
 
 spriteset (_2vl23_v2_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(4, 351, 0)
+  s10_template(0, 491, 0)
+} 
+
+// нет тока
+spriteset (_2vl23_r_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(419, 293, 0)
 } 
 
 // развёрнутый: погрузка/перемещение
 spriteset (_2vl23_r_v2_loading_spriteset, IMAGEFILE)
 {
-  s10_template(423, 219, 0)
+  s10_template(419, 359, 0)
 } 
 
 spriteset (_2vl23_r_v2_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(423, 285, 0)
+  s10_template(419, 425, 0)
 } 
 
 spritegroup _2vl23_r_v2_spritegroup
@@ -95,25 +119,33 @@ spritegroup _2vl23_r_v2_spritegroup
 
 spriteset (_2vl23_r_v2_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(423, 351, 0)
+  s10_template(419, 491, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _2vl23_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(_2vl23)) % 2) +
-  ((LOAD_TEMP(1) > threshold_of_speed()) * 2) +
-  cargo_subtype * 4
+  (((LOAD_TEMP(0) - count_veh_id(_2vl23)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  (cargo_subtype * 6)
 )
 {
-  0: _2vl23_spritegroup;
-  1: _2vl23_r_spritegroup;
+  0: _2vl23_notpowered_spriteset;
+  1: _2vl23_spritegroup;
   2: _2vl23_speedover50_spriteset;
-  3: _2vl23_r_speedover50_spriteset;
-  4: _2vl23_v2_spritegroup;
-  5: _2vl23_r_v2_spritegroup;
-  6: _2vl23_v2_speedover50_spriteset;
-  _2vl23_r_v2_speedover50_spriteset;
+  3: _2vl23_r_notpowered_spriteset;
+  4: _2vl23_r_spritegroup;
+  5: _2vl23_r_speedover50_spriteset;
+
+  6: _2vl23_v2_notpowered_spriteset;
+  7: _2vl23_v2_spritegroup;
+  8: _2vl23_v2_speedover50_spriteset;
+  9: _2vl23_r_v2_notpowered_spriteset;
+  10: _2vl23_r_v2_spritegroup;
+  11: _2vl23_r_v2_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, _2vl23_get_spriteset1,
