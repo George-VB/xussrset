@@ -91,21 +91,15 @@ spriteset (te2_r_v3_spriteset, IMAGEFILE)
   s7_template(323, 224, 0)
 } 
 
-// 4: покупка
-spriteset (te2_v4_purchase_spriteset, IMAGEFILE)
-{
-  s7_purchase_template(73, 400, 2)
-}
-
-// обычный: погрузка/перемещение
+// 4: обычный: погрузка/перемещение
 spriteset (te2_v4_loading_spriteset, IMAGEFILE)
 {
-  s7_template(73, 400, 0)
+  s7_template(73, 312, 0)
 } 
 
 spriteset (te2_v4_traveling_spriteset, IMAGEFILE)
 {
-  s7_template(73, 444, 0)
+  s7_template(73, 356, 0)
 } 
 
 spritegroup te2_v4_spritegroup
@@ -117,7 +111,60 @@ spritegroup te2_v4_spritegroup
 // развёрнутый
 spriteset (te2_r_v4_spriteset, IMAGEFILE)
 {
+  s7_template(323, 312, 0)
+} 
+
+
+// 5: покупка
+spriteset (te2_v5_purchase_spriteset, IMAGEFILE)
+{
+  s7_purchase_template(73, 400, 2)
+}
+
+// обычный: погрузка/перемещение
+spriteset (te2_v5_loading_spriteset, IMAGEFILE)
+{
+  s7_template(73, 400, 0)
+} 
+
+spriteset (te2_v5_traveling_spriteset, IMAGEFILE)
+{
+  s7_template(73, 444, 0)
+} 
+
+spritegroup te2_v5_spritegroup
+{
+  loading: te2_v5_loading_spriteset;
+  loaded: te2_v5_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (te2_r_v5_spriteset, IMAGEFILE)
+{
   s7_template(323, 400, 0)
+} 
+
+// 6: обычный: погрузка/перемещение
+spriteset (te2_v6_loading_spriteset, IMAGEFILE)
+{
+  s7_template(73, 488, 0)
+} 
+
+spriteset (te2_v6_traveling_spriteset, IMAGEFILE)
+{
+  s7_template(73, 532, 0)
+} 
+                 
+spritegroup te2_v6_spritegroup
+{
+  loading: te2_v6_loading_spriteset;
+  loaded: te2_v6_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (te2_r_v6_spriteset, IMAGEFILE)
+{
+  s7_template(323, 488, 0)
 } 
 
 #undef IMAGEFILE
@@ -126,7 +173,8 @@ switch (FEAT_TRAINS, SELF, te2_get_spriteset2,
   ((last_computed_result - count_veh_id(te2)) % 2) +
   ((build_year >= 1950) * 2) +
   ((build_year >= 1960) * 2) +
-  ((build_year >= 1972) * 2)
+  ((build_year >= 1972) * 4) +
+  (cargo_subtype * 2)
 )
 {
   0: te2_spritegroup;
@@ -136,7 +184,12 @@ switch (FEAT_TRAINS, SELF, te2_get_spriteset2,
   4: te2_v3_spritegroup;
   5: te2_r_v3_spriteset;
   6: te2_v4_spritegroup;
-  te2_r_v4_spriteset;
+  7: te2_r_v4_spriteset;
+  8: te2_v5_spritegroup;
+  9: te2_r_v5_spriteset;
+  10: te2_v6_spritegroup;
+  11: te2_r_v6_spriteset;
+  align_7_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, te2_get_spriteset1,
@@ -164,7 +217,7 @@ switch (FEAT_TRAINS, SELF, te2_get_purchase_spriteset,
   0: te2_purchase_spriteset;
   1: te2_v2_purchase_spriteset;
   2: te2_v3_purchase_spriteset;
-  te2_v4_purchase_spriteset;
+  te2_v5_purchase_spriteset;
 }
 
 // Что присоединяем?
@@ -190,6 +243,20 @@ switch (FEAT_TRAINS, SELF, te2_speed,
   return 93;
 }
 
+switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text2,
+  build_year >= 1960)
+{
+  1: string(STR_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_V1);
+  1: te2_cargo_subtype_text2;
+  return CB_RESULT_NO_TEXT;
+}
 
 item (FEAT_TRAINS, te2) 
 {
@@ -225,6 +292,7 @@ item (FEAT_TRAINS, te2)
     can_attach_wagon: te2_can_attach_wagon;
     start_stop: te2_start_stop;
     additional_text: return string(STR_TE2_PURCHASE_HINT);
+    cargo_subtype_text: te2_cargo_subtype_text;
     speed: te2_speed;
     cargo_capacity: return 0;
   }
