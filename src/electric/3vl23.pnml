@@ -7,18 +7,24 @@
 // покупка
 spriteset (_3vl23_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(0, 16, -4)
+  s10_purchase_template(0, 23, -4)
 }
+
+// нет тока
+spriteset (_3vl23_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(0, 23, 0)
+} 
 
 // обычный: погрузка/перемещение
 spriteset (_3vl23_loading_spriteset, IMAGEFILE)
 {
-  s10_template(0, 16, 0)
+  s10_template(0, 89, 0)
 } 
 
 spriteset (_3vl23_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(0, 82, 0)
+  s10_template(0, 155, 0)
 } 
 
 spritegroup _3vl23_spritegroup
@@ -29,18 +35,24 @@ spritegroup _3vl23_spritegroup
 
 spriteset (_3vl23_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(0, 148, 0)
+  s10_template(0, 221, 0)
+} 
+
+// нет тока
+spriteset (_3vl23_bc_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(419, 23, 0)
 } 
 
 // секции Б, В: погрузка/перемещение
 spriteset (_3vl23_bc_loading_spriteset, IMAGEFILE)
 {
-  s10_template(419, 16, 0)
+  s10_template(419, 89, 0)
 } 
 
 spriteset (_3vl23_bc_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(419, 82, 0)
+  s10_template(419, 155, 0)
 } 
 
 spritegroup _3vl23_bc_spritegroup
@@ -51,22 +63,28 @@ spritegroup _3vl23_bc_spritegroup
 
 spriteset (_3vl23_bc_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(419, 148, 0)
+  s10_template(419, 221, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _3vl23_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(_3vl23)) % 3) +
-  ((LOAD_TEMP(1) > threshold_of_speed()) * 3)
+  (((LOAD_TEMP(0) - count_veh_id(_3vl23)) % 3) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
 )
 {
-  0: _3vl23_spritegroup;
-  1: _3vl23_bc_spritegroup;
-  2: _3vl23_bc_spritegroup;
-  3: _3vl23_speedover50_spriteset;
-  4: _3vl23_bc_speedover50_spriteset;
-  _3vl23_bc_speedover50_spriteset;
+  0: _3vl23_notpowered_spriteset;
+  1: _3vl23_spritegroup;
+  2: _3vl23_speedover50_spriteset;
+  3: _3vl23_bc_notpowered_spriteset;
+  4: _3vl23_bc_spritegroup;
+  5: _3vl23_bc_speedover50_spriteset;
+  6: _3vl23_bc_notpowered_spriteset;
+  7: _3vl23_bc_spritegroup;
+  8: _3vl23_bc_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, _3vl23_get_spriteset1,
