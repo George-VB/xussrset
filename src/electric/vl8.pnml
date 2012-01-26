@@ -4,19 +4,24 @@
 // определены в n8.pnml
 
 switch (FEAT_TRAINS, SELF, vl8_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(vl8)) % 2) +
-  ((LOAD_TEMP(1) > threshold_of_speed()) * 2) +
-  cargo_subtype * 4
+  (((LOAD_TEMP(0) - count_veh_id(vl8)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  (cargo_subtype * 6)
 )
 {
-  0: n8_v5_spritegroup;
-  1: n8_r_v5_spriteset;
+  0: n8_v5_notpowered_spriteset;
+  1: n8_v5_spritegroup;
   2: n8_v5_speedover50_spriteset;
-  3: n8_r_v5_spriteset;
-  4: n8_v6_spritegroup;
-  5: n8_r_v6_spriteset;
-  6: n8_v6_speedover50_spriteset;
-  n8_r_v6_spriteset;
+  3: n8_r_v5_notpowered_spriteset;
+  4..5: n8_r_v5_spriteset;
+  6: n8_v6_notpowered_spriteset;
+  7: n8_v6_spritegroup;
+  8: n8_v6_speedover50_spriteset;
+  9: n8_r_v6_notpowered_spriteset;
+  10..11: n8_r_v6_spriteset;
+  align_8_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, vl8_get_spriteset1,
