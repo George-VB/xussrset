@@ -2,23 +2,29 @@
 
 // Спрайты
 
-#define IMAGEFILE  "src/electric/vl61d.png"
+#define IMAGEFILE  "src/electric/vl61-vl61d.png"
 
 // покупка
 spriteset (vl61d_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(5, 105, -4)
+  s10_purchase_template(95, 604, -4)
 }
+
+// нет тока
+spriteset (vl61d_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(95, 604, 0)
+} 
 
 // обычный: погрузка/перемещение
 spriteset (vl61d_loading_spriteset, IMAGEFILE)
 {
-  s10_template(5, 105, 0)
+  s10_template(95, 671, 0)
 } 
 
 spriteset (vl61d_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(5, 172, 0)
+  s10_template(95, 738, 0)
 } 
 
 spritegroup vl61d_spritegroup
@@ -29,18 +35,24 @@ spritegroup vl61d_spritegroup
 
 spriteset (vl61d_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(5, 239, 0)
+  s10_template(95, 805, 0)
+} 
+
+// нет тока
+spriteset (vl61d_b_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(536, 604, 0)
 } 
 
 // секция Б: погрузка/перемещение
 spriteset (vl61d_b_loading_spriteset, IMAGEFILE)
 {
-  s10_template(424, 105, 0)
+  s10_template(536, 671, 0)
 } 
 
 spriteset (vl61d_b_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(424, 172, 0)
+  s10_template(536, 738, 0)
 } 
 
 spritegroup vl61d_b_spritegroup
@@ -51,24 +63,30 @@ spritegroup vl61d_b_spritegroup
 
 spriteset (vl61d_b_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(424, 239, 0)
+  s10_template(536, 805, 0)
 } 
 
 // 2: покупка
 spriteset (vl61d_v2_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(5, 335, -4)
+  s10_purchase_template(95, 897, -4)
 }
 
+// нет тока
+spriteset (vl61d_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(95, 897, 0)
+}
+ 
 // обычный: погрузка/перемещение
 spriteset (vl61d_v2_loading_spriteset, IMAGEFILE)
 {
-  s10_template(5, 335, 0)
+  s10_template(95, 964, 0)
 } 
 
 spriteset (vl61d_v2_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(5, 402, 0)
+  s10_template(95, 1031, 0)
 } 
 
 spritegroup vl61d_v2_spritegroup
@@ -79,18 +97,24 @@ spritegroup vl61d_v2_spritegroup
 
 spriteset (vl61d_v2_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(5, 469, 0)
+  s10_template(95, 1098, 0)
 } 
 
+// нет тока
+spriteset (vl61d_b_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(536, 897, 0)
+}
+ 
 // секция Б: погрузка/перемещение
 spriteset (vl61d_b_v2_loading_spriteset, IMAGEFILE)
 {
-  s10_template(424, 335, 0)
+  s10_template(536, 964, 0)
 } 
 
 spriteset (vl61d_b_v2_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(424, 402, 0)
+  s10_template(536, 1031, 0)
 } 
 
 spritegroup vl61d_b_v2_spritegroup
@@ -101,25 +125,32 @@ spritegroup vl61d_b_v2_spritegroup
 
 spriteset (vl61d_b_v2_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(424, 469, 0)
+  s10_template(536, 1098, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl61d_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(vl61d)) % 2) +
-  ((LOAD_TEMP(1) > threshold_of_speed()) * 2) +
-  ((current_year >= 1972) * 4)
+  (((LOAD_TEMP(0) - count_veh_id(vl61d)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((current_year >= 1972) * 6)
 )
 {
-  0: vl61d_spritegroup;
-  1: vl61d_b_spritegroup;
+  0: vl61d_notpowered_spriteset;
+  1: vl61d_spritegroup;
   2: vl61d_speedover50_spriteset;
-  3: vl61d_b_speedover50_spriteset;
-  4: vl61d_v2_spritegroup;
-  5: vl61d_b_v2_spritegroup;
-  6: vl61d_v2_speedover50_spriteset;
-  vl61d_b_v2_speedover50_spriteset;
+  3: vl61d_b_notpowered_spriteset;
+  4: vl61d_b_spritegroup;
+  5: vl61d_b_speedover50_spriteset;
+  6: vl61d_v2_notpowered_spriteset;
+  7: vl61d_v2_spritegroup;
+  8: vl61d_v2_speedover50_spriteset;
+  9: vl61d_b_v2_notpowered_spriteset;
+  10: vl61d_b_v2_spritegroup;
+  11: vl61d_b_v2_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, vl61d_get_spriteset1,

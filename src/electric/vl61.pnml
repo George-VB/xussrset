@@ -2,23 +2,29 @@
 
 // Спрайты
 
-#define IMAGEFILE  "src/electric/vl61.png"
+#define IMAGEFILE  "src/electric/vl61-vl61d.png"
 
 // покупка
 spriteset (vl61_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(5, 105, -4)
+  s10_purchase_template(95, 18, -4)
 }
+
+// нет тока
+spriteset (vl61_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(95, 18, 0)
+} 
 
 // обычный: погрузка/перемещение
 spriteset (vl61_loading_spriteset, IMAGEFILE)
 {
-  s10_template(5, 105, 0)
+  s10_template(95, 85, 0)
 } 
 
 spriteset (vl61_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(5, 172, 0)
+  s10_template(95, 152, 0)
 } 
 
 spritegroup vl61_spritegroup
@@ -29,24 +35,30 @@ spritegroup vl61_spritegroup
 
 spriteset (vl61_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(5, 239, 0)
+  s10_template(95, 219, 0)
 } 
 
 // 2: покупка
 spriteset (vl61_v2_purchase_spriteset, IMAGEFILE)
 {
-  s10_purchase_template(5, 335, -4)
+  s10_purchase_template(95, 311, -4)
 }
+
+// нет тока
+spriteset (vl61_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(95, 311, 0)
+} 
 
 // обычный: погрузка/перемещение
 spriteset (vl61_v2_loading_spriteset, IMAGEFILE)
 {
-  s10_template(5, 335, 0)
+  s10_template(95, 378, 0)
 } 
 
 spriteset (vl61_v2_traveling_spriteset, IMAGEFILE)
 {
-  s10_template(5, 402, 0)
+  s10_template(95, 445, 0)
 } 
 
 spritegroup vl61_v2_spritegroup
@@ -57,20 +69,25 @@ spritegroup vl61_v2_spritegroup
 
 spriteset (vl61_v2_speedover50_spriteset, IMAGEFILE)
 {
-  s10_template(5, 469, 0)
+  s10_template(95, 512, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl61_get_spriteset2,
-  (last_computed_result > threshold_of_speed()) +
-  ((current_year >= 1972) * 2)
+  // поправка на нет тока
+  (((last_computed_result > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((current_year >= 1972) * 3)
 )
 {
-  0: vl61_spritegroup;
-  1: vl61_speedover50_spriteset;
-  2: vl61_v2_spritegroup;
-  vl61_v2_speedover50_spriteset;
+  0: vl61_notpowered_spriteset;
+  1: vl61_spritegroup;
+  2: vl61_speedover50_spriteset;
+  3: vl61_v2_notpowered_spriteset;
+  4: vl61_v2_spritegroup;
+  5: vl61_v2_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, vl61_get_spriteset1,
