@@ -139,10 +139,23 @@ switch (FEAT_TRAINS, SELF, vl8m_can_attach_wagon,
   return CB_RESULT_ATTACH_ALLOW;
 }
 
-switch (FEAT_TRAINS, PARENT, vl8m_start_stop,
-  0)
+// Если хотя бы 2 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, vl8m_start_stop2,
+[
+  set_offset_to(1),
+  prev_vehicle_type_id() == vl8m
+])
 {
-  return CB_RESULT_NO_TEXT;
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше двух, то не выпускать
+switch (FEAT_TRAINS, PARENT, vl8m_start_stop,
+  count_veh_id(vl8m) >= 2)
+{
+  1: vl8m_start_stop2;
+  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
 }
 
 switch (FEAT_TRAINS, SELF, vl8m_cargo_subtype_text,
