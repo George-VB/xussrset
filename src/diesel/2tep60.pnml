@@ -194,10 +194,25 @@ switch (FEAT_TRAINS, SELF, _2tep60_can_attach_wagon,
   return CB_RESULT_ATTACH_ALLOW;
 }
 
-switch (FEAT_TRAINS, PARENT, _2tep60_start_stop,
-  0)
+// Если хотя бы 2 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, _2tep60_start_stop2,
+[
+  set_offset_to(2),
+  prev_vehicle_type_id() == _2tep60
+])
 {
-  return CB_RESULT_NO_TEXT;
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше двух, то не выпускать
+// Если год >= 1990, то можно по одному
+switch (FEAT_TRAINS, PARENT, _2tep60_start_stop,
+  current_year >= 1990 ? 0 : count_veh_id(_2tep60) >= 2 ? 1 : 2)
+{
+  0: return CB_RESULT_NO_TEXT;
+  1: _2tep60_start_stop2;
+  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
 }
 
 switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text2,
