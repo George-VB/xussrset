@@ -184,10 +184,25 @@ switch (FEAT_TRAINS, SELF, _3te10m_can_attach_wagon,
   return CB_RESULT_ATTACH_ALLOW;
 }
 
-switch (FEAT_TRAINS, PARENT, _3te10m_start_stop,
-  0)
+// Если хотя бы 3 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, _3te10m_start_stop2,
+[
+  set_offset_to(2),
+  STORE_TEMP(prev_vehicle_type_id() == _3te10m, 0),
+  set_offset_to(4),
+  (prev_vehicle_type_id() == _3te10m) && LOAD_TEMP(0)
+])
 {
-  return CB_RESULT_NO_TEXT;
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_3_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше 3, то не выпускать
+switch (FEAT_TRAINS, PARENT, _3te10m_start_stop,
+  count_veh_id(_3te10m) >= 3)
+{
+  1: _3te10m_start_stop2;
+  return string(STR_START_STOP_NEED_3_OR_MORE_ENGINE);
 }
 
 switch (FEAT_TRAINS, SELF, _3te10m_cargo_subtype_text,
