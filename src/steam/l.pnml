@@ -54,18 +54,25 @@ switch (FEAT_TRAINS, SELF, l_e_can_attach_wagon,
   vehicle_type_id)
 {
   return CB_RESULT_ATTACH_ALLOW;
-//  return CB_RESULT_ATTACH_DISALLOW;
 }
 
-// С 1920 года увеличиваем скорость
-switch (FEAT_TRAINS, SELF, l_e_speed,
-  current_year >= 1920
-)
+// Макс. скорость: 105 км/ч до 1920, 120 км/ч после
+#define MAX_SPEED current_year >= 1920 ? 120 : 105
+
+switch (FEAT_TRAINS, SELF, l_e_purchase_speed,
+  MAX_SPEED)
 {
-  1: return 120;
-  return 105;
+  return;
 }
 
+switch (FEAT_TRAINS, SELF, l_e_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  position_in_consist == 0 ? LOAD_TEMP(0) : get_penalised_speed(LOAD_TEMP(0))
+])
+{
+  return;
+}
 
 item (FEAT_TRAINS, l_e) 
 {
@@ -80,7 +87,6 @@ item (FEAT_TRAINS, l_e)
     cost_factor: get_steam_cost_factor();
     running_cost_factor: get_steam_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 105 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: RAIL;
     ai_special_flag: AI_FLAG_PASSENGER;
@@ -100,14 +106,15 @@ item (FEAT_TRAINS, l_e)
     can_attach_wagon: l_e_can_attach_wagon;
     additional_text: return string(STR_L_PURCHASE_HINT);
     speed: l_e_speed;
+    purchase_speed: l_e_purchase_speed;
   }
 
   livery_override(unitb)
   {
     shorten_vehicle: return SHORTEN_TO_5_8;
-//    weight: return 74;
     l_t_spriteset;
   }
 
 }
 
+#undef MAX_SPEED
