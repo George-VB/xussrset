@@ -4,15 +4,25 @@
 #define MAX_SPEED 120
 
 switch (FEAT_TRAINS, SELF, lp_e_purchase_speed,
-  0)
+  MAX_SPEED)
 {
-  return MAX_SPEED;
+  return;
 }
 
 switch (FEAT_TRAINS, SELF, lp_e_speed,
-  position_in_consist == 0 ? MAX_SPEED : get_penalised_speed(MAX_SPEED))
+  is_penalise_speed() ? get_penalised_speed(MAX_SPEED) : MAX_SPEED
+)
 {
   return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, lp_e_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
 }
 
 item (FEAT_TRAINS, lp_e) 
@@ -48,6 +58,7 @@ item (FEAT_TRAINS, lp_e)
     additional_text: return string(STR_LP_PURCHASE_HINT);
     speed: lp_e_speed;
     purchase_speed: lp_e_purchase_speed;
+    bitmask_vehicle_info: lp_e_bitmask_vehicle_info;
   }
 
   livery_override(unitb)
@@ -56,5 +67,3 @@ item (FEAT_TRAINS, lp_e)
     l_t_spriteset;
   }
 }
-
-#undef MAX_SPEED
