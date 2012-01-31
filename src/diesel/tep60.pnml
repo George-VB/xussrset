@@ -439,6 +439,49 @@ switch (FEAT_TRAINS, SELF, tep60_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 160 км/ч, после 20 лет - 130 км/ч
+switch (FEAT_TRAINS, SELF, tep60_purchase_speed,
+  160)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, tep60_speed,
+[
+  STORE_TEMP((age_in_days >= (20*365+5)) ? 130 : 160, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, tep60_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(tep60), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, tep60_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(tep60), 0),
+  vehicle_type_id == tep60
+])
+{
+  tep60_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, tep60_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  tep60_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, tep60) 
 {
   property
@@ -453,7 +496,6 @@ item (FEAT_TRAINS, tep60)
     cost_factor: get_diesel_cost_factor();
     running_cost_factor: get_diesel_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 160 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: RAIL;
@@ -474,8 +516,10 @@ item (FEAT_TRAINS, tep60)
     can_attach_wagon: tep60_can_attach_wagon;
     start_stop: tep60_start_stop;
     additional_text: return string(STR_TEP60_PURCHASE_HINT);
-    speed: speed_after20_160to130;
     cargo_subtype_text: tep60_cargo_subtype_text;
     cargo_capacity: return 0;
+    speed: tep60_speed;
+    purchase_speed: tep60_purchase_speed;
+    bitmask_vehicle_info: tep60_bitmask_vehicle_info;
   }
 }

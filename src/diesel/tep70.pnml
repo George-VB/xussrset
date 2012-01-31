@@ -135,7 +135,8 @@ switch (FEAT_TRAINS, SELF, tep70_get_spriteset2,
   2: tep70_v2_spritegroup;
   3: tep70_r_v2_spritegroup;
   4: tep70_v3_spritegroup;
-  tep70_r_v3_spritegroup;
+  5: tep70_r_v3_spritegroup;
+  align_12_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, tep70_get_spriteset1,
@@ -190,17 +191,6 @@ switch (FEAT_TRAINS, SELF, tep70_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
-// ограничиваем скорость через 7 лет работы 160 --> 140
-// Для выпущенных с 1978 через 25 160 --> 140
-switch (FEAT_TRAINS, SELF, tep70_speed,
-  ((age_in_days >= (7*365+5)) && (build_year < 1978)) ||
-  ((age_in_days >= (25*365+5)) && (build_year >= 1978))
-)
-{
-  1: return 140;
-  return 160;
-}
-
 switch (FEAT_TRAINS, SELF, tep70_power,
   build_year >= 1978)
 {
@@ -229,6 +219,55 @@ switch (FEAT_TRAINS, SELF, tep70_articulated_part,
   articulated_part_dummy4;
 }
 
+// Макс. скорость: ограничиваем скорость через 7 лет работы 160 --> 140
+// Для выпущенных с 1978 через 25 160 --> 140
+#define MAX_SPEED ((age_in_days >= (7*365+5)) && (build_year < 1978)) || \
+  ((age_in_days >= (25*365+5)) && (build_year >= 1978)) ? 140 : 160
+
+switch (FEAT_TRAINS, SELF, tep70_purchase_speed,
+  160)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, tep70_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(tep70), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, tep70_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(tep70), 0),
+  vehicle_type_id == tep70
+])
+{
+  tep70_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  tep70_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, tep70)
 {
   property
@@ -243,7 +282,6 @@ item (FEAT_TRAINS, tep70)
     cost_factor: get_diesel_cost_factor();
     running_cost_factor: get_diesel_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 160 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: RAIL;
@@ -265,10 +303,12 @@ item (FEAT_TRAINS, tep70)
     additional_text: return string(STR_TEP70_PURCHASE_HINT);
     cargo_subtype_text: tep70_cargo_subtype_text;
     cargo_capacity: return 0;
-    speed: tep70_speed;
     power: tep70_power;
     weight: tep70_weight;
     tractive_effort_coefficient: tep70_tractive_effort_coefficient;
     articulated_part: tep70_articulated_part;
+    speed: tep70_speed;
+    purchase_speed: tep70_purchase_speed;
+    bitmask_vehicle_info: tep70_bitmask_vehicle_info;
   }
 }

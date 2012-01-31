@@ -234,15 +234,6 @@ switch (FEAT_TRAINS, PARENT, te2_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
-// С 1956 года увеличиваем скорость
-switch (FEAT_TRAINS, SELF, te2_speed,
-  current_year >= 1956
-)
-{
-  1: return 95;
-  return 93;
-}
-
 switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text2,
   build_year >= 1960)
 {
@@ -256,6 +247,53 @@ switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text,
   0: string(STR_REFIT_V1);
   1: te2_cargo_subtype_text2;
   return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: 93 км/ч до 1956, 95 км/ч после
+#define MAX_SPEED current_year >= 1956 ? 95 : 93
+
+switch (FEAT_TRAINS, SELF, te2_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, te2_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, te2_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(te2), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, te2_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(te2), 0),
+  vehicle_type_id == te2
+])
+{
+  te2_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, te2_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  te2_bitmask_vehicle_info2;
 }
 
 item (FEAT_TRAINS, te2) 
@@ -273,7 +311,6 @@ item (FEAT_TRAINS, te2)
     running_cost_factor: get_diesel_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
     misc_flags: bitmask(TRAIN_FLAG_TILT);
-    speed: 93 km/h;
     refit_cost: 0;
     track_type: RAIL;
     ai_special_flag: AI_FLAG_PASSENGER;
@@ -294,7 +331,9 @@ item (FEAT_TRAINS, te2)
     start_stop: te2_start_stop;
     additional_text: return string(STR_TE2_PURCHASE_HINT);
     cargo_subtype_text: te2_cargo_subtype_text;
-    speed: te2_speed;
     cargo_capacity: return 0;
+    speed: te2_speed;
+    purchase_speed: te2_purchase_speed;
+    bitmask_vehicle_info: te2_bitmask_vehicle_info;
   }
 }

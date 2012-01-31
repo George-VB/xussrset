@@ -118,6 +118,50 @@ switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 120 км/ч
+#define MAX_SPEED 120
+
+switch (FEAT_TRAINS, SELF, tg102_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, tg102_speed,
+  is_penalise_speed() ? get_penalised_speed(MAX_SPEED) : MAX_SPEED)
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, tg102_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(tg102), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, tg102_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(tg102), 0),
+  vehicle_type_id == tg102
+])
+{
+  tg102_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, tg102_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  tg102_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, tg102) 
 {
   property
@@ -132,15 +176,14 @@ item (FEAT_TRAINS, tg102)
     cost_factor: get_diesel_cost_factor();
     running_cost_factor: get_diesel_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 120 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: RAIL;
     ai_special_flag: AI_FLAG_PASSENGER;
-    power: 3010 hpM;
+    power: (3010/2) hpM;
     running_cost_base: RUNNING_COST_DIESEL;
     cargo_capacity: 1;
-    weight: 168 ton;
+    weight: (168/2) ton;
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: 0.19375607;
     shorten_vehicle: SHORTEN_TO_8_8;
@@ -155,5 +198,8 @@ item (FEAT_TRAINS, tg102)
     additional_text: return string(STR_TG102_PURCHASE_HINT);
     cargo_subtype_text: tg102_cargo_subtype_text;
     cargo_capacity: return 0;
+    speed: tg102_speed;
+    purchase_speed: tg102_purchase_speed;
+    bitmask_vehicle_info: tg102_bitmask_vehicle_info;
   }
 }

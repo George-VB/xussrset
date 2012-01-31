@@ -54,6 +54,50 @@ switch (FEAT_TRAINS, PARENT, da_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 96 км/ч
+#define MAX_SPEED 96
+
+switch (FEAT_TRAINS, SELF, da_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, da_speed,
+  is_penalise_speed() ? get_penalised_speed(MAX_SPEED) : MAX_SPEED)
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, da_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(da), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, da_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(da), 0),
+  vehicle_type_id == da
+])
+{
+  da_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, da_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  da_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, da) 
 {
   property
@@ -67,7 +111,6 @@ item (FEAT_TRAINS, da)
     cost_factor: get_diesel_cost_factor();
     running_cost_factor: get_diesel_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 96 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: RAIL;
     ai_special_flag: AI_FLAG_PASSENGER;
@@ -86,5 +129,8 @@ item (FEAT_TRAINS, da)
     can_attach_wagon: da_can_attach_wagon;
     start_stop: da_start_stop;
     additional_text: return string(STR_DA_PURCHASE_HINT);
+    speed: da_speed;
+    purchase_speed: da_purchase_speed;
+    bitmask_vehicle_info: da_bitmask_vehicle_info;
   }
 }

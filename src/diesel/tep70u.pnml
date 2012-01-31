@@ -51,7 +51,8 @@ switch (FEAT_TRAINS, SELF, tep70u_get_spriteset2,
 )
 {
   0: tep70u_spritegroup;
-  tep70u_r_spritegroup;
+  1: tep70u_r_spritegroup;
+  align_13_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, tep70u_get_spriteset1,
@@ -80,6 +81,53 @@ switch (FEAT_TRAINS, PARENT, tep70u_start_stop,
   0)
 {
   return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: ограничиваем скорость через 25 лет работы 160 --> 140
+#define MAX_SPEED (age_in_days >= (25*365+5)) ? 140 : 160
+
+switch (FEAT_TRAINS, SELF, tep70u_purchase_speed,
+  160)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, tep70u_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, tep70u_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(tep70u), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, tep70u_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(tep70u), 0),
+  vehicle_type_id == tep70u
+])
+{
+  tep70u_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, tep70u_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  tep70u_bitmask_vehicle_info2;
 }
 
 item (FEAT_TRAINS, tep70u)
@@ -114,6 +162,8 @@ item (FEAT_TRAINS, tep70u)
     can_attach_wagon: tep70u_can_attach_wagon;
     start_stop: tep70u_start_stop;
     additional_text: return string(STR_TEP70U_PURCHASE_HINT);
-    speed: speed_after25_160to140;
+    speed: tep70u_speed;
+    purchase_speed: tep70u_purchase_speed;
+    bitmask_vehicle_info: tep70u_bitmask_vehicle_info;
   }
 }
