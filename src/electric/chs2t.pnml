@@ -545,6 +545,33 @@ switch (FEAT_TRAINS, SELF, chs2t_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 160 км/ч, после 30 лет 130 км/ч
+#define MAX_SPEED (age_in_days >= (20*365+5)) ? 130 : 160
+
+switch (FEAT_TRAINS, SELF, chs2t_purchase_speed,
+  160)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, chs2t_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, chs2t_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
 item (FEAT_TRAINS, chs2t) 
 {
   property
@@ -582,6 +609,8 @@ item (FEAT_TRAINS, chs2t)
     additional_text: return string(STR_CHS2T_PURCHASE_HINT);
     cargo_subtype_text: chs2t_cargo_subtype_text;
     cargo_capacity: return 0;
-    speed: speed_after30_160to130;
+    speed: chs2t_speed;
+    purchase_speed: chs2t_purchase_speed;
+    bitmask_vehicle_info: chs2t_bitmask_vehicle_info;
   }
 }

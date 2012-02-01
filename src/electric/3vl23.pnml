@@ -118,6 +118,53 @@ switch (FEAT_TRAINS, PARENT, _3vl23_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 100 км/ч
+#define MAX_SPEED 100
+
+switch (FEAT_TRAINS, SELF, _3vl23_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, _3vl23_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, _3vl23_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_3vl23), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, _3vl23_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(_3vl23), 0),
+  vehicle_type_id == _3vl23
+])
+{
+  _3vl23_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, _3vl23_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  _3vl23_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, _3vl23)
 {
   property
@@ -149,5 +196,8 @@ item (FEAT_TRAINS, _3vl23)
     can_attach_wagon: _3vl23_can_attach_wagon;
     start_stop: _3vl23_start_stop;
     additional_text: return string(STR_3VL23_PURCHASE_HINT);
+    speed: _3vl23_speed;
+    purchase_speed: _3vl23_purchase_speed;
+    bitmask_vehicle_info: _3vl23_bitmask_vehicle_info;
   }
 }

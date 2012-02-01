@@ -725,6 +725,53 @@ switch (FEAT_TRAINS, SELF, chs7_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 160 км/ч
+#define MAX_SPEED 160
+
+switch (FEAT_TRAINS, SELF, chs7_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, chs7_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, chs7_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(chs7), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, chs7_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(chs7), 0),
+  vehicle_type_id == chs7
+])
+{
+  chs7_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, chs7_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  chs7_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, chs7) 
 {
   property
@@ -739,7 +786,6 @@ item (FEAT_TRAINS, chs7)
     cost_factor: get_electric_cost_factor();
     running_cost_factor: get_electric_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 160 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: ELRL;
@@ -762,5 +808,8 @@ item (FEAT_TRAINS, chs7)
     additional_text: return string(STR_CHS7_PURCHASE_HINT);
     cargo_subtype_text: chs7_cargo_subtype_text;
     cargo_capacity: return 0;
+    speed: chs7_speed;
+    purchase_speed: chs7_purchase_speed;
+    bitmask_vehicle_info: chs7_bitmask_vehicle_info;
   }
 }
