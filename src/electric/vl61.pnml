@@ -127,13 +127,31 @@ switch (FEAT_TRAINS, PARENT, vl61_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
-// меняем скорость: 75 для купленных до 1960, 85 - после
-switch (FEAT_TRAINS, SELF, vl61_speed,
-  (build_year >= 1960)
-)
+// Макс. скорость: 75 км/ч до 1960, 85 км/ч после
+#define MAX_SPEED current_year >= 1960 ? 85 : 75
+
+switch (FEAT_TRAINS, SELF, vl61_purchase_speed,
+  MAX_SPEED)
 {
-  0: return 75;
-  return 85;
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl61_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl61_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
 }
 
 item (FEAT_TRAINS, vl61) 
@@ -169,5 +187,7 @@ item (FEAT_TRAINS, vl61)
     start_stop: vl61_start_stop;
     additional_text: return string(STR_VL61_PURCHASE_HINT);
     speed: vl61_speed;
+    purchase_speed: vl61_purchase_speed;
+    bitmask_vehicle_info: vl61_bitmask_vehicle_info;
   }
 }

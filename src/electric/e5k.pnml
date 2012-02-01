@@ -108,6 +108,33 @@ switch (FEAT_TRAINS, PARENT, e5k_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 110 км/ч
+#define MAX_SPEED 110
+
+switch (FEAT_TRAINS, SELF, e5k_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, e5k_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, e5k_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
 item (FEAT_TRAINS, e5k)
 {
   property
@@ -121,7 +148,6 @@ item (FEAT_TRAINS, e5k)
     cost_factor: get_electric_cost_factor();
     running_cost_factor: get_electric_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 110 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: ELRL;
     ai_special_flag: AI_FLAG_CARGO;
@@ -140,5 +166,8 @@ item (FEAT_TRAINS, e5k)
     can_attach_wagon: e5k_can_attach_wagon;
     start_stop: e5k_start_stop;
     additional_text: return string(STR_E5K_PURCHASE_HINT);
+    speed: e5k_speed;
+    purchase_speed: e5k_purchase_speed;
+    bitmask_vehicle_info: e5k_bitmask_vehicle_info;
   }
 }

@@ -187,6 +187,53 @@ switch (FEAT_TRAINS, SELF, f_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 100 км/ч
+#define MAX_SPEED 100
+
+switch (FEAT_TRAINS, SELF, f_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, f_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, f_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(f), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, f_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(f), 0),
+  vehicle_type_id == f
+])
+{
+  f_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, f_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  f_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, f) 
 {
   property
@@ -224,5 +271,8 @@ item (FEAT_TRAINS, f)
     additional_text: return string(STR_F_PURCHASE_HINT);
     cargo_subtype_text: f_cargo_subtype_text;
     cargo_capacity: return 0;
+    speed: f_speed;
+    purchase_speed: f_purchase_speed;
+    bitmask_vehicle_info: f_bitmask_vehicle_info;
   }
 }

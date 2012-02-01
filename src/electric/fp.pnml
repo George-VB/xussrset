@@ -187,12 +187,51 @@ switch (FEAT_TRAINS, SELF, fp_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
-// меняем скорость: 160 до 1975, 120 - после
-switch (FEAT_TRAINS, SELF, fp_speed,
-  current_year >= 1975)
+// Макс. скорость: 160 км/ч, с 1975 - 120 км/ч
+#define MAX_SPEED current_year >= 1975 ? 120 : 160
+
+switch (FEAT_TRAINS, SELF, fp_purchase_speed,
+  MAX_SPEED)
 {
-  0: return 160;
-  return 120;
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, fp_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, fp_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(fp), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, fp_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(fp), 0),
+  vehicle_type_id == fp
+])
+{
+  fp_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, fp_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  fp_bitmask_vehicle_info2;
 }
 
 item (FEAT_TRAINS, fp) 
@@ -209,7 +248,6 @@ item (FEAT_TRAINS, fp)
     cost_factor: get_electric_cost_factor();
     running_cost_factor: get_electric_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 160 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: ELRL;
@@ -233,5 +271,7 @@ item (FEAT_TRAINS, fp)
     cargo_subtype_text: fp_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: fp_speed;
+    purchase_speed: fp_purchase_speed;
+    bitmask_vehicle_info: fp_bitmask_vehicle_info;
   }
 }

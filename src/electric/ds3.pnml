@@ -98,6 +98,53 @@ switch (FEAT_TRAINS, PARENT, ds3_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 120 км/ч
+#define MAX_SPEED 120
+
+switch (FEAT_TRAINS, SELF, ds3_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, ds3_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, ds3_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(ds3), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, ds3_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(ds3), 0),
+  vehicle_type_id == ds3
+])
+{
+  ds3_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, ds3_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  ds3_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, ds3)
 {
   property
@@ -111,7 +158,6 @@ item (FEAT_TRAINS, ds3)
     cost_factor: get_electric_cost_factor();
     running_cost_factor: get_electric_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 120 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: ELRL;
     ai_special_flag: AI_FLAG_PASSENGER;
@@ -130,5 +176,8 @@ item (FEAT_TRAINS, ds3)
     can_attach_wagon: ds3_can_attach_wagon;
     start_stop: ds3_start_stop;
     additional_text: return string(STR_DS3_PURCHASE_HINT);
+    speed: ds3_speed;
+    purchase_speed: ds3_purchase_speed;
+    bitmask_vehicle_info: ds3_bitmask_vehicle_info;
   }
 }

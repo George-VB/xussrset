@@ -346,6 +346,33 @@ switch (FEAT_TRAINS, SELF, chs4t_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
+// Макс. скорость: 160 км/ч после 25 лет - 140 км/ч
+#define MAX_SPEED (age_in_days >= (25*365+5)) ? 140 : 160
+
+switch (FEAT_TRAINS, SELF, chs4t_purchase_speed,
+  160)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, chs4t_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, chs4t_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
 item (FEAT_TRAINS, chs4t) 
 {
   property
@@ -360,7 +387,6 @@ item (FEAT_TRAINS, chs4t)
     cost_factor: get_electric_cost_factor();
     running_cost_factor: get_electric_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 160 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: ELRL;
@@ -383,6 +409,8 @@ item (FEAT_TRAINS, chs4t)
     additional_text: return string(STR_CHS4T_PURCHASE_HINT);
     cargo_subtype_text: chs4t_cargo_subtype_text;
     cargo_capacity: return 0;
-    speed: speed_after25_160to140;
+    speed: chs4t_speed;
+    purchase_speed: chs4t_purchase_speed;
+    bitmask_vehicle_info: chs4t_bitmask_vehicle_info;
   }
 }
