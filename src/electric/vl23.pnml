@@ -543,6 +543,53 @@ switch (FEAT_TRAINS, SELF, vl23_speed,
   return 90;
 }
 
+// Макс. скорость: 100 км/ч до 1985, 90 км/ч после
+#define MAX_SPEED current_year >= 1985 ? 90 : 100
+
+switch (FEAT_TRAINS, SELF, vl23_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl23_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vl23), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(vl23), 0),
+  vehicle_type_id == vl23
+])
+{
+  vl23_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  vl23_bitmask_vehicle_info2;
+}
+
 item (FEAT_TRAINS, vl23) 
 {
   property
@@ -557,7 +604,6 @@ item (FEAT_TRAINS, vl23)
     cost_factor: get_electric_cost_factor();
     running_cost_factor: get_electric_running_cost_factor();
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 100 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     refit_cost: 0;
     track_type: ELRL;
@@ -581,5 +627,7 @@ item (FEAT_TRAINS, vl23)
     cargo_subtype_text: vl23_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: vl23_speed;
+    purchase_speed: vl23_purchase_speed;
+    bitmask_vehicle_info: vl23_bitmask_vehicle_info;
   }
 }
