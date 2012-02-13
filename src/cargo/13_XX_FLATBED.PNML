@@ -1,0 +1,185 @@
+ // 13_xx_flatbed
+
+/// Платформа
+// Платформа 13-XX (грузоп. 50 т, БМЗ)
+// flatbed
+
+#define IMAGEFILE  "src/cargo/13-xx-flatbed-50t-bmz.png"
+
+// покупка
+spriteset (_13_xx_flatbed_purchase_spriteset, IMAGEFILE)
+{
+  s8_purchase_template(7, 36, 0)
+}
+
+// пусто
+spriteset (_13_xx_flatbed_empty_spriteset, IMAGEFILE)
+{
+  s8_template(7, 36, 0)
+}
+
+spriteset (_13_xx_flatbed_empty_v2_spriteset, IMAGEFILE)
+{
+  s8_template(7, 493, 0)
+}
+
+// шаблон груза, 4 вида загруженности
+#define _13_xx_sprite_layout4_template(x, y, cargo, ver) \
+spriteset (_13_xx_flatbed_##cargo##_1_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y, 0) \
+} \
+ \
+spriteset (_13_xx_flatbed_##cargo##_2_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+35, 0) \
+} \
+ \
+spriteset (_13_xx_flatbed_##cargo##_3_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+70, 0) \
+} \
+ \
+spriteset (_13_xx_flatbed_##cargo##_full_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+105, 0) \
+} \
+ \
+spritegroup _13_xx_flatbed_##cargo##_spritegroup \
+{ \
+  loading: [_13_xx_flatbed_empty##ver##_spriteset, \
+    _13_xx_flatbed_##cargo##_1_spriteset, \
+    _13_xx_flatbed_##cargo##_2_spriteset, \
+    _13_xx_flatbed_##cargo##_3_spriteset, \
+    _13_xx_flatbed_##cargo##_full_spriteset]; \
+  loaded: [_13_xx_flatbed_empty##ver##_spriteset, \
+    _13_xx_flatbed_##cargo##_1_spriteset, \
+    _13_xx_flatbed_##cargo##_2_spriteset, \
+    _13_xx_flatbed_##cargo##_3_spriteset, \
+    _13_xx_flatbed_##cargo##_full_spriteset]; \
+} \
+
+// шаблон груза, 3 вида загруженности
+#define _13_xx_sprite_layout3_template(x, y, cargo, ver) \
+spriteset (_13_xx_flatbed_##cargo##_1_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y, 0) \
+} \
+ \
+spriteset (_13_xx_flatbed_##cargo##_2_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+35, 0) \
+} \
+ \
+spriteset (_13_xx_flatbed_##cargo##_full_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+70, 0) \
+} \
+ \
+spritegroup _13_xx_flatbed_##cargo##_spritegroup \
+{ \
+  loading: [_13_xx_flatbed_empty##ver##_spriteset, \
+    _13_xx_flatbed_##cargo##_1_spriteset, \
+    _13_xx_flatbed_##cargo##_2_spriteset, \
+    _13_xx_flatbed_##cargo##_full_spriteset]; \
+  loaded: [_13_xx_flatbed_empty##ver##_spriteset, \
+    _13_xx_flatbed_##cargo##_1_spriteset, \
+    _13_xx_flatbed_##cargo##_2_spriteset, \
+    _13_xx_flatbed_##cargo##_full_spriteset]; \
+} \
+
+// шаблон груза, 2 вида загруженности
+#define _13_xx_sprite_layout2_template(x, y, cargo, ver) \
+spriteset (_13_xx_flatbed_##cargo##_1_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y, 0) \
+} \
+ \
+spriteset (_13_xx_flatbed_##cargo##_full_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+35, 0) \
+} \
+ \
+spritegroup _13_xx_flatbed_##cargo##_spritegroup \
+{ \
+  loading: [_13_xx_flatbed_empty##ver##_spriteset, \
+    _13_xx_flatbed_##cargo##_1_spriteset, \
+    _13_xx_flatbed_##cargo##_full_spriteset]; \
+  loaded: [_13_xx_flatbed_empty##ver##_spriteset, \
+    _13_xx_flatbed_##cargo##_1_spriteset, \
+    _13_xx_flatbed_##cargo##_full_spriteset]; \
+} \
+
+_13_xx_sprite_layout4_template(7,  71, good,)   // товары
+
+_13_xx_sprite_layout2_template(7, 211, wdpr,)  // лесоматериалы
+_13_xx_sprite_layout3_template(7, 281, stel,)  // сталь
+_13_xx_sprite_layout3_template(7, 386, stel2,) // сталь
+_13_xx_sprite_layout4_template(7, 528, stel3, _v2) // сталь
+_13_xx_sprite_layout3_template(7, 668, stel4, _v2) // сталь
+
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, _13_xx_flatbed_get_spriteset2,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD)
+)
+{
+  32: _13_xx_flatbed_stel_spritegroup;
+  32: _13_xx_flatbed_stel2_spritegroup;
+  32: _13_xx_flatbed_stel3_spritegroup;
+  32: _13_xx_flatbed_stel4_spritegroup;
+}
+
+switch (FEAT_TRAINS, SELF, _13_xx_flatbed_get_spriteset1,
+  cargo_type_in_veh)
+{
+  GOOD: _13_xx_flatbed_good_spritegroup;
+  WDPR: _13_xx_flatbed_wdpr_spritegroup;
+  STEL: _13_xx_flatbed_get_spriteset2;
+  align_8_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _13_xx_flatbed_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _13_xx_flatbed_get_spriteset1;
+}
+
+item (FEAT_TRAINS, _13_xx_flatbed) 
+{
+  property
+  {
+    name: string(STR_13_XX_FLATBED_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1930), 1, 1);
+    model_life: 32;
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, WDPR, STEL];
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 50;
+    weight: 18 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _13_xx_flatbed_get_spriteset;
+    purchase: _13_xx_flatbed_purchase_spriteset;
+    additional_text: return string(STR_13_XX_FLATBED_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
