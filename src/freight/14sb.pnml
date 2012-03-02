@@ -1,0 +1,114 @@
+ // 14sb
+
+/// Вагон
+// 14 сб (1957-1962), ЛВЗ им. Егорова
+// mail
+
+#define IMAGEFILE  "src/freight/14sb-1957-1962.png"
+
+// покупка
+spriteset (_14sb_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(0, 52, -12)
+}
+
+// вид 1
+spriteset (_14sb_spriteset, IMAGEFILE)
+{
+  s14_template(0, 52, 0)
+}
+
+// вид 2
+spriteset (_14sb_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 124, 0)
+}
+
+// хвост
+spriteset (_14sb_tail_spriteset, IMAGEFILE)
+{
+  s14_template(0, 206, 0)
+}
+
+spriteset (_14sb_tail_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 278, 0)
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _14sb_get_spriteset1,
+  (position_in_consist_from_end == 1) + // последний вагон?
+  (cargo_subtype * 2)
+)
+{
+  0: _14sb_spriteset;
+  1: _14sb_tail_spriteset;
+  2: _14sb_v2_spriteset;
+  3: _14sb_tail_v2_spriteset;
+  align_14_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _14sb_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _14sb_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _14sb_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_RAL_6020);
+  return CB_RESULT_NO_TEXT;
+}
+
+// с 1960 г. скорость 140, до - 120.
+switch (FEAT_TRAINS, SELF, _14sb_speed,
+  current_year >= 1960)
+{
+  1: return 140;
+  return 120;
+}
+
+item (FEAT_TRAINS, _14sb) 
+{
+  property
+  {
+    name: string(STR_14SB_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1957), 1, 1);
+    model_life: 28;
+    vehicle_life: 28;
+    reliability_decay: 20;
+    refittable_cargo_classes: bitmask(CC_MAIL);
+    default_cargo_type: MAIL;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 20;
+    weight: 51 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _14sb_get_spriteset;
+    purchase: _14sb_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_14SB_PURCHASE_HINT);
+    cargo_subtype_text: _14sb_cargo_subtype_text;
+    speed: _14sb_speed;
+  }
+}
