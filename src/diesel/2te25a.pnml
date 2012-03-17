@@ -1,0 +1,199 @@
+ // 2te25a
+
+// Спрайты
+// 2ТЭ25А "Витязь" (с 2006 г.) - новый тепловоз с асинхронным приводом
+// производства Брянского завода (БМЗ).
+
+#define IMAGEFILE  "src/diesel/2te25a.png"
+
+// покупка
+spriteset (_2te25a_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(124, 42, -8)
+}
+
+// секция А: погрузка/перемещение
+spriteset (_2te25a_loading_spriteset, IMAGEFILE)
+{
+  s12_template(124, 42, 0)
+} 
+
+spriteset (_2te25a_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(124, 113, 0)
+} 
+
+spritegroup _2te25a_spritegroup
+{
+  loading: _2te25a_loading_spriteset;
+  loaded: _2te25a_traveling_spriteset;
+}
+
+// секция Б
+spriteset (_2te25a_b_spriteset, IMAGEFILE)
+{
+  s12_template(567, 42, 0)
+} 
+
+// покупка
+spriteset (_2te25a_purchase_v2_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(124, 222, -8)
+}
+
+// секция А, вид 2: погрузка/перемещение
+spriteset (_2te25a_loading_v2_spriteset, IMAGEFILE)
+{
+  s12_template(124, 222, 0)
+} 
+
+spriteset (_2te25a_traveling_v2_spriteset, IMAGEFILE)
+{
+  s12_template(124, 290, 0)
+} 
+
+spritegroup _2te25a_v2_spritegroup
+{
+  loading: _2te25a_loading_v2_spriteset;
+  loaded: _2te25a_traveling_v2_spriteset;
+}
+
+// секция Б, вид 2
+spriteset (_2te25a_b_v2_spriteset, IMAGEFILE)
+{
+  s12_template(565, 222, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _2te25a_get_spriteset2,
+  ((last_computed_result - count_veh_id(_2te25a)) % 2) +
+  ((build_year >= 2010) * 2)
+)
+{
+  0: _2te25a_spritegroup;
+  1: _2te25a_b_spriteset;
+  2: _2te25a_v2_spritegroup;
+  3: _2te25a_b_v2_spriteset;
+  align_12_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, _2te25a_get_spriteset1,
+  count_veh_id(_2te25a))
+{
+  _2te25a_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _2te25a_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _2te25a_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _2te25a_get_purchase_spriteset,
+  build_year >= 2010)
+{
+  1: _2te25a_purchase_v2_spriteset;
+  _2te25a_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, _2te25a_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, _2te25a_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: 120 км/ч
+#define MAX_SPEED 120
+
+switch (FEAT_TRAINS, SELF, _2te25a_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, _2te25a_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, _2te25a_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_2te25a), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 4)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, _2te25a_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(_2te25a), 0),
+  vehicle_type_id == _2te25a
+])
+{
+  _2te25a_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, _2te25a_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  _2te25a_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, _2te25a)
+{
+  property
+  {
+    name: string(STR_2TE25A_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(2006, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: get_diesel_cost_factor();
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 2725 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 144 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: 0.27636054421;
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: _2te25a_get_spriteset;
+    purchase: _2te25a_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: _2te25a_can_attach_wagon;
+    start_stop: _2te25a_start_stop;
+    additional_text: return string(STR_2TE25A_PURCHASE_HINT);
+    speed: _2te25a_speed;
+    purchase_speed: _2te25a_purchase_speed;
+    bitmask_vehicle_info: _2te25a_bitmask_vehicle_info;
+  }
+}
