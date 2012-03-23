@@ -12,7 +12,7 @@ spriteset (_15_c863_tanker_purchase_spriteset, IMAGEFILE)
   s7_purchase_template(0, 39, 2)
 }
 
-// аверс
+// 1: аверс
 spriteset (_15_c863_tanker_spriteset, IMAGEFILE)
 {
   s7_template(0, 39, 0)
@@ -24,7 +24,28 @@ spriteset (_15_c863_tanker_r_spriteset, IMAGEFILE)
   s7_template(273, 39, 0)
 }
 
+// 2: аверс
+spriteset (_15_c863_tanker_v2_spriteset, IMAGEFILE)
+{
+  s7_template(0, 88, 0)
+}
+
+// реверс
+spriteset (_15_c863_tanker_r_v2_spriteset, IMAGEFILE)
+{
+  s7_template(273, 88, 0)
+}
+
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _15_c863_tanker_get_spriteset1,
+  cargo_subtype
+)
+{
+  0: _15_c863_tanker_spriteset;
+  1: _15_c863_tanker_v2_spriteset;
+  align_7_spriteset;
+}
 
 // Еcли рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -32,7 +53,15 @@ switch (FEAT_TRAINS, SELF, _15_c863_tanker_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  _15_c863_tanker_spriteset;
+  _15_c863_tanker_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _15_c863_tanker_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_V1);
+  1: string(STR_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
 }
 
 item (FEAT_TRAINS, _15_c863_tanker) 
@@ -68,5 +97,6 @@ item (FEAT_TRAINS, _15_c863_tanker)
     default: _15_c863_tanker_get_spriteset;
     purchase: _15_c863_tanker_purchase_spriteset;
     additional_text: return string(STR_15_C863_TANKER_PURCHASE_HINT);
+    cargo_subtype_text: _15_c863_tanker_cargo_subtype_text;
   }
 }
