@@ -82,7 +82,8 @@ spritegroup tep70bs_r_v2_spritegroup
 
 switch (FEAT_TRAINS, SELF, tep70bs_get_spriteset2,
   ((last_computed_result - count_veh_id(tep70bs)) % 2) +
-  cargo_subtype * 2
+  (cargo_subtype * 2) -
+  ((cargo_subtype >= 2) * 4)
 )
 {
   0: tep70bs_spritegroup;
@@ -120,21 +121,30 @@ switch (FEAT_TRAINS, PARENT, tep70bs_start_stop,
   return CB_RESULT_NO_TEXT;
 }
 
+switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text2,
+  build_year >= 2008)
+{
+  1: string(STR_REFIT_V1_120_KMH);
+  return CB_RESULT_NO_TEXT;
+}
+
 switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text,
   cargo_subtype)
 {
   0: string(STR_REFIT_V1);
   1: string(STR_REFIT_V2);
+  2: tep70bs_cargo_subtype_text2;
+  3: string(STR_REFIT_V2_120_KMH);
   return CB_RESULT_NO_TEXT;
 }
 
 // Макс. скорость: ограничиваем скорость через 25 лет работы 160 --> 140
 // Выпущенным с 2008 года - 120 км/ч
-#define MAX_SPEED build_year >= 2008 ? 120 : \
+#define MAX_SPEED cargo_subtype >= 2 ? 120 : \
   (age_in_days >= (25*365+5)) ? 140 : 160
 
 switch (FEAT_TRAINS, SELF, tep70bs_purchase_speed,
-  current_year >= 2008 ? 120 : 160)
+  160)
 {
   return;
 }
