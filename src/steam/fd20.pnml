@@ -1,0 +1,195 @@
+ // l
+
+// Спрайты
+// 1931-32
+// 1934-1940
+
+#define IMAGEFILE  "src/steam/fd20-fd21.png"
+
+// покупка
+spriteset (fd20_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(113, 61, -4)
+}
+
+// паровоз
+spriteset (fd20_spriteset, IMAGEFILE)
+{
+  s10_template(113, 61, 0)
+} 
+
+// реверс
+spriteset (fd20_r_spriteset, IMAGEFILE)
+{
+  s10_template(553, 61, 0)
+} 
+
+// покупка
+spriteset (fd20_v2_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(113, 61, -4)
+}
+
+// паровоз
+spriteset (fd20_v2_spriteset, IMAGEFILE)
+{
+  s10_template(113, 128, 0)
+} 
+
+// реверс
+spriteset (fd20_r_v2_spriteset, IMAGEFILE)
+{
+  s10_template(553, 128, 0)
+} 
+
+// тендер
+// 1931-1935
+spriteset (fd20_t17_spriteset, IMAGEFILE)
+{
+  s8_template(113, 272, 0)
+} 
+
+// с 1936
+spriteset (fd20_t6p_spriteset, IMAGEFILE)
+{
+  s7_template(113, 318, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, fd20_get_spriteset1,
+  build_year >= 1934)
+{
+  1: fd20_v2_spriteset;
+  fd20_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, fd20_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  fd20_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, fd20_get_purchase_spriteset,
+  build_year >= 1934)
+{
+  1: fd20_v2_purchase_spriteset;
+  fd20_purchase_spriteset;
+}
+
+// Присоединяем
+switch (FEAT_TRAINS, SELF, fd20_can_attach_wagon,
+  vehicle_type_id)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Макс. скорость: 65 км/ч, с 1936 85 км/ч, с 1956 90 км/ч
+#define MAX_SPEED current_year >= 1956 ? 90 : current_year >= 1936 ? 85 : 65
+
+switch (FEAT_TRAINS, SELF, fd20_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, fd20_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+// не умеет СМЕ
+switch (FEAT_TRAINS, SELF, fd20_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, SELF, fd20_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy2;
+  2: return unitb;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, fd20_get_tender_spriteset,
+  build_year >= 1936)
+{
+  1: fd20_t6p_spriteset;
+  fd20_t17_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, fd20_get_tender_length,
+  build_year >= 1936)
+{
+  1: return 7;
+  return 8;
+}
+
+switch (FEAT_TRAINS, SELF, fd20_weight,
+  current_year >= 1936)
+{
+  1: return (137+127);
+  return (137+123);
+}
+
+item (FEAT_TRAINS, fd20) 
+{
+  property
+  {
+    name: string(STR_FD20_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1931, 1, 1);
+    model_life: 25;
+    vehicle_life: 25; // срок службы
+    reliability_decay: 20;
+    cost_factor: get_steam_cost_factor();
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3000 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (137+123) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: 0.081632653;
+    length: 8;
+    visual_effect_and_powered: steam_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+
+  graphics {
+    default: fd20_get_spriteset;
+    purchase: fd20_get_purchase_spriteset;
+    articulated_part: fd20_articulated_part;
+    can_attach_wagon: fd20_can_attach_wagon;
+    additional_text: return string(STR_FD20_PURCHASE_HINT);
+    speed: fd20_speed;
+    purchase_speed: fd20_purchase_speed;
+    bitmask_vehicle_info: fd20_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    weight: fd20_weight;
+  }
+
+  livery_override(unitb)
+  {
+    length: fd20_get_tender_length;
+    fd20_get_tender_spriteset;
+  }
+
+}
