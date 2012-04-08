@@ -9,49 +9,172 @@
 // покупка
 spriteset (_12_119_gondola_purchase_spriteset, IMAGEFILE)
 {
-  s8_purchase_template(0, 23, 0)
+  s8_purchase_template(102, 56, 0)
 }
 
-// вид 1
-spriteset (_12_119_gondola_spriteset, IMAGEFILE)
+// пусто
+spriteset (_12_119_gondola_empty_spriteset, IMAGEFILE)
 {
-  s8_template(0, 23, 0)
+  s8_template(102, 56, 0)
 }
 
-// вид 2
-spriteset (_12_119_gondola_v2_spriteset, IMAGEFILE)
+spriteset (_12_119_gondola_v2_empty_spriteset, IMAGEFILE)
 {
-  s8_template(0, 59, 0)
+  s8_template(102, 92, 0)
 }
 
-// Реверс: (438, y, 0)
+// шаблон груза, 2 ливреи, 3 вида загруженности
+// 25-49%, 50-74%, полный
+#define _12_119_sprite_layout_template(x, y, cargo) \
+spriteset (_12_119_gondola_##cargo##_1_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y, 0) \
+} \
+ \
+spriteset (_12_119_gondola_v2_##cargo##_1_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+36, 0) \
+} \
+ \
+spriteset (_12_119_gondola_##cargo##_2_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x+298, y, 0) \
+} \
+ \
+spriteset (_12_119_gondola_v2_##cargo##_2_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x+298, y+36, 0) \
+} \
+ \
+spriteset (_12_119_gondola_##cargo##_full_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x+596, y, 0) \
+} \
+ \
+spriteset (_12_119_gondola_v2_##cargo##_full_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x+596, y+36, 0) \
+} \
+ \
+spritegroup _12_119_gondola_##cargo##_spritegroup \
+{ \
+  loading: [_12_119_gondola_empty_spriteset, \
+    _12_119_gondola_##cargo##_1_spriteset, \
+    _12_119_gondola_##cargo##_2_spriteset, \
+    _12_119_gondola_##cargo##_full_spriteset]; \
+  loaded: [_12_119_gondola_empty_spriteset, \
+    _12_119_gondola_##cargo##_1_spriteset, \
+    _12_119_gondola_##cargo##_2_spriteset, \
+    _12_119_gondola_##cargo##_full_spriteset]; \
+} \
+ \
+spritegroup _12_119_gondola_v2_##cargo##_spritegroup \
+{ \
+  loading: [_12_119_gondola_v2_empty_spriteset, \
+    _12_119_gondola_v2_##cargo##_1_spriteset, \
+    _12_119_gondola_v2_##cargo##_2_spriteset, \
+    _12_119_gondola_v2_##cargo##_full_spriteset]; \
+  loaded: [_12_119_gondola_v2_empty_spriteset, \
+    _12_119_gondola_v2_##cargo##_1_spriteset, \
+    _12_119_gondola_v2_##cargo##_2_spriteset, \
+    _12_119_gondola_v2_##cargo##_full_spriteset]; \
+} \
+
+_12_119_sprite_layout_template(400, 56, coal)    // уголь
+_12_119_sprite_layout_template(400, 174, iore)   // жел. руда
+_12_119_sprite_layout_template(400, 292, core)   // медн. руда
+_12_119_sprite_layout_template(400, 410, aore)   // бокситы
+_12_119_sprite_layout_template(400, 528, clay)   // глина
+_12_119_sprite_layout_template(400, 646, fert)   // удобрения
+_12_119_sprite_layout_template(400, 764, grvl)   // гравий
+_12_119_sprite_layout_template(400, 882, lime)   // известняк
+_12_119_sprite_layout_template(400, 1000, pota)  // поташ
+_12_119_sprite_layout_template(400, 1118, sand)  // песок
+_12_119_sprite_layout_template(400, 1236, sulp)  // сера
+_12_119_sprite_layout_template(400, 1354, brck)  // кирпичи
+_12_119_sprite_layout_template(400, 1472, wdpr)  // лесоматериалы
+_12_119_sprite_layout_template(400, 1590, stel)  // сталь
+_12_119_sprite_layout_template(400, 1708, stel2) // сталь
+_12_119_sprite_layout_template(400, 1826, stel3) // сталь
+_12_119_sprite_layout_template(400, 1944, stel4) // сталь
 
 #undef IMAGEFILE
 
-
-switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset1,
-  cargo_subtype
+random_switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset4,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD)
 )
 {
-  0: _12_119_gondola_spriteset;
-  1: _12_119_gondola_v2_spriteset;
+  32: _12_119_gondola_v2_stel_spritegroup;
+  32: _12_119_gondola_v2_stel2_spritegroup;
+  32: _12_119_gondola_v2_stel3_spritegroup;
+  32: _12_119_gondola_v2_stel4_spritegroup;
+}
+
+random_switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset3,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD)
+)
+{
+  32: _12_119_gondola_stel_spritegroup;
+  32: _12_119_gondola_stel2_spritegroup;
+  32: _12_119_gondola_stel3_spritegroup;
+  32: _12_119_gondola_stel4_spritegroup;
+}
+
+switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset2,
+  cargo_type_in_veh)
+{
+  COAL: _12_119_gondola_v2_coal_spritegroup;
+  IORE: _12_119_gondola_v2_iore_spritegroup;
+  CORE: _12_119_gondola_v2_core_spritegroup;
+  AORE: _12_119_gondola_v2_aore_spritegroup;
+  CLAY: _12_119_gondola_v2_clay_spritegroup;
+  FERT: _12_119_gondola_v2_fert_spritegroup;
+  GRVL: _12_119_gondola_v2_grvl_spritegroup;
+  LIME: _12_119_gondola_v2_lime_spritegroup;
+  POTA: _12_119_gondola_v2_pota_spritegroup;
+  SAND: _12_119_gondola_v2_sand_spritegroup;
+  SULP: _12_119_gondola_v2_sulp_spritegroup;
+  BRCK: _12_119_gondola_v2_brck_spritegroup;
+  WDPR: _12_119_gondola_v2_wdpr_spritegroup;
+  STEL: _12_119_gondola_get_spriteset4;
   align_8_spriteset;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
+switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset1,
+  cargo_type_in_veh)
 {
-  1: dummy_spriteset;
-  _12_119_gondola_get_spriteset1;
+  COAL: _12_119_gondola_coal_spritegroup;
+  IORE: _12_119_gondola_iore_spritegroup;
+  CORE: _12_119_gondola_core_spritegroup;
+  AORE: _12_119_gondola_aore_spritegroup;
+  CLAY: _12_119_gondola_clay_spritegroup;
+  FERT: _12_119_gondola_fert_spritegroup;
+  GRVL: _12_119_gondola_grvl_spritegroup;
+  LIME: _12_119_gondola_lime_spritegroup;
+  POTA: _12_119_gondola_pota_spritegroup;
+  SAND: _12_119_gondola_sand_spritegroup;
+  SULP: _12_119_gondola_sulp_spritegroup;
+  BRCK: _12_119_gondola_brck_spritegroup;
+  WDPR: _12_119_gondola_wdpr_spritegroup;
+  STEL: _12_119_gondola_get_spriteset3;
+  align_8_spriteset;
+}
+
+
+switch (FEAT_TRAINS, SELF, _12_119_gondola_get_spriteset,
+  cargo_subtype
+)
+{
+  0: _12_119_gondola_get_spriteset1;
+  1: _12_119_gondola_get_spriteset2;
+  align_8_spriteset;
 }
 
 switch (FEAT_TRAINS, SELF, _12_119_gondola_cargo_subtype_text,
   cargo_subtype)
 {
-  0: string(STR_REFIT_BROWN);
-  1: string(STR_REFIT_GREEN);
+  0: string(STR_REFIT_OCHER);
+  1: string(STR_REFIT_DARK_GREEN_MALE);
   return CB_RESULT_NO_TEXT;
 }
 
@@ -89,7 +212,6 @@ item (FEAT_TRAINS, _12_119_gondola)
   {
     default: _12_119_gondola_get_spriteset;
     purchase: _12_119_gondola_purchase_spriteset;
-//    articulated_part: articulated_part_dummy4;
     additional_text: return string(STR_12_119_GONDOLA_PURCHASE_HINT);
     cargo_subtype_text: _12_119_gondola_cargo_subtype_text;
   }
