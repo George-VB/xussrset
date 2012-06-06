@@ -1,0 +1,105 @@
+ // mail_61_505
+
+/// Вагон
+// 61-505 (1971-1979), почтовый вагон производства ЛВЗ им. Егорова
+// mail
+
+#define IMAGEFILE  "src/freight/mail-61-505-1971-1979.png"
+
+// покупка
+spriteset (mail_61_505_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(0, 46, -12)
+}
+
+// вид 1
+spriteset (mail_61_505_spriteset, IMAGEFILE)
+{
+  s14_template(0, 46, 0)
+}
+
+// вид 2
+spriteset (mail_61_505_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 118, 0)
+}
+
+// хвост
+spriteset (mail_61_505_tail_spriteset, IMAGEFILE)
+{
+  s14_template(0, 200, 0)
+}
+
+spriteset (mail_61_505_tail_v2_spriteset, IMAGEFILE)
+{
+  s14_template(0, 272, 0)
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, mail_61_505_get_spriteset1,
+  (position_in_consist_from_end == 1) + // последний вагон?
+  (cargo_subtype * 2)
+)
+{
+  0: mail_61_505_spriteset;
+  1: mail_61_505_tail_spriteset;
+  2: mail_61_505_v2_spriteset;
+  3: mail_61_505_tail_v2_spriteset;
+  align_14_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, mail_61_505_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  mail_61_505_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, mail_61_505_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_RAL_6020);
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, mail_61_505) 
+{
+  property
+  {
+    name: string(STR_MAIL_61_505_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1971), 1, 1);
+    model_life: 28;
+    vehicle_life: 28;
+    reliability_decay: 20;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 11;
+    cargo_capacity: 44;
+    weight: 47 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: mail_61_505_get_spriteset;
+    purchase: mail_61_505_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_MAIL_61_505_PURCHASE_HINT);
+    cargo_subtype_text: mail_61_505_cargo_subtype_text;
+  }
+}
