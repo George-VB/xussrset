@@ -1,0 +1,284 @@
+ // is20
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/is20.png"
+
+// покупка
+spriteset (is20_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(113, 61, -4)
+}
+
+// паровоз, анимация из 4-х фреймов
+spriteset (is20_1_spriteset, IMAGEFILE)
+{
+  s10_template(113, 61, 0)
+} 
+
+spriteset (is20_2_spriteset, IMAGEFILE)
+{
+  s10_template(113, 128, 0)
+} 
+
+spriteset (is20_3_spriteset, IMAGEFILE)
+{
+  s10_template(113, 195, 0)
+} 
+
+spriteset (is20_4_spriteset, IMAGEFILE)
+{
+  s10_template(113, 262, 0)
+} 
+
+//
+spriteset (is20_1_v2_spriteset, IMAGEFILE)
+{
+  s10_template(113, 344, 0)
+} 
+
+spriteset (is20_2_v2_spriteset, IMAGEFILE)
+{
+  s10_template(113, 411, 0)
+} 
+
+spriteset (is20_3_v2_spriteset, IMAGEFILE)
+{
+  s10_template(113, 478, 0)
+} 
+
+spriteset (is20_4_v2_spriteset, IMAGEFILE)
+{
+  s10_template(113, 545, 0)
+} 
+
+//
+spriteset (is20_1_v3_spriteset, IMAGEFILE)
+{
+  s10_template(113, 627, 0)
+} 
+
+spriteset (is20_2_v3_spriteset, IMAGEFILE)
+{
+  s10_template(113, 694, 0)
+} 
+
+spriteset (is20_3_v3_spriteset, IMAGEFILE)
+{
+  s10_template(113, 761, 0)
+} 
+
+spriteset (is20_4_v3_spriteset, IMAGEFILE)
+{
+  s10_template(113, 828, 0)
+} 
+
+// реверс : 553
+
+// тендер
+// 1932-1935
+spriteset (is20_t4o_spriteset, IMAGEFILE)
+{
+  s6_template(113, 920, 0)
+} 
+
+spriteset (is20_t4o_v2_spriteset, IMAGEFILE)
+{
+  s6_template(113, 963, 0)
+} 
+
+spriteset (is20_t4o_v3_spriteset, IMAGEFILE)
+{
+  s6_template(113, 1006, 0)
+} 
+
+// с 1936
+spriteset (is20_t6p_spriteset, IMAGEFILE)
+{
+  s7_template(113, 1074, 0)
+} 
+
+spriteset (is20_t6p_v2_spriteset, IMAGEFILE)
+{
+  s7_template(113, 1118, 0)
+} 
+
+spriteset (is20_t6p_v3_spriteset, IMAGEFILE)
+{
+  s7_template(113, 1162, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, is20_get_spriteset2,
+  (cargo_subtype * 4) +
+  last_computed_result)
+{
+  0: is20_1_spriteset;
+  1: is20_2_spriteset;
+  2: is20_3_spriteset;
+  3: is20_4_spriteset;
+  4: is20_1_v2_spriteset;
+  5: is20_2_v2_spriteset;
+  6: is20_3_v2_spriteset;
+  7: is20_4_v2_spriteset;
+  8: is20_1_v3_spriteset;
+  9: is20_2_v3_spriteset;
+  10: is20_3_v3_spriteset;
+  11: is20_4_v3_spriteset;
+  align_10_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, is20_get_spriteset1,
+  motion_counter & 3)
+{
+  is20_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, is20_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  is20_get_spriteset1;
+}
+
+// Присоединяем
+switch (FEAT_TRAINS, SELF, is20_can_attach_wagon,
+  vehicle_type_id)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Макс. скорость: 110 км/ч, с 1936 115 км/ч
+#define MAX_SPEED current_year >= 1936 ? 115 : 110
+
+switch (FEAT_TRAINS, SELF, is20_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, is20_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+// не умеет СМЕ
+switch (FEAT_TRAINS, SELF, is20_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, SELF, is20_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy2;
+  2: return unitb;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, is20_get_tender_spriteset,
+  ((build_year >= 1936) * 3) +
+  cargo_subtype)
+{
+  0: is20_t4o_spriteset;
+  1: is20_t4o_spriteset;
+  2: is20_t4o_spriteset;
+  3: is20_t6p_spriteset;
+  4: is20_t6p_spriteset;
+  is20_t6p_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, is20_get_tender_length,
+  build_year >= 1936)
+{
+  1: return 7;
+  return 6;
+}
+
+switch (FEAT_TRAINS, SELF, is20_weight,
+  current_year >= 1936)
+{
+  1: return (133+123);
+  return (133+85);
+}
+
+switch (FEAT_TRAINS, SELF, is20_cost_factor,
+  (current_year >= 1935) +
+  (current_year >= 1936))
+{
+  1: return 30;
+  2: return 36;
+  return 23;
+}
+
+switch (FEAT_TRAINS, SELF, is20_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_RAL_6020);
+  2: string(STR_REFIT_RED_ARROW);
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, is20) 
+{
+  property
+  {
+    name: string(STR_IS20_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1932, 1, 1);
+    model_life: 30;
+    vehicle_life: 30; // срок службы
+    reliability_decay: 20;
+    cost_factor: 23;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3200 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (133+123) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: 0.0601881377551;
+    length: 8;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+  }
+
+  graphics
+  {
+    default: is20_get_spriteset;
+    purchase: is20_purchase_spriteset;
+    articulated_part: is20_articulated_part;
+    can_attach_wagon: is20_can_attach_wagon;
+    additional_text: return string(STR_IS20_PURCHASE_HINT);
+    speed: is20_speed;
+    purchase_speed: is20_purchase_speed;
+    bitmask_vehicle_info: is20_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    weight: is20_weight;
+    cost_factor: is20_cost_factor;
+    cargo_subtype_text: is20_cargo_subtype_text;
+  }
+
+  livery_override(unitb)
+  {
+    length: is20_get_tender_length;
+    is20_get_tender_spriteset;
+  }
+
+}
