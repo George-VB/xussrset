@@ -2,7 +2,7 @@
 
 // Спрайты
 
-#define IMAGEFILE  "src/steam/is20.png"
+#define IMAGEFILE  "src/steam/is.png"
 
 // покупка
 spriteset (is20_purchase_spriteset, IMAGEFILE)
@@ -188,15 +188,18 @@ switch (FEAT_TRAINS, SELF, is20_articulated_part,
 }
 
 switch (FEAT_TRAINS, SELF, is20_get_tender_spriteset,
-  ((build_year >= 1936) * 3) +
-  cargo_subtype)
+[
+  set_offset_to(-2),
+  var[0x61, 0, 0xFF, 0xF2] + // cargo_subtype
+  ((build_year >= 1936) * 3)
+])
 {
   0: is20_t4o_spriteset;
-  1: is20_t4o_spriteset;
-  2: is20_t4o_spriteset;
+  1: is20_t4o_v2_spriteset;
+  2: is20_t4o_v3_spriteset;
   3: is20_t6p_spriteset;
-  4: is20_t6p_spriteset;
-  is20_t6p_spriteset;
+  4: is20_t6p_v2_spriteset;
+  is20_t6p_v3_spriteset;
 }
 
 switch (FEAT_TRAINS, SELF, is20_get_tender_length,
@@ -213,13 +216,21 @@ switch (FEAT_TRAINS, SELF, is20_weight,
   return (133+85);
 }
 
-switch (FEAT_TRAINS, SELF, is20_cost_factor,
-  (current_year >= 1935) +
-  (current_year >= 1936))
+// ТУ=ту/вес/9.8
+switch (FEAT_TRAINS, SELF, is20_tractive_effort_coefficient,
+  current_year >= 1936)
 {
-  1: return 30;
-  2: return 36;
-  return 23;
+  1: return 15; // 15.4081
+  return 18; // 18.093989
+}
+
+switch (FEAT_TRAINS, SELF, is20_cost_factor,
+  (current_year >= 1936) +
+  (current_year >= 1941))
+{
+  1: return 53;
+  2: return 63;
+  return 44;
 }
 
 switch (FEAT_TRAINS, SELF, is20_cargo_subtype_text,
@@ -249,9 +260,7 @@ item (FEAT_TRAINS, is20)
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 3200 hpM;
     running_cost_base: RUNNING_COST_STEAM;
-    weight: (133+123) ton;
     engine_class: ENGINE_CLASS_STEAM;
-    tractive_effort_coefficient: 0.0601881377551;
     length: 8;
     visual_effect_and_powered: steam_visual_effect_and_powered(-2);
     cargo_allow_refit: [PASS];
@@ -273,6 +282,7 @@ item (FEAT_TRAINS, is20)
     weight: is20_weight;
     cost_factor: is20_cost_factor;
     cargo_subtype_text: is20_cargo_subtype_text;
+    tractive_effort_coefficient: is20_tractive_effort_coefficient;
   }
 
   livery_override(unitb)
