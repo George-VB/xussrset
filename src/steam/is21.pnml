@@ -1,0 +1,125 @@
+ // is21
+
+// Пассажирские паровозы семейства ИС (Иосиф Сталин): ИС21 (1941-1942).
+
+// Присоединяем
+switch (FEAT_TRAINS, SELF, is21_can_attach_wagon,
+  vehicle_type_id)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Макс. скорость: 115 км/ч
+#define MAX_SPEED 115
+
+switch (FEAT_TRAINS, SELF, is21_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, is21_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+// не умеет СМЕ
+switch (FEAT_TRAINS, SELF, is21_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, SELF, is21_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy2;
+  2: return unitb;
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, is21_get_tender_spriteset,
+[
+  set_offset_to(-2),
+  var[0x61, 0, 0xFF, 0xF2] // cargo_subtype
+])
+{
+  0: is20_t6p_spriteset;
+  1: is20_t6p_v2_spriteset;
+  2: is20_t6p_v3_spriteset;
+  align_7_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, is21_cost_factor,
+  (current_year >= 1941))
+{
+  1: return 66;
+  return 64;
+}
+
+switch (FEAT_TRAINS, SELF, is21_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_RAL_6020);
+  2: string(STR_REFIT_RED_ARROW);
+  return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, is21) 
+{
+  property
+  {
+    name: string(STR_IS21_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1941, 1, 1);
+    model_life: 30;
+    vehicle_life: 30; // срок службы
+    reliability_decay: 20;
+    cost_factor: 64;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: RAIL;
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3300 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (133+127) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: 0.06083202;
+    length: 8;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-2);
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+  }
+
+  graphics
+  {
+    default: is20_get_spriteset;
+    purchase: is20_purchase_spriteset;
+    articulated_part: is21_articulated_part;
+    can_attach_wagon: is21_can_attach_wagon;
+    additional_text: return string(STR_IS21_PURCHASE_HINT);
+    speed: is21_speed;
+    purchase_speed: is21_purchase_speed;
+    bitmask_vehicle_info: is21_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    cost_factor: is21_cost_factor;
+    cargo_subtype_text: is21_cargo_subtype_text;
+  }
+
+  livery_override(unitb)
+  {
+    length: 7;
+    is21_get_tender_spriteset;
+  }
+
+}
