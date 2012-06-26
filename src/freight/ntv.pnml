@@ -1,0 +1,144 @@
+ // ntv
+
+/// Вагон
+// нормальный товарный вагон (НТВ) 1875-1931.
+// 
+
+#define IMAGEFILE  "src/freight/ntv.png"
+
+// покупка
+spriteset (ntv_purchase_spriteset, IMAGEFILE)
+{
+  s4_purchase_template(0, 31, 8)
+}
+
+// вид 1
+spriteset (ntv_spriteset, IMAGEFILE)
+{
+  s4_template(0, 31, 0)
+}
+
+// вид 2
+spriteset (ntv_v2_spriteset, IMAGEFILE)
+{
+  s4_template(0, 73, 0)
+}
+
+// вид 3
+spriteset (ntv_v3_spriteset, IMAGEFILE)
+{
+  s4_template(0, 115, 0)
+}
+
+// вид 4
+spriteset (ntv_v4_spriteset, IMAGEFILE)
+{
+  s4_template(235, 31, 0)
+}
+
+// вид 5
+spriteset (ntv_v5_spriteset, IMAGEFILE)
+{
+  s4_template(235, 73, 0)
+}
+
+// вид 6
+spriteset (ntv_v6_spriteset, IMAGEFILE)
+{
+  s4_template(235, 115, 0)
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, ntv_get_spriteset,
+  ((current_year >= 1918) * 3) +
+  cargo_subtype
+)
+{
+  0: ntv_spriteset;
+  1: ntv_v2_spriteset;
+  2: ntv_v3_spriteset;
+  3: ntv_v4_spriteset;
+  4: ntv_v5_spriteset;
+  5: ntv_v6_spriteset;
+  align_4_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_V1);
+  1: string(STR_REFIT_V2);
+  2: string(STR_REFIT_V3);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_additional_text,
+  (current_year >= 1891) +
+  (current_year >= 1905) +
+  (current_year >= 1911)
+)
+{
+  0: return string(STR_NTV_1875_PURCHASE_HINT);
+  1: return string(STR_NTV_1891_PURCHASE_HINT);
+  2: return string(STR_NTV_1905_PURCHASE_HINT);
+  return string(STR_NTV_1911_PURCHASE_HINT);
+}
+
+switch (FEAT_TRAINS, SELF, ntv_cargo_capacity,
+  (build_year >= 1891) +
+  (build_year >= 1905) +
+  (build_year >= 1911) +
+  ((cargo_type_in_veh == GOOD) * 4)
+)
+{
+  0: return 10; // 9.8;
+  1: return 12; // 12.3;
+  2: return 15; // 14.7;
+  3: return 16; //16.3;
+  4: return 20; // 9.8;
+  5: return 24; // 12.3;
+  6: return 30; // 14.7;
+  return 32; //16.3;
+}
+
+item (FEAT_TRAINS, ntv) 
+{
+  property
+  {
+    name: string(STR_NTV_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1875), 1, 1);
+    model_life: 30;
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, WOOL, PAPR, GRAI, WHEA, MAIZ, CERE, ENSP,
+      MNSP, FICR, GLAS, OLSD, BDMT];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 5;
+    cargo_capacity: 1;
+    weight: 7 ton;
+    length: 4;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: ntv_get_spriteset;
+    purchase: ntv_purchase_spriteset;
+    additional_text: ntv_additional_text;
+    cargo_subtype_text: ntv_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: ntv_cargo_capacity;
+  }
+}
