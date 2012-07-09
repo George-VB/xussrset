@@ -67,16 +67,46 @@ spriteset (_2te116u_r_v2_spriteset, IMAGEFILE)
 } 
 
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/2te116u-2009-pid.png"
+
+// обычный: погрузка/перемещение
+spriteset (_2te116u_v3_loading_spriteset, IMAGEFILE)
+{
+  s11_template(4, 14, 0)
+} 
+
+spriteset (_2te116u_v3_traveling_spriteset, IMAGEFILE)
+{
+  s11_template(4, 80, 0)
+} 
+
+spritegroup _2te116u_v3_spritegroup
+{
+  loading: _2te116u_v3_loading_spriteset;
+  loaded: _2te116u_v3_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (_2te116u_r_v3_spriteset, IMAGEFILE)
+{
+  s11_template(423, 14, 0)
+} 
+
+#undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _2te116u_get_spriteset2,
   ((last_computed_result - count_veh_id(_2te116u)) % 2) +
-  ((build_year >= 2009) * 2)
+  ((build_year >= 2009) * 2) +
+  (cargo_subtype * 2)
 )
 {
   0: _2te116u_spritegroup;
   1: _2te116u_r_spriteset;
   2: _2te116u_v2_spritegroup;
-  _2te116u_r_v2_spriteset;
+  3: _2te116u_r_v2_spriteset;
+  4: _2te116u_v3_spritegroup;
+  5: _2te116u_r_v3_spriteset;
+  align_11_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, _2te116u_get_spriteset1,
@@ -170,6 +200,22 @@ switch (FEAT_TRAINS, SELF, _2te116u_cost_factor,
   return 490;
 }
 
+switch (FEAT_TRAINS, SELF, _2te116u_cargo_subtype_text2,
+  (current_year > 2009)
+)
+{
+  1: string(STR_REFIT_RZD_PID);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _2te116u_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: _2te116u_cargo_subtype_text2;
+  return CB_RESULT_NO_TEXT;
+}
+
 item (FEAT_TRAINS, _2te116u)
 {
   property
@@ -207,7 +253,7 @@ item (FEAT_TRAINS, _2te116u)
     speed: _2te116u_speed;
     purchase_speed: _2te116u_purchase_speed;
     bitmask_vehicle_info: _2te116u_bitmask_vehicle_info;
-    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_subtype_text: _2te116u_cargo_subtype_text;
     cargo_capacity: return 0;
     cost_factor: _2te116u_cost_factor;
   }
