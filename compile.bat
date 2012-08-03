@@ -36,7 +36,7 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml src/%NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-nmlc --nfo=%NMLNAME%.nfo --grf=%NMLNAME%.grf ^
+nmlc --nfo=%NMLNAME%.nfo --grf=%NMLNAME%.grf -c ^
   --nml=%NMLNAME%_optimized.nml -M --MF=%NMLNAME%_dep.txt %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем
