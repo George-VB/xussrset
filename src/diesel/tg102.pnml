@@ -7,18 +7,18 @@
 // покупка
 spriteset (tg102_purchase_spriteset, IMAGEFILE)
 {
-  s9_purchase_template(0, 26, -2)
+  s9_purchase_template(2, 48, -2)
 }
 
 // обычный: погрузка/перемещение
 spriteset (tg102_loading_spriteset, IMAGEFILE)
 {
-  s9_template(0, 26, 0)
+  s9_template(2, 48, 0)
 } 
 
 spriteset (tg102_traveling_spriteset, IMAGEFILE)
 {
-  s9_template(0, 97, 0)
+  s9_template(2, 115, 0)
 } 
 
 spritegroup tg102_spritegroup
@@ -30,18 +30,24 @@ spritegroup tg102_spritegroup
 // развёрнутый
 spriteset (tg102_r_spriteset, IMAGEFILE)
 {
-  s9_template(449, 26, 0)
+  s9_template(433, 48, 0)
 } 
+
+// покупка
+spriteset (tg102_v2_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(2, 210, -2)
+}
 
 // обычный: погрузка/перемещение
 spriteset (tg102_v2_loading_spriteset, IMAGEFILE)
 {
-  s9_template(0, 162, 0)
+  s9_template(2, 210, 0)
 } 
 
 spriteset (tg102_v2_traveling_spriteset, IMAGEFILE)
 {
-  s9_template(0, 233, 0)
+  s9_template(2, 277, 0)
 } 
 
 spritegroup tg102_v2_spritegroup
@@ -53,20 +59,46 @@ spritegroup tg102_v2_spritegroup
 // развёрнутый
 spriteset (tg102_r_v2_spriteset, IMAGEFILE)
 {
-  s9_template(449, 162, 0)
+  s9_template(433, 210, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (tg102_v3_loading_spriteset, IMAGEFILE)
+{
+  s9_template(2, 366, 0)
+} 
+
+spriteset (tg102_v3_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(2, 433, 0)
+} 
+
+spritegroup tg102_v3_spritegroup
+{
+  loading: tg102_v3_loading_spriteset;
+  loaded: tg102_v3_traveling_spriteset;
+}
+
+// развёрнутый
+spriteset (tg102_r_v3_spriteset, IMAGEFILE)
+{
+  s9_template(433, 366, 0)
 } 
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, tg102_get_spriteset2,
   ((last_computed_result - count_veh_id(tg102)) % 2) +
-  cargo_subtype * 2
-)
+  ((build_year >= 1960) * 2) +
+  (cargo_subtype * 2))
 {
   0: tg102_spritegroup;
   1: tg102_r_spriteset;
   2: tg102_v2_spritegroup;
-  tg102_r_v2_spriteset;
+  3: tg102_r_v2_spriteset;
+  4: tg102_v3_spritegroup;
+  5: tg102_r_v3_spriteset;
+  align_9_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, tg102_get_spriteset1,
@@ -82,6 +114,13 @@ switch (FEAT_TRAINS, SELF, tg102_get_spriteset,
 {
   1: dummy_spriteset;
   tg102_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, tg102_get_purchase_spriteset,
+  current_year >= 1960)
+{
+  0: tg102_purchase_spriteset;
+  tg102_v2_purchase_spriteset;
 }
 
 // Что присоединяем?
@@ -111,10 +150,12 @@ switch (FEAT_TRAINS, PARENT, tg102_start_stop,
 }
 
 switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text,
-  cargo_subtype)
+  (build_year >= 1960) +
+  (cargo_subtype * 2))
 {
-  0: string(STR_REFIT_V1);
-  1: string(STR_REFIT_V2);
+  0: string(STR_REFIT_PREPRODUCTION);
+  1: string(STR_REFIT_LIGHT_BLUE_MALE);
+  3: string(STR_REFIT_GREEN_GRASS);
   return CB_RESULT_NO_TEXT;
 }
 
@@ -193,13 +234,13 @@ item (FEAT_TRAINS, tg102)
     cargo_capacity: 1;
     weight: (168/2) ton;
     engine_class: ENGINE_CLASS_DIESEL;
-    tractive_effort_coefficient: 0.19375607;
+    tractive_effort_coefficient: 0.38751214771;
     length: 8;
     visual_effect_and_powered: diesel_visual_effect_and_powered(0);
   }
   graphics {
     default: tg102_get_spriteset;
-    purchase: tg102_purchase_spriteset;
+    purchase: tg102_get_purchase_spriteset;
     articulated_part: articulated_part_dummy1;
     can_attach_wagon: tg102_can_attach_wagon;
     start_stop: tg102_start_stop;
