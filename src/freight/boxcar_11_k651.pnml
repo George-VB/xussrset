@@ -1,0 +1,114 @@
+ // boxcar_11_k651
+
+/// Вагон
+// Крытый для автомобилей и легковесных грузов 11-К651 (1971-)
+// boxcar 11-k651
+
+#define IMAGEFILE  "src/freight/boxcar-11-k651-1971.png"
+
+// покупка
+spriteset (boxcar_11_k651_purchase_spriteset, IMAGEFILE)
+{
+  s14_purchase_template(7, 47, -12)
+}
+
+spriteset (boxcar_11_k651_spriteset, IMAGEFILE)
+{
+  s14_template(7, 47, 0)
+}
+
+spriteset (boxcar_11_k651_v2_spriteset, IMAGEFILE)
+{
+  s14_template(7, 114, 0)
+}
+
+spriteset (boxcar_11_k651_v3_spriteset, IMAGEFILE)
+{
+  s14_template(7, 180, 0)
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_get_spriteset2,
+  cargo_subtype)
+{
+  0: boxcar_11_k651_spriteset;
+  1: boxcar_11_k651_v2_spriteset;
+  2: boxcar_11_k651_v3_spriteset;
+  align_14_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  boxcar_11_k651_get_spriteset2;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_OCHER);
+  2: string(STR_REFIT_BROWN);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 84;
+  VEHI: return 7;
+  return 42;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_loading_speed,
+  cargo_type_in_veh)
+{
+  GOOD: return 22;
+  VEHI: return 3;
+  return 11;
+}
+
+item (FEAT_TRAINS, boxcar_11_k651) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_K651_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1971), 1, 1);
+    model_life: 33;
+    vehicle_life: 33;
+    reliability_decay: 20;
+    cargo_allow_refit: [VEHI, GOOD, GLAS, ENSP, MNSP, PAPR, WOOL];
+    default_cargo_type: VEHI;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 3;
+    cargo_capacity: 7;
+    weight: 42 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_k651_get_spriteset;
+    purchase: boxcar_11_k651_purchase_spriteset;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_BOXCAR_11_K651_PURCHASE_HINT);
+    cargo_subtype_text: boxcar_11_k651_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: boxcar_11_k651_cargo_capacity;
+    loading_speed: boxcar_11_k651_loading_speed;
+  }
+}
