@@ -1,0 +1,245 @@
+ // ep10
+
+// Спрайты
+
+#define IMAGEFILE  "src/electric/ep10.png"
+
+// покупка
+spriteset (ep10_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(0, 37, -10)
+}
+
+// нет тока
+spriteset (ep10_notpowered_spriteset, IMAGEFILE)
+{
+  s13_template(0, 37, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (ep10_loading_spriteset, IMAGEFILE)
+{
+  s13_template(0, 104, 0)
+} 
+
+spriteset (ep10_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(0, 171, 0)
+} 
+
+spritegroup ep10_spritegroup
+{
+  loading: ep10_loading_spriteset;
+  loaded: ep10_traveling_spriteset;
+}
+
+spriteset (ep10_speedover50_spriteset, IMAGEFILE)
+{
+  s13_template(0, 238, 0)
+} 
+
+// 2: покупка
+spriteset (ep10_v2_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(0, 330, -10)
+}
+
+// нет тока
+spriteset (ep10_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s13_template(0, 330, 0)
+}
+ 
+// обычный: погрузка/перемещение
+spriteset (ep10_v2_loading_spriteset, IMAGEFILE)
+{
+  s13_template(0, 397, 0)
+} 
+
+spriteset (ep10_v2_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(0, 464, 0)
+} 
+
+spritegroup ep10_v2_spritegroup
+{
+  loading: ep10_v2_loading_spriteset;
+  loaded: ep10_v2_traveling_spriteset;
+}
+
+spriteset (ep10_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s13_template(0, 531, 0)
+} 
+
+// 3: покупка
+spriteset (ep10_v3_purchase_spriteset, IMAGEFILE)
+{
+  s13_purchase_template(0, 617, -10)
+}
+
+// нет тока
+spriteset (ep10_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s13_template(0, 617, 0)
+}
+ 
+// обычный: погрузка/перемещение
+spriteset (ep10_v3_loading_spriteset, IMAGEFILE)
+{
+  s13_template(0, 684, 0)
+} 
+
+spriteset (ep10_v3_traveling_spriteset, IMAGEFILE)
+{
+  s13_template(0, 751, 0)
+} 
+
+spritegroup ep10_v3_spritegroup
+{
+  loading: ep10_v3_loading_spriteset;
+  loaded: ep10_v3_traveling_spriteset;
+}
+
+spriteset (ep10_v3_speedover50_spriteset, IMAGEFILE)
+{
+  s13_template(0, 818, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ep10_get_spriteset2,
+  // поправка на нет тока
+  (((last_computed_result > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((build_year >= 2004) * 3) +
+  ((build_year >= 2006) * 3)
+)
+{
+  0: ep10_notpowered_spriteset;
+  1: ep10_spritegroup;
+  2: ep10_speedover50_spriteset;
+  3: ep10_v2_notpowered_spriteset;
+  4: ep10_v2_spritegroup;
+  5: ep10_v2_speedover50_spriteset;
+  6: ep10_v3_notpowered_spriteset;
+  7: ep10_v3_spritegroup;
+  8: ep10_v3_speedover50_spriteset;
+  align_13_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, ep10_get_spriteset1,
+  current_speed)
+{
+  ep10_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, ep10_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  ep10_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, ep10_get_purchase_spriteset,
+  (current_year >= 2004) +
+  (current_year >= 2006))
+{
+  0: ep10_purchase_spriteset;
+  1: ep10_v2_purchase_spriteset;
+  ep10_v3_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, ep10_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ep10_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: 160 км/ч
+#define MAX_SPEED 160
+
+switch (FEAT_TRAINS, SELF, ep10_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, ep10_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, ep10_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, SELF, ep10_cost_factor,
+  (current_year >= 2000) +
+  (current_year >= 2004))
+{
+  0: return 553;
+  1: return 600;
+  return 813;
+}
+
+item (FEAT_TRAINS, ep10) 
+{
+  property
+  {
+    name: string(STR_EP10_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1998, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: get_electric_cost_factor();
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_dual_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 9060 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    weight: 135 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: 0.22675736961;
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: ep10_get_spriteset;
+    purchase: ep10_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep10_can_attach_wagon;
+    start_stop: ep10_start_stop;
+    additional_text: return string(STR_EP10_PURCHASE_HINT);
+    speed: ep10_speed;
+    purchase_speed: ep10_purchase_speed;
+    bitmask_vehicle_info: ep10_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    cost_factor: ep10_cost_factor;
+  }
+}
