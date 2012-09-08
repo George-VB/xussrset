@@ -1,0 +1,291 @@
+ // vl22m
+
+// ВЛ22м (1947-1958) - модернизированная версия ВЛ22
+
+#define IMAGEFILE  "src/electric/vl22m.png"
+
+// покупка
+spriteset (vl22m_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(3, 25, -4)
+}
+
+// нет тока
+spriteset (vl22m_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(3, 25, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl22m_loading_spriteset, IMAGEFILE)
+{
+  s10_template(3, 92, 0)
+} 
+
+spriteset (vl22m_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(3, 159, 0)
+} 
+
+spritegroup vl22m_spritegroup
+{
+  loading: vl22m_loading_spriteset;
+  loaded: vl22m_traveling_spriteset;
+}
+
+spriteset (vl22m_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(3, 226, 0)
+} 
+
+// 2: покупка
+spriteset (vl22m_v2_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(3, 302, -4)
+}
+
+// нет тока
+spriteset (vl22m_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(3, 302, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl22m_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(3, 369, 0)
+} 
+
+spriteset (vl22m_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(3, 436, 0)
+} 
+
+spritegroup vl22m_v2_spritegroup
+{
+  loading: vl22m_v2_loading_spriteset;
+  loaded: vl22m_v2_traveling_spriteset;
+}
+
+spriteset (vl22m_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(3, 503, 0)
+} 
+
+// 3: нет тока
+spriteset (vl22m_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(3, 575, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl22m_v3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(3, 642, 0)
+} 
+
+spriteset (vl22m_v3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(3, 709, 0)
+} 
+
+spritegroup vl22m_v3_spritegroup
+{
+  loading: vl22m_v3_loading_spriteset;
+  loaded: vl22m_v3_traveling_spriteset;
+}
+
+spriteset (vl22m_v3_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(3, 776, 0)
+} 
+
+// нет тока
+spriteset (vl22m_v4_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(3, 847, 0)
+} 
+
+// 4: обычный: погрузка/перемещение
+spriteset (vl22m_v4_loading_spriteset, IMAGEFILE)
+{
+  s10_template(3, 914, 0)
+} 
+
+spriteset (vl22m_v4_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(3, 981, 0)
+} 
+
+spritegroup vl22m_v4_spritegroup
+{
+  loading: vl22m_v4_loading_spriteset;
+  loaded: vl22m_v4_traveling_spriteset;
+}
+
+spriteset (vl22m_v4_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(3, 1048, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl22m_get_spriteset2,
+  // поправка на нет тока
+  (((last_computed_result > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+
+  ((build_year >= 1972) * 6) +
+  (cargo_subtype * 3)
+)
+{
+  0: vl22m_notpowered_spriteset;
+  1: vl22m_spritegroup;
+  2: vl22m_speedover50_spriteset;
+
+  3: vl22m_v3_notpowered_spriteset;
+  4: vl22m_v3_spritegroup;
+  5: vl22m_v3_speedover50_spriteset;
+  6: vl22m_v2_notpowered_spriteset;
+  7: vl22m_v2_spritegroup;
+  8: vl22m_v2_speedover50_spriteset;
+  9: vl22m_v4_notpowered_spriteset;
+  10: vl22m_v4_spritegroup;
+  11: vl22m_v4_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, vl22m_get_spriteset1,
+  current_speed)
+{
+  vl22m_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl22m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  vl22m_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, vl22m_get_purchase_spriteset,
+  (current_year >= 1972)
+)
+{
+  0: vl22m_purchase_spriteset;
+  vl22m_v2_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, vl22m_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, vl22m_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl22m_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_LIGHT_BLUE_MALE);
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: 80 км/ч
+#define MAX_SPEED 80
+
+switch (FEAT_TRAINS, SELF, vl22m_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl22m_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl22m_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vl22m), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, vl22m_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(vl22m), 0),
+  vehicle_type_id == vl22m
+])
+{
+  vl22m_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, vl22m_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  vl22m_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, vl22m) 
+{
+  property
+  {
+    name: string(STR_VL22M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1947, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cost_factor: 50;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2480 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 132 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: 0.1167285095;
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: vl22m_get_spriteset;
+    purchase: vl22m_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: vl22m_can_attach_wagon;
+    start_stop: vl22m_start_stop;
+    additional_text: return string(STR_VL22M_PURCHASE_HINT);
+    cargo_subtype_text: vl22m_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: vl22m_speed;
+    purchase_speed: vl22m_purchase_speed;
+    bitmask_vehicle_info: vl22m_bitmask_vehicle_info;
+  }
+}
