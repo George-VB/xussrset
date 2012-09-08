@@ -1,0 +1,212 @@
+ // ssm
+
+// СсМ (1952-1956) - модернизированная версия грузопассажирского Сс.
+
+#define IMAGEFILE  "src/electric/ssm.png"
+
+// покупка
+spriteset (ssm_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(2, 21, -4)
+}
+
+// нет тока
+spriteset (ssm_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(2, 21, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (ssm_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 88, 0)
+} 
+
+spriteset (ssm_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 155, 0)
+} 
+
+spritegroup ssm_spritegroup
+{
+  loading: ssm_loading_spriteset;
+  loaded: ssm_traveling_spriteset;
+}
+
+spriteset (ssm_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(2, 222, 0)
+} 
+
+// 2: нет тока
+spriteset (ssm_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(2, 290, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (ssm_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 357, 0)
+} 
+
+spriteset (ssm_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 424, 0)
+} 
+
+spritegroup ssm_v2_spritegroup
+{
+  loading: ssm_v2_loading_spriteset;
+  loaded: ssm_v2_traveling_spriteset;
+}
+
+spriteset (ssm_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(2, 491, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ssm_get_spriteset2,
+  // поправка на нет тока
+  (((last_computed_result > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  (cargo_subtype * 3)
+)
+{
+  0: ssm_notpowered_spriteset;
+  1: ssm_spritegroup;
+  2: ssm_speedover50_spriteset;
+
+  3: ssm_v2_notpowered_spriteset;
+  4: ssm_v2_spritegroup;
+  5: ssm_v2_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, ssm_get_spriteset1,
+  current_speed)
+{
+  ssm_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, ssm_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  ssm_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, ssm_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ssm_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, ssm_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_GREEN_GRASS);
+  1: string(STR_REFIT_LIGHT_BLUE_MALE);
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: с 1945 - 70 км/ч
+#define MAX_SPEED 70
+
+switch (FEAT_TRAINS, SELF, ssm_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, ssm_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, ssm_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(ssm), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, ssm_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(ssm), 0),
+  vehicle_type_id == ssm
+])
+{
+  ssm_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, ssm_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  ssm_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, ssm) 
+{
+  property
+  {
+    name: string(STR_SSM_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1952, 1, 1);
+    vehicle_life: 16; // срок службы
+    model_life: 16; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cost_factor: 50;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2450 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 132 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: 0.15538;
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: ssm_get_spriteset;
+    purchase: ssm_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: ssm_can_attach_wagon;
+    start_stop: ssm_start_stop;
+    additional_text: return string(STR_SSM_PURCHASE_HINT);
+    cargo_subtype_text: ssm_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: ssm_speed;
+    purchase_speed: ssm_purchase_speed;
+    bitmask_vehicle_info: ssm_bitmask_vehicle_info;
+  }
+}
