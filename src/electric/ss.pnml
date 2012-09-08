@@ -1,0 +1,295 @@
+ // ss
+
+// "Сурамский советский" (1932-1934) - первый серийный электровоз
+// советского производства.
+
+#define IMAGEFILE  "src/electric/ss.png"
+
+// покупка
+spriteset (ss_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(2, 19, -4)
+}
+
+// нет тока
+spriteset (ss_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(2, 19, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (ss_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 86, 0)
+} 
+
+spriteset (ss_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 153, 0)
+} 
+
+spritegroup ss_spritegroup
+{
+  loading: ss_loading_spriteset;
+  loaded: ss_traveling_spriteset;
+}
+
+spriteset (ss_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(2, 220, 0)
+} 
+
+// 2: покупка
+spriteset (ss_v2_purchase_spriteset, IMAGEFILE)
+{
+  s10_purchase_template(2, 291, -4)
+}
+
+// нет тока
+spriteset (ss_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(2, 291, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (ss_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 358, 0)
+} 
+
+spriteset (ss_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 425, 0)
+} 
+
+spritegroup ss_v2_spritegroup
+{
+  loading: ss_v2_loading_spriteset;
+  loaded: ss_v2_traveling_spriteset;
+}
+
+spriteset (ss_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(2, 492, 0)
+} 
+
+// 3: нет тока
+spriteset (ss_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(2, 560, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (ss_v3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 627, 0)
+} 
+
+spriteset (ss_v3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 694, 0)
+} 
+
+spritegroup ss_v3_spritegroup
+{
+  loading: ss_v3_loading_spriteset;
+  loaded: ss_v3_traveling_spriteset;
+}
+
+spriteset (ss_v3_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(2, 761, 0)
+} 
+
+// нет тока
+spriteset (ss_v4_notpowered_spriteset, IMAGEFILE)
+{
+  s10_template(2, 828, 0)
+} 
+
+// 4: обычный: погрузка/перемещение
+spriteset (ss_v4_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 895, 0)
+} 
+
+spriteset (ss_v4_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 962, 0)
+} 
+
+spritegroup ss_v4_spritegroup
+{
+  loading: ss_v4_loading_spriteset;
+  loaded: ss_v4_traveling_spriteset;
+}
+
+spriteset (ss_v4_speedover50_spriteset, IMAGEFILE)
+{
+  s10_template(2, 1029, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ss_get_spriteset2,
+  // поправка на нет тока
+  (((last_computed_result > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+
+  ((build_year >= 1933) * 3) +
+  (cargo_subtype * 3)
+)
+{
+  0: ss_notpowered_spriteset;
+  1: ss_spritegroup;
+  2: ss_speedover50_spriteset;
+
+  3: ss_v2_notpowered_spriteset;
+  4: ss_v2_spritegroup;
+  5: ss_v2_speedover50_spriteset;
+  6: ss_v3_notpowered_spriteset;
+  7: ss_v3_spritegroup;
+  8: ss_v3_speedover50_spriteset;
+  9: ss_v4_notpowered_spriteset;
+  10: ss_v4_spritegroup;
+  11: ss_v4_speedover50_spriteset;
+  align_10_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, ss_get_spriteset1,
+  current_speed)
+{
+  ss_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, ss_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  ss_get_spriteset1;
+}
+
+// покупка
+switch (FEAT_TRAINS, SELF, ss_get_purchase_spriteset,
+  (current_year >= 1933)
+)
+{
+  0: ss_purchase_spriteset;
+  ss_v2_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, ss_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ss_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, ss_cargo_subtype_text,
+  (build_year >= 1933) +
+  (cargo_subtype * 2))
+{
+  0: string(STR_REFIT_PREPRODUCTION);
+  1: string(STR_REFIT_GREEN_GRASS);
+  3: string(STR_REFIT_RAL_6020);
+  5: string(STR_REFIT_LIGHT_BLUE_MALE);
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: с 1932 - 65 км/ч; с 1940 - 80 км/ч; с 1945 - 70 км/ч
+#define MAX_SPEED current_year < 1940 ? 65 : current_year < 1945 ? 80 : 70
+
+switch (FEAT_TRAINS, SELF, ss_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, ss_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, ss_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(ss), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, ss_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(ss), 0),
+  vehicle_type_id == ss
+])
+{
+  ss_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, ss_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  ss_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, ss) 
+{
+  property
+  {
+    name: string(STR_SS_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1932, 1, 1);
+    vehicle_life: 40; // срок службы
+    model_life: 40; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cost_factor: 50;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2430 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 132 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: 0.15538;
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: ss_get_spriteset;
+    purchase: ss_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: ss_can_attach_wagon;
+    start_stop: ss_start_stop;
+    additional_text: return string(STR_SS_PURCHASE_HINT);
+    cargo_subtype_text: ss_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: ss_speed;
+    purchase_speed: ss_purchase_speed;
+    bitmask_vehicle_info: ss_bitmask_vehicle_info;
+  }
+}
