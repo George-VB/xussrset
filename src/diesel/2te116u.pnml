@@ -66,6 +66,12 @@ spriteset (_2te116u_r_v2_spriteset, IMAGEFILE)
   s11_template(505, 14, 0)
 } 
 
+// покупка
+spriteset (_2te116u_v3_purchase_spriteset, IMAGEFILE)
+{
+  s11_purchase_template(86, 166, -6)
+}
+
 // обычный: погрузка/перемещение
 spriteset (_2te116u_v3_loading_spriteset, IMAGEFILE)
 {
@@ -94,7 +100,7 @@ spriteset (_2te116u_r_v3_spriteset, IMAGEFILE)
 switch (FEAT_TRAINS, SELF, _2te116u_get_spriteset2,
   ((last_computed_result - count_veh_id(_2te116u)) % 2) +
   ((current_year >= 2009) * 2) +
-  (cargo_subtype * 2)
+  ((build_year >= 2011) * 2)
 )
 {
   0: _2te116u_spritegroup;
@@ -123,11 +129,13 @@ switch (FEAT_TRAINS, SELF, _2te116u_get_spriteset,
 
 // покупка
 switch (FEAT_TRAINS, SELF, _2te116u_get_purchase_spriteset,
-  (current_year >= 2009)
+  (current_year >= 2009) +
+  (current_year >= 2011)
 )
 {
   0: _2te116u_purchase_spriteset;
-  _2te116u_v2_purchase_spriteset;
+  1: _2te116u_v2_purchase_spriteset;
+  _2te116u_v3_purchase_spriteset;
 }
 
 // Что присоединяем?
@@ -197,19 +205,12 @@ switch (FEAT_TRAINS, SELF, _2te116u_cost_factor,
   return 490;
 }
 
-switch (FEAT_TRAINS, SELF, _2te116u_cargo_subtype_text2,
-  (current_year > 2009)
-)
-{
-  1: string(STR_REFIT_RZD_PID);
-  return CB_RESULT_NO_TEXT;
-}
-
 switch (FEAT_TRAINS, SELF, _2te116u_cargo_subtype_text,
-  cargo_subtype)
+  (build_year >= 2011) +
+  (cargo_subtype * 2))
 {
-  0: string(STR_REFIT_FACTORY);
-  1: _2te116u_cargo_subtype_text2;
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_RZD_PID);
   return CB_RESULT_NO_TEXT;
 }
 
