@@ -1,0 +1,173 @@
+ // n60
+
+// ВЛ60 - первый массовый отечественный электровоз переменного тока.
+// Н60 - предсерийная версия
+
+#define IMAGEFILE  "src/electric/n60-vl60.png"
+
+// покупка
+spriteset (n60_purchase_spriteset, IMAGEFILE)
+{
+  s12_purchase_template(6, 27, -8)
+}
+
+// нет тока
+spriteset (n60_notpowered_spriteset, IMAGEFILE)
+{
+  s12_template(6, 27, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (n60_loading_spriteset, IMAGEFILE)
+{
+  s12_template(6, 94, 0)
+} 
+
+spriteset (n60_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(6, 161, 0)
+} 
+
+spritegroup n60_spritegroup
+{
+  loading: n60_loading_spriteset;
+  loaded: n60_traveling_spriteset;
+}
+
+spriteset (n60_speedover50_spriteset, IMAGEFILE)
+{
+  s12_template(6, 228, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, n60_get_spriteset2,
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)))  
+)
+{
+  0: n60_notpowered_spriteset;
+  1: n60_spritegroup;
+  2: n60_speedover50_spriteset;
+  align_12_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, n60_get_spriteset1,
+[
+  STORE_TEMP(current_speed, 1)
+])
+{
+  n60_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, n60_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  n60_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, n60_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, n60_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: 100 км/ч
+#define MAX_SPEED 100
+
+switch (FEAT_TRAINS, SELF, n60_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, n60_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, n60_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(n60), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, n60_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(n60), 0),
+  vehicle_type_id == n60
+])
+{
+  n60_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, n60_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  n60_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, n60) 
+{
+  property
+  {
+    name: string(STR_N60_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1959, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: 20; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: 80;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 4470 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    weight: 140 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: (255.0/140/9.8);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: n60_get_spriteset;
+    purchase: n60_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: n60_can_attach_wagon;
+    start_stop: n60_start_stop;
+    additional_text: return string(STR_N60_PURCHASE_HINT);
+    speed: n60_speed;
+    purchase_speed: n60_purchase_speed;
+    bitmask_vehicle_info: n60_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+  }
+}
