@@ -62,6 +62,15 @@ spritegroup flatbed_13_479_vehi_spritegroup
 
 #undef IMAGEFILE
 
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, flatbed_13_479__get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  flatbed_13_479_vehi_spritegroup;
+}
+
 random_switch (FEAT_TRAINS, SELF, flatbed_13_479_colour_mapping,
   bitmask(TRIGGER_VEHICLE_NEW_LOAD)
 )
@@ -104,7 +113,7 @@ item (FEAT_TRAINS, flatbed_13_479)
   }
   graphics
   {
-    default: flatbed_13_479_vehi_spritegroup;
+    default: flatbed_13_479__get_spriteset;
     purchase: flatbed_13_479_purchase_spriteset;
     articulated_part: articulated_part_dummy5;
     additional_text: return string(STR_FLATBED_13_479_PURCHASE_HINT);
