@@ -1,0 +1,70 @@
+ // dumpcar_33_677
+
+/// Вагон
+// 33-677 6-осный думпкар типа ВС-105
+// dumpcar
+
+#define IMAGEFILE  "src/freight/dumpcar-33-677.png"
+
+// покупка
+spriteset (dumpcar_33_677_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(0, 18, 0)
+}
+
+// вид 1
+spriteset (dumpcar_33_677_spriteset, IMAGEFILE)
+{
+  s9_template(0, 18, 0)
+}
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, dumpcar_33_677_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  dumpcar_33_677_spriteset;
+}
+
+
+item (FEAT_TRAINS, dumpcar_33_677) 
+{
+  property
+  {
+    name: string(STR_DUMPCAR_33_677_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1992), 1, 1);
+    model_life: 22;
+    vehicle_life: 22;
+    reliability_decay: 20;
+    cargo_allow_refit: [COAL, IORE, CORE, GOLD, GRVL, AORE, CLAY, LIME,
+      POTA, SAND, SULP];
+    default_cargo_type: COAL;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 80 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 23;
+    cargo_capacity: 105;
+    weight: 62 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: dumpcar_33_677_get_spriteset;
+    purchase: dumpcar_33_677_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_DUMPCAR_33_677_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
