@@ -16,7 +16,22 @@ spriteset (boxcar_11_259_spriteset, IMAGEFILE)
   s9_template(0, 38, 0)
 }
 
+// вид 2
+spriteset (boxcar_11_259_v2_spriteset, IMAGEFILE)
+{
+  s9_template(0, 113, 0)
+}
+
+
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_259_get_spriteset2,
+  cargo_subtype)
+{
+  0: boxcar_11_259_spriteset;
+  1: boxcar_11_259_v2_spriteset;
+  align_9_spriteset;
+}
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -24,7 +39,15 @@ switch (FEAT_TRAINS, SELF, boxcar_11_259_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  boxcar_11_259_spriteset;
+  boxcar_11_259_get_spriteset2;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_259_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_V1);
+  1: string(STR_REFIT_V2);
+  return CB_RESULT_NO_TEXT;
 }
 
 item (FEAT_TRAINS, boxcar_11_259) 
@@ -62,5 +85,6 @@ item (FEAT_TRAINS, boxcar_11_259)
     articulated_part: articulated_part_dummy1;
     additional_text: return string(STR_BOXCAR_11_259_PURCHASE_HINT);
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: boxcar_11_259_cargo_subtype_text;
   }
 }
