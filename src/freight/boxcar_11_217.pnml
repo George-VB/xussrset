@@ -1,0 +1,112 @@
+ // boxcar_11_217
+
+/// Вагон
+
+// Графика от 11-259
+#define IMAGEFILE  "src/freight/boxcar-11-259-1984.png"
+
+// покупка
+spriteset (boxcar_11_217_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(0, 38, -2)
+}
+
+// шаблон: движение/100%, 33%, 66%, 99%
+#define boxcar_11_217_sprite_layout_template(x, y, v) \
+spriteset (boxcar_11_217##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y, 0) \
+} \
+ \
+spriteset (boxcar_11_217_1##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y+113-38, 0) \
+} \
+ \
+spriteset (boxcar_11_217_2##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y+188-38, 0) \
+} \
+ \
+spriteset (boxcar_11_217_3##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y+263-38, 0) \
+} \
+ \
+spritegroup boxcar_11_217##v##_spritegroup \
+{ \
+  loading: [boxcar_11_217_1##v##_spriteset, \
+    boxcar_11_217_1##v##_spriteset, \
+    boxcar_11_217_1##v##_spriteset, \
+    boxcar_11_217_2##v##_spriteset, \
+    boxcar_11_217_2##v##_spriteset, \
+    boxcar_11_217_2##v##_spriteset, \
+    boxcar_11_217_3##v##_spriteset, \
+    boxcar_11_217_3##v##_spriteset, \
+    boxcar_11_217_3##v##_spriteset, \
+    boxcar_11_217##v##_spriteset]; \
+  loaded: [boxcar_11_217##v##_spriteset]; \
+} \
+
+
+
+// ливреи
+boxcar_11_217_sprite_layout_template(0, 38,)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_217_get_spriteset2,
+  cargo_subtype)
+{
+  0..79: boxcar_11_217_spritegroup;
+  align_9_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, boxcar_11_217_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  boxcar_11_217_get_spriteset2;
+}
+
+item (FEAT_TRAINS, boxcar_11_217) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_217_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1976), 1, 1);
+    model_life: 32;
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, PAPR, ENSP, MNSP, FICR, BDMT];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: RAIL;
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 17;
+    cargo_capacity: 2*68;
+    weight: 25 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_217_get_spriteset;
+    purchase: boxcar_11_217_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_BOXCAR_11_217_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: ttd_cc_cargo_subtype_text;
+    colour_mapping: ttd_cc_colour_mapping;
+  }
+}
