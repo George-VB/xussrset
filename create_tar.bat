@@ -1,10 +1,12 @@
 @echo off
-set PATH=C:\MinGW\msys\1.0\bin;C:\Program Files\7-Zip;%PATH%
-:: определяем текущую ревизию
-for /F %%i in ('hg id -n') do set REPO_REVISION=%%i
+call compile selfconfig
+call config user
 
-:: убираем +, если он есть
-if "%REPO_REVISION:~-1%" == "+" set REPO_REVISION=%REPO_REVISION:~0,-1%
+:: задаём переменные окружения
+set PATH=%PATHMINGW%;%PATH7Z%;%PATHTHG%;%PATH%
+
+:: определяем текущую ревизию
+call compile gethgrev
 
 :: имя папки
 set TITLE=xussr_railway_set-1.0.%REPO_REVISION%_alpha
