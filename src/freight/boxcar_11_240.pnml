@@ -12,15 +12,56 @@ spriteset (boxcar_11_240_purchase_spriteset, IMAGEFILE)
   s9_purchase_template(0, 38, -2)
 }
 
-// вид 1
-spriteset (boxcar_11_240_spriteset, IMAGEFILE)
-{
-  s9_template(0, 38, 0)
-}
+// шаблон: движение/100%, 33%, 66%, 99%
+#define boxcar_11_240_sprite_layout_template(x, y, v) \
+spriteset (boxcar_11_240##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y, 0) \
+} \
+ \
+spriteset (boxcar_11_240_1##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y+113-38, 0) \
+} \
+ \
+spriteset (boxcar_11_240_2##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y+188-38, 0) \
+} \
+ \
+spriteset (boxcar_11_240_3##v##_spriteset, IMAGEFILE) \
+{ \
+  s9_template(x, y+263-38, 0) \
+} \
+ \
+spritegroup boxcar_11_240##v##_spritegroup \
+{ \
+  loading: [boxcar_11_240_1##v##_spriteset, \
+    boxcar_11_240_1##v##_spriteset, \
+    boxcar_11_240_1##v##_spriteset, \
+    boxcar_11_240_2##v##_spriteset, \
+    boxcar_11_240_2##v##_spriteset, \
+    boxcar_11_240_2##v##_spriteset, \
+    boxcar_11_240_3##v##_spriteset, \
+    boxcar_11_240_3##v##_spriteset, \
+    boxcar_11_240_3##v##_spriteset, \
+    boxcar_11_240##v##_spriteset]; \
+  loaded: [boxcar_11_240##v##_spriteset]; \
+} \
 
-// Реверс: (441, y, 0)
+
+
+// ливреи
+boxcar_11_240_sprite_layout_template(0, 38,)
 
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_get_spriteset2,
+  cargo_subtype)
+{
+  0..2: boxcar_11_240_spritegroup;
+  align_9_spriteset;
+}
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -28,7 +69,25 @@ switch (FEAT_TRAINS, SELF, boxcar_11_240_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  boxcar_11_240_spriteset;
+  boxcar_11_240_get_spriteset2;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_colour_mapping,
+  cargo_subtype)
+{
+  0: return ttd_cc + 81;
+  1: return ttd_cc + 80;
+  2: return ttd_cc + 82;
+  return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_1A);
+  1: string(STR_REFIT_TTD_19);
+  2: string(STR_REFIT_TTD_5A);
+  return CB_RESULT_NO_TEXT;
 }
 
 item (FEAT_TRAINS, boxcar_11_240) 
@@ -65,5 +124,7 @@ item (FEAT_TRAINS, boxcar_11_240)
     purchase: boxcar_11_240_purchase_spriteset;
     articulated_part: articulated_part_dummy1;
     additional_text: return string(STR_BOXCAR_11_240_PURCHASE_HINT);
+    cargo_subtype_text: boxcar_11_240_cargo_subtype_text;
+    colour_mapping: boxcar_11_240_colour_mapping;
   }
 }
