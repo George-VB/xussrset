@@ -1,0 +1,316 @@
+ // vl80t
+
+// ВЛ80Т "Выло" (1969-1980) - усиленная модификация ВЛ10 с повышенной
+// нагрузкой на ось для большего сцепного веса
+
+#define IMAGEFILE  "src/electric/vl80t.png"
+
+// покупка
+spriteset (vl80t_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(3, 53, 0)
+}
+
+// нет тока
+spriteset (vl80t_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(3, 53, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl80t_loading_spriteset, IMAGEFILE)
+{
+  s9_template(3, 120, 0)
+} 
+
+spriteset (vl80t_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(3, 187, 0)
+} 
+
+spritegroup vl80t_spritegroup
+{
+  loading: vl80t_loading_spriteset;
+  loaded: vl80t_traveling_spriteset;
+}
+
+spriteset (vl80t_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(3, 254, 0)
+} 
+
+// нет тока
+spriteset (vl80t_r_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(434, 53, 0)
+} 
+
+// развёрнутый
+spriteset (vl80t_r_spriteset, IMAGEFILE)
+{
+  s9_template(434, 120, 0)
+} 
+
+// покупка
+spriteset (vl80t_v2_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(3, 373, 0)
+}
+
+// нет тока
+spriteset (vl80t_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(3, 373, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl80t_v2_loading_spriteset, IMAGEFILE)
+{
+  s9_template(3, 440, 0)
+} 
+
+spriteset (vl80t_v2_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(3, 507, 0)
+} 
+
+spritegroup vl80t_v2_spritegroup
+{
+  loading: vl80t_v2_loading_spriteset;
+  loaded: vl80t_v2_traveling_spriteset;
+}
+
+spriteset (vl80t_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(3, 574, 0)
+} 
+
+// нет тока
+spriteset (vl80t_r_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(434, 373, 0)
+} 
+
+// развёрнутый
+spriteset (vl80t_r_v2_spriteset, IMAGEFILE)
+{
+  s9_template(434, 440, 0)
+} 
+
+// покупка
+spriteset (vl80t_v3_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(3, 691, 0)
+}
+
+// нет тока
+spriteset (vl80t_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(3, 691, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl80t_v3_loading_spriteset, IMAGEFILE)
+{
+  s9_template(3, 758, 0)
+} 
+
+spriteset (vl80t_v3_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(3, 825, 0)
+} 
+
+spritegroup vl80t_v3_spritegroup
+{
+  loading: vl80t_v3_loading_spriteset;
+  loaded: vl80t_v3_traveling_spriteset;
+}
+
+spriteset (vl80t_v3_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(3, 892, 0)
+} 
+
+// нет тока
+spriteset (vl80t_r_v3_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(434, 691, 0)
+} 
+
+// развёрнутый
+spriteset (vl80t_r_v3_spriteset, IMAGEFILE)
+{
+  s9_template(434, 758, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl80t_get_spriteset2,
+  (((LOAD_TEMP(0) - count_veh_id(vl80t)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((current_year >= 1972 && build_year < 1972) * 6) +
+  ((build_year >= 1978) * 12)
+)
+{
+  0: vl80t_notpowered_spriteset;
+  1: vl80t_spritegroup;
+  2: vl80t_speedover50_spriteset;
+  3: vl80t_r_notpowered_spriteset;
+  4..5: vl80t_r_spriteset;
+  6: vl80t_v2_notpowered_spriteset;
+  7: vl80t_v2_spritegroup;
+  8: vl80t_v2_speedover50_spriteset;
+  9: vl80t_r_v2_notpowered_spriteset;
+  10..11: vl80t_r_v2_spriteset;
+  12: vl80t_v3_notpowered_spriteset;
+  13: vl80t_v3_spritegroup;
+  14: vl80t_v3_speedover50_spriteset;
+  15: vl80t_r_v3_notpowered_spriteset;
+  16..17: vl80t_r_v3_spriteset;
+  align_9_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, vl80t_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(vl80t), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  vl80t_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl80t_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  vl80t_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, vl80t_get_purchase_spriteset,
+  (current_year >= 1972) +
+  (current_year >= 1978))
+{
+  0: vl80t_purchase_spriteset;
+  1: vl80t_v2_purchase_spriteset;
+  2: vl80t_v3_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, vl80t_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Если хотя бы 2 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, vl80t_start_stop2,
+[
+  set_offset_to(2),
+  prev_vehicle_type_id() == vl80t
+])
+{
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше двух, то не выпускать
+switch (FEAT_TRAINS, PARENT, vl80t_start_stop,
+  count_veh_id(vl80t) >= 2)
+{
+  1: vl80t_start_stop2;
+  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
+}
+
+// Макс. скорость: 110 км/ч
+#define MAX_SPEED 110
+
+switch (FEAT_TRAINS, SELF, vl80t_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl80t_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl80t_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vl80t), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, vl80t_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(vl80t), 0),
+  vehicle_type_id == vl80t
+])
+{
+  vl80t_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, vl80t_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  vl80t_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, vl80t) 
+{
+  property
+  {
+    name: string(STR_VL80T_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1969, 1, 1);
+    vehicle_life: 40; // срок службы
+    model_life: 40; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: 70;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: (8110/2) hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: (184/2) ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: (402.0/184/9.8);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: vl80t_get_spriteset;
+    purchase: vl80t_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    can_attach_wagon: vl80t_can_attach_wagon;
+    start_stop: vl80t_start_stop;
+    additional_text: return string(STR_VL80T_PURCHASE_HINT);
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    speed: vl80t_speed;
+    purchase_speed: vl80t_purchase_speed;
+    bitmask_vehicle_info: vl80t_bitmask_vehicle_info;
+  }
+}
