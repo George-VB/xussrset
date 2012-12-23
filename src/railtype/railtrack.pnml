@@ -1,145 +1,415 @@
  /// railtracks
 
-// Переезды
-/*
-switch (FEAT_RAILTYPES, SELF, rail_level_crossings,
-  level_crossing_status)
-{
-  LEVEL_CROSSING_CLOSED: rail_level_crossings_closed;
-  rail_level_crossings_open;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail2_level_crossings,
-  level_crossing_status)
-{
-  LEVEL_CROSSING_CLOSED: rail2_level_crossings_closed;
-  rail2_level_crossings_open;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail3_level_crossings,
-  level_crossing_status)
-{
-  LEVEL_CROSSING_CLOSED: rail3_level_crossings_closed;
-  rail3_level_crossings_open;
-}
-
-switch (FEAT_RAILTYPES, SELF, new_rail_level_crossings,
-  level_crossing_status)
-{
-  LEVEL_CROSSING_CLOSED: new_rail_level_crossings_closed_big;
-  new_rail_level_crossings_open;
-}
-
-switch (FEAT_RAILTYPES, SELF, new_rail_level_crossings2,
-  level_crossing_status)
-{
-  LEVEL_CROSSING_CLOSED: new_rail_level_crossings_closed2;
-  new_rail_level_crossings_open2;
-}
-
-switch (FEAT_RAILTYPES, SELF, new_rail_level_town_zone,
-  var[0x44, 0, 0xFF])
-{
-  TOWNZONE_EDGE: new_rail_level_crossings;
-  new_rail_level_crossings2;
-}
-*/
-
-switch (FEAT_RAILTYPES, SELF, rail_track_overlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail_track_overlay_snowed;
-  rail_track_overlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail2_track_overlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail2_track_overlay_snowed;
-  rail2_track_overlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail3_track_overlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail3_track_overlay_snowed;
-  rail3_track_overlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, raila_track_overlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: raila_track_overlay_snowed;
-  rail2_track_overlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail_underlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail_underlay_snowed;
-  rail_underlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail2_underlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail2_underlay_snowed;
-  rail2_underlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail3_underlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail3_underlay_snowed;
-  rail3_underlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, raila_underlay_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: raila_underlay_snowed;
-  rail2_underlay;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail_tunnels_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail_tunnels_snowed;
-  rail_tunnels;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail2_tunnels_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail2_tunnels_snowed;
-  rail2_tunnels;
-}
-
-switch (FEAT_RAILTYPES, SELF, rail3_tunnels_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail3_tunnels_snowed;
-  rail3_tunnels;
-}
-
-switch (FEAT_RAILTYPES, SELF, raila_tunnels_sw,
-  terrain_type )
-{
-  TILETYPE_SNOW: raila_tunnels_snowed;
-  rail2_tunnels;
-}
-
-// Депо
-
-switch (FEAT_RAILTYPES, SELF, rail_depots,
-  terrain_type )
-{
-  TILETYPE_SNOW: rail_depot_snow;
-  rail_depot;
-}
-
 if (enable_our_own_tracks)
 {
+  /// Пути эпохи индустриализации, пути промпредприятий
+  /// с испокон веков (в XLS с 1880?)
+  // Автономная железная дорога
+  item (FEAT_RAILTYPES, rla1)
+  {
+    property
+    {
+      label: "RLA1";
+      introduction_date: date(0, 1, 1);
+      name: string(STR_RAIL_NAME);
+      toolbar_caption: string(STR_RAIL_TOOLBAR);
+      menu_text: string(STR_RAIL_MENU);
+      build_window_caption: string(STR_RAIL_BUILD_CAPTION);
+      autoreplace_text: string(STR_RAIL_AUTOREPLACE);
+      new_engine_text: string(STR_RAIL_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 64;
+      speed_limit: 100 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 10;
+      sort_order: 0x08;
+      alternative_railtype_list: ["RAIL"];
+    }
+    graphics
+    {
+      gui: rail_gui;
+      track_overlay: rail_track_overlay_sw;
+      underlay: rail_underlay_sw;
+      tunnels: rail_tunnels_sw;
+      bridge_surfaces: rail_bridge_surfaces;
+      level_crossings: rail_level_crossings;
+      fences: rail_fences;
+      depots: rail_depots;
+    }
+  }
+
+  // электрифицированная железная дорога переменного тока
+  item (FEAT_RAILTYPES, era1)
+  {
+    property
+    {
+      label: "ERA1";
+      introduction_date: date(0, 1, 1);
+      name: string(STR_ERAC_NAME);
+      toolbar_caption: string(STR_ERAC_TOOLBAR);
+      menu_text: string(STR_ERAC_MENU);
+      build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+      new_engine_text: string(STR_ERAC_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERA1", "ERA2", "ERA3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 256;
+      speed_limit: 100 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 120;
+      sort_order: 0x18;
+      alternative_railtype_list: ["ELRL"];
+    }
+    graphics
+    {
+      gui: rail_gui;
+      track_overlay: rail_track_overlay_sw;
+      underlay: rail_underlay_sw;
+      tunnels: rail_tunnels_sw;
+      bridge_surfaces: rail_bridge_surfaces;
+      level_crossings: rail_level_crossings;
+      fences: rail_fences;
+      depots: rail_depots;
+      catenary_wire: erac_catenary_wire;
+      catenary_pylons: erac_catenary_pylons;
+    }
+  }
+
+  // электрифицированная железная дорога постоянного тока
+  item (FEAT_RAILTYPES, erd1)
+  {
+    property
+    {
+      label: "ERD1";
+      introduction_date: date(0, 1, 1);
+      name: string(STR_ERDC_NAME);
+      toolbar_caption: string(STR_ERDC_TOOLBAR);
+      menu_text: string(STR_ERDC_MENU);
+      build_window_caption: string(STR_ERDC_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERDC_AUTOREPLACE);
+      new_engine_text: string(STR_ERDC_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERD1", "ERD2", "ERD3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 512;
+      speed_limit: 100 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 152;
+      sort_order: 0x1C;
+      alternative_railtype_list: ["ELRL"];
+    }
+    graphics
+    {
+      gui: rail_gui;
+      track_overlay: rail_track_overlay_sw;
+      underlay: rail_underlay_sw;
+      tunnels: rail_tunnels_sw;
+      bridge_surfaces: rail_bridge_surfaces;
+      level_crossings: rail_level_crossings;
+      fences: rail_fences;
+      depots: rail_depots;
+      catenary_wire: erdc_catenary_wire;
+      catenary_pylons: erdc_catenary_pylons;
+    }
+  }
+
+  /// Магистральная линия (в XLS с 1920?)
+  // Автономная железная дорога
+  item (FEAT_RAILTYPES, rla2)
+  {
+    property
+    {
+      label: "RLA2";
+      introduction_date: date(1920, 1, 1);
+      name: string(STR_RAIL_NAME);
+      toolbar_caption: string(STR_RAIL_TOOLBAR);
+      menu_text: string(STR_RAIL_MENU);
+      build_window_caption: string(STR_RAIL_BUILD_CAPTION);
+      autoreplace_text: string(STR_RAIL_AUTOREPLACE);
+      new_engine_text: string(STR_RAIL_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 64;
+      speed_limit: 140 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 10;
+      sort_order: 0x09;
+      alternative_railtype_list: ["RAIL"];
+    }
+    graphics
+    {
+      gui: rail2_gui;
+      track_overlay: rail2_track_overlay_sw;
+      underlay: rail2_underlay_sw;
+      tunnels: rail2_tunnels_sw;
+      bridge_surfaces: rail2_bridge_surfaces;
+      level_crossings: rail2_level_crossings;
+      fences: rail2_fences;
+      depots: rail_depots;
+    }
+  }
+
+  // электрифицированная железная дорога переменного тока
+  item (FEAT_RAILTYPES, era2)
+  {
+    property
+    {
+      label: "ERA2";
+      introduction_date: date(1920, 1, 1);
+      name: string(STR_ERAC_NAME);
+      toolbar_caption: string(STR_ERAC_TOOLBAR);
+      menu_text: string(STR_ERAC_MENU);
+      build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+      new_engine_text: string(STR_ERAC_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERA1", "ERA2", "ERA3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 256;
+      speed_limit: 140 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 120;
+      sort_order: 0x19;
+      alternative_railtype_list: ["ELRL"];
+    }
+    graphics
+    {
+      gui: rail2_gui;
+      track_overlay: raila_track_overlay_sw;
+      underlay: raila_underlay_sw;
+      tunnels: raila_tunnels_sw;
+      bridge_surfaces: rail2_bridge_surfaces;
+      level_crossings: rail2_level_crossings;
+      fences: rail2_fences;
+      depots: rail_depots;
+      catenary_wire: erac_catenary_wire;
+      catenary_pylons: erac_catenary_pylons;
+    }
+  }
+
+  // электрифицированная железная дорога постоянного тока
+  item (FEAT_RAILTYPES, erd2)
+  {
+    property
+    {
+      label: "ERD2";
+      introduction_date: date(1920, 1, 1);
+      name: string(STR_ERDC_NAME);
+      toolbar_caption: string(STR_ERDC_TOOLBAR);
+      menu_text: string(STR_ERDC_MENU);
+      build_window_caption: string(STR_ERDC_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERDC_AUTOREPLACE);
+      new_engine_text: string(STR_ERDC_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERD1", "ERD2", "ERD3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 512;
+      speed_limit: 140 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 152;
+      sort_order: 0x1D;
+      alternative_railtype_list: ["ELRL"];
+    }
+    graphics
+    {
+      gui: rail2_gui;
+      track_overlay: rail2_track_overlay_sw;
+      underlay: rail2_underlay_sw;
+      tunnels: rail2_tunnels_sw;
+      bridge_surfaces: rail2_bridge_surfaces;
+      level_crossings: rail2_level_crossings;
+      fences: rail2_fences;
+      depots: rail_depots;
+      catenary_wire: erdc_catenary_wire;
+      catenary_pylons: erdc_catenary_pylons;
+    }
+  }
+
+  // Двусистемная ж/д (double-system)
+  item (FEAT_RAILTYPES, er2s)
+  {
+    property
+    {
+      label: "ER2S";
+      introduction_date: date(1920, 1, 1);
+      name: string(STR_ERDS_NAME);
+      toolbar_caption: string(STR_ERDS_TOOLBAR);
+      menu_text: string(STR_ERDS_MENU);
+      build_window_caption: string(STR_ERDS_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERDS_AUTOREPLACE);
+      new_engine_text: string(STR_ERDS_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERA1", "ERA2", "ERA3", "ERD1",
+        "ERD2", "ERD3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      construction_cost: 1024;
+      speed_limit: 140 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 23;
+      sort_order: 0x20;
+    }
+    graphics
+    {
+      gui: rail2_gui;
+      track_overlay: rail2_track_overlay_sw;
+      underlay: rail2_underlay_sw;
+      tunnels: rail2_tunnels_sw;
+      bridge_surfaces: rail2_bridge_surfaces;
+      level_crossings: rail2_level_crossings;
+      fences: rail2_fences;
+      depots: rail_depots;
+      catenary_wire: erds_catenary_wire;
+      catenary_pylons: erds_catenary_pylons;
+    }
+  }
+
+  /// Высокоскоростная пассажирская магистраль (в XLS с 1960?)
+  // Автономная железная дорога
+  item (FEAT_RAILTYPES, rla3)
+  {
+    property
+    {
+      label: "RLA3";
+      introduction_date: date(1960, 1, 1);
+      name: string(STR_RAIL_NAME);
+      toolbar_caption: string(STR_RAIL_TOOLBAR);
+      menu_text: string(STR_RAIL_MENU);
+      build_window_caption: string(STR_RAIL_BUILD_CAPTION);
+      autoreplace_text: string(STR_RAIL_AUTOREPLACE);
+      new_engine_text: string(STR_RAIL_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 64;
+      speed_limit: 0 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 10;
+      sort_order: 0x0A;
+      alternative_railtype_list: ["RAIL"];
+    }
+    graphics
+    {
+      gui: rail3_gui;
+      track_overlay: rail3_track_overlay_sw;
+      underlay: rail3_underlay_sw;
+      tunnels: rail3_tunnels_sw;
+      bridge_surfaces: rail3_bridge_surfaces;
+      level_crossings: rail3_level_crossings;
+      fences: rail3_fences;
+      depots: rail_depots;
+    }
+  }
+
+  // электрифицированная железная дорога переменного тока
+  item (FEAT_RAILTYPES, era3)
+  {
+    property
+    {
+      label: "ERA3";
+      introduction_date: date(1960, 1, 1);
+      name: string(STR_ERAC_NAME);
+      toolbar_caption: string(STR_ERAC_TOOLBAR);
+      menu_text: string(STR_ERAC_MENU);
+      build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+      new_engine_text: string(STR_ERAC_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERA1", "ERA2", "ERA3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 256;
+      speed_limit: 0 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 120;
+      sort_order: 0x1A;
+      alternative_railtype_list: ["ELRL"];
+    }
+    graphics
+    {
+      gui: rail3_gui;
+      track_overlay: rail3_track_overlay_sw;
+      underlay: rail3_underlay_sw;
+      tunnels: rail3_tunnels_sw;
+      bridge_surfaces: rail3_bridge_surfaces;
+      level_crossings: rail3_level_crossings;
+      fences: rail3_fences;
+      depots: rail_depots;
+      catenary_wire: erac_catenary_wire;
+      catenary_pylons: erac_catenary_pylons;
+    }
+  }
+
+  // электрифицированная железная дорога постоянного тока
+  item (FEAT_RAILTYPES, erd3)
+  {
+    property
+    {
+      label: "ERD3";
+      introduction_date: date(1960, 1, 1);
+      name: string(STR_ERDC_NAME);
+      toolbar_caption: string(STR_ERDC_TOOLBAR);
+      menu_text: string(STR_ERDC_MENU);
+      build_window_caption: string(STR_ERDC_BUILD_CAPTION);
+      autoreplace_text: string(STR_ERDC_AUTOREPLACE);
+      new_engine_text: string(STR_ERDC_NEW_ENGINE);
+      compatible_railtype_list: ["RAIL", "ELRL", "RLA1", "RLA2", "RLA3",
+        "ERA1", "ERA2", "ERA3", "ERD1", "ERD2", "ERD3", "ER2S"];
+      powered_railtype_list: ["ELRL", "ERD1", "ERD2", "ERD3", "ER2S"];
+      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+      curve_speed_multiplier: 1;
+      station_graphics: RAILTYPE_STATION_NORMAL;
+      construction_cost: 512;
+      speed_limit: 0 km/h;
+      acceleration_model: ACC_MODEL_RAIL;
+      map_colour: 152;
+      sort_order: 0x1E;
+      alternative_railtype_list: ["ELRL"];
+    }
+    graphics
+    {
+      gui: rail3_gui;
+      track_overlay: rail3_track_overlay_sw;
+      underlay: rail3_underlay_sw;
+      tunnels: rail3_tunnels_sw;
+      bridge_surfaces: rail3_bridge_surfaces;
+      level_crossings: rail3_level_crossings;
+      fences: rail3_fences;
+      depots: rail_depots;
+      catenary_wire: erdc_catenary_wire;
+      catenary_pylons: erdc_catenary_pylons;
+    }
+  }
+
+
+/*
   // Переопределим элементы обычной ж/д
   item (FEAT_RAILTYPES, rail)
   {
@@ -282,4 +552,5 @@ if (enable_our_own_tracks)
       catenary_pylons: erds_catenary_pylons;
     }
   }
+*/
 }
