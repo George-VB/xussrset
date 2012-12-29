@@ -9,10 +9,10 @@ exceeding original Transport Tycoon graphics. All technical features such as
 power, tractive effort, capacity, production date are based on pecularities and
 functionality of real vehicles.
 
-Copyright © 2004-2011 by AgRiG, Georgiy Bagaev (George), Vladimir Guryanov
-(Wowan), Andrey Kashirin (Simozzz), Alexander Kozlov (dvornik), Anton Murashov
-(Joyrider), Serguei Stepanov (Ghost), Alexander Tkachuk (Rubiroid), Vasiliy
-Verigin (Engineer_Keen).
+Copyright (C) 2004-2012 by AgRiG, George (George V. Bagaev), Wowan (Vladimir
+Guryanov), Simozzz (Andrey Kashirin), dvornik (Alexander Kozlov), Joyrider
+(Anton Murashov), Ghost (Serguei Stepanov), Rubiroid (Alexander Tkachuk),
+Engineer_Keen (Vasiliy Verigin), Otecan (Andrey Pichugin).
 
 Web: www.ttdrussia.net
 
