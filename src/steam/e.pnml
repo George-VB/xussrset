@@ -1,0 +1,165 @@
+ // e
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/e.png"
+
+// покупка
+spriteset (e_e_purchase_spriteset, IMAGEFILE)
+{
+  s7_purchase_template(7, 8, 0)
+}
+
+// паровоз, анимация из 4-х фреймов
+spriteset (e_e_1_spriteset, IMAGEFILE)
+{
+  s7_template(7, 8, 0)
+} 
+
+spriteset (e_e_2_spriteset, IMAGEFILE)
+{
+  s7_template(7, 8, 0)
+} 
+
+spriteset (e_e_3_spriteset, IMAGEFILE)
+{
+  s7_template(7, 8, 0)
+} 
+
+spriteset (e_e_4_spriteset, IMAGEFILE)
+{
+  s7_template(7, 8, 0)
+} 
+
+// тендер
+
+spriteset (e_t_spriteset, IMAGEFILE)
+{
+  s5_template(7, 176, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, PARENT, e_e_get_spriteset,
+  motion_counter & 3)
+{
+  0: e_e_1_spriteset;
+  1: e_e_2_spriteset;
+  2: e_e_3_spriteset;
+  e_e_4_spriteset;
+}
+
+// Присоединяем
+switch (FEAT_TRAINS, SELF, e_e_can_attach_wagon,
+  vehicle_type_id)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, e_e_weight,
+  (build_year >= 1920))
+{
+  0: return (78+64);
+  return (82+64);
+}
+
+switch (FEAT_TRAINS, SELF, e_e_tractive_effort_coefficient,
+  (build_year >= 1913) +
+  (build_year >= 1916) +
+  (build_year >= 1920))
+{
+  0: return int((127.0/(78+64)/9.8) * 256);///23; // (127.0/(78+64)/9.8); * 256 == 23,36303535498707
+  1: return 26; // (140.0/(78+64)/9.8); 25,75452716297787
+  2: return 27; // (149.0/(78+64)/9.8); 27,41017533774073
+  return 27; // (149.0/(82+64)/9.8); 26,65921162985742
+}
+
+switch (FEAT_TRAINS, SELF, e_e_power,
+  (build_year >= 1916) +
+  (build_year >= 1920) +
+  (build_year >= 1936))
+{
+  0: return 780;
+  1: return 790;
+  2: return 1000;
+  return 1100;
+}
+
+// Макс. скорость: 55 км/ч до 1936, 65 км/ч после
+#define MAX_SPEED current_year >= 1936 ? 65 : 55
+
+switch (FEAT_TRAINS, SELF, e_e_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, e_e_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, e_e_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+item (FEAT_TRAINS, e_e) 
+{
+  property
+  {
+    name: string(STR_E_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1912, 1, 1);
+    model_life: 40;
+    vehicle_life: 40; // срок службы
+    reliability_decay: 20;
+    cost_factor: 15;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 780 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (78+64) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: (127.0/(78+64)/9.8);
+    length: 7;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+
+  graphics {
+    default: e_e_get_spriteset;
+    purchase: e_e_purchase_spriteset;
+    articulated_part: articulated_part_tender;
+    can_attach_wagon: e_e_can_attach_wagon;
+    additional_text: return string(STR_E_PURCHASE_HINT);
+    speed: e_e_speed;
+    purchase_speed: e_e_purchase_speed;
+    bitmask_vehicle_info: e_e_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    power: e_e_power;
+    tractive_effort_coefficient: e_e_tractive_effort_coefficient;
+    weight: e_e_weight;
+  }
+
+  livery_override(unitb)
+  {
+    length: return 5;
+    e_t_spriteset;
+  }
+
+}
