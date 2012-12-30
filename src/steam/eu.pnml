@@ -1,0 +1,134 @@
+ // eu
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/e.png"
+
+// покупка
+spriteset (eu_e_purchase_spriteset, IMAGEFILE)
+{
+  s7_purchase_template(7, 50, 0)
+}
+
+// паровоз, анимация из 4-х фреймов
+spriteset (eu_e_1_spriteset, IMAGEFILE)
+{
+  s7_template(7, 50, 0)
+} 
+
+spriteset (eu_e_2_spriteset, IMAGEFILE)
+{
+  s7_template(7, 50, 0)
+} 
+
+spriteset (eu_e_3_spriteset, IMAGEFILE)
+{
+  s7_template(7, 50, 0)
+} 
+
+spriteset (eu_e_4_spriteset, IMAGEFILE)
+{
+  s7_template(7, 50, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, PARENT, eu_e_get_spriteset,
+  motion_counter & 3)
+{
+  0: eu_e_1_spriteset;
+  1: eu_e_2_spriteset;
+  2: eu_e_3_spriteset;
+  eu_e_4_spriteset;
+}
+
+// Присоединяем
+switch (FEAT_TRAINS, SELF, eu_e_can_attach_wagon,
+  vehicle_type_id)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, eu_e_power,
+  (build_year >= 1936))
+{
+  0: return 1250;
+  return 1320;
+}
+
+// Макс. скорость: 55 км/ч до 1936, 65 км/ч после
+#define MAX_SPEED current_year >= 1936 ? 65 : 55
+
+switch (FEAT_TRAINS, SELF, eu_e_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, eu_e_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, eu_e_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+item (FEAT_TRAINS, eu_e) 
+{
+  property
+  {
+    name: string(STR_EU_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1926, 1, 1);
+    model_life: 30;
+    vehicle_life: 30; // срок службы
+    reliability_decay: 20;
+    cost_factor: 15;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1250 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (86+72) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: (159.0/(86+72)/9.8);
+    length: 7;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+
+  graphics {
+    default: eu_e_get_spriteset;
+    purchase: eu_e_purchase_spriteset;
+    articulated_part: articulated_part_tender;
+    can_attach_wagon: eu_e_can_attach_wagon;
+    additional_text: return string(STR_EU_PURCHASE_HINT);
+    speed: eu_e_speed;
+    purchase_speed: eu_e_purchase_speed;
+    bitmask_vehicle_info: eu_e_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    power: eu_e_power;
+  }
+
+  livery_override(unitb)
+  {
+    length: return 5;
+    e_t_spriteset;
+  }
+
+}
