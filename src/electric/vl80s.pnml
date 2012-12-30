@@ -1,0 +1,201 @@
+ // vl80s
+
+// ВЛ80с "Выло" (1979-1995-2003)
+
+#define IMAGEFILE  "src/electric/vl80s.png"
+
+// покупка
+spriteset (vl80s_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(6, 57, -2)
+}
+
+// нет тока
+spriteset (vl80s_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(6, 57, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl80s_loading_spriteset, IMAGEFILE)
+{
+  s9_template(6, 124, 0)
+} 
+
+spriteset (vl80s_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(6, 191, 0)
+} 
+
+spritegroup vl80s_spritegroup
+{
+  loading: vl80s_loading_spriteset;
+  loaded: vl80s_traveling_spriteset;
+}
+
+spriteset (vl80s_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(6, 258, 0)
+} 
+
+// нет тока
+spriteset (vl80s_r_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(437, 57, 0)
+} 
+
+// развёрнутый
+spriteset (vl80s_r_spriteset, IMAGEFILE)
+{
+  s9_template(437, 124, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl80s_get_spriteset2,
+  (((LOAD_TEMP(0) - count_veh_id(vl80s)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))))
+{
+  0: vl80s_notpowered_spriteset;
+  1: vl80s_spritegroup;
+  2: vl80s_speedover50_spriteset;
+  3: vl80s_r_notpowered_spriteset;
+  4..5: vl80s_r_spriteset;
+  align_9_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, vl80s_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(vl80s), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  vl80s_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl80s_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  vl80s_get_spriteset1;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, vl80s_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Если хотя бы 2 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, vl80s_start_stop2,
+[
+  set_offset_to(2),
+  prev_vehicle_type_id() == vl80s
+])
+{
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше двух, то не выпускать
+switch (FEAT_TRAINS, PARENT, vl80s_start_stop,
+  count_veh_id(vl80s) >= 2)
+{
+  1: vl80s_start_stop2;
+  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
+}
+
+// Макс. скорость: 110 км/ч
+#define MAX_SPEED 110
+
+switch (FEAT_TRAINS, SELF, vl80s_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl80s_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl80s_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vl80s), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 4)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, vl80s_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(vl80s), 0),
+  vehicle_type_id == vl80s
+])
+{
+  vl80s_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, vl80s_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  vl80s_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, vl80s) 
+{
+  property
+  {
+    name: string(STR_VL80S_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1979, 1, 1);
+    vehicle_life: 40; // срок службы
+    model_life: 40; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: 70;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT);
+    refit_cost: 0;
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 4055 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 92 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: (201.0/92/9.8);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: vl80s_get_spriteset;
+    purchase: vl80s_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    can_attach_wagon: vl80s_can_attach_wagon;
+    start_stop: vl80s_start_stop;
+    additional_text: return string(STR_VL80S_PURCHASE_HINT);
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    speed: vl80s_speed;
+    purchase_speed: vl80s_purchase_speed;
+    bitmask_vehicle_info: vl80s_bitmask_vehicle_info;
+  }
+}
