@@ -1,0 +1,273 @@
+ // vl11
+
+// ВЛ11 (1975-1986)
+
+#define IMAGEFILE  "src/electric/vl11.png"
+
+// покупка
+spriteset (vl11_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(5, 44, -2)
+}
+
+// нет тока
+spriteset (vl11_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(5, 44, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl11_loading_spriteset, IMAGEFILE)
+{
+  s9_template(5, 111, 0)
+} 
+
+spriteset (vl11_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(5, 178, 0)
+} 
+
+spritegroup vl11_spritegroup
+{
+  loading: vl11_loading_spriteset;
+  loaded: vl11_traveling_spriteset;
+}
+
+spriteset (vl11_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(5, 245, 0)
+} 
+
+// нет тока
+spriteset (vl11_r_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(436, 44, 0)
+} 
+
+// развёрнутый
+spriteset (vl11_r_spriteset, IMAGEFILE)
+{
+  s9_template(436, 111, 0)
+} 
+
+// покупка
+spriteset (vl11_v2_purchase_spriteset, IMAGEFILE)
+{
+  s9_purchase_template(5, 356, -2)
+}
+
+// нет тока
+spriteset (vl11_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(5, 356, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl11_v2_loading_spriteset, IMAGEFILE)
+{
+  s9_template(5, 423, 0)
+} 
+
+spriteset (vl11_v2_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(5, 490, 0)
+} 
+
+spritegroup vl11_v2_spritegroup
+{
+  loading: vl11_v2_loading_spriteset;
+  loaded: vl11_v2_traveling_spriteset;
+}
+
+spriteset (vl11_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(5, 557, 0)
+} 
+
+// нет тока
+spriteset (vl11_r_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(436, 356, 0)
+} 
+
+// развёрнутый
+spriteset (vl11_r_v2_spriteset, IMAGEFILE)
+{
+  s9_template(436, 423, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset2,
+  (((LOAD_TEMP(0) - count_veh_id(vl11)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((build_year >= 1978) * 6)
+)
+{
+  0: vl11_notpowered_spriteset;
+  1: vl11_spritegroup;
+  2: vl11_speedover50_spriteset;
+  3: vl11_r_notpowered_spriteset;
+  4..5: vl11_r_spriteset;
+  6: vl11_v2_notpowered_spriteset;
+  7: vl11_v2_spritegroup;
+  8: vl11_v2_speedover50_spriteset;
+  9: vl11_r_v2_notpowered_spriteset;
+  10..11: vl11_r_v2_spriteset;
+  align_9_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, vl11_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(vl11), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  vl11_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  vl11_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_get_purchase_spriteset,
+  current_year >= 1978)
+{
+  0: vl11_purchase_spriteset;
+  vl11_v2_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, vl11_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Если хотя бы 2 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, vl11_start_stop2,
+[
+  set_offset_to(2),
+  prev_vehicle_type_id() == vl11
+])
+{
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше двух, то не выпускать
+switch (FEAT_TRAINS, PARENT, vl11_start_stop,
+  count_veh_id(vl11) >= 2)
+{
+  1: vl11_start_stop2;
+  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
+}
+
+// Макс. скорость: 100 км/ч
+#define MAX_SPEED 100
+
+switch (FEAT_TRAINS, SELF, vl11_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl11_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vl11), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 3)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, vl11_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(vl11), 0),
+  vehicle_type_id == vl11
+])
+{
+  vl11_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  vl11_bitmask_vehicle_info2;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_cost_factor,
+  (current_year >= 1976) +
+  (current_year >= 1980) +
+  (current_year >= 1986))
+{
+  0: return 89;
+  1: return 92;
+  2: return 98;
+  return 107;
+}
+
+item (FEAT_TRAINS, vl11) 
+{
+  property
+  {
+    name: string(STR_VL11_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1975, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: 30; // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: 89;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3030 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 92 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: (157.0/92/9.8);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: vl11_get_spriteset;
+    purchase: vl11_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    can_attach_wagon: vl11_can_attach_wagon;
+    start_stop: vl11_start_stop;
+    additional_text: return string(STR_VL11_PURCHASE_HINT);
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    speed: vl11_speed;
+    purchase_speed: vl11_purchase_speed;
+    bitmask_vehicle_info: vl11_bitmask_vehicle_info;
+    cost_factor: vl11_cost_factor;
+  }
+}
