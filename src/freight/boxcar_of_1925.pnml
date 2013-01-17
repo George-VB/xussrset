@@ -1,0 +1,85 @@
+ // boxcar_of_1925
+
+/// Вагон
+// Крытый 1925 года. 4-осный крытый вагон (дерев., клепаной констр-ции)	Тверской завод	1925-1936
+
+// boxcar
+
+#define IMAGEFILE  "src/freight/boxcar-of-1925.png"
+
+// покупка
+spriteset (boxcar_of_1925_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 0)
+}
+
+// шаблон: движение/100%, 25%, 75%
+#define boxcar_of_1925_sprite_layout_template(x, y, v) \
+spriteset (boxcar_of_1925##v##_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y, 0) \
+} \
+ \
+spriteset (boxcar_of_1925_1##v##_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+44, 0) \
+} \
+ \
+spriteset (boxcar_of_1925_2##v##_spriteset, IMAGEFILE) \
+{ \
+  s8_template(x, y+88, 0) \
+} \
+ \
+ \
+spritegroup boxcar_of_1925##v##_spritegroup \
+{ \
+  loading: [boxcar_of_1925_1##v##_spriteset, \
+    boxcar_of_1925_2##v##_spriteset, \
+    boxcar_of_1925_2##v##_spriteset, \
+    boxcar_of_1925##v##_spriteset]; \
+  loaded: [boxcar_of_1925##v##_spriteset]; \
+} \
+
+
+// ливреи
+boxcar_of_1925_sprite_layout_template(2, 22,)
+
+#undef IMAGEFILE
+
+item (FEAT_TRAINS, boxcar_of_1925) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_OF_1925_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1925), 1, 1);
+    model_life: get_model_life(1925,1936);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [PAPR, GOOD, GRAI, WHEA, MAIZ, CERE, ENSP, MNSP,
+      FICR, GLAS, OLSD, BDMT, SGBT];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 110 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 13;
+    cargo_capacity: 104;
+    weight: 23 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_of_1925_spritegroup;
+    purchase: boxcar_of_1925_purchase_spriteset;
+    additional_text: return string(STR_BOXCAR_OF_1925_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
