@@ -1,0 +1,252 @@
+ // tera1
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/tera1.png"
+
+// покупка
+spriteset (tera1_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 0)
+}
+
+// обычный: погрузка/перемещение
+spriteset (tera1_loading_spriteset, IMAGEFILE)
+{
+  s12_template(0, 90, 0)
+} 
+
+spriteset (tera1_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(0, 154, 0)
+} 
+
+spritegroup tera1_spritegroup
+{
+  loading: tera1_loading_spriteset;
+  loaded: tera1_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tera1_r_loading_spriteset, IMAGEFILE)
+{
+  s12_template(449, 90, 0)
+} 
+
+spriteset (tera1_r_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(449, 154, 0)
+} 
+
+spritegroup tera1_r_spritegroup
+{
+  loading: tera1_r_loading_spriteset;
+  loaded: tera1_r_traveling_spriteset;
+}
+
+// покупка
+
+// обычный: погрузка/перемещение
+spriteset (tera1_v2_loading_spriteset, IMAGEFILE)
+{
+  s12_template(0, 239, 0)
+} 
+
+spriteset (tera1_v2_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(0, 303, 0)
+} 
+
+spritegroup tera1_v2_spritegroup
+{
+  loading: tera1_v2_loading_spriteset;
+  loaded: tera1_v2_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tera1_v2_r_loading_spriteset, IMAGEFILE)
+{
+  s12_template(449, 239, 0)
+} 
+
+spriteset (tera1_v2_r_traveling_spriteset, IMAGEFILE)
+{
+  s12_template(449, 303, 0)
+} 
+
+spritegroup tera1_v2_r_spritegroup
+{
+  loading: tera1_v2_r_loading_spriteset;
+  loaded: tera1_v2_r_traveling_spriteset;
+}
+
+#undef IMAGEFILE
+
+
+switch (FEAT_TRAINS, SELF, tera1_get_spriteset2,
+  ((last_computed_result - count_veh_id(tera1)) % 2)
+)
+{
+  0: tera1_spritegroup;
+  tera1_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tera1_get_spriteset1,
+  count_veh_id(tera1))
+{
+  tera1_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tera1_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tera1_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, tera1_v2_get_spriteset2,
+  ((last_computed_result - count_veh_id(tera1)) % 2)
+)
+{
+  0: tera1_v2_spritegroup;
+  tera1_v2_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tera1_v2_get_spriteset1,
+  count_veh_id(tera1))
+{
+  tera1_v2_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tera1_v2_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tera1_v2_get_spriteset1;
+}
+
+
+
+
+switch (FEAT_TRAINS, SELF, tera1_get_spritegroup, cargo_subtype)
+{
+  0: tera1_get_spriteset;
+  1: tera1_v2_get_spriteset;
+  align_12_spriteset; // параллелепипед
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, tera1_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, tera1_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tera1_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY_V1);
+  1: string(STR_REFIT_FACTORY_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+// Макс. скорость: 115 км/ч
+#define MAX_SPEED 115
+
+switch (FEAT_TRAINS, SELF, tera1_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, tera1_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, tera1_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(tera1), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 2)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, tera1_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(tera1), 0),
+  vehicle_type_id == tera1
+])
+{
+  tera1_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, tera1_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  tera1_bitmask_vehicle_info2;
+}
+
+
+item (FEAT_TRAINS, tera1) 
+{
+  property
+  {
+    name: string(STR_TERA1_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1998, 1, 1);
+    vehicle_life: 20; // срок службы
+    model_life: get_model_life(1998,1998); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: 1;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2915 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 180 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(454.0, 180);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: tera1_get_spritegroup;
+    purchase: tera1_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: tera1_can_attach_wagon;
+    start_stop: tera1_start_stop;
+    additional_text: return string(STR_TERA1_PURCHASE_HINT);
+    speed: tera1_speed;
+    purchase_speed: tera1_purchase_speed;
+    bitmask_vehicle_info: tera1_bitmask_vehicle_info;
+    cargo_subtype_text: tera1_cargo_subtype_text;
+    cargo_capacity: return 0;
+    cost_factor: return 372;
+  }
+}
