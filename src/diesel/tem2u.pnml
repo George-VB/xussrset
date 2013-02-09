@@ -12,6 +12,8 @@ spriteset (tem2u_purchase_spriteset, IMAGEFILE)
   new_purchase_template(0, 0)
 }
 
+// Окрас 1
+
 // обычный: погрузка/перемещение
 spriteset (tem2u_loading_spriteset, IMAGEFILE)
 {
@@ -46,7 +48,46 @@ spritegroup tem2u_r_spritegroup
   loaded: tem2u_r_traveling_spriteset;
 }
 
+// Окрас 2
+
+// обычный: погрузка/перемещение
+spriteset (tem2u_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(0, 191, 0)
+} 
+
+spriteset (tem2u_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(0, 258, 0)
+} 
+
+spritegroup tem2u_v2_spritegroup
+{
+  loading: tem2u_v2_loading_spriteset;
+  loaded: tem2u_v2_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tem2u_v2_r_loading_spriteset, IMAGEFILE)
+{
+  s10_template(435, 191, 0)
+} 
+
+spriteset (tem2u_v2_r_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(435, 258, 0)
+} 
+
+spritegroup tem2u_v2_r_spritegroup
+{
+  loading: tem2u_v2_r_loading_spriteset;
+  loaded: tem2u_v2_r_traveling_spriteset;
+}
+
+
 #undef IMAGEFILE
+
+// Окрас 1
 
 switch (FEAT_TRAINS, SELF, tem2u_get_spriteset2,
   ((last_computed_result - count_veh_id(tem2u)) % 2)
@@ -69,6 +110,48 @@ switch (FEAT_TRAINS, SELF, tem2u_get_spriteset,
 {
   1: dummy_spriteset;
   tem2u_get_spriteset1;
+}
+
+// Окрас 2
+
+switch (FEAT_TRAINS, SELF, tem2u_v2_get_spriteset2,
+  ((last_computed_result - count_veh_id(tem2u)) % 2)
+)
+{
+  0: tem2u_v2_spritegroup;
+  tem2u_v2_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tem2u_v2_get_spriteset1,
+  count_veh_id(tem2u))
+{
+  tem2u_v2_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tem2u_v2_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tem2u_v2_get_spriteset1;
+}
+
+// Выбор окраса
+
+switch (FEAT_TRAINS, SELF, tem2u_get_spritegroup, cargo_subtype)
+{
+  0: tem2u_get_spriteset;
+  1: tem2u_v2_get_spriteset;
+  align_10_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, tem2u_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY_V1);
+  1: string(STR_REFIT_FACTORY_V2);
+  return CB_RESULT_NO_TEXT;
 }
 
 // Что присоединяем?
@@ -107,7 +190,6 @@ item (FEAT_TRAINS, tem2u)
     speed: 100 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: get_normal_track_type();
-    ai_special_flag: AI_FLAG_PASSENGER;
     power: 840 hpM;
     running_cost_base: RUNNING_COST_DIESEL;
     weight: 124 ton;
@@ -120,14 +202,14 @@ item (FEAT_TRAINS, tem2u)
     cargo_capacity: 1;
   }
   graphics {
-    default: tem2u_get_spriteset;
+    default: tem2u_get_spritegroup;
     purchase: tem2u_purchase_spriteset;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: tem2u_can_attach_wagon;
     start_stop: tem2u_start_stop;
     additional_text: return string(STR_TEM2U_PURCHASE_HINT);
     bitmask_vehicle_info: tem2u_bitmask_vehicle_info;
-    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_subtype_text: tem2u_cargo_subtype_text;
     cargo_capacity: return 0;
   }
 }
