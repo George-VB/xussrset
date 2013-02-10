@@ -1,0 +1,63 @@
+ // tem2um
+
+// Спрайты в tem2u
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, tem2um_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, tem2um_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// Маневровый всегда штрафует других по скорости
+switch (FEAT_TRAINS, SELF, tem2um_bitmask_vehicle_info,
+  0)
+{
+  return FLAG_PENALISE_SPEED;
+}
+
+item (FEAT_TRAINS, tem2um)
+{
+  property
+  {
+    name: string(STR_TEM2UM_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1989, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1989,1995); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: 38;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    power: 840 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 126 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(230.0, 126);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: tem2u_get_spritegroup;
+    purchase: tem2u_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: tem2um_can_attach_wagon;
+    start_stop: tem2um_start_stop;
+    additional_text: return string(STR_TEM2UM_PURCHASE_HINT);
+    bitmask_vehicle_info: tem2um_bitmask_vehicle_info;
+    cargo_subtype_text: tem2u_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}

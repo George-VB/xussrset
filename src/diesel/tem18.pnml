@@ -1,0 +1,279 @@
+ // tem18
+
+// Спрайты
+
+// 2 окраса в зависимости от года выпуска
+
+#define IMAGEFILE  "src/diesel/tem18.png"
+
+// покупка
+spriteset (tem18_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 0)
+}
+
+// Окрас 1
+
+// обычный: погрузка/перемещение
+spriteset (tem18_loading_spriteset, IMAGEFILE)
+{
+  s10_template(0, 29, 0)
+} 
+
+spriteset (tem18_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(0, 96, 0)
+} 
+
+spritegroup tem18_spritegroup
+{
+  loading: tem18_loading_spriteset;
+  loaded: tem18_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tem18_r_loading_spriteset, IMAGEFILE)
+{
+  s10_template(435, 29, 0)
+} 
+
+spriteset (tem18_r_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(435, 96, 0)
+} 
+
+spritegroup tem18_r_spritegroup
+{
+  loading: tem18_r_loading_spriteset;
+  loaded: tem18_r_traveling_spriteset;
+}
+
+// Окрас 2
+
+// обычный: погрузка/перемещение
+spriteset (tem18_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(0, 191, 0)
+} 
+
+spriteset (tem18_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(0, 258, 0)
+} 
+
+spritegroup tem18_v2_spritegroup
+{
+  loading: tem18_v2_loading_spriteset;
+  loaded: tem18_v2_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tem18_v2_r_loading_spriteset, IMAGEFILE)
+{
+  s10_template(435, 191, 0)
+} 
+
+spriteset (tem18_v2_r_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(435, 258, 0)
+} 
+
+spritegroup tem18_v2_r_spritegroup
+{
+  loading: tem18_v2_r_loading_spriteset;
+  loaded: tem18_v2_r_traveling_spriteset;
+}
+
+// Окрас 3
+
+// обычный: погрузка/перемещение
+spriteset (tem18_v3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(0, 353, 0)
+} 
+
+spriteset (tem18_v3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(0, 420, 0)
+} 
+
+spritegroup tem18_v3_spritegroup
+{
+  loading: tem18_v3_loading_spriteset;
+  loaded: tem18_v3_traveling_spriteset;
+}
+
+// развёрнутый: погрузка/перемещение
+spriteset (tem18_v3_r_loading_spriteset, IMAGEFILE)
+{
+  s10_template(435, 353, 0)
+} 
+
+spriteset (tem18_v3_r_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(435, 420, 0)
+} 
+
+spritegroup tem18_v3_r_spritegroup
+{
+  loading: tem18_v3_r_loading_spriteset;
+  loaded: tem18_v3_r_traveling_spriteset;
+}
+
+
+#undef IMAGEFILE
+
+// Окрас 1
+
+switch (FEAT_TRAINS, SELF, tem18_get_spriteset2,
+  ((last_computed_result - count_veh_id(tem18)) % 2)
+)
+{
+  0: tem18_spritegroup;
+  tem18_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tem18_get_spriteset1,
+  count_veh_id(tem18))
+{
+  tem18_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tem18_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tem18_get_spriteset1;
+}
+
+// Окрас 2
+
+switch (FEAT_TRAINS, SELF, tem18_v2_get_spriteset2,
+  ((last_computed_result - count_veh_id(tem18)) % 2)
+)
+{
+  0: tem18_v2_spritegroup;
+  tem18_v2_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tem18_v2_get_spriteset1,
+  count_veh_id(tem18))
+{
+  tem18_v2_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tem18_v2_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tem18_v2_get_spriteset1;
+}
+
+// Окрас 3
+
+switch (FEAT_TRAINS, SELF, tem18_v3_get_spriteset2,
+  ((last_computed_result - count_veh_id(tem18)) % 2)
+)
+{
+  0: tem18_v3_spritegroup;
+  tem18_v3_r_spritegroup;
+}
+
+switch (FEAT_TRAINS, PARENT, tem18_v3_get_spriteset1,
+  count_veh_id(tem18))
+{
+  tem18_v3_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, tem18_v3_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  tem18_v3_get_spriteset1;
+}
+
+// Выбор окраса
+
+switch (FEAT_TRAINS, SELF, tem18_get_spritegroup, cargo_subtype)
+{
+  0: tem18_get_spriteset;
+  1: tem18_v2_get_spriteset;
+  2: tem18_v3_get_spriteset;
+  align_10_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, tem18_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_FACTORY_V1);
+  2: string(STR_REFIT_FACTORY_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, tem18_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, tem18_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// Маневровый всегда штрафует других по скорости
+switch (FEAT_TRAINS, SELF, tem18_bitmask_vehicle_info,
+  0)
+{
+  return FLAG_PENALISE_SPEED;
+}
+
+item (FEAT_TRAINS, tem18)
+{
+  property
+  {
+    name: string(STR_TEM18_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1992, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1992,2015); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: 38;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    power: 820 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 126 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(206.0, 126);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: tem18_get_spritegroup;
+    purchase: tem18_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: tem18_can_attach_wagon;
+    start_stop: tem18_start_stop;
+    additional_text: return string(STR_TEM18_PURCHASE_HINT);
+    bitmask_vehicle_info: tem18_bitmask_vehicle_info;
+    cargo_subtype_text: tem18_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}
+                       	

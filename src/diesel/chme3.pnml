@@ -1,0 +1,229 @@
+ // chme3
+
+// Спрайты
+
+// 2 окраса в зависимости от года выпуска
+
+#define IMAGEFILE  "src/diesel/chme3.png"
+
+// покупка
+spriteset (chme3_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 0)
+}
+
+spriteset (chme3_v2_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(100, 0)
+}
+
+switch (FEAT_TRAINS, SELF, chme3_get_purchase_spriteset,
+  (current_year >= 1972))
+{
+  0: chme3_purchase_spriteset;
+  chme3_v2_purchase_spriteset;
+}
+
+// Окрас 1
+
+// обычный: погрузка/перемещение
+spriteset (chme3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 25, 0)
+} 
+
+spriteset (chme3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 91, 0)
+} 
+
+spritegroup chme3_spritegroup
+{
+  loading: chme3_loading_spriteset;
+  loaded: chme3_traveling_spriteset;
+}
+
+// Окрас 2
+
+// обычный: погрузка/перемещение
+spriteset (chme3_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 170, 0)
+} 
+
+spriteset (chme3_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 236, 0)
+} 
+
+spritegroup chme3_v2_spritegroup
+{
+  loading: chme3_v2_loading_spriteset;
+  loaded: chme3_v2_traveling_spriteset;
+}
+
+// Окрас 3
+
+// обычный: погрузка/перемещение
+spriteset (chme3_v3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 314, 0)
+} 
+
+spriteset (chme3_v3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 380, 0)
+} 
+
+spritegroup chme3_v3_spritegroup
+{
+  loading: chme3_v3_loading_spriteset;
+  loaded: chme3_v3_traveling_spriteset;
+}
+
+// Окрас 4
+
+// обычный: погрузка/перемещение
+spriteset (chme3_v4_loading_spriteset, IMAGEFILE)
+{
+  s10_template(2, 459, 0)
+} 
+
+spriteset (chme3_v4_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(2, 525, 0)
+} 
+
+spritegroup chme3_v4_spritegroup
+{
+  loading: chme3_v4_loading_spriteset;
+  loaded: chme3_v4_traveling_spriteset;
+}
+
+
+#undef IMAGEFILE
+
+// Окрас 1
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, chme3_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  chme3_spritegroup;
+}
+
+// Окрас 2
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, chme3_v2_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  chme3_v2_spritegroup;
+}
+
+// Окрас 3
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, chme3_v3_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  chme3_v3_spritegroup;
+}
+
+// Окрас 4
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, chme3_v4_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  chme3_v4_spritegroup;
+}
+
+// Выбор окраса
+
+switch (FEAT_TRAINS, SELF, chme3_get_spritegroup, 
+	((current_year >= 1973) +
+	(cargo_subtype * 2)))
+{
+  0: chme3_get_spriteset;
+  1: chme3_v2_get_spriteset;
+  2: chme3_v3_get_spriteset;
+  3: chme3_v4_get_spriteset;
+  align_10_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, chme3_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY_V1);
+  1: string(STR_REFIT_FACTORY_V2);
+  return CB_RESULT_NO_TEXT;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, chme3_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, chme3_start_stop,
+  0)
+{
+  return CB_RESULT_NO_TEXT;
+}
+
+// Маневровый всегда штрафует других по скорости
+switch (FEAT_TRAINS, SELF, chme3_bitmask_vehicle_info,
+  0)
+{
+  return FLAG_PENALISE_SPEED;
+}
+
+item (FEAT_TRAINS, chme3)
+{
+  property
+  {
+    name: string(STR_CHME3_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(1964, 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1964,1988); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: 68;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 95 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    power: 970 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 123 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(255.0, 123);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: chme3_get_spritegroup;
+    purchase: chme3_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: chme3_can_attach_wagon;
+    start_stop: chme3_start_stop;
+    additional_text: return string(STR_CHME3_PURCHASE_HINT);
+    bitmask_vehicle_info: chme3_bitmask_vehicle_info;
+    cargo_subtype_text: chme3_cargo_subtype_text;
+    cargo_capacity: return 0;
+  }
+}
