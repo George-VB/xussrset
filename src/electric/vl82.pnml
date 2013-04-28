@@ -1,0 +1,262 @@
+ // vl82
+
+// ВЛ82 (1966-1968)  
+
+#define IMAGEFILE  "src/electric/vl82.png"
+
+// покупка
+spriteset (vl82_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 0)
+}
+
+// нет тока
+spriteset (vl82_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(5, 58, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl82_loading_spriteset, IMAGEFILE)
+{
+  s9_template(5, 125, 0)
+} 
+
+spriteset (vl82_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(5, 192, 0)
+} 
+
+spritegroup vl82_spritegroup
+{
+  loading: vl82_loading_spriteset;
+  loaded: vl82_traveling_spriteset;
+}
+
+spriteset (vl82_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(5, 259, 0)
+} 
+
+// нет тока
+spriteset (vl82_r_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(436, 58, 0)
+} 
+
+// развёрнутый
+spriteset (vl82_r_spriteset, IMAGEFILE)
+{
+  s9_template(436, 125, 0)
+} 
+
+// покупка
+spriteset (vl82_v2_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(100, 0)
+}
+
+// нет тока
+spriteset (vl82_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(5, 344, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (vl82_v2_loading_spriteset, IMAGEFILE)
+{
+  s9_template(5, 411, 0)
+} 
+
+spriteset (vl82_v2_traveling_spriteset, IMAGEFILE)
+{
+  s9_template(5, 545, 0)
+} 
+
+spritegroup vl82_v2_spritegroup
+{
+  loading: vl82_v2_loading_spriteset;
+  loaded: vl82_v2_traveling_spriteset;
+}
+
+spriteset (vl82_v2_speedover50_spriteset, IMAGEFILE)
+{
+  s9_template(5, 545, 0)
+} 
+
+// нет тока
+spriteset (vl82_r_v2_notpowered_spriteset, IMAGEFILE)
+{
+  s9_template(436, 344, 0)
+} 
+
+// развёрнутый
+spriteset (vl82_r_v2_spriteset, IMAGEFILE)
+{
+  s9_template(436, 411, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl82_get_spriteset2,
+  (((LOAD_TEMP(0) - count_veh_id(vl82)) % 2) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((current_year >= 1972) * 6)   
+)
+{
+  0: vl82_notpowered_spriteset;
+  1: vl82_spritegroup;
+  2: vl82_speedover50_spriteset;
+  3: vl82_r_notpowered_spriteset;
+  4..5: vl82_r_spriteset;
+  6: vl82_v2_notpowered_spriteset;
+  7: vl82_v2_spritegroup;
+  8: vl82_v2_speedover50_spriteset;
+  9: vl82_r_v2_notpowered_spriteset;
+  10..11: vl82_r_v2_spriteset;
+  align_9_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, PARENT, vl82_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(vl82), 0),
+  STORE_TEMP(current_speed, 1)
+])
+{
+  vl82_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl82_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  vl82_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, vl82_get_purchase_spriteset,
+  (current_year >= 1972))
+{
+  0: vl82_purchase_spriteset;
+  1: vl82_v2_purchase_spriteset;
+}
+
+// Что присоединяем?
+switch (FEAT_TRAINS, SELF, vl82_can_attach_wagon,
+  0)
+{
+  return CB_RESULT_ATTACH_ALLOW;
+}
+
+// Если хотя бы 2 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, vl82_start_stop2,
+[
+  set_offset_to(2),
+  prev_vehicle_type_id() == vl82
+])
+{
+  1: return CB_RESULT_NO_TEXT;
+  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше двух, то не выпускать
+switch (FEAT_TRAINS, PARENT, vl82_start_stop,
+  count_veh_id(vl82) >= 2)
+{
+  1: vl82_start_stop2;
+  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
+}
+
+// Макс. скорость: 110 км/ч
+#define MAX_SPEED 110
+
+switch (FEAT_TRAINS, SELF, vl82_purchase_speed,
+  MAX_SPEED)
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, vl82_speed,
+[
+  STORE_TEMP(MAX_SPEED, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+#undef MAX_SPEED
+
+switch (FEAT_TRAINS, SELF, vl82_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vl82), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 3)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, vl82_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(vl82), 0),
+  vehicle_type_id == vl82
+])
+{
+  vl82_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, vl82_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  vl82_bitmask_vehicle_info2;
+}
+
+item (FEAT_TRAINS, vl82) 
+{
+  property
+  {
+    name: string(STR_VL82_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1966), 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1966,1968);
+    retire_early: get_retire_early(1966,1968); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cost_factor: 70;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT);
+    refit_cost: 0;
+    track_type: get_dual_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3360 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 96 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(167.0, 96.0);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: vl82_get_spriteset;
+    purchase: vl82_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy1;
+    can_attach_wagon: vl82_can_attach_wagon;
+    start_stop: vl82_start_stop;
+    additional_text: return string(STR_VL82_PURCHASE_HINT);
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    speed: vl82_speed;
+    purchase_speed: vl82_purchase_speed;
+    bitmask_vehicle_info: vl82_bitmask_vehicle_info;
+  }
+}
