@@ -378,13 +378,38 @@ switch (FEAT_TRAINS, PARENT, dr1a_n_get_spriteset1,
   dr1a_n_get_spriteset2;
 }
 
+switch (FEAT_TRAINS, SELF, dr1a_n_get_spriteset_DRB1,
+  (position_in_consist != 0) +
+  cargo_subtype * 2
+)
+{
+  0: dr1a_n_v1_spritegroup;
+  1: dr1a_rn_v1_spriteset;
+  2: dr1a_n_v1_spritegroup;
+  3: dr1a_rn_v1_spriteset;
+  4: dr1a_n_v2_spritegroup;
+  5: dr1a_rn_v2_spriteset;
+  6: dr1a_n_v3_spritegroup;
+  7: dr1a_rn_v3_spriteset;
+  8: dr1a_n_v4_spritegroup;
+  dr1a_rn_v4_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_n_get_spriteset0,
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2) == 0) && ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1)
+)
+{
+  1: dr1a_n_get_spriteset_DRB1;
+  dr1a_n_get_spriteset1;
+}
+
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
 switch (FEAT_TRAINS, SELF, dr1a_n_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  dr1a_n_get_spriteset1;
+  dr1a_n_get_spriteset0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_m_can_attach_wagon10,
@@ -546,8 +571,46 @@ switch (FEAT_TRAINS, SELF, dr1a_m_can_attach_wagon,
   return CB_RESULT_ATTACH_DISALLOW;
 }
 
+switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon4,
+  count_veh_id(_2m62u))
+{
+  0: return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon3,
+  count_veh_id(_2m62u))
+{
+  0: dr1a_m_can_attach_wagon11;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon2,
+  count_veh_id(_2m62u))
+{
+  0: dr1a_m_can_attach_wagon1;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon1,
+  count_veh_id(dr1a_m)+count_veh_id(dr1a_n)+count_veh_id(_2m62u))
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, dr1a_n_can_attach_wagon,
+  vehicle_type_id)
+{
+  dr1a_m: dr1a_n_can_attach_wagon4;
+  dr1a_n: dr1a_n_can_attach_wagon3;
+  dr1a_c: dr1a_n_can_attach_wagon2;
+  _2m62u: dr1a_n_can_attach_wagon1;
+  return CB_RESULT_ATTACH_DISALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, dr1a_m_start_stop,
-  (count_veh_id(dr1a_m) + count_veh_id(dr1a_n)) % 2)
+  (count_veh_id(dr1a_m) + count_veh_id(dr1a_n) + count_veh_id(_2m62u)) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
   return string(STR_CANNOT_START);
@@ -674,7 +737,7 @@ item (FEAT_TRAINS, dr1a_n)
     default: dr1a_n_get_spriteset;
     purchase: dr1a_n_v1_purchase_spriteset;
     articulated_part: articulated_part_dummy7;
-    can_attach_wagon: dr1a_m_can_attach_wagon;
+    can_attach_wagon: dr1a_n_can_attach_wagon;
     start_stop: dr1a_m_start_stop;
     speed: speed_after20_120to110;
     purchase_speed: return 120;
