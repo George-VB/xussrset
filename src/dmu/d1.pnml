@@ -660,17 +660,52 @@ switch (FEAT_TRAINS, SELF, d1_m_visual_effect_and_powered1,
   return diesel_visual_effect_and_powered(7);
 }
 
-switch (FEAT_TRAINS, PARENT, d1_m_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, d1_m_visual_effect_and_powered0,
   count_veh_id(d1_m))
 {
   d1_m_visual_effect_and_powered1;
 }
+
+// Визуализируем эффекты тяги только если локомотив - d1_m 
+switch (FEAT_TRAINS, PARENT, d1_m_visual_effect_and_powered,
+  (vehicle_type_id == d1_m)
+  )
+{
+  1: d1_m_visual_effect_and_powered0; 
+  return disable_visual_effect_and_powered();
+} 
+
+// Даём тягу, только если локомотив - d1_m 
+switch (FEAT_TRAINS, PARENT, d1_m_power,
+  (vehicle_type_id == d1_m) 
+  )
+{
+  1: return get_power_in_cb(615); 
+  return 0;
+} 
 
 switch (FEAT_TRAINS, SELF, d1_cargo_capacity,
   build_year >= 1967)
 {
   1: return 72;
   return 77;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - d1_m 
+switch (FEAT_TRAINS, PARENT, d1_m_cargo_capacity,
+  (vehicle_type_id == d1_m)
+)
+{
+  1: d1_cargo_capacity;
+  return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, d1_c_cargo_capacity,
+  (vehicle_type_id == d1_m)
+)
+{
+  1: return 128;
+  return 0;
 }
 
 // 1963-66 - 1 
@@ -745,9 +780,10 @@ item (FEAT_TRAINS, d1_m)
     visual_effect_and_powered: d1_m_visual_effect_and_powered;
     speed: speed_after20_120to110;
     purchase_speed: return 120;
-    cargo_capacity: d1_cargo_capacity;
     additional_text: return string(STR_D1_M_PURCHASE_HINT);
     cargo_subtype_text: d1_cargo_subtype_text;
+    power: d1_m_power;
+    cargo_capacity: d1_m_cargo_capacity;
   }
 }
 
@@ -791,5 +827,6 @@ item (FEAT_TRAINS, d1_c)
     can_attach_wagon: return CB_RESULT_ATTACH_ALLOW;
     start_stop: return string(STR_CANNOT_START_HEAD);
     additional_text: return string(STR_D1_M_PURCHASE_HINT);
+    cargo_capacity: d1_c_cargo_capacity;
   }
 }

@@ -243,10 +243,45 @@ switch (FEAT_TRAINS, SELF, dr1_m_visual_effect_and_powered1,
   return diesel_visual_effect_and_powered(7);
 }
 
-switch (FEAT_TRAINS, PARENT, dr1_m_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, dr1_m_visual_effect_and_powered0,
   count_veh_id(dr1_m))
 {
   dr1_m_visual_effect_and_powered1;
+}
+
+// Визуализируем эффекты тяги только если локомотив - dr1_m
+switch (FEAT_TRAINS, PARENT, dr1_m_visual_effect_and_powered,
+  (vehicle_type_id == dr1_m) 
+  )
+{
+  1: dr1_m_visual_effect_and_powered0; 
+  return disable_visual_effect_and_powered();
+} 
+
+// Даём тягу, только если локомотив - dr1_m 
+switch (FEAT_TRAINS, PARENT, dr1_m_power,
+  (vehicle_type_id == dr1_m) 
+  )
+{
+  1: return get_power_in_cb(750); 
+  return 0;
+} 
+
+// Допускается эксплуатация с пассажирами только если голова - dr1_m 
+switch (FEAT_TRAINS, PARENT, dr1_m_cargo_capacity,
+  (vehicle_type_id == dr1_m)
+)
+{
+  1: return 80;
+  return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_c_cargo_capacity,
+  (vehicle_type_id == dr1_m)
+)
+{
+  1: return 128;
+  return 0;
 }
 
 switch (FEAT_TRAINS, SELF, dr1_m_additional_text,
@@ -313,6 +348,8 @@ item (FEAT_TRAINS, dr1_m)
     speed: speed_after20_120to110;
     purchase_speed: return 120;
     additional_text: dr1_m_additional_text;
+    power: dr1_m_power;
+    cargo_capacity: dr1_m_cargo_capacity;
   }
 }
 
@@ -355,5 +392,6 @@ item (FEAT_TRAINS, dr1_c)
     can_attach_wagon: return CB_RESULT_ATTACH_ALLOW;
     start_stop: return string(STR_CANNOT_START_HEAD);
     additional_text: dr1_m_additional_text;
+    cargo_capacity: dr1_c_cargo_capacity;
   }
 }

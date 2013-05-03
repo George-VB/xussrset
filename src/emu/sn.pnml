@@ -166,6 +166,18 @@ switch (FEAT_TRAINS, SELF, sn_get_spriteset,
   sn_get_spriteset1;
 }
 
+switch (FEAT_TRAINS, SELF, sn_b_get_spriteset00,
+[
+  STORE_TEMP(-2, 0x10F),
+  (var[0x61, 0, 0xFF, 0xF2]) 
+])
+{
+  0: sn_b_notpowered_spriteset;
+  1: sn_b_v2_notpowered_spriteset;
+  2: sn_b_v3_notpowered_spriteset;
+  align_12_spriteset;
+}
+
 switch (FEAT_TRAINS, SELF, sn_b_get_spriteset1,
 [
   STORE_TEMP(-2, 0x10F),
@@ -182,11 +194,21 @@ switch (FEAT_TRAINS, SELF, sn_b_get_spriteset1,
   align_12_spriteset;
 }
 
+switch (FEAT_TRAINS, PARENT, sn_b_get_spriteset0,
+  (vehicle_type_id == sn) 
+)
+{
+  1: sn_b_get_spriteset1;
+  sn_b_get_spriteset00;
+}
+
+
+
 switch (FEAT_TRAINS, SELF, sn_b_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  sn_b_get_spriteset1;
+  sn_b_get_spriteset0;
 }
 
 switch (FEAT_TRAINS, SELF, sn_c_get_spriteset1,
@@ -244,6 +266,31 @@ switch (FEAT_TRAINS, SELF, sn_articulated_part,
   return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+// Визуализируем эффекты тяги у sn, только если локомотив - sn
+switch (FEAT_TRAINS, PARENT, sn_visual_effect_and_powered,
+  vehicle_type_id == sn)
+{
+  1: return electric_visual_effect_and_powered(0);
+  return disable_visual_effect_and_powered();
+}
+
+// Даём тягу, только если локомотив - sn
+switch (FEAT_TRAINS, PARENT, sn_power,
+  vehicle_type_id == sn)
+{
+  1: return get_power_in_cb(921);
+  return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - sn
+switch (FEAT_TRAINS, PARENT, sn_cargo_capacity,
+  (vehicle_type_id == sn)
+)
+{
+  1: return 296;
+  return 0;
+}
+
 item (FEAT_TRAINS, sn) 
 {
   property
@@ -282,12 +329,13 @@ item (FEAT_TRAINS, sn)
     can_attach_wagon: sn_can_attach_wagon;
     additional_text: return string(STR_SN_PURCHASE_HINT);
     cargo_subtype_text: sn_cargo_subtype_text;
-    cargo_capacity: return 296;
+    cargo_capacity: sn_cargo_capacity;
+    power: sn_power;
   }
   livery_override(unitb)
   {
     length: return 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    visual_effect_and_powered: sn_visual_effect_and_powered;
     sn_b_get_spriteset;
 
   }

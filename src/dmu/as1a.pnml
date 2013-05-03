@@ -68,6 +68,32 @@ switch (FEAT_TRAINS, PARENT, as1a_can_attach_wagon,
   as1a_can_attach_wagon1;
 }
 
+// Визуализируем эффекты тяги только если локомотив - as1a
+switch (FEAT_TRAINS, PARENT, as1a_visual_effect_and_powered,
+  vehicle_type_id == as1a)
+{
+  1: return diesel_visual_effect_and_powered(0);
+  return disable_visual_effect_and_powered();
+}
+
+// Даём тягу, только если локомотив - as1a 
+switch (FEAT_TRAINS, PARENT, as1a_power,
+  (vehicle_type_id == as1a)  
+  )
+{
+  1: return get_power_in_cb(70); 
+  return 0;
+} 
+
+// Допускается эксплуатация с пассажирами только если голова - as1a 
+switch (FEAT_TRAINS, PARENT, as1a_cargo_capacity,
+  (vehicle_type_id == as1a)
+)
+{
+  1: return 24;
+  return 0;
+}
+
 switch (FEAT_TRAINS, SELF, as1a_cargo_subtype_text,
   cargo_subtype)
 {
@@ -112,6 +138,9 @@ item (FEAT_TRAINS, as1a)
     can_attach_wagon: as1a_can_attach_wagon;
     cargo_subtype_text: as1a_cargo_subtype_text;
     additional_text: return string(STR_AS1A_PURCHASE_HINT);
+    power: as1a_power;
+    visual_effect_and_powered: as1a_visual_effect_and_powered;
+    cargo_capacity: as1a_cargo_capacity;
   }
 }
 
