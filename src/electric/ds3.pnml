@@ -99,10 +99,10 @@ switch (FEAT_TRAINS, PARENT, ds3_start_stop,
 }
 
 // Макс. скорость: 120 км/ч
-#define MAX_SPEED 120
+#define MAX_SPEED (cargo_subtype == 0) ? 120 : 160
 
 switch (FEAT_TRAINS, SELF, ds3_purchase_speed,
-  MAX_SPEED)
+  120)
 {
   return;
 }
@@ -145,6 +145,14 @@ switch (FEAT_TRAINS, SELF, ds3_bitmask_vehicle_info,
   ds3_bitmask_vehicle_info2;
 }
 
+switch (FEAT_TRAINS, SELF, ds3_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_CARGO);
+  1: string(STR_REFIT_PASSANGERS);
+  return CB_RESULT_NO_TEXT;
+}
+
 item (FEAT_TRAINS, ds3)
 {
   property
@@ -183,7 +191,7 @@ item (FEAT_TRAINS, ds3)
     speed: ds3_speed;
     purchase_speed: ds3_purchase_speed;
     bitmask_vehicle_info: ds3_bitmask_vehicle_info;
-    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_subtype_text: ds3_cargo_subtype_text;
     cargo_capacity: return 0;
     cost_factor: return 754;
   }
