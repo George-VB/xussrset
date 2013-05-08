@@ -1,0 +1,130 @@
+ // 3es5k
+
+// Спрайты
+// 2ЭС5К и 3ЭС5К "Ермак" - новочеркасские электровозы переменного тока.
+// Частично используются из 2es5k.pnml, второй вариант
+
+#define IMAGEFILE  "src/electric/2es5k-3es5k.png"
+
+// покупка
+spriteset (_3es5k_m_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 60)
+}
+
+// бустерная секция (средняя)
+spriteset (_3es5k_m_c_spriteset, IMAGEFILE)
+{
+  s10_template(152, 562, 0)
+} 
+
+spriteset (_3es5k_m_cr_spriteset, IMAGEFILE)
+{
+  s10_template(610, 562, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _3es5k_m_get_spriteset1,
+[  set_offset_to(-2),
+   prev_vehicle_type_id() == _3es5k
+])
+{ 1: _3es5k_m_c_spriteset;
+     _3es5k_m_cr_spriteset;}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _3es5k_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _3es5k_m_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _3es5k_m_speed,
+[
+  STORE_TEMP(110, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
+])
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, _3es5k_m_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_3es5k_m), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 6)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, _3es5k_m_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(_3es5k_m), 0),
+  vehicle_type_id == _3es5k_m
+])
+{
+  _3es5k_m_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, _3es5k_m_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  _3es5k_m_bitmask_vehicle_info2;
+}
+
+switch (FEAT_TRAINS, SELF, _3es5k_m_cost_factor,
+  current_year >= 2009)
+{
+  1: return 360;
+  return 356;
+}
+
+item (FEAT_TRAINS, _3es5k_m)
+{
+  property
+  {
+    name: string(STR_3ES5K_M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(2006), 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(2006,2025);
+    retire_early: get_retire_early(2006,2025); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: get_electric_cost_factor();
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 4065 hpM;
+    speed: 110 km/h;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    weight: 96 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(211.0, 96);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: _3es5k_m_get_spriteset;
+    purchase: _3es5k_m_purchase_spriteset;
+    purchase_speed: 110;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: return string(STR_CANNOT_START_HEAD);
+    additional_text: return string(STR_3ES5K_M_PURCHASE_HINT);
+    speed: _3es5k_m_speed;
+    bitmask_vehicle_info: _3es5k_m_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    cost_factor: _3es5k_m_cost_factor;
+  }
+}

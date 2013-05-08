@@ -1,0 +1,116 @@
+ // 4te10s_m
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/4te10s.png"
+
+// покупка
+spriteset (_4te10s_m_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(493, 115)
+}
+
+spriteset (_4te10s_m_rcd_spriteset, IMAGEFILE)
+{
+  s10_template(842, 16, 0)
+} 
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _4te10s_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _4te10s_m_rcd_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_speed,
+[
+  STORE_TEMP(100, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_4te10s_m) - count_veh_id(_2te10m) -
+    count_veh_id(_2te10u) - count_veh_id(_2te116), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 4)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, _4te10s_m_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(_4te10s_m) + count_veh_id(_2te10m) +
+    count_veh_id(_2te10u) + count_veh_id(_2te116), 0),
+  (vehicle_type_id == _4te10s_m) || (vehicle_type_id == _2te10m) ||
+    (vehicle_type_id == _2te10u) || (vehicle_type_id == _2te116)
+])
+{
+  _4te10s_m_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  _4te10s_m_bitmask_vehicle_info2;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_cost_factor,
+  (current_year >= 1987))
+{
+  1: return 90;
+  return 86;
+}
+
+item (FEAT_TRAINS, _4te10s_m) 
+{
+  property
+  {
+    name: string(STR_4TE10S_M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1983), 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1983,1987);
+    retire_early: get_retire_early(1983,1987); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cost_factor: get_diesel_cost_factor();
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 2273 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 138 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(245.0, 138);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: _4te10s_m_get_spriteset;
+    purchase: _4te10s_m_purchase_spriteset;
+    purchase_speed: 100;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: return string(STR_CANNOT_START_HEAD);
+    additional_text: return string(STR_4TE10S_M_PURCHASE_HINT);
+    speed: _4te10s_m_speed;
+    bitmask_vehicle_info: _4te10s_m_bitmask_vehicle_info;
+    cargo_subtype_text: cargo_subtype_text_default;
+    cargo_capacity: return 0;
+    cost_factor: _4te10s_m_cost_factor;
+  }
+}

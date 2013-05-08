@@ -1,0 +1,184 @@
+ // 3m62u_m
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/3m62u.png"
+
+// покупка
+spriteset (_3m62u_m_purchase_spriteset, IMAGEFILE)
+{
+  new_purchase_template(0, 20)
+}
+
+// секция В
+spriteset (_3m62u_m_c_spriteset, IMAGEFILE)
+{
+  s10_template(1055, 80, 0)
+} 
+
+// секция В (реверс)
+spriteset (_3m62u_m_cr_spriteset, IMAGEFILE)
+{
+  s10_template(1516, 80, 0)
+} 
+
+// секция В
+spriteset (_3m62u_m_c_v2_spriteset, IMAGEFILE)
+{
+  s10_template(1055, 237, 0)
+} 
+
+// секция В (реверс)
+spriteset (_3m62u_m_cr_v2_spriteset, IMAGEFILE)
+{
+  s10_template(1516, 237, 0)
+} 
+
+// секция В
+spriteset (_3m62u_m_c_v3_spriteset, IMAGEFILE)
+{
+  s10_template(1055, 394, 0)
+} 
+
+// секция В (реверс)
+spriteset (_3m62u_m_cr_v3_spriteset, IMAGEFILE)
+{
+  s10_template(1516, 394, 0)
+} 
+
+// секция В
+spriteset (_3m62u_m_c_v4_spriteset, IMAGEFILE)
+{
+  s10_template(1055, 551, 0)
+} 
+
+// секция В (реверс)
+spriteset (_3m62u_m_cr_v4_spriteset, IMAGEFILE)
+{
+  s10_template(1516, 551, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_get_spriteset1,
+  cargo_subtype 
+)
+{
+  0: _3m62u_m_c_spriteset;
+  1: _3m62u_m_c_v2_spriteset;
+  2: _3m62u_m_c_v3_spriteset;
+     _3m62u_m_c_v4_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _3m62u_m_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  _3m62u_m_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_cargo_subtype_text2,
+  current_year >= 1990)
+{
+  1: string(STR_REFIT_MOSCOW_RAILWAY);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_RAL_6020);
+  1: string(STR_REFIT_GREEN_GRASS);
+  2: _3m62u_m_cargo_subtype_text2;
+  3: string(STR_REFIT_KALININGRAD_RAILWAY);
+  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_speed,
+[
+  STORE_TEMP(100, 0),
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])
+{
+  return;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_bitmask_vehicle_info3,
+[
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_3m62u_m), 0),
+  (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
+    LOAD_TEMP(0) < 6)
+])
+{
+  1: return 0;
+  return FLAG_PENALISE_SPEED;
+}
+
+switch (FEAT_TRAINS, PARENT, _3m62u_m_bitmask_vehicle_info2,
+[
+  STORE_TEMP(count_veh_id(_3m62u_m), 0),
+  vehicle_type_id == _3m62u_m
+])
+{
+  _3m62u_m_bitmask_vehicle_info3;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_bitmask_vehicle_info,
+  position_in_consist == 0)
+{
+  1: return 0;
+  _3m62u_m_bitmask_vehicle_info2;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_cost_factor,
+  (current_year >= 1991))
+{
+  1: return 65;
+  return 61;
+}
+
+item (FEAT_TRAINS, _3m62u_m) 
+{
+  property
+  {
+    name: string(STR_3M62U_M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1986), 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1986,1992);
+    retire_early: get_retire_early(1986,1992); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: get_diesel_cost_factor();
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 1546 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 1;
+    weight: (378/3) ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(196.0, 378/3);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: _3m62u_m_get_spriteset;
+    purchase: _3m62u_m_purchase_spriteset;
+    purchase_speed: 100;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: return string(STR_CANNOT_START_HEAD);
+    additional_text: return string(STR_3M62U_M_PURCHASE_HINT);
+    cargo_subtype_text: _3m62u_m_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: _3m62u_m_speed; 
+    bitmask_vehicle_info: _3m62u_m_bitmask_vehicle_info;
+    cost_factor: _3m62u_m_cost_factor;
+  }
+}
