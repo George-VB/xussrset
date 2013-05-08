@@ -33,11 +33,6 @@ spriteset (_3te10u_rb_spriteset, IMAGEFILE)
   s10_template(423, 16, 0)
 } 
 
-spriteset (_3te10u_rc_spriteset, IMAGEFILE)
-{
-  s10_template(842, 16, 0)
-} 
-
 // обычный: погрузка/перемещение
 spriteset (_3te10u_v2_loading_spriteset, IMAGEFILE)
 {
@@ -59,11 +54,6 @@ spritegroup _3te10u_v2_spritegroup
 spriteset (_3te10u_rb_v2_spriteset, IMAGEFILE)
 {
   s10_template(423, 153, 0)
-} 
-
-spriteset (_3te10u_rc_v2_spriteset, IMAGEFILE)
-{
-  s10_template(842, 153, 0)
 } 
 
 // обычный: погрузка/перемещение
@@ -89,33 +79,100 @@ spriteset (_3te10u_rb_v3_spriteset, IMAGEFILE)
   s10_template(423, 290, 0)
 } 
 
-spriteset (_3te10u_rc_v3_spriteset, IMAGEFILE)
-{
-  s10_template(842, 290, 0)
-} 
-
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset2,
-  ((last_computed_result - count_veh_id(_3te10u)) % 3) +
-  cargo_subtype * 3
-)
+// расчёт ориентации секций локомотива. Первые 4 ориентируются парами, далее по номеру в составе. 
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset2l2,
+  cargo_subtype)
 {
   0: _3te10u_spritegroup;
-  1: _3te10u_rc_spriteset;
-  2: _3te10u_rb_spriteset;
-  3: _3te10u_v2_spritegroup;
-  4: _3te10u_rc_v2_spriteset;
-  5: _3te10u_rb_v2_spriteset;
-  6: _3te10u_v3_spritegroup;
-  7: _3te10u_rc_v3_spriteset;
-  _3te10u_rb_v3_spriteset;
+  1: _3te10u_v2_spritegroup;
+     _3te10u_v3_spritegroup;
 }
 
-switch (FEAT_TRAINS, PARENT, _3te10u_get_spriteset1,
-  count_veh_id(_3te10u))
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset2r,
+  cargo_subtype)
 {
-  _3te10u_get_spriteset2;
+  0: _3te10u_rb_spriteset;
+  1: _3te10u_rb_v2_spriteset;
+     _3te10u_rb_v3_spriteset;
+}  
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset2l,
+[ set_offset_to(2),
+  (prev_vehicle_type_id() == _2te10u) || (prev_vehicle_type_id() == _3te10u) || 
+  (position_in_consist == 0) ])
+{ 1: _3te10u_get_spriteset2l2;
+     _3te10u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset_old,
+  ((LOAD_TEMP(0) - count_veh_id(_3te10u) + 1) % 2) )
+{ 1: _3te10u_get_spriteset2l;
+     _3te10u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset_10,
+[  set_offset_to(-10),
+  ((prev_vehicle_type_id() == _2te10u) ||
+   (prev_vehicle_type_id() == _3te10u)) +
+  ((prev_vehicle_type_id() == _3te10u_m) * 2)])
+{ 1: _3te10u_get_spriteset_old;
+  2: _3te10u_get_spriteset2r;
+     _3te10u_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset_8,
+[  set_offset_to(-8),
+  ((prev_vehicle_type_id() == _2te10u) ||
+   (prev_vehicle_type_id() == _3te10u)) +
+  ((prev_vehicle_type_id() == _3te10u_m) * 2)])
+{ 1: _3te10u_get_spriteset_10;
+  2: _3te10u_get_spriteset2l;
+     _3te10u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset_6,
+[  set_offset_to(-6),
+  ((prev_vehicle_type_id() == _2te10u) ||
+   (prev_vehicle_type_id() == _3te10u)) +
+  ((prev_vehicle_type_id() == _3te10u_m) * 2)])
+{ 1: _3te10u_get_spriteset_8;
+  2: _3te10u_get_spriteset2r;
+     _3te10u_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset_4,
+[  set_offset_to(-4),
+  ((prev_vehicle_type_id() == _2te10u) ||
+   (prev_vehicle_type_id() == _3te10u)) +
+  ((prev_vehicle_type_id() == _3te10u_m) * 2)])
+{ 1: _3te10u_get_spriteset_6;
+  2: _3te10u_get_spriteset2l;
+     _3te10u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset_2,
+[  set_offset_to(-2),
+  (prev_vehicle_type_id() == _2te10u) ||
+  (prev_vehicle_type_id() == _3te10u)])
+{ 1: _3te10u_get_spriteset_4;
+     _3te10u_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset4,
+[  set_offset_to(2),
+  prev_vehicle_type_id() == _3te10u_m    
+])
+{ 1: _3te10u_get_spriteset2l2;
+     _3te10u_get_spriteset_2;}
+
+switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset3,
+[  set_offset_to(-2),
+  prev_vehicle_type_id() == _3te10u_m  
+])
+{ 1: _3te10u_get_spriteset2r;
+     _3te10u_get_spriteset4;}
+
+switch (FEAT_TRAINS, PARENT, _3te10u_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(_3te10u), 0) ])
+{
+     _3te10u_get_spriteset3;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
@@ -125,13 +182,6 @@ switch (FEAT_TRAINS, SELF, _3te10u_get_spriteset,
 {
   1: dummy_spriteset;
   _3te10u_get_spriteset1;
-}
-
-// Что присоединяем?
-switch (FEAT_TRAINS, SELF, _3te10u_can_attach_wagon,
-  0)
-{
-  return CB_RESULT_ATTACH_ALLOW;
 }
 
 // Если хотя бы 3 не следуют др. за др., то не выпускать
@@ -255,7 +305,7 @@ item (FEAT_TRAINS, _3te10u)
     default: _3te10u_get_spriteset;
     purchase: _3te10u_purchase_spriteset;
     articulated_part: articulated_part_dummy2;
-    can_attach_wagon: _3te10u_can_attach_wagon;
+    can_attach_wagon: any_can_attach_wagon;
     start_stop: _3te10u_start_stop;
     additional_text: return string(STR_3TE10U_PURCHASE_HINT);
     cargo_subtype_text: _3te10u_cargo_subtype_text;

@@ -12,42 +12,99 @@ spriteset (_3es5k_purchase_spriteset, IMAGEFILE)
   new_purchase_template(0, 40)
 }
 
-// бустерная секция (средняя)
-spriteset (_3es5k_c_spriteset, IMAGEFILE)
-{
-  s10_template(152, 562, 0)
-} 
-
-spriteset (_3es5k_cr_spriteset, IMAGEFILE)
-{
-  s10_template(610, 562, 0)
-} 
-
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2,
-  (((LOAD_TEMP(0) - count_veh_id(_3es5k)) % 3) * 3) +
-  // поправка на нет тока
+// расчёт ориентации секций локомотива. Первые 4 ориентируются парами, далее по номеру в составе. 
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2l2,
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
-)
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
 {
   0: _2es5k_v2_notpowered_spriteset;
   1: _2es5k_v2_spritegroup;
-  2: _2es5k_v2_speedover50_spriteset;
-  3..5: _3es5k_cr_spriteset;
-  6: _2es5k_b_v2_notpowered_spriteset;
-  7..8: _2es5k_b_v2_spriteset;
-  align_10_spriteset; // параллелепипед
+     _2es5k_v2_speedoverTH_spriteset;
 }
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2r,
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
+{ 0: _2es5k_b_v2_notpowered_spriteset;
+     _2es5k_b_v2_spriteset;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2l,
+[ set_offset_to(2),
+  (prev_vehicle_type_id() == _3es5k) || (prev_vehicle_type_id() == _2es5k) || 
+  (position_in_consist == 0) ])
+{ 1: _3es5k_get_spriteset2l2;
+     _3es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_old,
+  ((LOAD_TEMP(0) - count_veh_id(_3es5k) + 1) % 2) )
+{ 1: _3es5k_get_spriteset2l;
+     _3es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_10,
+[  set_offset_to(-10),
+  ((prev_vehicle_type_id() == _2es5k) ||
+   (prev_vehicle_type_id() == _3es5k)) +
+  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
+{ 1: _3es5k_get_spriteset_old;
+  2: _3es5k_get_spriteset2r;
+     _3es5k_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_8,
+[  set_offset_to(-8),
+  ((prev_vehicle_type_id() == _2es5k) ||
+   (prev_vehicle_type_id() == _3es5k)) +
+  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
+{ 1: _3es5k_get_spriteset_10;
+  2: _3es5k_get_spriteset2l;
+     _3es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_6,
+[  set_offset_to(-6),
+  ((prev_vehicle_type_id() == _2es5k) ||
+   (prev_vehicle_type_id() == _3es5k)) +
+  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
+{ 1: _3es5k_get_spriteset_8;
+  2: _3es5k_get_spriteset2r;
+     _3es5k_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_4,
+[  set_offset_to(-4),
+  ((prev_vehicle_type_id() == _2es5k) ||
+   (prev_vehicle_type_id() == _3es5k)) +
+  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
+{ 1: _3es5k_get_spriteset_6;
+  2: _3es5k_get_spriteset2l;
+     _3es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_2,
+[  set_offset_to(-2),
+  (prev_vehicle_type_id() == _2es5k) ||
+  (prev_vehicle_type_id() == _3es5k)])
+{ 1: _3es5k_get_spriteset_4;
+     _3es5k_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset4,
+[  set_offset_to(2),
+  prev_vehicle_type_id() == _3es5k_m    
+])
+{ 1: _3es5k_get_spriteset2l2;
+     _3es5k_get_spriteset_2;}
+
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset3,
+[  set_offset_to(-2),
+  prev_vehicle_type_id() == _3es5k_m  
+])
+{ 1: _3es5k_get_spriteset2r;
+     _3es5k_get_spriteset4;}
 
 switch (FEAT_TRAINS, PARENT, _3es5k_get_spriteset1,
 [
   STORE_TEMP(count_veh_id(_3es5k), 0),
-  STORE_TEMP(current_speed, 1)
-])
+  STORE_TEMP(current_speed, 1) ])
 {
-  _3es5k_get_spriteset2;
+     _3es5k_get_spriteset3;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
@@ -59,29 +116,22 @@ switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset,
   _3es5k_get_spriteset1;
 }
 
-// Что присоединяем?
-switch (FEAT_TRAINS, SELF, _3es5k_can_attach_wagon,
-  0)
-{
-  return CB_RESULT_ATTACH_ALLOW;
-}
-
 // Если хотя бы 3 не следуют др. за др., то не выпускать
 switch (FEAT_TRAINS, PARENT, _3es5k_start_stop2,
 [
   set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == _3es5k, 0),
+  STORE_TEMP((prev_vehicle_type_id() == _3es5k) || ((prev_vehicle_type_id() == _3es5k_m)), 0),
   set_offset_to(4),
-  (prev_vehicle_type_id() == _3es5k) && LOAD_TEMP(0)
+  ((prev_vehicle_type_id() == _3es5k) || (prev_vehicle_type_id() == _3es5k_m)) && LOAD_TEMP(0)
 ])
 {
-  1: return CB_RESULT_NO_TEXT;
+  1: any_start_stop;
   return string(STR_START_STOP_NEED_AT_LEAST_3_CONSECUTIVE_ENGINE);
 }
 
 // Если локомотивов меньше 3, то не выпускать
 switch (FEAT_TRAINS, PARENT, _3es5k_start_stop,
-  count_veh_id(_3es5k) >= 3)
+  (count_veh_id(_3es5k) + count_veh_id(_3es5k_m)) >= 3)
 {
   1: _3es5k_start_stop2;
   return string(STR_START_STOP_NEED_3_OR_MORE_ENGINE);
@@ -173,7 +223,7 @@ item (FEAT_TRAINS, _3es5k)
     default: _3es5k_get_spriteset;
     purchase: _3es5k_purchase_spriteset;
     articulated_part: articulated_part_dummy2;
-    can_attach_wagon: _3es5k_can_attach_wagon;
+    can_attach_wagon: any_can_attach_wagon;
     start_stop: _3es5k_start_stop;
     additional_text: return string(STR_3ES5K_PURCHASE_HINT);
     speed: _3es5k_speed;

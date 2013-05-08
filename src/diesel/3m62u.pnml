@@ -33,18 +33,6 @@ spriteset (_3m62u_b_spriteset, IMAGEFILE)
   s10_template(594, 80, 0)
 } 
 
-// секция В
-spriteset (_3m62u_c_spriteset, IMAGEFILE)
-{
-  s10_template(1055, 80, 0)
-} 
-
-// секция В (реверс)
-spriteset (_3m62u_cr_spriteset, IMAGEFILE)
-{
-  s10_template(1516, 80, 0)
-} 
-
 // обычный: погрузка/перемещение
 spriteset (_3m62u_v2_loading_spriteset, IMAGEFILE)
 {
@@ -66,18 +54,6 @@ spritegroup _3m62u_v2_spritegroup
 spriteset (_3m62u_b_v2_spriteset, IMAGEFILE)
 {
   s10_template(594, 237, 0)
-} 
-
-// секция В
-spriteset (_3m62u_c_v2_spriteset, IMAGEFILE)
-{
-  s10_template(1055, 237, 0)
-} 
-
-// секция В (реверс)
-spriteset (_3m62u_cr_v2_spriteset, IMAGEFILE)
-{
-  s10_template(1516, 237, 0)
 } 
 
 // обычный: погрузка/перемещение
@@ -103,18 +79,6 @@ spriteset (_3m62u_b_v3_spriteset, IMAGEFILE)
   s10_template(594, 394, 0)
 } 
 
-// секция В
-spriteset (_3m62u_c_v3_spriteset, IMAGEFILE)
-{
-  s10_template(1055, 394, 0)
-} 
-
-// секция В (реверс)
-spriteset (_3m62u_cr_v3_spriteset, IMAGEFILE)
-{
-  s10_template(1516, 394, 0)
-} 
-
 // обычный: погрузка/перемещение
 spriteset (_3m62u_v4_loading_spriteset, IMAGEFILE)
 {
@@ -138,43 +102,103 @@ spriteset (_3m62u_b_v4_spriteset, IMAGEFILE)
   s10_template(594, 551, 0)
 } 
 
-// секция В
-spriteset (_3m62u_c_v4_spriteset, IMAGEFILE)
-{
-  s10_template(1055, 551, 0)
-} 
-
-// секция В (реверс)
-spriteset (_3m62u_cr_v4_spriteset, IMAGEFILE)
-{
-  s10_template(1516, 551, 0)
-} 
-
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset2,
-  ((last_computed_result - count_veh_id(_3m62u)) % 3) +
-  (cargo_subtype * 3)
-)
+// расчёт ориентации секций локомотива. Первые 4 ориентируются парами, далее по номеру в составе. 
+
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset2l2,
+  cargo_subtype)
 {
   0: _3m62u_spritegroup;
-  1: _3m62u_c_spriteset;
-  2: _3m62u_b_spriteset;
-  3: _3m62u_v2_spritegroup;
-  4: _3m62u_c_v2_spriteset;
-  5: _3m62u_b_v2_spriteset;
-  6: _3m62u_v3_spritegroup;
-  7: _3m62u_c_v3_spriteset;
-  8: _3m62u_b_v3_spriteset;
-  9: _3m62u_v4_spritegroup;
-  10: _3m62u_c_v4_spriteset;
-  _3m62u_b_v4_spriteset;
+  1: _3m62u_v2_spritegroup;
+  2: _3m62u_v3_spritegroup;
+     _3m62u_v4_spritegroup;
 }
 
-switch (FEAT_TRAINS, PARENT, _3m62u_get_spriteset1,
-  count_veh_id(_3m62u))
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset2r,
+  cargo_subtype)
 {
-  _3m62u_get_spriteset2;
+  0: _3m62u_b_spriteset;
+  1: _3m62u_b_v2_spriteset;
+  2: _3m62u_b_v3_spriteset;
+     _3m62u_b_v4_spriteset;
+}  
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset2l,
+[ set_offset_to(2),
+  (prev_vehicle_type_id() == _2m62u) || (prev_vehicle_type_id() == _3m62u) || 
+  (position_in_consist == 0) ])
+{ 1: _3m62u_get_spriteset2l2;
+     _3m62u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset_old,
+  ((LOAD_TEMP(0) - count_veh_id(_3m62u) + 1) % 2) )
+{ 1: _3m62u_get_spriteset2l;
+     _3m62u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset_10,
+[  set_offset_to(-10),
+  ((prev_vehicle_type_id() == _2m62u) ||
+   (prev_vehicle_type_id() == _3m62u)) +
+  ((prev_vehicle_type_id() == _3m62u_m) * 2)])
+{ 1: _3m62u_get_spriteset_old;
+  2: _3m62u_get_spriteset2r;
+     _3m62u_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset_8,
+[  set_offset_to(-8),
+  ((prev_vehicle_type_id() == _2m62u) ||
+   (prev_vehicle_type_id() == _3m62u)) +
+  ((prev_vehicle_type_id() == _3m62u_m) * 2)])
+{ 1: _3m62u_get_spriteset_10;
+  2: _3m62u_get_spriteset2l;
+     _3m62u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset_6,
+[  set_offset_to(-6),
+  ((prev_vehicle_type_id() == _2m62u) ||
+   (prev_vehicle_type_id() == _3m62u)) +
+  ((prev_vehicle_type_id() == _3m62u_m) * 2)])
+{ 1: _3m62u_get_spriteset_8;
+  2: _3m62u_get_spriteset2r;
+     _3m62u_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset_4,
+[  set_offset_to(-4),
+  ((prev_vehicle_type_id() == _2m62u) ||
+   (prev_vehicle_type_id() == _3m62u)) +
+  ((prev_vehicle_type_id() == _3m62u_m) * 2)])
+{ 1: _3m62u_get_spriteset_6;
+  2: _3m62u_get_spriteset2l;
+     _3m62u_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset_2,
+[  set_offset_to(-2),
+  (prev_vehicle_type_id() == _2m62u) ||
+  (prev_vehicle_type_id() == _3m62u)])
+{ 1: _3m62u_get_spriteset_4;
+     _3m62u_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset4,
+[  set_offset_to(2),
+  prev_vehicle_type_id() == _3m62u_m    
+])
+{ 1: _3m62u_get_spriteset2l2;
+     _3m62u_get_spriteset_2;}
+
+switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset3,
+[  set_offset_to(-2),
+  prev_vehicle_type_id() == _3m62u_m  
+])
+{ 1: _3m62u_get_spriteset2r;
+     _3m62u_get_spriteset4;}
+
+switch (FEAT_TRAINS, PARENT, _3m62u_get_spriteset1,
+[
+  STORE_TEMP(count_veh_id(_3m62u), 0) ])
+{
+     _3m62u_get_spriteset3;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
@@ -186,13 +210,6 @@ switch (FEAT_TRAINS, SELF, _3m62u_get_spriteset,
   _3m62u_get_spriteset1;
 }
 
-// Что присоединяем?
-switch (FEAT_TRAINS, SELF, _3m62u_can_attach_wagon,
-  0)
-{
-  return CB_RESULT_ATTACH_ALLOW;
-}
-
 // Если хотя бы 3 не следуют др. за др., то не выпускать
 switch (FEAT_TRAINS, PARENT, _3m62u_start_stop2,
 [
@@ -202,7 +219,7 @@ switch (FEAT_TRAINS, PARENT, _3m62u_start_stop2,
   (prev_vehicle_type_id() == _3m62u) && LOAD_TEMP(0)
 ])
 {
-  1: return CB_RESULT_NO_TEXT;
+  1: any_start_stop;
   return string(STR_START_STOP_NEED_AT_LEAST_3_CONSECUTIVE_ENGINE);
 }
 
@@ -315,7 +332,7 @@ item (FEAT_TRAINS, _3m62u)
     default: _3m62u_get_spriteset;
     purchase: _3m62u_purchase_spriteset;
     articulated_part: articulated_part_dummy2;
-    can_attach_wagon: _3m62u_can_attach_wagon;
+    can_attach_wagon: any_can_attach_wagon;
     start_stop: _3m62u_start_stop;
     additional_text: return string(STR_3M62U_PURCHASE_HINT);
     cargo_subtype_text: _3m62u_cargo_subtype_text;

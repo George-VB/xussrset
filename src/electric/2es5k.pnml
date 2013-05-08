@@ -34,7 +34,7 @@ spritegroup _2es5k_spritegroup
   loaded: _2es5k_traveling_spriteset;
 }
 
-spriteset (_2es5k_speedover50_spriteset, IMAGEFILE)
+spriteset (_2es5k_speedoverTH_spriteset, IMAGEFILE)
 {
   s10_template(152, 227, 0)
 } 
@@ -74,7 +74,7 @@ spritegroup _2es5k_v2_spritegroup
   loaded: _2es5k_v2_traveling_spriteset;
 }
 
-spriteset (_2es5k_v2_speedover50_spriteset, IMAGEFILE)
+spriteset (_2es5k_v2_speedoverTH_spriteset, IMAGEFILE)
 {
   s10_template(152, 495, 0)
 } 
@@ -93,37 +93,106 @@ spriteset (_2es5k_b_v2_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset2,
-  (((LOAD_TEMP(0) - count_veh_id(_2es5k)) % 2) * 3) +
-  // поправка на нет тока
+// расчёт ориентации секций локомотива. Первые 4 ориентируются парами, далее по номеру в составе. 
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset2l2,
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 2006) * 6)
-)
+  ((build_year >= 2006) * 3))
 {
   0: _2es5k_notpowered_spriteset;
   1: _2es5k_spritegroup;
-  2: _2es5k_speedover50_spriteset;
-  3: _2es5k_b_notpowered_spriteset;
-  4: _2es5k_b_spriteset;
-  5: _2es5k_b_spriteset;
-
-  6: _2es5k_v2_notpowered_spriteset;
-  7: _2es5k_v2_spritegroup;
-  8: _2es5k_v2_speedover50_spriteset;
-  9: _2es5k_b_v2_notpowered_spriteset;
-  10: _2es5k_b_v2_spriteset;
-  11: _2es5k_b_v2_spriteset;
-  align_10_spriteset; // параллелепипед
+  2: _2es5k_speedoverTH_spriteset;
+  3: _2es5k_v2_notpowered_spriteset;
+  4: _2es5k_v2_spritegroup;
+     _2es5k_v2_speedoverTH_spriteset;
 }
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset2r,
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((build_year >= 2006) * 3))
+{ 0: _2es5k_b_notpowered_spriteset;
+  1..2: _2es5k_b_spriteset;
+  3: _2es5k_b_v2_notpowered_spriteset;
+     _2es5k_b_v2_spriteset; }
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset2l,
+[ set_offset_to(2),
+  (prev_vehicle_type_id() == _2es5k) || (prev_vehicle_type_id() == _2es5k) || 
+  (position_in_consist == 0) ])
+{ 1: _2es5k_get_spriteset2l2;
+     _2es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset_old,
+  ((LOAD_TEMP(0) - count_veh_id(_2es5k) + 1) % 2) )
+{ 1: _2es5k_get_spriteset2l;
+     _2es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset_10,
+[  set_offset_to(-10),
+  ((prev_vehicle_type_id() == _2es5k) ||
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 0))) +
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 1)) * 2])
+{ 1: _2es5k_get_spriteset_old;
+  2: _2es5k_get_spriteset2r;
+     _2es5k_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset_8,
+[  set_offset_to(-8),
+  ((prev_vehicle_type_id() == _2es5k) ||
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 0))) +
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 1)) * 2])
+{ 1: _2es5k_get_spriteset_10;
+  2: _2es5k_get_spriteset2l;
+     _2es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset_6,
+[  set_offset_to(-6),
+  ((prev_vehicle_type_id() == _2es5k) ||
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 0))) +
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 1)) * 2])
+{ 1: _2es5k_get_spriteset_8;
+  2: _2es5k_get_spriteset2r;
+     _2es5k_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset_4,
+[  set_offset_to(-4),
+  ((prev_vehicle_type_id() == _2es5k) ||
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 0))) +
+  ((prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 1)) * 2 ])
+{ 1: _2es5k_get_spriteset_6;
+  2: _2es5k_get_spriteset2l;
+     _2es5k_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset_2,
+[  set_offset_to(-2),
+  (prev_vehicle_type_id() == _2es5k) ||
+  (prev_vehicle_type_id() == _3es5k)])
+{ 1: _2es5k_get_spriteset_4;
+     _2es5k_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset4,
+[  set_offset_to(2),
+  (prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 1)  
+  
+])
+{ 1: _2es5k_get_spriteset2l2;
+     _2es5k_get_spriteset_2;}
+
+switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset2,
+[  set_offset_to(-2),
+  (prev_vehicle_type_id() == _3es5k) && ((prev_vehicle_cargo_subtype() % 2) == 1)  
+  
+])
+{ 1: _2es5k_get_spriteset2r;
+     _2es5k_get_spriteset4;}
 
 switch (FEAT_TRAINS, PARENT, _2es5k_get_spriteset1,
 [
   STORE_TEMP(count_veh_id(_2es5k), 0),
-  STORE_TEMP(current_speed, 1)
-])
+  STORE_TEMP(current_speed, 1) ])
 {
-  _2es5k_get_spriteset2;
+     _2es5k_get_spriteset2;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
@@ -135,18 +204,11 @@ switch (FEAT_TRAINS, SELF, _2es5k_get_spriteset,
   _2es5k_get_spriteset1;
 }
 
-// Что присоединяем?
-switch (FEAT_TRAINS, SELF, _2es5k_can_attach_wagon,
-  0)
-{
-  return CB_RESULT_ATTACH_ALLOW;
-}
-
 // Если хотя бы 2 не следуют др. за др., то не выпускать
 switch (FEAT_TRAINS, PARENT, _2es5k_start_stop2,
 [
   set_offset_to(2),
-  prev_vehicle_type_id() == _2es5k
+  (prev_vehicle_type_id() == _2es5k) || (prev_vehicle_type_id() == _3es5k)
 ])
 {
   1: return CB_RESULT_NO_TEXT;
@@ -247,7 +309,7 @@ item (FEAT_TRAINS, _2es5k)
     default: _2es5k_get_spriteset;
     purchase: _2es5k_purchase_spriteset;
     articulated_part: articulated_part_dummy2;
-    can_attach_wagon: _2es5k_can_attach_wagon;
+    can_attach_wagon: any_can_attach_wagon;
     start_stop: _2es5k_start_stop;
     additional_text: return string(STR_2ES5K_PURCHASE_HINT);
     speed: _2es5k_speed;
