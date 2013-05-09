@@ -225,10 +225,10 @@ switch (FEAT_TRAINS, PARENT, _3m62u_start_stop2,
 
 // Если локомотивов меньше 3, то не выпускать
 switch (FEAT_TRAINS, PARENT, _3m62u_start_stop,
-  count_veh_id(_3m62u) + count_veh_id(_3m62u_m) >= 3)
+  (count_veh_id(_3m62u) >= 2) && (count_veh_id(_3m62u_m) >= 1))
 {
   1: _3m62u_start_stop2;
-  return string(STR_START_STOP_NEED_3_OR_MORE_ENGINE);
+  return string(STR_START_STOP_NEED_2AND1_OR_MORE_ENGINE);
 }
 
 switch (FEAT_TRAINS, SELF, _3m62u_cargo_subtype_text2,
@@ -267,7 +267,7 @@ switch (FEAT_TRAINS, SELF, _3m62u_speed,
 
 switch (FEAT_TRAINS, SELF, _3m62u_bitmask_vehicle_info3,
 [
-  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_3m62u), 0),
+  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(_3m62u) - count_veh_id(_3m62u_m) - count_veh_id(_2m62u), 0),
   (last_computed_result && (position_in_consist == 2 * LOAD_TEMP(0)) &&
     LOAD_TEMP(0) < 6)
 ])
@@ -278,8 +278,8 @@ switch (FEAT_TRAINS, SELF, _3m62u_bitmask_vehicle_info3,
 
 switch (FEAT_TRAINS, PARENT, _3m62u_bitmask_vehicle_info2,
 [
-  STORE_TEMP(count_veh_id(_3m62u), 0),
-  vehicle_type_id == _3m62u
+  STORE_TEMP(count_veh_id(_3m62u) + count_veh_id(_3m62u_m) + count_veh_id(_2m62u), 0),
+  (vehicle_type_id == _3m62u) || (vehicle_type_id == _3m62u_m) || (vehicle_type_id == _2m62u) 
 ])
 {
   _3m62u_bitmask_vehicle_info3;
