@@ -126,11 +126,11 @@ switch (FEAT_TRAINS, SELF, _4te10s_get_spriteset,
 switch (FEAT_TRAINS, PARENT, _4te10s_start_stop5,
 [
   set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == _4te10s, 0),
+  STORE_TEMP((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m), 0),
   set_offset_to(4),
-  STORE_TEMP((prev_vehicle_type_id() == _4te10s) && LOAD_TEMP(0), 0),
+  STORE_TEMP(((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m)) && LOAD_TEMP(0), 0),
   set_offset_to(6),
-  (prev_vehicle_type_id() == _4te10s) && LOAD_TEMP(0)
+  ((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m)) && LOAD_TEMP(0)
 ])
 {
   1: any_start_stop;
@@ -139,7 +139,7 @@ switch (FEAT_TRAINS, PARENT, _4te10s_start_stop5,
 
 // Если локомотивов меньше 4, то не выпускать
 switch (FEAT_TRAINS, PARENT, _4te10s_start_stop4,
-  count_veh_id(_4te10s) >= 4)
+  count_veh_id(_4te10s) + count_veh_id(_4te10s_m)  >= 4)
 {
   1: _4te10s_start_stop5;
   return string(STR_START_STOP_NEED_4_OR_MORE_ENGINE);
@@ -149,9 +149,9 @@ switch (FEAT_TRAINS, PARENT, _4te10s_start_stop4,
 switch (FEAT_TRAINS, PARENT, _4te10s_start_stop3,
 [
   set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == _4te10s, 0),
+  STORE_TEMP((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m), 0),
   set_offset_to(4),
-  (prev_vehicle_type_id() == _4te10s) && LOAD_TEMP(0)
+  ((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m)) && LOAD_TEMP(0)
 ])
 {
   1: return CB_RESULT_NO_TEXT;
@@ -160,7 +160,7 @@ switch (FEAT_TRAINS, PARENT, _4te10s_start_stop3,
 
 // Если локомотивов меньше 3, то не выпускать
 switch (FEAT_TRAINS, PARENT, _4te10s_start_stop2,
-  count_veh_id(_4te10s) >= 3)
+  count_veh_id(_4te10s) + count_veh_id(_4te10s_m) >= 3)
 {
   1: _4te10s_start_stop3;
   return string(STR_START_STOP_NEED_3_OR_MORE_ENGINE);
@@ -171,7 +171,7 @@ switch (FEAT_TRAINS, PARENT, _4te10s_start_stop,
   current_year >= 1993)
 {
   1: _4te10s_start_stop2;
-  _4te10s_start_stop4;
+     _4te10s_start_stop4;
 }
 
 // Макс. скорость: 100 км/ч
