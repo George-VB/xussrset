@@ -26,13 +26,22 @@ switch (FEAT_TRAINS, SELF, _4te10s_m_get_spriteset,
   _4te10s_m_rcd_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, _4te10s_m_speed,
-[
-  STORE_TEMP(100, 0),
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])
+// Макс. скорость: 100 км/ч
+#define MAX_SPEED 100
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_purchase_speed,
+  MAX_SPEED)
 {
   return;
 }
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_speed,
+  is_penalise_speed() ? get_penalised_speed(MAX_SPEED) : MAX_SPEED)
+{
+  return;
+}
+
+#undef MAX_SPEED
 
 switch (FEAT_TRAINS, SELF, _4te10s_m_bitmask_vehicle_info3,
 [
@@ -102,7 +111,7 @@ item (FEAT_TRAINS, _4te10s_m)
   graphics {
     default: _4te10s_m_get_spriteset;
     purchase: _4te10s_m_purchase_spriteset;
-    purchase_speed: 100;
+    purchase_speed: _4te10s_m_purchase_speed;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: return string(STR_CANNOT_START_HEAD);
