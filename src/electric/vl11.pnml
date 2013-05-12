@@ -98,34 +98,79 @@ spriteset (vl11_r_v2_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl11_get_spriteset2,
-  (((LOAD_TEMP(0) - count_veh_id(vl11)) % 2) * 3) +
-  // поправка на нет тока
+// расчёт ориентации секций локомотива. Первые 6 ориентируются парами, далее по номеру в составе. 
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset2l2,
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 1978) * 6)
-)
-{
-  0: vl11_notpowered_spriteset;
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) + 
+  ((build_year >= 1978) * 3))
+{ 0: vl11_notpowered_spriteset;
   1: vl11_spritegroup;
   2: vl11_speedoverTH_spriteset;
-  3: vl11_r_notpowered_spriteset;
-  4..5: vl11_r_spriteset;
-  6: vl11_v2_notpowered_spriteset;
-  7: vl11_v2_spritegroup;
-  8: vl11_v2_speedoverTH_spriteset;
-  9: vl11_r_v2_notpowered_spriteset;
-  10..11: vl11_r_v2_spriteset;
-  align_9_spriteset; // параллелепипед
-}
+  3: vl11_v2_notpowered_spriteset;
+  4: vl11_v2_spritegroup;
+     vl11_v2_speedoverTH_spriteset;	 }
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset2r,
+  ((!(vehicle_is_not_powered || vehicle_is_in_depot))) + 
+  ((build_year >= 1978) * 2))
+{ 0: vl11_r_notpowered_spriteset;
+  1: vl11_r_spriteset;
+  2: vl11_r_v2_notpowered_spriteset;
+     vl11_r_v2_spriteset; }
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset2l,
+[ set_offset_to(2),
+  (prev_vehicle_type_id() == vl11) ||
+  (position_in_consist == 0) ])
+{ 1: vl11_get_spriteset2l2;
+     vl11_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_old,
+  ((LOAD_TEMP(0) - count_veh_id(vl11) + 1) % 2) )
+{ 1: vl11_get_spriteset2l;
+     vl11_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_12,
+[  set_offset_to(-12),
+  (prev_vehicle_type_id() == vl11) ])
+{ 1: vl11_get_spriteset_old;
+     vl11_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_10,
+[  set_offset_to(-10),
+  (prev_vehicle_type_id() == vl11) ])
+{ 1: vl11_get_spriteset_12;
+     vl11_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_8,
+[  set_offset_to(-8),
+  (prev_vehicle_type_id() == vl11) ])
+{ 1: vl11_get_spriteset_10;
+     vl11_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_6,
+[  set_offset_to(-6),
+  (prev_vehicle_type_id() == vl11) ])
+{ 1: vl11_get_spriteset_8;
+     vl11_get_spriteset2l;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_4,
+[  set_offset_to(-4),
+  (prev_vehicle_type_id() == vl11) ])
+{ 1: vl11_get_spriteset_6;
+     vl11_get_spriteset2r;}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_2,
+[  set_offset_to(-2),
+  (prev_vehicle_type_id() == vl11) ])
+{ 1: vl11_get_spriteset_4;
+     vl11_get_spriteset2l;}
 
 switch (FEAT_TRAINS, PARENT, vl11_get_spriteset1,
-[
-  STORE_TEMP(count_veh_id(vl11), 0),
-  STORE_TEMP(current_speed, 1)
-])
+[ STORE_TEMP(count_veh_id(vl11), 0),
+  STORE_TEMP(current_speed, 1) ])
 {
-  vl11_get_spriteset2;
+  vl11_get_spriteset_2;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
