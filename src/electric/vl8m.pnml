@@ -92,36 +92,33 @@ spriteset (vl8m_r_v2_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl8m_get_spriteset2,
-  (((LOAD_TEMP(0) - count_veh_id(vl8m)) % 2) * 3) +
+switch (FEAT_TRAINS, SELF, vl8m_get_spriteset_l,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  (cargo_subtype * 6)
-)
+  (cargo_subtype * 3))
 {
   0: vl8m_notpowered_spriteset;
   1: vl8m_spritegroup;
   2: vl8m_speedoverTH_spriteset;
-  3: vl8m_r_notpowered_spriteset;
-  4..5: vl8m_r_spriteset;
-
-  6: vl8m_v2_notpowered_spriteset;
-  7: vl8m_v2_spritegroup;
-  8: vl8m_v2_speedoverTH_spriteset;
-  9: vl8m_r_v2_notpowered_spriteset;
-  10..11: vl8m_r_v2_spriteset;
+  3: vl8m_v2_notpowered_spriteset;
+  4: vl8m_v2_spritegroup;
+  5: vl8m_v2_speedoverTH_spriteset;
   align_8_spriteset; // параллелепипед
 }
 
-switch (FEAT_TRAINS, PARENT, vl8m_get_spriteset1,
-[
-  STORE_TEMP(count_veh_id(vl8m), 0),
-  STORE_TEMP(current_speed, 1)
-])
+switch (FEAT_TRAINS, SELF, vl8m_get_spriteset_r,
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
+  (cargo_subtype * 2))
 {
-  vl8m_get_spriteset2;
+  0: vl8m_r_notpowered_spriteset;
+  1: vl8m_r_spriteset;
+  2: vl8m_r_v2_notpowered_spriteset;
+  3: vl8m_r_v2_spriteset;
+  align_8_spriteset; // параллелепипед
 }
+
+engine_direction_template(vl8m) 
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -129,7 +126,7 @@ switch (FEAT_TRAINS, SELF, vl8m_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  vl8m_get_spriteset1;
+  vl8m_get_spriteset_t;
 }
 
 // Если хотя бы 2 не следуют др. за др., то не выпускать

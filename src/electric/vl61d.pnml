@@ -130,37 +130,39 @@ spriteset (vl61d_b_v2_speedoverTH_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl61d_get_spriteset2,
-  (((LOAD_TEMP(0) - count_veh_id(vl61d)) % 2) * 3) +
+switch (FEAT_TRAINS, SELF, vl61d_get_spriteset_l,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((current_year >= 1972) * 6)
+  ((LOAD_TEMP(2) >= date(1972, 1, 1)) * 3)
 )
 {
   0: vl61d_notpowered_spriteset;
   1: vl61d_spritegroup;
   2: vl61d_speedoverTH_spriteset;
-  3: vl61d_b_notpowered_spriteset;
-  4: vl61d_b_spritegroup;
-  5: vl61d_b_speedoverTH_spriteset;
-  6: vl61d_v2_notpowered_spriteset;
-  7: vl61d_v2_spritegroup;
-  8: vl61d_v2_speedoverTH_spriteset;
-  9: vl61d_b_v2_notpowered_spriteset;
-  10: vl61d_b_v2_spritegroup;
-  11: vl61d_b_v2_speedoverTH_spriteset;
-  align_10_spriteset; // параллелепипед
+  3: vl61d_v2_notpowered_spriteset;
+  4: vl61d_v2_spritegroup;
+  5: vl61d_v2_speedoverTH_spriteset;
+     align_10_spriteset; // параллелепипед
 }
 
-switch (FEAT_TRAINS, PARENT, vl61d_get_spriteset1,
-[
-  STORE_TEMP(count_veh_id(vl61d), 0),
-  STORE_TEMP(current_speed, 1)
-])
+switch (FEAT_TRAINS, SELF, vl61d_get_spriteset_r,
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  ((LOAD_TEMP(2) >= date(1972, 1, 1)) * 3)
+)
 {
-  vl61d_get_spriteset2;
+  0: vl61d_b_notpowered_spriteset;
+  1: vl61d_b_spritegroup;
+  2: vl61d_b_speedoverTH_spriteset;
+  3: vl61d_b_v2_notpowered_spriteset;
+  4: vl61d_b_v2_spritegroup;
+  5: vl61d_b_v2_speedoverTH_spriteset;
+     align_10_spriteset; // параллелепипед
 }
+
+engine_direction_template(vl61d) 
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -168,7 +170,7 @@ switch (FEAT_TRAINS, SELF, vl61d_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  vl61d_get_spriteset1;
+  vl61d_get_spriteset_t;
 }
 
 // Макс. скорость: 85 км/ч

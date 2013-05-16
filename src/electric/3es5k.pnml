@@ -14,8 +14,8 @@ spriteset (_3es5k_purchase_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-// расчёт ориентации секций локомотива. Первые 4 ориентируются парами, далее по номеру в составе. 
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2l2,
+// расчёт ориентации секций локомотива. 
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_l,
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
 {
@@ -24,88 +24,12 @@ switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2l2,
      _2es5k_v2_speedoverTH_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2r,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
+switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_r,
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)) )
 { 0: _2es5k_b_v2_notpowered_spriteset;
      _2es5k_b_v2_spriteset;}
 
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset2l,
-[ set_offset_to(2),
-  (prev_vehicle_type_id() == _2es5k) || (prev_vehicle_type_id() == _3es5k) || 
-  (position_in_consist == 0) ])
-{ 1: _3es5k_get_spriteset2l2;
-     _3es5k_get_spriteset2r;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_old,
-  ((LOAD_TEMP(0) - count_veh_id(_3es5k) + 1) % 2) )
-{ 1: _3es5k_get_spriteset2l;
-     _3es5k_get_spriteset2r;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_10,
-[  set_offset_to(-10),
-  ((prev_vehicle_type_id() == _2es5k) ||
-   (prev_vehicle_type_id() == _3es5k)) +
-  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
-{ 1: _3es5k_get_spriteset_old;
-  2: _3es5k_get_spriteset2r;
-     _3es5k_get_spriteset2l;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_8,
-[  set_offset_to(-8),
-  ((prev_vehicle_type_id() == _2es5k) ||
-   (prev_vehicle_type_id() == _3es5k)) +
-  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
-{ 1: _3es5k_get_spriteset_10;
-  2: _3es5k_get_spriteset2l;
-     _3es5k_get_spriteset2r;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_6,
-[  set_offset_to(-6),
-  ((prev_vehicle_type_id() == _2es5k) ||
-   (prev_vehicle_type_id() == _3es5k)) +
-  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
-{ 1: _3es5k_get_spriteset_8;
-  2: _3es5k_get_spriteset2r;
-     _3es5k_get_spriteset2l;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_4,
-[  set_offset_to(-4),
-  ((prev_vehicle_type_id() == _2es5k) ||
-   (prev_vehicle_type_id() == _3es5k)) +
-  ((prev_vehicle_type_id() == _3es5k_m) * 2)])
-{ 1: _3es5k_get_spriteset_6;
-  2: _3es5k_get_spriteset2l;
-     _3es5k_get_spriteset2r;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset_2,
-[  set_offset_to(-2),
-  (prev_vehicle_type_id() == _2es5k) ||
-  (prev_vehicle_type_id() == _3es5k)])
-{ 1: _3es5k_get_spriteset_4;
-     _3es5k_get_spriteset2l;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset4,
-[  set_offset_to(2),
-  prev_vehicle_type_id() == _3es5k_m    
-])
-{ 1: _3es5k_get_spriteset2l2;
-     _3es5k_get_spriteset_2;}
-
-switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset3,
-[  set_offset_to(-2),
-  prev_vehicle_type_id() == _3es5k_m  
-])
-{ 1: _3es5k_get_spriteset2r;
-     _3es5k_get_spriteset4;}
-
-switch (FEAT_TRAINS, PARENT, _3es5k_get_spriteset1,
-[
-  STORE_TEMP(count_veh_id(_3es5k), 0),
-  STORE_TEMP(current_speed, 1) ])
-{
-     _3es5k_get_spriteset3;
-}
+engine_direction_template3m(_3es5k, _2es5k, _3es5k_m) 
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -113,7 +37,7 @@ switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  _3es5k_get_spriteset1;
+  _3es5k_get_spriteset_t;
 }
 
 // Если хотя бы 2 не следуют др. за др., то не выпускать

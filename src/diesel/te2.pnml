@@ -169,34 +169,39 @@ spriteset (te2_r_v6_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, te2_get_spriteset2,
-  ((last_computed_result - count_veh_id(te2)) % 2) +
-  ((build_year >= 1950) * 2) +
-  ((build_year >= 1960) * 2) +
-  ((build_year >= 1972) * 4) +
-  (cargo_subtype * 2)
+switch (FEAT_TRAINS, SELF, te2_get_spriteset_l,
+  (build_year >= 1950) +
+  (build_year >= 1960) +
+  ((build_year >= 1972) * 2) +
+  cargo_subtype
 )
 {
   0: te2_spritegroup;
-  1: te2_r_spriteset;
-  2: te2_v2_spritegroup;
-  3: te2_r_v2_spriteset;
-  4: te2_v3_spritegroup;
-  5: te2_r_v3_spriteset;
-  6: te2_v4_spritegroup;
-  7: te2_r_v4_spriteset;
-  8: te2_v5_spritegroup;
-  9: te2_r_v5_spriteset;
-  10: te2_v6_spritegroup;
-  11: te2_r_v6_spriteset;
-  align_7_spriteset;
+  1: te2_v2_spritegroup;
+  2: te2_v3_spritegroup;
+  3: te2_v4_spritegroup;
+  4: te2_v5_spritegroup;
+  5: te2_v6_spritegroup;
+     align_7_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, te2_get_spriteset1,
-  count_veh_id(te2))
+switch (FEAT_TRAINS, SELF, te2_get_spriteset_r,
+  (build_year >= 1950) +
+  (build_year >= 1960) +
+  ((build_year >= 1972) * 2) +
+  cargo_subtype
+)
 {
-  te2_get_spriteset2;
+  0: te2_r_spriteset;
+  1: te2_r_v2_spriteset;
+  2: te2_r_v3_spriteset;
+  3: te2_r_v4_spriteset;
+  4: te2_r_v5_spriteset;
+  5: te2_r_v6_spriteset;
+     align_7_spriteset;
 }
+
+engine_direction_template(te2) 
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
@@ -204,7 +209,7 @@ switch (FEAT_TRAINS, SELF, te2_get_spriteset,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  te2_get_spriteset1;
+  te2_get_spriteset_t;
 }
 
 // покупка
