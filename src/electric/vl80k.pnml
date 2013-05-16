@@ -352,25 +352,6 @@ switch (FEAT_TRAINS, SELF, vl80k_get_purchase_spriteset,
   3: vl80k_v6_purchase_spriteset;
 }
 
-// Если хотя бы 2 не следуют др. за др., то не выпускать
-switch (FEAT_TRAINS, PARENT, vl80k_start_stop2,
-[
-  set_offset_to(2),
-  prev_vehicle_type_id() == vl80k
-])
-{
-  1: any_start_stop;
-  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
-}
-
-// Если локомотивов меньше двух, то не выпускать
-switch (FEAT_TRAINS, PARENT, vl80k_start_stop,
-  count_veh_id(vl80k) >= 2)
-{
-  1: vl80k_start_stop2;
-  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
-}
-
 // Макс. скорость: 100 км/ч
 #define MAX_SPEED 100
 
@@ -453,7 +434,7 @@ item (FEAT_TRAINS, vl80k)
     purchase: vl80k_get_purchase_spriteset;
     articulated_part: articulated_part_dummy1;
     can_attach_wagon: any_can_attach_wagon;
-    start_stop: vl80k_start_stop;
+    start_stop: any_start_stop;
     additional_text: return string(STR_VL80K_PURCHASE_HINT);
     cargo_subtype_text: cargo_subtype_text_default;
     cargo_capacity: return 0;
