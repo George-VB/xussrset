@@ -190,11 +190,11 @@ spriteset (chs4_v6_speedoverTH_spriteset, IMAGEFILE)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, chs4_get_spriteset2,
-  ((last_computed_result > threshold_of_speed()) + 1) *
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
   // поправка на нет тока
   ((build_year >= 1967) * 3) +
-  (((current_year >= 1976) && (build_year < 1967) &&
+  (((LOAD_TEMP(2) >= 1976) && (build_year < 1967) &&
     (cargo_subtype > 0)) * 6) +
   cargo_subtype * 3
 )
@@ -221,7 +221,9 @@ switch (FEAT_TRAINS, SELF, chs4_get_spriteset2,
 }
 
 switch (FEAT_TRAINS, PARENT, chs4_get_spriteset1,
-  current_speed)
+[ STORE_TEMP(count_veh_id(chs4), 0),                         
+  STORE_TEMP(current_speed, 1),                              
+  STORE_TEMP(date_of_last_service, 2) ])                     
 {
   chs4_get_spriteset2;
 }
