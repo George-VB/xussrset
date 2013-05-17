@@ -40,7 +40,7 @@ call :WriteCustomTags>%CUSTOM_TAGS%
 :: -D amacro=defn Define macro amacro as defn.
 gcc -D REPO_REVISION=%REPO_REVISION% ^
   -D MIN_COMPATIBLE_REVISION=%MIN_COMPATIBLE_REVISION% ^
-  -E -C -P -x c -o %NMLNAME%.nml src/%NMLNAME%.pnml
+  -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
