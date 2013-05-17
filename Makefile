@@ -5,27 +5,54 @@
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with NML build framework. If not, see <http://www.gnu.org/licenses/>.
 #
 
+-include Makefile.config
+
+##################################################################
+#
+# For easy updates you can copy these basic definitions in
+# Makefile.config
+# and place that next to the Makefile. This will allow easy
+# updates to the generic Makefile
+#
+##################################################################
+
 # Definition of the grfs
-GRF_FILE            := xussr.grf
-REPO_NAME           := xUSSR Trainset
-MAIN_SRC_FILE       := xussr.pnml
-# GFX_LIST_FILES      := gfx/png_source_list
+REPO_NAME           ?= My NewGRF
 
-# Directory structure
-SRC_DIR             := src
-DOC_DIR             := docs
-SCRIPT_DIR          := build-common
-LANG_DIR            := lang
+# This is the filename part common to the grf file, main source file and the tar name
+BASE_FILENAME       ?= mynewgrf
 
-# Documentation files:
-DOC_FILES = docs/readme.txt docs/license.txt docs/changelog.txt docs/readme_ru.txt docs/changelog_ru.txt
+# Documentation files
+DOC_FILES ?= docs/readme.txt docs/license.txt docs/changelog.txt
+
+# Directory structure. If DevZone's translation service is required, don't change this
+SCRIPT_DIR          ?= scripts
+
+# Version the NewGRF is backward compatible to
+# MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
+
+# Uncomment in order to make use of gimp scripting. See the file
+# for a description of the format
+# GFX_SCRIPT_LIST_FILES      := gfx/png_source_list
+
+##################################################################
+#
+# Everything below here usually need not change for simple NewGRFs
+#
+##################################################################
+
+# Define the filenames of the grf and nml file. They must be in the main directoy
+GRF_FILE            := $(BASE_FILENAME).grf
+NML_FILE            := $(BASE_FILENAME).nml
+# uncomment MAIN_SRC_FILE if you do not want any preprocessing to happen to your source file
+MAIN_SRC_FILE       := $(BASE_FILENAME).pnml
 
 # List of all files which will get shipped
-# DOC_FILES = readme, changelog and license
-# GRF_FILENAME = MAIN_FILENAME_SRC with the extention .grf
+# documentation files: readme, changelog and license, usually $(DOC_FILES)
+# grf file: the above defined grf file, usualls $(GRF_FILE)
 # Add any additional, not usual files here, too, including
 # their relative path to the root of the repository
-BUNDLE_FILES           = $(GRF_FILE) $(DOC_FILES)
+BUNDLE_FILES           ?= $(GRF_FILE) $(DOC_FILES)
 
 # Replacement strings in the source and in the documentation
 # You may only change the values, not add new definitions
@@ -34,14 +61,13 @@ REPLACE_TITLE       := {{GRF_TITLE}}
 REPLACE_GRFID       := {{GRF_ID}}
 REPLACE_REVISION    := {{REPO_REVISION}}
 REPLACE_FILENAME    := {{FILENAME}}
-REPLACE_MD5SUM      := {{GRF_MD5}}
 
 # target 'all' must be first target
 all: grf doc bundle_tar
 
 # general definitions (no rules!)
--include Makefile_dist
-.PHONY: all clean distclean mrproper depend docs test bundle bundle_bsrc bundle_bzip bundle_gsrc bundle_src bundle_tar bundle_xsrc bundle_xz bundle_zip bundle_zsrc check addcheck
+-include Makefile.dist
+.PHONY: all clean distclean doc test bundle bundle_bsrc bundle_bzip bundle_gsrc bundle_src bundle_tar bundle_xsrc bundle_xz bundle_zip bundle_zsrc check
 
 # We want to disable the default rules. It's not c/c++ anyway
 .SUFFIXES:
@@ -59,12 +85,10 @@ MAKE_FLAGS     ?= -r
 NML            ?= $(shell which nmlc 2>/dev/null)
 NML_FLAGS      ?= -c
 
+ifdef MAIN_SRC_FILE
 CC             ?= $(shell which gcc 2>/dev/null)
-CC_FLAGS       ?= -C -E - <
-
-# Macs have a different md5 command than linux or mingw envirnoment:
-MD5SUM         ?= $(shell [ "$(OSTYPE)" = "Darwin" ] && echo "md5" || echo "md5sum")
-MD5SUM_FLAGS   ?= $(shell [ "$(OSTYPE)" = "Darwin" ] && echo "-r" || echo "")
+CC_FLAGS       ?= -C -E -nostdinc -x c-header
+endif
 
 AWK            ?= awk
 
@@ -88,6 +112,9 @@ DEFAULT_BRANCH_NAME ?=
 # HG revision
 REPO_REVISION  ?= $(shell $(HG) id -n | cut -d+ -f1)
 
+# Version the NewGRF is backward compatible to
+MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
+
 # Whether there are local changes
 REPO_MODIFIED  ?= $(shell [ "`$(HG) id | cut -c13`" = "+" ] && echo "M" || echo "")
 
@@ -106,10 +133,6 @@ REPO_VERSION_STRING ?= $(shell [ -n "$(REPO_TAGS)" ] && echo $(REPO_TAGS)$(REPO_
 # The title consists of name and version
 REPO_TITLE     ?= $(REPO_NAME) $(REPO_VERSION_STRING)
 
-NML_FILE           := $(patsubst %.grf,%.nml,$(GRF_FILE))
-
-MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
-
 # Remove the @ when you want a more verbose output.
 _V ?= @
 _E ?= @echo
@@ -117,26 +140,22 @@ _E ?= @echo
 distclean:: clean
 maintainer-clean:: distclean
 
-# target 'depend' (not implemented)
-# include $(SCRIPT_DIR)/Makefile_dep
--include Makefile_gfx.dep
-
 # target nml
 ################################################################
-# NML-specific targets and rules
+# Pre-processing and generation of $(NML_FILE)
 ################################################################
 
+# ifdef $(MAIN_SRC_FILE)
 nml:
 	$(_E) "[CPP] $(NML_FILE)"
-	$(_V) cd $(MAIN_SRC_DIR)
-	$(_V) $(CC) -D REPO_REVISION=$(REPO_REVISION) -D MIN_COMPATIBLE_REVISION=$(MIN_COMPATIBLE_REVISION) -iquote$(SRC_DIR) $(CC_FLAGS) $(SRC_DIR)/$(MAIN_SRC_FILE) > $(NML_FILE)
+	$(_V) $(CC) -D REPO_REVISION=$(REPO_REVISION) -D MIN_COMPATIBLE_REVISION=$(MIN_COMPATIBLE_REVISION) $(CC_FLAGS) -o $(NML_FILE) $(MAIN_SRC_FILE)
 
 clean::
 	$(_E) "[CLEAN NML]"
 	$(_V)-rm -rf $(NML_FILE)
-
-test::
-	$(_E) "nml:                          $(NML) $(NML_FLAGS)"
+# else
+# nml:
+# endif
 
 # target 'gfx' which builds all needed sprites
 # Only a special gfx target for gimp exists so far
@@ -144,13 +163,17 @@ test::
 # Targets related to creation of graphics files
 ################################################################
 # Dependency on source list file via dep check
+ifdef GFX_SCRIPT_LIST_FILES
+# include dependency file, if we generate graphics
+-include Makefile_gfx.dep
+
 GIMP           ?= $(shell [ `which gimp 2>/dev/null` ] && echo "gimp" || echo "")
 GIMP_FLAGS     ?= -n -i -b - <
 
 %.scm: $(SCRIPT_DIR)/gimpscript $(SCRIPT_DIR)/gimp.sed
 	$(_E) "[GIMP-SCRIPT] $@"
 	$(_V) cat $(SCRIPT_DIR)/gimpscript > $@
-	$(_V) cat $(GFX_LIST_FILES) | grep $(patsubst %.scm,%.png,$@) | sed -f $(SCRIPT_DIR)/gimp.sed >> $@
+	$(_V) cat $(GFX_SCRIPT_LIST_FILES) | grep $(patsubst %.scm,%.png,$@) | sed -f $(SCRIPT_DIR)/gimp.sed >> $@
 	$(_V) echo "(gimp-quit 0)" >> $@
 
 # create the png file. And make sure it's re-created even when present in the repo
@@ -158,25 +181,20 @@ GIMP_FLAGS     ?= -n -i -b - <
 	$(_E) "[GIMP] $@"
 	$(_V) $(GIMP) $(GIMP_FLAGS) $< >/dev/null
 
-ifdef $(GFX_LIST_FILES)
-Makefile_gfx.dep: $(GFX_LIST_FILES) $(SCRIPT_DIR)/Makefile_gimp
+Makefile_gfx.dep: $(GFX_SCRIPT_LIST_FILES) Makefile
 	$(_E) "[GFX-DEP] $@"
 	$(_V) echo "" > $@
-	$(_V) for j in $(GFX_LIST_FILES); do for i in `cat $$j | grep "\([pP][cCnN][xXgG]\)" | cut -d\  -f1 | sed "s/\.\([pP][cCnN][xXgG]\)//"`; do echo "$$i.scm: $$j" >> $@; echo "gfx: $$i.png" >> $@; done; done
-	$(_V) cat $(GFX_LIST_FILES) | grep "\([pP][cCnN][xXgG]\)" | sed "s/[ ] */ /g" | cut -d\  -f1-2 | sed "s/ /: /g" >> $@
-endif
+	$(_V) for j in $(GFX_SCRIPT_LIST_FILES); do for i in `cat $$j | grep "\([pP][cCnN][xXgG]\)" | grep -v "^#" | cut -d\  -f1 | sed "s/\.\([pP][cCnN][xXgG]\)//"`; do echo "$$i.scm: $$j" >> $@; echo "$(GRF_FILE): $$i.png" >> $@; done; done
+	$(_V) cat $(GFX_SCRIPT_LIST_FILES) | grep "\([pP][cCnN][xXgG]\)" | grep -v "^#" | sed "s/[ ] */ /g" | cut -d\  -f1-2 | sed "s/ /: /g" >> $@
 
-ifdef $(GFX_LIST_FILES)
 gfx: Makefile_gfx.dep
-else
-gfx:
-endif
 
 maintainer-clean::
 	$(_E) "[MAINTAINER CLEAN GFX]"
 	$(_V) rm -rf Makefile_gfx.dep
-ifdef $(GFX_LIST_FILES)
-	$(_V) for j in $(GFX_LIST_FILES); do for i in `cat $$j | grep "\([pP][cCnN][xXgG]\)" | cut -d\  -f1 | sed "s/\.\([pP][cCnN][xXgG]\)//"`; do rm -rf $$i.scm; rm -rf $$i.png; done; done
+	$(_V) for j in $(GFX_SCRIPT_LIST_FILES); do for i in `cat $$j | grep "\([pP][cCnN][xXgG]\)" | cut -d\  -f1 | sed "s/\.\([pP][cCnN][xXgG]\)//"`; do rm -rf $$i.scm; rm -rf $$i.png; done; done
+else
+gfx:
 endif
 
 #####################################################
@@ -199,14 +217,11 @@ clean::
 # target 'grf' which builds the grf from the nml
 ################################################################
 
-grf $(GRF_FILE): gfx nml lng
+$(GRF_FILE): gfx nml lng
 	$(_E) "[NML] $(GRF_FILE)"
 	$(_V) $(NML) $(NML_FLAGS) --grf $(GRF_FILE) $(NML_FILE)
 
-$(MD5_FILENAME) $(MD5_SRC_FILENAME): $(GRF_FILE)
-	$(_E) "[MD5] $@"
-	$(_V) $(MD5SUM) $(MD5SUM_FLAGS) $< | sed "s/  / /;s/ /  /" > $@
-md5: $(MD5_FILENAME)
+grf: $(GRF_FILE)
 
 clean::
 	$(_E) "[CLEAN GRF]"
@@ -214,13 +229,12 @@ clean::
 	$(_V)-rm -rf $(GRF_FILE).cache
 	$(_V)-rm -rf $(GRF_FILE).cacheindex
 	$(_V)-rm -rf parsetab.py
-	$(_V)-rm -rf $(MD5_FILENAME)
 
 maintainer-clean::
 	$(_E) "[MAINTAINER-CLEAN GRF]"
 	$(_V) -rm -rf $(MD5_SRC_FILENAME)
 
-################################################################
+###############################################################
 # Documentation targets
 # target 'doc' which builds the docs
 ################################################################
@@ -249,7 +263,6 @@ clean::
 # and the distribution bundles like bundle_tar, bundle_zip, ...
 
 # Programme definitions
-
 TAR            ?= $(shell which tar 2>/dev/null)
 TAR_FLAGS      ?= -cf
 
@@ -268,6 +281,9 @@ XZ_FLAGS       ?= -efk
 # OSX has nice extended file attributes which create their own file within tars. We don't want those, thus don't copy them
 CP_FLAGS       ?= $(shell [ "$(OSTYPE)" = "Darwin" ] && echo "-rfX" || echo "-rf")
 
+# Use the grfID programme to find the checksum which OpenTTD checks
+GRFID          ?= $(shell which grfid 2>/dev/null)
+GRFID_FLAGS    ?= -m
 
 # Rules on how to generate filenames. Usually no need to change
 
@@ -278,11 +294,8 @@ CP_FLAGS       ?= $(shell [ "$(OSTYPE)" = "Darwin" ] && echo "-rfX" || echo "-rf
 # followed by an M, if the source repository is not a clean version.
 
 # Common to all filenames
-FILENAME_STUB      := $(firstword $(basename $(GRF_FILE)))
-
-DIR_BASE           := $(FILENAME_STUB)-
-DIR_NAME           := $(shell [ -n "$(REPO_TAGS)" ] && echo $(DIR_BASE)$(REPO_VERSION_STRING) || echo $(FILENAME_STUB))
-VERSIONED_FILENAME := $(DIR_BASE)$(REPO_VERSION_STRING)
+DIR_NAME           := $(shell [ -n "$(REPO_TAGS)" ] && echo $(BASE_FILENAME)-$(REPO_VERSION_STRING) || echo $(BASE_FILENAME))
+VERSIONED_FILENAME := $(BASE_FILENAME)-$(REPO_VERSION_STRING)
 DIR_NAME_SRC       := $(VERSIONED_FILENAME)-source
 
 TAR_FILENAME       := $(DIR_NAME).tar
@@ -292,7 +305,11 @@ XZ_FILENAME        := $(TAR_FILENAME).xz
 ZIP_FILENAME       := $(VERSIONED_FILENAME).zip
 MD5_FILENAME       := $(DIR_NAME).md5
 MD5_SRC_FILENAME   := $(DIR_NAME).check.md5
-# customly defined tags. Don't change the filename.
+
+# Creating file with checksum
+%.md5: $(GRF_FILE)
+	$(_E) "[GRFID] $@"
+	$(_V) $(GRFID) $(GRFID_FLAGS) $< > $@
 
 # Bundle directory
 $(DIR_NAME): grf doc
@@ -339,10 +356,10 @@ clean::
 ################################################################
 RE_FILES_NO_SRC_BUNDLE = ^.devzone|^.hg
 
-# OSX md5 programm generates slightly different output. Aleviate that by throwing some sed on all output:
 check: $(MD5_FILENAME)
 	$(_V) if [ -f $(MD5_SRC_FILENAME) ]; then echo "[CHECKING md5sums]"; else echo "Required file '$(MD5_SRC_FILENAME)' which to test against not found!"; false; fi
-	$(_V) if [ -z "`diff $(MD5_FILENAME) $(MD5_SRC_FILENAME)`" ]; then echo "No differences in md5sums"; else echo "Differences in md5sums:"; echo "`diff $(MD5_FILENAME) $(MD5_SRC_FILENAME)`"; false; fi
+	$(_V) if [ -z "`diff $(MD5_FILENAME) $(MD5_SRC_FILENAME)`" ]; then echo "Checksums are equal"; else echo "Differences in checksums:"; echo "`diff $(MD5_FILENAME) $(MD5_SRC_FILENAME)`"; false; fi
+	$(_V) rm $(MD5_FILENAME)
 
 $(DIR_NAME_SRC).tar: $(DIR_NAME_SRC)
 	$(_E) "[BUNDLE SRC]"
@@ -398,19 +415,20 @@ maintainer-clean::
 ################################################################
 # OS-specific definitions and paths
 ################################################################
-PROJECT_NAME := $(basename $(firstword $(GRF_FILE)))
 
 # If we are not given an install dir explicitly we'll try to
 #    find the default one for the OS we have
-ifndef $(INSTALL_DIR)
+ifndef INSTALL_DIR
 
 # Determine the OS we run on and set the default install path accordingly
 OSTYPE:=$(shell uname -s)
 
+# Check for OSX
 ifeq ($(OSTYPE),Darwin)
-INSTALL_DIR :=$(HOME)/Documents/OpenTTD/newgrf/$(PROJECT_NAME)
+INSTALL_DIR :=$(HOME)/Documents/OpenTTD/newgrf/$(BASE_FILENAME)
 endif
 
+# Check for Windows / MinGW32
 ifeq ($(shell echo "$(OSTYPE)" | cut -d_ -f1),MINGW32)
 # If CC has been set to the default implicit value (cc), check if it can be used. Otherwise use a saner default.
 ifeq "$(origin CC)" "default"
@@ -418,57 +436,33 @@ ifeq "$(origin CC)" "default"
 endif
 WIN_VER = $(shell echo "$(OSTYPE)" | cut -d- -f2 | cut -d. -f1)
 ifeq ($(WIN_VER),5)
-	INSTALL_DIR :=C:\Documents and Settings\All Users\Shared Documents\OpenTTD\newgrf\$(PROJECT_NAME)
+	INSTALL_DIR :=C:\Documents and Settings\All Users\Shared Documents\OpenTTD\newgrf\$(BASE_FILENAME)
 else
-	INSTALL_DIR :=C:\Users\Public\Documents\OpenTTD\newgrf\$(PROJECT_NAME)
+	INSTALL_DIR :=C:\Users\Public\Documents\OpenTTD\newgrf\$(BASE_FILENAME)
 endif
 endif
 
+# Check for Windows / Cygwin
 ifeq ($(shell echo "$(OSTYPE)" | cut -d_ -f1),CYGWIN)
-INSTALL_DIR :=$(shell cygpath -A -O)/OpenTTD/newgrf/$(PROJECT_NAME)
+INSTALL_DIR :=$(shell cygpath -A -O)/OpenTTD/newgrf/$(BASE_FILENAME)
 endif
 
 # If non of the above matched, we'll assume we're on a unix-like system
 ifeq ($(OSTYPE),Linux)
-INSTALL_DIR := $(HOME)/.openttd/newgrf/$(PROJECT_NAME)
+INSTALL_DIR := $(HOME)/.openttd/newgrf/$(BASE_FILENAME)
 endif
 
 endif
-DOCDIR ?= $(INSTALL_DIR)
 
 install: $(DIR_NAME).tar
 ifeq ($(INSTALL_DIR),"")
-	$(_E) "No install dir defined! Aborting"
+	$(_E) "No install dir defined! Aborting."
+	$(_E) "Try calling 'make install -D INSTALL_DIR=path/to/install_dir'"
 	$(_V) false
 endif
 	$(_E) "[INSTALL] to $(INSTALL_DIR)"
 	$(_V) install -d $(INSTALL_DIR)
 	$(_V) install -m644 $< $(INSTALL_DIR)
-ifndef DO_NOT_INSTALL_DOCS
-ifneq ($(filter-out $(LICENSE_FILE) $(CHANGELOG_FILE),$(DOC_FILES)),)
-	$(_E) [INSTALL] docs to $(DOCDIR)
-	$(_V) install -d $(DOCDIR)
-	$(_V) install -m644 $(filter-out $(LICENSE_FILE) $(CHANGELOG_FILE),$(DOC_FILES)) $(DOCDIR)
-endif
-endif
-ifndef DO_NOT_INSTALL_LICENSE
-ifneq ($(LICENSE_FILE),)
-	$(_E) [INSTALL] license to $(DOCDIR)
-	$(_V) install -d $(DOCDIR)
-	$(_V) install -m644 $(LICENSE_FILE) $(DOCDIR)
-endif
-endif
-ifndef DO_NOT_INSTALL_CHANGELOG
-ifneq ($(CHANGELOG_FILE),)
-	$(_E) [INSTALL] changelog to $(DOCDIR)
-	$(_V) install -d $(DOCDIR)
-	$(_V) install -m644 $(CHANGELOG_FILE) $(DOCDIR)
-endif
-endif
-
-$(INSTALL_DIR):
-	$(_E) "[WRITING]"
-	$(_V) mkdir -p $(INSTALL_DIR)
 
 # misc. convenience targets like 'langcheck'
 -include $(SCRIPT_DIR)/Makefile_misc
@@ -477,11 +471,13 @@ help:
 	$(_E) "all:         Build the entire NewGRF and its documentation"
 	$(_E) "install:     Install into the default NewGRF directory ($(INSTALL_DIR))"
 	$(_E) "doc:         Build the documentation ($(DOC_FILES))"
-ifdef $(GFX_LIST_FILES)
+ifdef GFX_SCRIPT_LIST_FILES
 	$(_E) "gfx:         Build the graphics dependencies"
 endif
 	$(_E) "grf:         Build the grf file only ($(GRF_FILE))"
+ifdef MAIN_SRC_FILE
 	$(_E) "nml:         Generate the combined nml file only ($(NML_FILE))"
+endif
 	$(_E) "lng:         Generate the language file(s) and custom_tags.txt"
 	$(_E)
 	$(_E) "clean:       Clean all built files"
@@ -502,15 +498,19 @@ endif
 	$(_E) "bundle_xsrc: Build the source bundle as tar archive compressed with xz"
 	$(_E) "bundle_zsrc: Build the source bundle as tar archive compressed with zip"
 	$(_E)
-	$(_E) "Valide command line variables are:"
+	$(_E) "Valid command line variables are:"
 	$(_E) "Helper programmes:"
 	$(_E) "MAKE MAKE_FLAGS.        defaults: $(MAKE) $(MAKE_FLAGS)"
+ifdef MAIN_SRC_FILE
 	$(_E) "CC CC_FLAGS.            defaults: $(CC) $(CC_FLAGS)"
+endif
 	$(_E) "AWK                     defaults: $(AWK)"
 	$(_E) "GREP                    defaults: $(GREP)"
-	$(_E) "MD5SUM MD5SUM_FLAGS.    defaults: $(MD5SUM) $(MD5SUM_FLAGS)"
+	$(_E) "GRFID GRFID_FLAGS.      defaults: $(GRFID) $(GRFID_FLAGS)"
 	$(_E) "UNIX2DOS UNIX2DOS_FLAGS defaults: $(UNIX2DOS) $(UNIX2DOS_FLAGS)"
+ifdef GFX_SCRIPT_LIST_FILES
 	$(_E) "GIMP GIMP_FLAGS         defaults: $(GIMP) $(GIMP_FLAGS)"
+endif
 	$(_E) "CP_FLAGS (for cp command):        $(CP_FLAGS)"
 	$(_E)
 	$(_E) "NML NML_FLAGS.          defaults: $(NML) $(NML_FLAGS)"
