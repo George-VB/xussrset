@@ -1,8 +1,8 @@
 // T6 содержит номер секции
-// первая 1, вторая 2, бустер или третья 3 , последняя секция СМЕ - 10 (она же одиночный локомотив 
+// первая 1, вторая 2, третья 3 , последняя секция СМЕ - 10 (она же одиночный локомотив 
 // или вторая секция двухсекционного локомотива)
 // вторая бригада 
-// первая 11, вторая 12, бустер или третья 13 , последняя секция СМЕ - 20
+// первая 11, вторая 12, третья 13 , последняя секция СМЕ - 20
 
 // Специальная проверка длины состава
 
@@ -25,7 +25,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -81,7 +82,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -152,6 +153,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_single,
      loco_limit_can_attach_wagon_8_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+//   1..20: loco_limit_can_attach_wagon_end;
+          loco_limit_can_attach_wagon_end;
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -161,19 +169,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_8_single;     		 
-     loco_limit_can_attach_wagon_8_afterbuster_2;
+  1: loco_limit_can_attach_wagon_8_afterbuster_2;
+  2: loco_limit_can_attach_wagon_8_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_end;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_8,
@@ -198,7 +209,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -254,7 +266,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -325,6 +337,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_single,
      loco_limit_can_attach_wagon_7_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_8;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -334,19 +353,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_7_single;     		 
-     loco_limit_can_attach_wagon_7_afterbuster_2;
+  1: loco_limit_can_attach_wagon_7_afterbuster_2;
+  2: loco_limit_can_attach_wagon_7_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_8;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_7,
@@ -371,7 +393,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -427,7 +450,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -498,6 +521,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_single,
      loco_limit_can_attach_wagon_6_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_7;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -507,19 +537,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_6_single;     		 
-     loco_limit_can_attach_wagon_6_afterbuster_2;
+  1: loco_limit_can_attach_wagon_6_afterbuster_2;
+  2: loco_limit_can_attach_wagon_6_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_7;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_6,
@@ -544,7 +577,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -600,7 +634,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -671,6 +705,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_single,
      loco_limit_can_attach_wagon_5_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_6;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -680,19 +721,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_5_single;     		 
-     loco_limit_can_attach_wagon_5_afterbuster_2;
+  1: loco_limit_can_attach_wagon_5_afterbuster_2;
+  2: loco_limit_can_attach_wagon_5_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_6;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_5,
@@ -717,7 +761,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -773,7 +818,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -844,6 +889,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_single,
      loco_limit_can_attach_wagon_4_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_5;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -853,19 +905,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_4_single;     		 
-     loco_limit_can_attach_wagon_4_afterbuster_2;
+  1: loco_limit_can_attach_wagon_4_afterbuster_2;
+  2: loco_limit_can_attach_wagon_4_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_5;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_4,
@@ -890,7 +945,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -946,7 +1002,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -1017,6 +1073,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_single,
      loco_limit_can_attach_wagon_3_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_4;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -1026,19 +1089,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_3_single;     		 
-     loco_limit_can_attach_wagon_3_afterbuster_2;
+  1: loco_limit_can_attach_wagon_3_afterbuster_2;
+  2: loco_limit_can_attach_wagon_3_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_4;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_3,
@@ -1063,7 +1129,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -1119,7 +1186,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) ||
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -1190,6 +1257,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_single,
      loco_limit_can_attach_wagon_2_single_2;        
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_3;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -1199,19 +1273,22 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
      (LOAD_TEMP(7) == _3m62u_m) ||
      (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
-     (LOAD_TEMP(7) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(7) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_2_single;     		 
-     loco_limit_can_attach_wagon_2_afterbuster_2;
+  1: loco_limit_can_attach_wagon_2_afterbuster_2;
+  2: loco_limit_can_attach_wagon_2_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_3;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2,
@@ -1226,7 +1303,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_2,
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto4_2,
-[  STORE_TEMP((LOAD_TEMP(3) != LOAD_TEMP(5) ? 11 : ((LOAD_TEMP(6) % 10) == 3) ? 10 : ((LOAD_TEMP(6) % 10) == 2) ? 3 : ((LOAD_TEMP(6) % 10) == 1) ? 2 : 11), 4),
+[  STORE_TEMP((LOAD_TEMP(3) != LOAD_TEMP(7) ? 11 : ((LOAD_TEMP(6) % 10) == 3) ? 10 : ((LOAD_TEMP(6) % 10) == 2) ? 3 : ((LOAD_TEMP(6) % 10) == 1) ? 2 : 11), 4),
    STORE_TEMP((((LOAD_TEMP(6) > 10) + (LOAD_TEMP(6) > 20)) * 10) + LOAD_TEMP(4), 6) ])   
 {   
    1..20: loco_limit_can_attach_wagon_2;
@@ -1237,7 +1314,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -1258,7 +1336,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto4,
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto3_2,
-[  STORE_TEMP((LOAD_TEMP(3) != LOAD_TEMP(5) ? 11 : ((LOAD_TEMP(6) % 10) == 2) ? 10 : ((LOAD_TEMP(6) % 10) == 1) ? 2 : 11), 4),
+[  STORE_TEMP((LOAD_TEMP(3) != LOAD_TEMP(7) ? 11 : ((LOAD_TEMP(6) % 10) == 2) ? 10 : ((LOAD_TEMP(6) % 10) == 1) ? 2 : 11), 4),
    STORE_TEMP((((LOAD_TEMP(6) > 10) + (LOAD_TEMP(6) > 20)) * 10) + LOAD_TEMP(4), 6) ])   
 {   
    1..20: loco_limit_can_attach_wagon_2;
@@ -1278,7 +1356,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto3,
 
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto2_2,
-[  STORE_TEMP((LOAD_TEMP(3) != LOAD_TEMP(5) ? 11 : ((LOAD_TEMP(6) % 10) == 1) ? 10 : 11), 4),
+[  STORE_TEMP((LOAD_TEMP(3) != LOAD_TEMP(7) ? 11 : ((LOAD_TEMP(6) % 10) == 1) ? 10 : 11), 4),
    STORE_TEMP((((LOAD_TEMP(6) > 10) + (LOAD_TEMP(6) > 20)) * 10) +  LOAD_TEMP(4), 6) ])   
 {   
    1..20: loco_limit_can_attach_wagon_2;
@@ -1294,7 +1372,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
@@ -1365,6 +1443,13 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_single,
      loco_limit_can_attach_wagon_1_single_2;
 }
 
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_afterbuster_3,
+[  STORE_TEMP (((LOAD_TEMP(6) % 10) == 1) ?  LOAD_TEMP(6): ((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10) + 1, 6) ])
+{
+   1..20: loco_limit_can_attach_wagon_2;
+          loco_limit_can_attach_wagon_end;  
+}
+
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_afterbuster_2,
 [  STORE_TEMP(((1+ (LOAD_TEMP(6) >= 10) + (LOAD_TEMP(6) >= 20)) * 10), 6) ])      
 {   
@@ -1374,24 +1459,28 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_afterbuster_2,
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1_afterbuster,
 [  STORE_TEMP(0, 4),
-// тепловозы средние секции
+// средние секции
    STORE_TEMP((
-     (LOAD_TEMP(5) == _3m62u_m) ||
-     (LOAD_TEMP(5) == _3te10m_m) || (LOAD_TEMP(5) == _3te10u_m) ||
-     (LOAD_TEMP(5) == _4te10s_m)
-    ) || LOAD_TEMP(4), 4),
-// электровозы средние секции
+     (LOAD_TEMP(7) == _3m62u_m) ||
+     (LOAD_TEMP(7) == _3te10m_m) || (LOAD_TEMP(7) == _3te10u_m) ||
+     (LOAD_TEMP(7) == _4te10s_m) ||
+     (LOAD_TEMP(7) == _3es5k_m)), 4),
    STORE_TEMP((
-     (LOAD_TEMP(5) == _3es5k_m) 
-    ) || LOAD_TEMP(4) && (LOAD_TEMP(3) != _4te10s_m), 4)])
+     (LOAD_TEMP(3) == _3m62u_m) ||
+     (LOAD_TEMP(3) == _3te10m_m) || (LOAD_TEMP(3) == _3te10u_m) ||
+     (LOAD_TEMP(3) == _4te10s_m) ||
+     (LOAD_TEMP(3) == _3es5k_m)) * 2 + LOAD_TEMP(4), 4) ])
 {
   0: loco_limit_can_attach_wagon_1_single;     		 
-     loco_limit_can_attach_wagon_1_afterbuster_2;
+  1: loco_limit_can_attach_wagon_1_afterbuster_2;
+  2: loco_limit_can_attach_wagon_1_afterbuster_3;  
+  3: loco_limit_can_attach_wagon_2;
 }
 
 switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_1,
 [  set_offset_to(num_vehs_in_consist-2),
-   STORE_TEMP(prev_vehicle_type_id(), 3)])
+   STORE_TEMP(prev_vehicle_type_id(), 3),
+   STORE_TEMP(LOAD_TEMP(5) , 7)])
 {
    unitb: loco_limit_can_attach_wagon_2;
           loco_limit_can_attach_wagon_1_afterbuster;
@@ -1401,7 +1490,8 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_0_upto4,
 [  STORE_TEMP(0, 4),
 // тепловозы до 4-х секций
    STORE_TEMP((
-     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || (LOAD_TEMP(3) == _3te10u) ||
+     (LOAD_TEMP(3) == _2te10m) || (LOAD_TEMP(3) == _2te10u) || (LOAD_TEMP(3) == _2te10mk) || (LOAD_TEMP(3) == _3te10m) || 
+	 (LOAD_TEMP(3) == _3te10u) || (LOAD_TEMP(3) == _4te10s) ||
 	 (LOAD_TEMP(3) == dm62) || (LOAD_TEMP(3) == _2m62u) ||  (LOAD_TEMP(3) == _3m62u) ||
 	 (LOAD_TEMP(3) == _2te116) || (LOAD_TEMP(3) == _2te116u) ||
 	 (LOAD_TEMP(3) == _2te70) ||
@@ -1442,7 +1532,7 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_0_upto2,
 	 (LOAD_TEMP(3) == te2) || 
 	 (LOAD_TEMP(3) == te3) ||
 	 (LOAD_TEMP(3) == te10) || (LOAD_TEMP(3) == _2te10) || (LOAD_TEMP(3) == _2te10l) || (LOAD_TEMP(3) == _2te10v) || 
-	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || (LOAD_TEMP(3) == _4te10s) ||
+	 (LOAD_TEMP(3) == _2te10ut) || (LOAD_TEMP(3) == _2te10utk) || (LOAD_TEMP(3) == _2te10s) || 
      (LOAD_TEMP(3) == tep10) || (LOAD_TEMP(3) == tep10l) || 
 	 (LOAD_TEMP(3) == tep60) || (LOAD_TEMP(3) == _2tep60) ||
      (LOAD_TEMP(3) == m62) || (LOAD_TEMP(3) == _2m62) ||
