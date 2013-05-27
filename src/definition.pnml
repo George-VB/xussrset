@@ -541,3 +541,34 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                     \
 { 1: return 0;                                                              \
   name##_bitmask_vehicle_info2; }                                           \
 
+// Определение скорости без вариантов
+
+#define engine_speed(name, speed)                                           \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, speed)                    \
+{ return; }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                    \
+  is_penalise_speed() ? get_penalised_speed(speed) : speed)                 \
+{ return; }                                                                 \
+
+// Определение скорости со снижением для старых
+
+#define engine_speed_with_reduce(name, speed, speed_r, life)                \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, speed)                    \
+{ return; }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                    \
+[ STORE_TEMP(get_max_speed(life, speed_r, speed), 0),                       \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ]) \
+{ return; }                                                                 \
+
+// Определение скорости со снижением для старых и с предсерийной моделью
+
+#define engine_speed_with_reduce_and_pre_model(name, speed, speed_r, life, life_pre, pre_year) \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, speed)                                       \
+{ return; }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                       \
+[ STORE_TEMP( ((age_in_days >= (life_pre*365)) && (build_year < pre_year)) ||                  \
+  ((age_in_days >= (life*365)) && (build_year >= pre_year)) ? speed_r : speed, 0),             \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                    \
+{ return; }                                                                                    \
+
+                                                                                       

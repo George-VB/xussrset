@@ -451,27 +451,7 @@ switch (FEAT_TRAINS, SELF, tep70_articulated_part,
   articulated_part_dummy4;
 }
 
-// Макс. скорость: ограничиваем скорость через 7 лет работы 160 --> 140
-// Для выпущенных с 1978 через 25 160 --> 140
-#define MAX_SPEED ((age_in_days >= (7*365+5)) && (build_year < 1978)) || \
-  ((age_in_days >= (25*365+5)) && (build_year >= 1978)) ? 140 : 160
-
-switch (FEAT_TRAINS, SELF, tep70_purchase_speed,
-  160)
-{
-  return;
-}
-
-switch (FEAT_TRAINS, SELF, tep70_speed,
-[
-  STORE_TEMP(MAX_SPEED, 0),
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
-])
-{
-  return;
-}
-
-#undef MAX_SPEED
+engine_speed_with_reduce_and_pre_model(tep70, 160, 140, 25, 7, 1978)
 
 engine_penalise_speed(tep70, 2)
 
