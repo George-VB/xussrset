@@ -550,6 +550,40 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                    \
   is_penalise_speed() ? get_penalised_speed(speed) : speed)                 \
 { return; }                                                                 \
 
+// Определение скорости с изменением по ливрее
+
+#define engine_speed_change_livery(name, speed, new_speed, num)             \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, speed)                    \
+{ return; }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                    \
+[ STORE_TEMP((cargo_subtype >= num) ? new_speed : speed, 0),                \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ]) \
+{ return; }                                                                 \
+
+// Определение скорости с изменением в заданный год
+
+#define engine_speed_change_after(name, speed, new_speed, year)             \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)     \
+{ 1: return new_speed;                                                      \
+     return speed; }                                                        \
+switch (FEAT_TRAINS, SELF, name##_speed,                                    \
+[ STORE_TEMP(current_year >= year ? new_speed : speed , 0),                 \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ]) \
+{ return; }                                                                 \
+
+// Определение скорости с изменением в 2 заданных года
+
+#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)                  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +                           \
+                                                 (current_year >= year2))                            \
+{ 1: return new_speed;                                                                               \
+  2: return new_speed2;                                                                              \
+     return speed; }                                                                                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                             \
+[ STORE_TEMP(current_year >= year ? (current_year >= year2 ? new_speed2 : new_speed) : speed , 0),   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
+{ return; }                                                                                          \
+
 // Определение скорости со снижением для старых
 
 #define engine_speed_with_reduce(name, speed, speed_r, life)                \
