@@ -29,7 +29,7 @@ DOC_FILES ?= docs/readme.txt docs/license.txt docs/changelog.txt
 SCRIPT_DIR          ?= scripts
 
 # Version the NewGRF is backward compatible to
-MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
+# MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
 
 # Uncomment in order to make use of gimp scripting. See the file
 # for a description of the format
@@ -113,7 +113,7 @@ DEFAULT_BRANCH_NAME ?=
 REPO_REVISION  ?= $(shell $(HG) id -n | cut -d+ -f1)
 
 # Version the NewGRF is backward compatible to
-# MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
+MIN_COMPATIBLE_REVISION ?= $(REPO_REVISION)
 
 # Whether there are local changes
 REPO_MODIFIED  ?= $(shell [ "`$(HG) id | cut -c13`" = "+" ] && echo "M" || echo "")
