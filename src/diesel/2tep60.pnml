@@ -181,27 +181,6 @@ switch (FEAT_TRAINS, SELF, _2tep60_get_purchase_spriteset,
   _2tep60_v4_purchase_spriteset;
 }
 
-// Если хотя бы 2 не следуют др. за др., то не выпускать
-switch (FEAT_TRAINS, PARENT, _2tep60_start_stop2,
-[
-  set_offset_to(2),
-  prev_vehicle_type_id() == _2tep60
-])
-{
-  1: any_start_stop;
-  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
-}
-
-// Если локомотивов меньше двух, то не выпускать
-// Если год >= 1990, то можно по одному
-switch (FEAT_TRAINS, PARENT, _2tep60_start_stop,
-  current_year >= 1990 ? 0 : count_veh_id(_2tep60) >= 2 ? 1 : 2)
-{
-  0: any_start_stop;
-  1: _2tep60_start_stop2;
-  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
-}
-
 switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text2,
   (build_year >= 1966)
 )
@@ -217,7 +196,6 @@ switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text,
   1: _2tep60_cargo_subtype_text2;
   return CB_RESULT_NO_TEXT;
 }
-
 
 engine_speed_with_reduce(_2tep60, 160, 130, 20)
 
@@ -257,7 +235,7 @@ item (FEAT_TRAINS, _2tep60)
     purchase: _2tep60_get_purchase_spriteset;
     articulated_part: articulated_part_dummy3;
     can_attach_wagon: any_can_attach_wagon;
-    start_stop: _2tep60_start_stop;
+    start_stop: any_start_stop;
     additional_text: return string(STR_2TEP60_PURCHASE_HINT);
     cargo_subtype_text: _2tep60_cargo_subtype_text;
     cargo_capacity: return 0;

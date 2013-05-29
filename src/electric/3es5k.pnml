@@ -37,54 +37,7 @@ switch (FEAT_TRAINS, SELF, _3es5k_get_spriteset,
   _3es5k_get_spriteset_t;
 }
 
-// Если хотя бы 2 не следуют др. за др., то не выпускать
-switch (FEAT_TRAINS, PARENT, _3es5k_start_stop4,
-[
-  set_offset_to(2),
-  (prev_vehicle_type_id() == _3es5k) || ((prev_vehicle_type_id() == _3es5k_m)) 
-])
-{
-  1: any_start_stop;
-  return string(STR_START_STOP_NEED_AT_LEAST_2_CONSECUTIVE_ENGINE);
-}
-
-// Если локомотивов меньше 2, то не выпускать
-switch (FEAT_TRAINS, PARENT, _3es5k_start_stop3,
-  (count_veh_id(_3es5k) + count_veh_id(_3es5k_m)) >= 2)
-{
-  1: _3es5k_start_stop4;
-  return string(STR_START_STOP_NEED_2_OR_MORE_ENGINE);
-}
-
-// Если хотя бы 3 не следуют др. за др., то не выпускать
-switch (FEAT_TRAINS, PARENT, _3es5k_start_stop2,
-[
-  set_offset_to(2),
-  STORE_TEMP((prev_vehicle_type_id() == _3es5k) || ((prev_vehicle_type_id() == _3es5k_m)), 0),
-  set_offset_to(4),
-  ((prev_vehicle_type_id() == _3es5k) || (prev_vehicle_type_id() == _3es5k_m)) && LOAD_TEMP(0)
-])
-{
-  1: any_start_stop;
-  return string(STR_START_STOP_NEED_AT_LEAST_3_CONSECUTIVE_ENGINE);
-}
-
-// Если локомотивов меньше 3, то не выпускать
-switch (FEAT_TRAINS, PARENT, _3es5k_start_stop1,
-  (count_veh_id(_3es5k) >= 2) && (count_veh_id(_3es5k_m) >= 1)  
-  )
-{
-  1: _3es5k_start_stop2;
-  return string(STR_START_STOP_NEED_2AND1_OR_MORE_ENGINE);
-}
-
-switch (FEAT_TRAINS, PARENT, _3es5k_start_stop,
-   age_in_days >= 365*5)
-{
-  1: _3es5k_start_stop3;
-     _3es5k_start_stop1;
-}
-
+new_3x_train_start_stop(_3es5k)
 
 engine_speed(_3es5k, 110)
 
