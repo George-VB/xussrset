@@ -105,44 +105,15 @@ switch (FEAT_TRAINS, SELF, tep70bs_get_spriteset,
   tep70bs_get_spriteset1;
 }
 
-switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text2,
-  build_year >= 2008)
-{
-  1: string(STR_REFIT_V1_120_KMH);
-  return CB_RESULT_NO_TEXT;
-}
-
 switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text,
   cargo_subtype)
 {
-  0: string(STR_REFIT_V1);
-  1: string(STR_REFIT_V2);
-  2: tep70bs_cargo_subtype_text2;
-  3: string(STR_REFIT_V2_120_KMH);
+  0: string(STR_REFIT_RZD_PID);
+  1: string(STR_REFIT_BELARUSSIAN_RAILWAY);
   return CB_RESULT_NO_TEXT;
 }
 
-
-// Выпущенным с 2008 года - 120 км/ч
-#define MAX_SPEED cargo_subtype >= 2 ? 120 : \
-  (age_in_days >= (25*365+5)) ? 140 : 160
-
-switch (FEAT_TRAINS, SELF, tep70bs_purchase_speed,
-  160)
-{
-  return;
-}
-
-switch (FEAT_TRAINS, SELF, tep70bs_speed,
-[
-  STORE_TEMP(MAX_SPEED, 0),
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
-])
-{
-  return;
-}
-
-#undef MAX_SPEED
+engine_speed_with_reduce(tep70bs, ((cargo_subtype >= 1) ? 160 : 120), ((cargo_subtype >= 1) ? 140 : 120), 30)
 
 engine_penalise_speed(tep70bs, 2)
 

@@ -341,27 +341,7 @@ switch (FEAT_TRAINS, SELF, n8_cargo_subtype_text,
   return CB_RESULT_NO_TEXT;
 }
 
-// меняем скорость: 90 для купленных до 1957, 100 - после 1957
-// с 1962 - всем 80 км/ч
-
-#define MAX_SPEED current_year >= 1962 ? 80 : build_year >= 1957 ? 100 : 90
-
-switch (FEAT_TRAINS, SELF, n8_purchase_speed,
-  MAX_SPEED)
-{
-  return;
-}
-
-switch (FEAT_TRAINS, SELF, n8_speed,
-[
-  STORE_TEMP(MAX_SPEED, 0),
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0)
-])
-{
-  return;
-}
-
-#undef MAX_SPEED
+engine_speed_with_reduce_change_build_after(n8, 90, 80, 10, 100, 1957)
 
 engine_penalise_speed(n8, 2)
 
