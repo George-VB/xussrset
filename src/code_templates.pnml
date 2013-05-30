@@ -526,3 +526,16 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_a
 {  1: any_start_stop;                                                                                 \
       name##_start_stop1; }                                                                           \
 
+// не выпускать новые двойки с средней секцией                                                                                        
+
+#define  new_2x_train_start_stop(name, namem)                                                                \
+switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                                      \
+[ set_offset_to(2),                                                                                   \
+  STORE_TEMP((prev_vehicle_type_id() != namem), 0) ])                                                 \
+{ 1: any_start_stop;                                                                                  \
+  return string(STR_START_STOP_NEED_NO_MIDDLE_SECTION); }                                             \
+switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_age)                   \
+{  1: any_start_stop;                                                                                 \
+      name##_start_stop2; }                                                                           \
+
+
