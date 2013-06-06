@@ -118,8 +118,8 @@ spriteset (mail_61_516_tail_v10_spriteset, IMAGEFILE)
 
 switch (FEAT_TRAINS, SELF, mail_61_516_get_spriteset1,
   (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2)
-)
+  (cargo_subtype * 2) +
+  (((cargo_subtype == 7) && (LOAD_TEMP(2) >= date(2004,1,1))) * 4) )
 {
   0: mail_61_516_spriteset;
   1: mail_61_516_tail_spriteset;
@@ -137,20 +137,26 @@ switch (FEAT_TRAINS, SELF, mail_61_516_get_spriteset1,
   13: mail_61_516_tail_v7_spriteset;
   14: mail_61_516_v8_spriteset;
   15: mail_61_516_tail_v8_spriteset;
-  16: mail_61_516_v9_spriteset;
-  17: mail_61_516_tail_v9_spriteset;
-  18: mail_61_516_v10_spriteset;
-  19: mail_61_516_tail_v10_spriteset;
+  16: mail_61_516_v10_spriteset;
+  17: mail_61_516_tail_v10_spriteset;
+  18: mail_61_516_v9_spriteset;
+  19: mail_61_516_tail_v9_spriteset;
   align_14_spriteset;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
-switch (FEAT_TRAINS, SELF, mail_61_516_get_spriteset,
+switch (FEAT_TRAINS, SELF, mail_61_516_get_spriteset0,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
   mail_61_516_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, PARENT, mail_61_516_get_spriteset,
+  [STORE_TEMP(date_of_last_service, 2)])
+{
+    mail_61_516_get_spriteset0;
 }
 
 switch (FEAT_TRAINS, SELF, mail_61_516_cargo_subtype_text,
@@ -163,9 +169,8 @@ switch (FEAT_TRAINS, SELF, mail_61_516_cargo_subtype_text,
   4: string(STR_REFIT_BELARUSSIAN_RAILWAY);
   5: string(STR_REFIT_UKRAINIAN_RAILWAY);
   6: string(STR_REFIT_LDZ);
-  7: string(STR_REFIT_LG_OLD);
-  8: string(STR_REFIT_LG);
-  9: string(STR_REFIT_UZBEKISTAN_TEMIR_YOLLARI);
+  7: string(STR_REFIT_LG);
+  8: string(STR_REFIT_UZBEKISTAN_TEMIR_YOLLARI);
   return CB_RESULT_NO_TEXT;
 }
 
