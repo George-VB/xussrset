@@ -418,12 +418,11 @@ spriteset (chs2t_v14_speedoverTH_spriteset, IMAGEFILE)
 
 switch (FEAT_TRAINS, SELF, chs2t_get_spriteset2,
   // поправка на нет тока
-  ((last_computed_result > threshold_of_speed()) + 1) *
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
   ((build_year >= 1974) * 3) +
   ((build_year >= 1976) * 21) +
-  (cargo_subtype * 3)
-)
+  (cargo_subtype * 3) )
 {
   0: chs2t_notpowered_spriteset;
   1: chs2t_spritegroup;
@@ -471,7 +470,9 @@ switch (FEAT_TRAINS, SELF, chs2t_get_spriteset2,
 }
 
 switch (FEAT_TRAINS, PARENT, chs2t_get_spriteset1,
-  current_speed)
+[ STORE_TEMP(count_veh_id(chs2t), 0),                         
+  STORE_TEMP(current_speed, 1),                              
+  STORE_TEMP(date_of_last_service, 2) ])                     
 {
   chs2t_get_spriteset2;
 }

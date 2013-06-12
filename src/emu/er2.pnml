@@ -1396,11 +1396,11 @@ switch (FEAT_TRAINS, PARENT, er2_c_get_spriteset4,
 }
 
 // Рисуем вариант не в депо
-// last_computed_result - кол-во элементов Г в составе
+// R0 - кол-во элементов Г в составе
 switch (FEAT_TRAINS, SELF, er2_c_get_spriteset3,
 [
-  ((last_computed_result - count_veh_id(er2_c)) >
-    ((last_computed_result / 2) + (last_computed_result % 2))) +
+  ((LOAD_TEMP(0) - count_veh_id(er2_c)) >
+    ((LOAD_TEMP(0) / 2) + (LOAD_TEMP(0) % 2))) +
   (cargo_subtype * 2)
 ])
 {
@@ -1423,7 +1423,7 @@ switch (FEAT_TRAINS, SELF, er2_c_get_spriteset3,
 
 
 switch (FEAT_TRAINS, PARENT, er2_c_get_spriteset2,
-  count_veh_id(er2_c)) // для определения реверса
+  STORE_TEMP(count_veh_id(er2_c), 0)) // для определения реверса
 {
   er2_c_get_spriteset3;
 }
@@ -1467,7 +1467,7 @@ switch (FEAT_TRAINS, SELF, er2_h_get_purchase_spriteset,
 // После головного присоединять нельзя
 // Более 12 вагонов в составе нельзя
 switch (FEAT_TRAINS, PARENT, er2_h_can_attach_wagon1,
-  (count_veh_id(er2_h) > 1) ? (last_computed_result == er2_h ? 0 : 1) :
+  (count_veh_id(er2_h) > 1) ? (LOAD_TEMP(0) == er2_h ? 0 : 1) :
     (num_vehs_in_consist >= 12 * 2) ? 2 : 3
 )
 {
@@ -1479,7 +1479,7 @@ switch (FEAT_TRAINS, PARENT, er2_h_can_attach_wagon1,
 
 // Можно присоединять только компоненты ЭР1
 switch (FEAT_TRAINS, SELF, er2_h_can_attach_wagon,
-  vehicle_type_id)
+  STORE_TEMP(vehicle_type_id, 0))
 {
   er2_h: er2_h_can_attach_wagon1;
   er2_m: er2_h_can_attach_wagon1;

@@ -217,7 +217,7 @@ spritegroup m62_r_v6_spritegroup
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, m62_get_spriteset2,
-  ((last_computed_result - count_veh_id(m62)) % 2) +
+  ((LOAD_TEMP(0) - count_veh_id(m62)) % 2) +
   ((build_year >= 1970) * 2) +
 //  ((build_year >= 1990) * 4) +
   cargo_subtype * 2
@@ -233,12 +233,14 @@ switch (FEAT_TRAINS, SELF, m62_get_spriteset2,
   7: m62_r_v4_spritegroup;
   8: m62_v5_spritegroup;
   9: m62_r_v5_spritegroup;
-  10: m62_v6_spritegroup;
-  m62_r_v6_spritegroup;
+ 10: m62_v6_spritegroup;
+     m62_r_v6_spritegroup;
 }
 
 switch (FEAT_TRAINS, PARENT, m62_get_spriteset1,
-  count_veh_id(m62))
+[ STORE_TEMP(count_veh_id(m62), 0),                         
+  STORE_TEMP(current_speed, 1),                              
+  STORE_TEMP(date_of_last_service, 2) ])                     
 {
   m62_get_spriteset2;
 }

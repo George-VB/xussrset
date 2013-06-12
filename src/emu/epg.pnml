@@ -82,7 +82,7 @@ switch (FEAT_TRAINS, SELF, epg_b_get_spriteset,
 
 switch (FEAT_TRAINS, SELF, epg_c_get_spriteset2,
   !(vehicle_is_not_powered || vehicle_is_in_depot
-    || last_computed_result != epg))
+    || LOAD_TEMP(0) != epg))
 {
   0: epg_c_loading_spriteset; // нет тяги
   1: epg_c_spritegroup;
@@ -90,7 +90,7 @@ switch (FEAT_TRAINS, SELF, epg_c_get_spriteset2,
 }
 
 switch (FEAT_TRAINS, PARENT, epg_c_get_spriteset1,
-  vehicle_type_id)
+  STORE_TEMP(vehicle_type_id, 0))
 {
   epg_c_get_spriteset2;
 }
@@ -111,7 +111,7 @@ switch (FEAT_TRAINS, SELF, epg_d_get_spriteset,
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
-  ((vehicle_type_id == epg) && (last_computed_result < 3)))
+  ((vehicle_type_id == epg) && (LOAD_TEMP(0) < 3)))
 {
   1: return CB_RESULT_ATTACH_ALLOW;
   return CB_RESULT_ATTACH_DISALLOW;
@@ -120,7 +120,7 @@ switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, epg_can_attach_wagon,
-  count_veh_id(epg)/2)
+  STORE_TEMP(count_veh_id(epg)/2, 0))
 {
   epg_can_attach_wagon2;
 }

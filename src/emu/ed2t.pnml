@@ -497,7 +497,7 @@ switch (FEAT_TRAINS, PARENT, ed2t_h_get_spriteset4,
 // Рисуем вариант не в депо, разворачиваем каждый второй
 switch (FEAT_TRAINS, SELF, ed2t_h_get_spriteset3,
 [
-  ((last_computed_result - count_veh_id(ed2t_h)) % 2) +
+  ((LOAD_TEMP(0) - count_veh_id(ed2t_h)) % 2) +
   (cargo_subtype * 2)
 ])
 {
@@ -515,7 +515,7 @@ switch (FEAT_TRAINS, SELF, ed2t_h_get_spriteset3,
 }
 
 switch (FEAT_TRAINS, PARENT, ed2t_h_get_spriteset2,
-  count_veh_id(ed2t_h)) // для определения реверса
+  STORE_TEMP(count_veh_id(ed2t_h), 0)) // для определения реверса
 {
   ed2t_h_get_spriteset3;
 }
@@ -727,12 +727,12 @@ switch (FEAT_TRAINS, PARENT, ed2t_c_get_spriteset4,
 }
 
 // Рисуем вариант не в депо
-// last_computed_result - кол-во элементов Г в составе
+// R0 - кол-во элементов Г в составе
 // Реверс для П считаем по М
 switch (FEAT_TRAINS, SELF, ed2t_c_get_spriteset3,
 [
-  ((last_computed_result - count_veh_id(ed2t_m)) >
-    ((last_computed_result / 2) + (last_computed_result % 2))) +
+  ((LOAD_TEMP(0) - count_veh_id(ed2t_m)) >
+    ((LOAD_TEMP(0) / 2) + (LOAD_TEMP(0) % 2))) +
   (cargo_subtype * 2)
 ])
 {
@@ -751,7 +751,7 @@ switch (FEAT_TRAINS, SELF, ed2t_c_get_spriteset3,
 
 
 switch (FEAT_TRAINS, PARENT, ed2t_c_get_spriteset2,
-  count_veh_id(ed2t_m)) // для определения реверса
+  STORE_TEMP(count_veh_id(ed2t_m), 0)) // для определения реверса
 {
   ed2t_c_get_spriteset3;
 }
@@ -776,7 +776,7 @@ switch (FEAT_TRAINS, SELF, ed2t_c_get_spriteset,
 // После головного присоединять нельзя
 // Более 12 вагонов в составе нельзя
 switch (FEAT_TRAINS, PARENT, ed2t_h_can_attach_wagon1,
-  (count_veh_id(ed2t_h) > 1) ? (last_computed_result == ed2t_h ? 0 : 1) :
+  (count_veh_id(ed2t_h) > 1) ? (LOAD_TEMP(0) == ed2t_h ? 0 : 1) :
     (num_vehs_in_consist >= 12 * 2) ? 2 : 3
 )
 {
@@ -788,7 +788,7 @@ switch (FEAT_TRAINS, PARENT, ed2t_h_can_attach_wagon1,
 
 // Можно присоединять только компоненты ЭР1
 switch (FEAT_TRAINS, SELF, ed2t_h_can_attach_wagon,
-  vehicle_type_id)
+  STORE_TEMP(vehicle_type_id, 0))
 {
   ed2t_h: ed2t_h_can_attach_wagon1;
   ed2t_m: ed2t_h_can_attach_wagon1;
