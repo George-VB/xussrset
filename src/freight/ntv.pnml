@@ -15,53 +15,24 @@ spriteset (ntv_spriteset, IMAGEFILE)
   s4_template(0, 31, 0)
 }
 
+// покупка
+purchase_spriteset(ntv_v2, 100, 0)
+
 // вид 2
 spriteset (ntv_v2_spriteset, IMAGEFILE)
 {
-  s4_template(0, 73, 0)
-}
-
-// вид 3
-spriteset (ntv_v3_spriteset, IMAGEFILE)
-{
-  s4_template(0, 115, 0)
-}
-
-// покупка
-purchase_spriteset(ntv_v4, 100, 0)
-
-// вид 4
-spriteset (ntv_v4_spriteset, IMAGEFILE)
-{
   s4_template(235, 31, 0)
-}
-
-// вид 5
-spriteset (ntv_v5_spriteset, IMAGEFILE)
-{
-  s4_template(235, 73, 0)
-}
-
-// вид 6
-spriteset (ntv_v6_spriteset, IMAGEFILE)
-{
-  s4_template(235, 115, 0)
 }
 
 #undef IMAGEFILE
 
 
 switch (FEAT_TRAINS, SELF, ntv_get_spriteset2,
-  ((LOAD_TEMP(2) >= date(1918,1,1)) * 3) +
-  cargo_subtype)
+  LOAD_TEMP(2) >= date(1918,1,1) )
 {
   0: ntv_spriteset;
   1: ntv_v2_spriteset;
-  2: ntv_v3_spriteset;
-  3: ntv_v4_spriteset;
-  4: ntv_v5_spriteset;
-  5: ntv_v6_spriteset;
-  align_4_spriteset;
+     align_4_spriteset;
 }
 
 switch (FEAT_TRAINS, PARENT, ntv_get_spriteset,
@@ -75,16 +46,7 @@ switch (FEAT_TRAINS, SELF, ntv_get_purchase_spriteset,
 )
 {
   0: ntv_purchase_spriteset;
-  ntv_v4_purchase_spriteset;
-}
-
-switch (FEAT_TRAINS, SELF, ntv_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: string(STR_REFIT_WITHOUT_CORRUGATION);
-  1: string(STR_REFIT_LIGHT_CORRUGATION);
-  2: string(STR_REFIT_DARK_CORRUGATION);
-  return CB_RESULT_NO_TEXT;
+  ntv_v2_purchase_spriteset;
 }
 
 switch (FEAT_TRAINS, SELF, ntv_additional_text,
@@ -167,7 +129,6 @@ item (FEAT_TRAINS, ntv)
     default: ntv_get_spriteset;
     purchase: ntv_get_purchase_spriteset;
     additional_text: ntv_additional_text;
-    cargo_subtype_text: ntv_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_capacity: ntv_cargo_capacity;
   }
