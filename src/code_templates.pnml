@@ -463,6 +463,19 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                    \
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ]) \
 { return; }                                                                 \
 
+// Определение скорости с изменением по году постройки и в заданном году
+
+#define engine_speed_change_build_after_and_year(name, speed, new_speed, year, new_speed2, year2)    \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed,                                                    \
+        (build_year >= year) + ((current_year >= year2) * 2))                                        \
+{ 0: return speed;                                                                                   \
+  1: return new_speed;                                                                               \
+     return new_speed2; }                                                                            \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                             \
+[ STORE_TEMP(current_year >= year2 ? new_speed2 : build_year >= year ? new_speed : speed , 0),       \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
+{ return; }                                                                                          \
+
 // Определение скорости с изменением в 2 заданных года
 
 #define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)                  \
