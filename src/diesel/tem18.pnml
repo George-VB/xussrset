@@ -120,14 +120,18 @@ spritegroup tem18_v3_r_spritegroup
 
 #undef IMAGEFILE
 
-// Окрас 1
-
 switch (FEAT_TRAINS, SELF, tem18_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(tem18)) % 2)
+  ((LOAD_TEMP(0) - count_veh_id(tem18)) % 2) +
+  (cargo_subtype * 2)
 )
 {
   0: tem18_spritegroup;
-  tem18_r_spritegroup;
+  1: tem18_r_spritegroup;
+  2: tem18_v2_spritegroup;
+  3: tem18_v2_r_spritegroup;
+  4: tem18_v3_spritegroup;
+  5: tem18_v3_r_spritegroup;
+     align_10_spriteset; // параллелепипед
 }
 
 switch (FEAT_TRAINS, PARENT, tem18_get_spriteset1,
@@ -140,77 +144,13 @@ switch (FEAT_TRAINS, PARENT, tem18_get_spriteset1,
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem18_get_spriteset,
+switch (FEAT_TRAINS, SELF, tem18_get_spritegroup,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
   tem18_get_spriteset1;
 }
-
-// Окрас 2
-
-switch (FEAT_TRAINS, SELF, tem18_v2_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(tem18)) % 2)
-)
-{
-  0: tem18_v2_spritegroup;
-  tem18_v2_r_spritegroup;
-}
-
-switch (FEAT_TRAINS, PARENT, tem18_v2_get_spriteset1,
-[ STORE_TEMP(count_veh_id(tem18), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  tem18_v2_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem18_v2_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  tem18_v2_get_spriteset1;
-}
-
-// Окрас 3
-
-switch (FEAT_TRAINS, SELF, tem18_v3_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(tem18)) % 2)
-)
-{
-  0: tem18_v3_spritegroup;
-  tem18_v3_r_spritegroup;
-}
-
-switch (FEAT_TRAINS, PARENT, tem18_v3_get_spriteset1,
-[ STORE_TEMP(count_veh_id(tem18), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  tem18_v3_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem18_v3_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  tem18_v3_get_spriteset1;
-}
-
-// Выбор окраса
-
-switch (FEAT_TRAINS, SELF, tem18_get_spritegroup, cargo_subtype)
-{
-  0: tem18_get_spriteset;
-  1: tem18_v2_get_spriteset;
-  2: tem18_v3_get_spriteset;
-  align_10_spriteset; // параллелепипед
-}
-
+ 
 switch (FEAT_TRAINS, SELF, tem18_cargo_subtype_text,
   cargo_subtype)
 {

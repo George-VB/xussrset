@@ -84,67 +84,34 @@ spritegroup tem2u_v2_r_spritegroup
 
 #undef IMAGEFILE
 
-// Окрас 1
-
 switch (FEAT_TRAINS, SELF, tem2u_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(tem2u)) % 2)
+  ((LOAD_TEMP(0) - count_veh_id(tem2u)) % 2) + 
+  (cargo_subtype * 2)
 )
 {
   0: tem2u_spritegroup;
-  tem2u_r_spritegroup;
-}
+  1: tem2u_r_spritegroup;
+  2: tem2u_v2_spritegroup;
+  3: tem2u_v2_r_spritegroup;
+     align_10_spriteset; // параллелепипед
 
-switch (FEAT_TRAINS, PARENT, tem2u_get_spriteset1,
-[ STORE_TEMP(count_veh_id(tem2u), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  tem2u_get_spriteset2;
 }
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то
 // отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem2u_get_spriteset,
+switch (FEAT_TRAINS, SELF, tem2u_get_spritegroup1,
   is_drawn_in_viewport() && is_hidden_at(1))
 {
   1: dummy_spriteset;
-  tem2u_get_spriteset1;
+     tem2u_get_spriteset2;
 }
 
-// Окрас 2
-
-switch (FEAT_TRAINS, SELF, tem2u_v2_get_spriteset2,
-  ((LOAD_TEMP(0) - count_veh_id(tem2u)) % 2)
-)
-{
-  0: tem2u_v2_spritegroup;
-  tem2u_v2_r_spritegroup;
-}
-
-switch (FEAT_TRAINS, PARENT, tem2u_v2_get_spriteset1,
+switch (FEAT_TRAINS, PARENT, tem2u_get_spritegroup,
 [ STORE_TEMP(count_veh_id(tem2u), 0),                         
   STORE_TEMP(current_speed, 1),                              
   STORE_TEMP(date_of_last_service, 2) ])                     
 {
-  tem2u_v2_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem2u_v2_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  tem2u_v2_get_spriteset1;
-}
-
-// Выбор окраса
-
-switch (FEAT_TRAINS, SELF, tem2u_get_spritegroup, cargo_subtype)
-{
-  0: tem2u_get_spriteset;
-  1: tem2u_v2_get_spriteset;
-  align_10_spriteset; // параллелепипед
+  tem2u_get_spritegroup1;
 }
 
 switch (FEAT_TRAINS, SELF, tem2u_cargo_subtype_text,
