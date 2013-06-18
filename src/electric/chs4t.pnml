@@ -264,40 +264,69 @@ spriteset (chs4t_v9_speedoverTH_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, chs4t_get_spriteset2,
+switch (FEAT_TRAINS, SELF, chs4t_get_spriteset_f1,
+  // поправка на нет тока
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
+{
+  0: chs4t_notpowered_spriteset;    
+  1: chs4t_spritegroup;             
+  2: chs4t_speedoverTH_spriteset;   
+     align_12_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, chs4t_get_spriteset_f2,
+  // поправка на нет тока
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
+{
+  0: chs4t_v2_notpowered_spriteset;    
+  1: chs4t_v2_spritegroup;             
+  2: chs4t_v2_speedoverTH_spriteset;   
+     align_12_spriteset; // параллелепипед
+}
+
+random_switch (FEAT_TRAINS, PARENT, chs4t_get_spriteset4, 0)
+{
+   1: chs4t_get_spriteset_f1;
+   1: chs4t_get_spriteset_f2;  
+}
+
+switch (FEAT_TRAINS, SELF, chs4t_get_spriteset3,
   // поправка на нет тока
   ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
   cargo_subtype * 3
 )
 {
-  0: chs4t_notpowered_spriteset;
-  1: chs4t_spritegroup;
-  2: chs4t_speedoverTH_spriteset;
-  3: chs4t_v2_notpowered_spriteset;
-  4: chs4t_v2_spritegroup;
-  5: chs4t_v2_speedoverTH_spriteset;
-  6: chs4t_v3_notpowered_spriteset;
-  7: chs4t_v3_spritegroup;
-  8: chs4t_v3_speedoverTH_spriteset;
-  9: chs4t_v4_notpowered_spriteset;
-  10: chs4t_v4_spritegroup;
-  11: chs4t_v4_speedoverTH_spriteset;
-  12: chs4t_v5_notpowered_spriteset;
-  13: chs4t_v5_spritegroup;
-  14: chs4t_v5_speedoverTH_spriteset;
-  15: chs4t_v6_notpowered_spriteset;
-  16: chs4t_v6_spritegroup;
-  17: chs4t_v6_speedoverTH_spriteset;
-  18: chs4t_v7_notpowered_spriteset;
-  19: chs4t_v7_spritegroup;
-  20: chs4t_v7_speedoverTH_spriteset;
-  21: chs4t_v8_notpowered_spriteset;
-  22: chs4t_v8_spritegroup;
-  23: chs4t_v8_speedoverTH_spriteset;
-  24: chs4t_v9_notpowered_spriteset;
-  25: chs4t_v9_spritegroup;
-  chs4t_v9_speedoverTH_spriteset;
+  3: chs4t_v3_notpowered_spriteset;    
+  4: chs4t_v3_spritegroup;             
+  5: chs4t_v3_speedoverTH_spriteset;   
+  6: chs4t_v4_notpowered_spriteset;    
+  7: chs4t_v4_spritegroup;             
+  8: chs4t_v4_speedoverTH_spriteset;   
+  9: chs4t_v5_notpowered_spriteset;    
+ 10: chs4t_v5_spritegroup;             
+ 11: chs4t_v5_speedoverTH_spriteset;   
+ 12: chs4t_v6_notpowered_spriteset;    
+ 13: chs4t_v6_spritegroup;             
+ 14: chs4t_v6_speedoverTH_spriteset;   
+ 15: chs4t_v7_notpowered_spriteset;    
+ 16: chs4t_v7_spritegroup;             
+ 17: chs4t_v7_speedoverTH_spriteset;   
+ 18: chs4t_v8_notpowered_spriteset;    
+ 19: chs4t_v8_spritegroup;             
+ 20: chs4t_v8_speedoverTH_spriteset;   
+ 21: chs4t_v9_notpowered_spriteset;    
+ 22: chs4t_v9_spritegroup;             
+ 23: chs4t_v9_speedoverTH_spriteset;
+     align_12_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, chs4t_get_spriteset2, cargo_subtype)
+{
+   0: chs4t_get_spriteset4;
+      chs4t_get_spriteset3;
 }
 
 switch (FEAT_TRAINS, PARENT, chs4t_get_spriteset1,
@@ -320,16 +349,15 @@ switch (FEAT_TRAINS, SELF, chs4t_get_spriteset,
 switch (FEAT_TRAINS, SELF, chs4t_cargo_subtype_text,
   cargo_subtype)
 {
-  0: string(STR_REFIT_FACTORY_SKODA," 1");
-  1: string(STR_REFIT_FACTORY_SKODA," 2");
-  2: string(STR_REFIT_RZD_TCH8_CAUCASUS);
-  3: string(STR_REFIT_RZD_TCH8_KIROV);
-  4: string(STR_REFIT_RZD_TCH41_VYAZMA_SORT);
-  5: string(STR_REFIT_RZD_TCH15_BALASHOV);
-  6: string(STR_REFIT_RZD_TCH42_BRYANSK_II);
-  7: string(STR_REFIT_RZD_TCH3_ROSSOSH);
-  8: string(STR_REFIT_BELARUSSIAN_RAILWAY_TCH1_MINSK_SORT);
-  return CB_RESULT_NO_TEXT;
+  0: string(STR_REFIT_FACTORY_SKODA);
+  1: string(STR_REFIT_RZD_TCH8_CAUCASUS);
+  2: string(STR_REFIT_RZD_TCH8_KIROV);
+  3: string(STR_REFIT_RZD_TCH41_VYAZMA_SORT);
+  4: string(STR_REFIT_RZD_TCH15_BALASHOV);
+  5: string(STR_REFIT_RZD_TCH42_BRYANSK_II);
+  6: string(STR_REFIT_RZD_TCH3_ROSSOSH);
+  7: string(STR_REFIT_BELARUSSIAN_RAILWAY_TCH1_MINSK_SORT);
+     return CB_RESULT_NO_TEXT;
 }
 
 
