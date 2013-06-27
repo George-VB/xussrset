@@ -221,44 +221,45 @@ switch (FEAT_TRAINS, SELF, vl60k_get_spriteset2,
      align_12_spriteset; // параллелепипед
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, vl60k_get_spriteset1,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  vl60k_get_spriteset2;
-}
-
-switch (FEAT_TRAINS, PARENT, vl60k_get_spriteset,
+switch (FEAT_TRAINS, PARENT, vl60k_get_spriteset1,
 [ STORE_TEMP(current_speed, 1),
   STORE_TEMP(date_of_last_service, 2)])
 {
+  vl60k_get_spriteset2;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, vl60k_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
   vl60k_get_spriteset1;
 }
 
-switch (FEAT_TRAINS, SELF, vl60k_cargo_subtype_text3,
-  current_year >= 1991)
-{
-  1: string(STR_REFIT_NORTHERN_RAILWAY);
-  return CB_RESULT_NO_TEXT;
-}
-
 switch (FEAT_TRAINS, SELF, vl60k_cargo_subtype_text2,
-  current_year >= 1991)
-{
-  1: string(STR_REFIT_UKRAINIAN_RAILWAY);
-  return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl60k_cargo_subtype_text,
   cargo_subtype)
 {
   0: string(STR_REFIT_TTD_53);
   1: string(STR_REFIT_TTD_5A);
-  2: vl60k_cargo_subtype_text2;
-  3: vl60k_cargo_subtype_text3;
   return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60k_cargo_subtype_text1,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_53);
+  1: string(STR_REFIT_TTD_5A);
+  2: string(STR_REFIT_UKRAINIAN_RAILWAY);
+  3: string(STR_REFIT_NORTHERN_RAILWAY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60k_cargo_subtype_text,
+  (current_year >= 1991) || (build_year >= 1991))
+{
+  1: vl60k_cargo_subtype_text1;
+     vl60k_cargo_subtype_text2;
 }
 
 engine_speed(vl60k, 100)
