@@ -9,31 +9,15 @@
 // покупка
 purchase_spriteset(refrigerator_fenix, 0, 0)
 
-spriteset (refrigerator_fenix_spriteset, IMAGEFILE)   
-{ 
-  s8_template(64, 136, 0) 
-}
-
-spriteset (refrigerator_fenix_spriteset_open, IMAGEFILE) \
-{ 
-  s8_template(64, 216, 0) 
-} 
-
-spritegroup refrigerator_fenix_other_spritegroup
-{ 
-  loading: [refrigerator_fenix_spriteset_open];
-  loaded: [refrigerator_fenix_spriteset]; 
-}
-
 #define refrigerator_fenix_sprite_layout_template(x, y, cargo)  \
 spriteset (refrigerator_fenix_##cargo##_spriteset, IMAGEFILE)   \
 { s8_template(64, 136, 0) }                                     \
 spriteset (refrigerator_fenix_1_##cargo##_spriteset, IMAGEFILE) \
-{ s8_template(x, y, 0) }                                        \
+{ s8_template(64, 176, 0) }                                     \
 spriteset (refrigerator_fenix_2_##cargo##_spriteset, IMAGEFILE) \
-{ s8_template(x, y+40, 0) }                                     \
+{ s8_template(x, y, 0) }                                        \
 spriteset (refrigerator_fenix_3_##cargo##_spriteset, IMAGEFILE) \
-{ s8_template(x, y+80, 0) }                                     \
+{ s8_template(x, y+40, 0) }                                     \
 spritegroup refrigerator_fenix_##cargo##_spritegroup            \
 { loading: [refrigerator_fenix_1_##cargo##_spriteset,           \
     refrigerator_fenix_1_##cargo##_spriteset,                   \
@@ -47,11 +31,13 @@ spritegroup refrigerator_fenix_##cargo##_spritegroup            \
     refrigerator_fenix_##cargo##_spriteset];                    \
   loaded: [refrigerator_fenix_##cargo##_spriteset]; }           \
 
-// ливреи
-refrigerator_fenix_sprite_layout_template(64, 216, fruit1)
-refrigerator_fenix_sprite_layout_template(64, 368, fruit2)
-refrigerator_fenix_sprite_layout_template(64, 520, fruit3)
-refrigerator_fenix_sprite_layout_template(64, 672, fish)
+refrigerator_fenix_sprite_layout_template(64, 256, fruit1)
+refrigerator_fenix_sprite_layout_template(64, 376, fruit2)
+refrigerator_fenix_sprite_layout_template(64, 496, fruit3)
+refrigerator_fenix_sprite_layout_template(64, 616, fish)
+refrigerator_fenix_sprite_layout_template(64, 736, food1)
+refrigerator_fenix_sprite_layout_template(64, 856, food2)
+refrigerator_fenix_sprite_layout_template(64, 976, sgbt)
 
 #undef IMAGEFILE
 
@@ -63,14 +49,21 @@ random_switch (FEAT_TRAINS, SELF, refrigerator_fenix_fruit_get_spriteset,
   2: refrigerator_fenix_fruit3_spritegroup;
 }
 
+random_switch (FEAT_TRAINS, SELF, refrigerator_fenix_food_get_spriteset,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  1: refrigerator_fenix_food1_spritegroup;
+  1: refrigerator_fenix_food2_spritegroup;
+}
+
 switch (FEAT_TRAINS, SELF, refrigerator_fenix_get_spriteset,
   cargo_type_in_veh)
 {
   FRVG: refrigerator_fenix_fruit_get_spriteset;
   FRUT: refrigerator_fenix_fruit_get_spriteset;
   FISH: refrigerator_fenix_fish_spritegroup;
-  FOOD: refrigerator_fenix_other_spritegroup;
-  SGBT: refrigerator_fenix_other_spritegroup;
+  FOOD: refrigerator_fenix_food_get_spriteset;
+  SGBT: refrigerator_fenix_sgbt_spritegroup;
         align_9_spriteset;
 }
 

@@ -8,49 +8,17 @@
 
 // покупка
 purchase_spriteset(refrigerator_bmz, 0, 0)
-purchase_spriteset(refrigerator_bmz_v2, 0, 20)
-
-spriteset (refrigerator_bmz_spriteset, IMAGEFILE)   
-{ 
-  s8_template(186, 306, 0) 
-}
-
-spriteset (refrigerator_bmz_spriteset_open, IMAGEFILE) \
-{ 
-  s8_template(186, 426, 0) 
-} 
-
-spritegroup refrigerator_bmz_other_spritegroup
-{ 
-  loading: [refrigerator_bmz_spriteset_open];
-  loaded: [refrigerator_bmz_spriteset]; 
-}
-
-spriteset (refrigerator_bmz_v2_spriteset, IMAGEFILE)   
-{ 
-  s8_template(186, 306, 0) 
-}
-
-spriteset (refrigerator_bmz_v2_spriteset_open, IMAGEFILE) \
-{ 
-  s8_template(186, 426, 0) 
-} 
-
-spritegroup refrigerator_bmz_v2_other_spritegroup
-{ 
-  loading: [refrigerator_bmz_v2_spriteset_open];
-  loaded: [refrigerator_bmz_v2_spriteset]; 
-}
+purchase_spriteset(refrigerator_bmz_v2, 0, 21)
 
 #define refrigerator_bmz_sprite_layout_template(x, y, cargo)  \
 spriteset (refrigerator_bmz_##cargo##_spriteset, IMAGEFILE)   \
 { s9_template(186, 306, 0) }                                  \
 spriteset (refrigerator_bmz_1_##cargo##_spriteset, IMAGEFILE) \
-{ s9_template(x, y, 0) }                                      \
+{ s9_template(186, 377, 0) }                                  \
 spriteset (refrigerator_bmz_2_##cargo##_spriteset, IMAGEFILE) \
-{ s9_template(x, y+72, 0) }                                   \
+{ s9_template(x, y, 0) }                                      \
 spriteset (refrigerator_bmz_3_##cargo##_spriteset, IMAGEFILE) \
-{ s9_template(x, y+144, 0) }                                  \
+{ s9_template(x, y+72, 0) }                                   \
 spritegroup refrigerator_bmz_##cargo##_spritegroup            \
 { loading: [refrigerator_bmz_1_##cargo##_spriteset,           \
     refrigerator_bmz_1_##cargo##_spriteset,                   \
@@ -66,11 +34,11 @@ spritegroup refrigerator_bmz_##cargo##_spritegroup            \
 spriteset (refrigerator_bmz_v2_##cargo##_spriteset, IMAGEFILE)   \
 { s9_template(860, 306, 0) }                                     \
 spriteset (refrigerator_bmz_1_v2_##cargo##_spriteset, IMAGEFILE) \
-{ s9_template(x+674, y, 0) }                                     \
+{ s9_template(860, 377, 0) }                                     \
 spriteset (refrigerator_bmz_2_v2_##cargo##_spriteset, IMAGEFILE) \
-{ s9_template(x+674, y+72, 0) }                                  \
+{ s9_template(x+674, y, 0) }                                     \
 spriteset (refrigerator_bmz_3_v2_##cargo##_spriteset, IMAGEFILE) \
-{ s9_template(x+674, y+144, 0) }                                 \
+{ s9_template(x+674, y+72, 0) }                                  \
 spritegroup refrigerator_bmz_v2_##cargo##_spritegroup            \
 { loading: [refrigerator_bmz_1_v2_##cargo##_spriteset,           \
     refrigerator_bmz_1_v2_##cargo##_spriteset,                   \
@@ -85,10 +53,13 @@ spritegroup refrigerator_bmz_v2_##cargo##_spritegroup            \
   loaded: [refrigerator_bmz_v2_##cargo##_spriteset]; }           \
 
 // ливреи
-refrigerator_bmz_sprite_layout_template(186,  426, fruit1)
-refrigerator_bmz_sprite_layout_template(186,  698, fruit2)
-refrigerator_bmz_sprite_layout_template(186,  970, fish)
-refrigerator_bmz_sprite_layout_template(186, 1242, fruit3)
+refrigerator_bmz_sprite_layout_template(186,  498, fruit1)
+refrigerator_bmz_sprite_layout_template(186,  688, fruit2)
+refrigerator_bmz_sprite_layout_template(186,  880, fruit3)
+refrigerator_bmz_sprite_layout_template(186, 1072, fish)
+refrigerator_bmz_sprite_layout_template(186, 1264, food1)
+refrigerator_bmz_sprite_layout_template(186, 1456, food2)
+refrigerator_bmz_sprite_layout_template(186, 1648, sgbt)
 
 #undef IMAGEFILE
 
@@ -98,7 +69,6 @@ switch (FEAT_TRAINS, SELF, refrigerator_bmz_get_purchase_spriteset,
   0: refrigerator_bmz_purchase_spriteset;
      refrigerator_bmz_v2_purchase_spriteset;
 }
-
 
 random_switch (FEAT_TRAINS, SELF, refrigerator_bmz_fruit_get_spriteset,
   bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
@@ -116,14 +86,28 @@ random_switch (FEAT_TRAINS, SELF, refrigerator_bmz_v2_fruit_get_spriteset,
   2: refrigerator_bmz_v2_fruit3_spritegroup;
 }
 
+random_switch (FEAT_TRAINS, SELF, refrigerator_bmz_food_get_spriteset,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  2: refrigerator_bmz_food1_spritegroup;
+  2: refrigerator_bmz_food2_spritegroup;
+}
+
+random_switch (FEAT_TRAINS, SELF, refrigerator_bmz_v2_food_get_spriteset,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  2: refrigerator_bmz_v2_food1_spritegroup;
+  1: refrigerator_bmz_v2_food2_spritegroup;
+}
+
 switch (FEAT_TRAINS, SELF, refrigerator_bmz_v1_get_spriteset,
   cargo_type_in_veh)
 {
   FRVG: refrigerator_bmz_fruit_get_spriteset;
   FRUT: refrigerator_bmz_fruit_get_spriteset;
   FISH: refrigerator_bmz_fish_spritegroup;
-  FOOD: refrigerator_bmz_other_spritegroup;
-  SGBT: refrigerator_bmz_other_spritegroup;
+  FOOD: refrigerator_bmz_food_get_spriteset;
+  SGBT: refrigerator_bmz_sgbt_spritegroup;
         align_9_spriteset;
 }
 
@@ -133,8 +117,8 @@ switch (FEAT_TRAINS, SELF, refrigerator_bmz_v2_get_spriteset,
   FRVG: refrigerator_bmz_v2_fruit_get_spriteset;
   FRUT: refrigerator_bmz_v2_fruit_get_spriteset;
   FISH: refrigerator_bmz_v2_fish_spritegroup;
-  FOOD: refrigerator_bmz_v2_other_spritegroup;
-  SGBT: refrigerator_bmz_v2_other_spritegroup;
+  FOOD: refrigerator_bmz_v2_food_get_spriteset;
+  SGBT: refrigerator_bmz_v2_sgbt_spritegroup;
         align_9_spriteset;
 }
 
