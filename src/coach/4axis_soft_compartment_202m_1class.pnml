@@ -1,0 +1,149 @@
+ // _4axis_soft_compartment_202m_1class
+
+/// Вагон
+// 4-осный мягкий купейный 20 м I класса
+// Тверской завод	1912-1917-1920
+
+#define IMAGEFILE  "src/coach/4axis-soft-compartment-202m-1class.png"
+
+// покупка
+purchase_spriteset(_4axis_soft_compartment_202m_1class, 0, 0)
+purchase_spriteset(_4axis_soft_compartment_202m_1class_v2, 0, 21)
+
+spriteset (_4axis_soft_compartment_202m_1class_spriteset, IMAGEFILE)
+{
+  s12_template(0, 46, 0)
+}
+
+spriteset (_4axis_soft_compartment_202m_1class_v2_spriteset, IMAGEFILE)
+{
+  s12_template(0, 113, 0)
+}
+
+spriteset (_4axis_soft_compartment_202m_1class_v3_spriteset, IMAGEFILE)
+{
+  s12_template(0, 181, 0)
+}
+
+
+spriteset (_4axis_soft_compartment_202m_1class_tail_spriteset, IMAGEFILE)
+{
+  s11_template(0, 273, 0)
+}
+
+spriteset (_4axis_soft_compartment_202m_1class_tail_v2_spriteset, IMAGEFILE)
+{
+  s11_template(0, 340, 0)
+}
+
+spriteset (_4axis_soft_compartment_202m_1class_tail_v3_spriteset, IMAGEFILE)
+{
+  s11_template(0, 408, 0)
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _4axis_soft_compartment_202m_1class_get_purchase_spriteset,
+  (current_year >= 1920) )
+{
+  0: _4axis_soft_compartment_202m_1class_purchase_spriteset;
+     _4axis_soft_compartment_202m_1class_v2_purchase_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, _4axis_soft_compartment_202m_1class_get_spriteset1,
+  (position_in_consist_from_end == 1) +
+  (cargo_subtype * 2 ))
+{
+  0: _4axis_soft_compartment_202m_1class_spriteset;
+  1: _4axis_soft_compartment_202m_1class_tail_spriteset;
+  2: _4axis_soft_compartment_202m_1class_v2_spriteset;
+  3: _4axis_soft_compartment_202m_1class_tail_v2_spriteset;
+  4: _4axis_soft_compartment_202m_1class_v3_spriteset;
+  5: _4axis_soft_compartment_202m_1class_tail_v3_spriteset;
+     align_12_spriteset;
+}
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, _4axis_soft_compartment_202m_1class_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+     _4axis_soft_compartment_202m_1class_get_spriteset1;
+}
+
+switch (FEAT_TRAINS, SELF, _4axis_soft_compartment_202m_1class_cargo_subtype_text_2,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_93);
+  1: string(STR_REFIT_TTD_5A);
+  2: string(STR_REFIT_RED_ARROW);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _4axis_soft_compartment_202m_1class_cargo_subtype_text_1,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_93);
+  1: string(STR_REFIT_TTD_5A);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _4axis_soft_compartment_202m_1class_cargo_subtype_text,
+  ((current_year >= 1920) || (build_year>=1920)) + 
+  ((current_year >= 1931) || (build_year>=1931)) )
+{
+  0: return CB_RESULT_NO_TEXT;
+  1: _4axis_soft_compartment_202m_1class_cargo_subtype_text_1;
+     _4axis_soft_compartment_202m_1class_cargo_subtype_text_2;
+}
+
+item (FEAT_TRAINS, _4axis_soft_compartment_202m_1class) 
+{
+  property
+  {
+    name: string(STR_4AXIS_SOFT_COMPARTMENT_202M_1CLASS_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1912), 1, 1);
+    model_life: get_model_life(1912,1920);
+    retire_early: get_retire_early(1912,1920);
+    vehicle_life: 28;
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS, TOUR];
+    default_cargo_type: PASS;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 14;
+    cargo_capacity: 18;
+    weight: 40 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: _4axis_soft_compartment_202m_1class_get_spriteset;
+    purchase: _4axis_soft_compartment_202m_1class_get_purchase_spriteset;
+    articulated_part: articulated_part_dummy4;
+    additional_text: return string(STR_4AXIS_SOFT_COMPARTMENT_202M_1CLASS_PURCHASE_HINT);
+    cargo_subtype_text: _4axis_soft_compartment_202m_1class_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _4axis_soft_compartment_202m_1class)
+  {
+    property
+    { name: string(STR_4AXIS_SOFT_COMPARTMENT_202M_1CLASS_NAME_LONG); }
+  }
+}
+
