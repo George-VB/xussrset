@@ -1,0 +1,96 @@
+ // eel
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/eel.png"
+
+// покупка
+purchase_spriteset(eel, 0, 0)
+
+// обычный: погрузка/перемещение
+spriteset (eel_loading_spriteset, IMAGEFILE)
+{
+  s8_template(2, 26, 0)
+} 
+
+spriteset (eel_traveling_spriteset, IMAGEFILE)
+{
+  s8_template(2, 60, 0)
+} 
+
+spritegroup eel_spritegroup
+{
+  loading: eel_loading_spriteset;
+  loaded: eel_traveling_spriteset;
+}
+
+
+#undef IMAGEFILE
+
+// Если рисуем на карте и следующий в цепочке вагон скрыт, то
+// отдаём пустышку
+switch (FEAT_TRAINS, SELF, eel_get_spriteset,
+  is_drawn_in_viewport() && is_hidden_at(1))
+{
+  1: dummy_spriteset;
+  eel_spritegroup;
+}
+
+engine_speed(eel, 100)
+
+engine_penalise_speed(eel, 2)
+
+item (FEAT_TRAINS, eel) 
+{
+  property
+  {
+    name: string(STR_EEL_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1949), 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(1949,1955);
+    retire_early: get_retire_early(1949,1955); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cost_factor: 14;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT);
+    refit_cost: 0;
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 690 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 1;
+    weight: 85 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    extra_power_per_wagon: 0 kW;
+    tractive_effort_coefficient: get_tec(108.0, 85);
+    length: 7;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: eel_get_spriteset;
+    purchase: eel_purchase_spriteset;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_EEL_PURCHASE_HINT);
+    cargo_capacity: return 0;
+    speed: eel_speed;
+    purchase_speed: eel_purchase_speed;
+    bitmask_vehicle_info: eel_bitmask_vehicle_info;
+    cost_factor: 14;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, eel)
+  {
+    property
+    { name: string(STR_EEL_NAME_LONG); }
+  }
+}
+
