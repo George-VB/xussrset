@@ -1,0 +1,135 @@
+ // tanker_15_1547
+
+/// Вагон
+// 15-Ц863 4-осная цистерна для бензина и нефти (1960-1971)
+// tanker petrol
+
+#define IMAGEFILE  "src/freight/tanker-15-1547-1988-1992.png"
+
+// покупка
+purchase_spriteset(tanker_15_1547, 0, 0)
+
+spriteset (tanker_15_1547_spriteset, IMAGEFILE)
+{
+  s7_template(0, 39, 0)
+}
+
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/freight/tanker-15-1547-1993-1997.png"
+
+// покупка
+purchase_spriteset(tanker_15_1547_v2, 0, 0)
+
+spriteset (tanker_15_1547_v2_spriteset, IMAGEFILE)
+{
+  s7_template(0, 39, 0)
+}
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_get_purchase_spriteset,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_purchase_spriteset;
+     tanker_15_1547_v2_purchase_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_get_spriteset, 
+  build_year >= 1993)
+{
+  0: tanker_15_1547_spriteset;
+     tanker_15_1547_v2_spriteset; 
+}
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_random, 0 )
+{
+  3: return ttd_cc + 4;  
+  3: return ttd_cc + 6;  
+  4: return ttd_cc + 80;  
+  7: return ttd_cc + 87;  
+  5: return ttd_cc + 84;  
+  5: return ttd_cc + 21;  
+  2: return ttd_cc + 55;  
+  1: return ttd_cc + 58;  
+}                      
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_colour_mapping,
+  cargo_subtype)
+{
+  0: tanker_15_1547_random;  
+  1: return ttd_cc + 4;  
+  2: return ttd_cc + 6;  
+  3: return ttd_cc + 80;  
+  4: return ttd_cc + 87;  
+  5: return ttd_cc + 84;  
+  6: return ttd_cc + 21;  
+  7: return ttd_cc + 55;  
+  8: return ttd_cc + 58;  
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_cargo_subtype_text, 
+    cargo_subtype )
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_08);
+  2: string(STR_REFIT_TTD_0A);
+  3: string(STR_REFIT_TTD_19);
+  4: string(STR_REFIT_TTD_24);
+  5: string(STR_REFIT_TTD_26);
+  6: string(STR_REFIT_TTD_42);
+  7: string(STR_REFIT_TTD_95);
+  8: string(STR_REFIT_TTD_9D);
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, tanker_15_1547) 
+{
+  property
+  {
+    name: string(STR_TANKER_15_1547_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1983), 1, 1);
+    model_life: get_model_life(1983,1997);
+    retire_early: get_retire_early(1983,1997);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [PETR];
+    default_cargo_type: PETR;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    speed: 120 km/h;
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 15;
+    cargo_capacity: 68;
+    weight: 24 ton;
+    length: 7;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: tanker_15_1547_get_spriteset;
+    purchase: tanker_15_1547_get_purchase_spriteset;
+    additional_text: return string(STR_TANKER_15_1547_PURCHASE_HINT);
+    cargo_subtype_text: tanker_15_1547_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: tanker_15_1547_colour_mapping;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, tanker_15_1547)
+  {
+    property
+    { name: string(STR_TANKER_15_1547_NAME_LONG); }
+  }
+}
+
