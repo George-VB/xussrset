@@ -5,132 +5,13 @@
 
 #define IMAGEFILE  "src/electric/vl10u.png"
 
-// покупка
 purchase_spriteset(vl10u, 0, 0)
-
-// нет тока
-spriteset (vl10u_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(5, 44, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl10u_loading_spriteset, IMAGEFILE)
-{
-  s9_template(5, 111, 0)
-} 
-
-spriteset (vl10u_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(5, 178, 0)
-} 
-
-spritegroup vl10u_spritegroup
-{
-  loading: vl10u_loading_spriteset;
-  loaded: vl10u_traveling_spriteset;
-}
-
-spriteset (vl10u_speedoverTH_spriteset, IMAGEFILE)
-{
-  s9_template(5, 245, 0)
-} 
-
-// нет тока
-spriteset (vl10u_r_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(436, 44, 0)
-} 
-
-// развёрнутый
-spriteset (vl10u_r_spriteset, IMAGEFILE)
-{
-  s9_template(436, 111, 0)
-} 
-
-// покупка
 purchase_spriteset(vl10u_v2, 0, 20)
 
-// нет тока
-spriteset (vl10u_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(5, 356, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl10u_v2_loading_spriteset, IMAGEFILE)
-{
-  s9_template(5, 423, 0)
-} 
-
-spriteset (vl10u_v2_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(5, 490, 0)
-} 
-
-spritegroup vl10u_v2_spritegroup
-{
-  loading: vl10u_v2_loading_spriteset;
-  loaded: vl10u_v2_traveling_spriteset;
-}
-
-spriteset (vl10u_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s9_template(5, 557, 0)
-} 
-
-// нет тока
-spriteset (vl10u_r_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(436, 356, 0)
-} 
-
-// развёрнутый
-spriteset (vl10u_r_v2_spriteset, IMAGEFILE)
-{
-  s9_template(436, 423, 0)
-} 
+electric2_spriteset(9, vl10u, 5, 44)
+electric2_spriteset(9, vl10u_v2, 5, 356)
 
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, vl10u_get_spriteset_l,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 1976) * 3)
-)
-{
-  0: vl10u_notpowered_spriteset;
-  1: vl10u_spritegroup;
-  2: vl10u_speedoverTH_spriteset;
-  3: vl10u_v2_notpowered_spriteset;
-  4: vl10u_v2_spritegroup;
-  5: vl10u_v2_speedoverTH_spriteset;
-  align_9_spriteset; // параллелепипед
-}
-
-switch (FEAT_TRAINS, SELF, vl10u_get_spriteset_r,
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
-  ((build_year >= 1976) * 2)
-)
-{
-  0: vl10u_r_notpowered_spriteset;
-  1: vl10u_r_spriteset;
-  2: vl10u_r_v2_notpowered_spriteset;
-  3: vl10u_r_v2_spriteset;
-  align_9_spriteset; // параллелепипед
-}
-
-engine_direction_template(vl10u) 
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, vl10u_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-     vl10u_get_spriteset_t;
-}
 
 switch (FEAT_TRAINS, SELF, vl10u_get_purchase_spriteset,
   current_year >= 1976)
@@ -138,6 +19,25 @@ switch (FEAT_TRAINS, SELF, vl10u_get_purchase_spriteset,
   0: vl10u_purchase_spriteset;
      vl10u_v2_purchase_spriteset;
 }
+
+switch (FEAT_TRAINS, SELF, vl10u_get_spriteset_l,
+  build_year >= 1976)
+{   0: vl10u_get_spriteset_left;
+    1: vl10u_v2_get_spriteset_left;
+       align_9_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, vl10u_get_spriteset_r,
+  build_year >= 1976)
+{ 
+    0: vl10u_get_spriteset_right;
+    1: vl10u_v2_get_spriteset_right;
+       align_9_spriteset; // параллелепипед
+}
+
+engine_direction_template(vl10u) 
+
+long_vehicle(vl10u, )
 
 engine_speed(vl10u, 100)
 

@@ -1,133 +1,92 @@
- // vl11
-
-// ВЛ11 (1975-1986)
+ // vl11 ВЛ11
 
 #define IMAGEFILE  "src/electric/vl11.png"
 
-// покупка
 purchase_spriteset(vl11, 0, 0)
-
-// нет тока
-spriteset (vl11_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(5, 44, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl11_loading_spriteset, IMAGEFILE)
-{
-  s9_template(5, 111, 0)
-} 
-
-spriteset (vl11_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(5, 178, 0)
-} 
-
-spritegroup vl11_spritegroup
-{
-  loading: vl11_loading_spriteset;
-  loaded: vl11_traveling_spriteset;
-}
-
-spriteset (vl11_speedoverTH_spriteset, IMAGEFILE)
-{
-  s9_template(5, 245, 0)
-} 
-
-// нет тока
-spriteset (vl11_r_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(436, 44, 0)
-} 
-
-// развёрнутый
-spriteset (vl11_r_spriteset, IMAGEFILE)
-{
-  s9_template(436, 111, 0)
-} 
-
-// покупка
 purchase_spriteset(vl11_v2, 0, 20)
 
-// нет тока
-spriteset (vl11_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(5, 356, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl11_v2_loading_spriteset, IMAGEFILE)
-{
-  s9_template(5, 423, 0)
-} 
-
-spriteset (vl11_v2_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(5, 490, 0)
-} 
-
-spritegroup vl11_v2_spritegroup
-{
-  loading: vl11_v2_loading_spriteset;
-  loaded: vl11_v2_traveling_spriteset;
-}
-
-spriteset (vl11_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s9_template(5, 557, 0)
-} 
-
-// нет тока
-spriteset (vl11_r_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(436, 356, 0)
-} 
-
-// развёрнутый
-spriteset (vl11_r_v2_spriteset, IMAGEFILE)
-{
-  s9_template(436, 423, 0)
-} 
+electric2_spriteset(9, vl11, 5, 44)
+electric2_spriteset(9, vl11_v2, 5, 356)
+electric2_spriteset(9, vl11_v3, 5, 676)
+electric2_spriteset(9, vl11_v4, 5, 988)
+electric2_spriteset(9, vl11_v5, 5, 1301)
+electric2_spriteset(9, vl11_v6, 5, 1613)
 
 #undef IMAGEFILE
-
-// расчёт ориентации секций локомотива. Первые 6 ориентируются парами, далее по номеру в составе. 
-switch (FEAT_TRAINS, SELF, vl11_get_spriteset_l,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) + 
-  ((build_year >= 1978) * 3))
-{ 0: vl11_notpowered_spriteset;
-  1: vl11_spritegroup;
-  2: vl11_speedoverTH_spriteset;
-  3: vl11_v2_notpowered_spriteset;
-  4: vl11_v2_spritegroup;
-     vl11_v2_speedoverTH_spriteset;	 }
-
-switch (FEAT_TRAINS, SELF, vl11_get_spriteset_r,
-  (!(vehicle_is_not_powered || vehicle_is_in_depot)) + 
-  ((build_year >= 1978) * 2))
-{ 0: vl11_r_notpowered_spriteset;
-  1: vl11_r_spriteset;
-  2: vl11_r_v2_notpowered_spriteset;
-     vl11_r_v2_spriteset; }
-
-engine_direction_template(vl11) 
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, vl11_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-     vl11_get_spriteset_t;
-}
 
 switch (FEAT_TRAINS, SELF, vl11_get_purchase_spriteset,
   current_year >= 1978)
 {
   0: vl11_purchase_spriteset;
      vl11_v2_purchase_spriteset;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_l,
+  cargo_subtype + 
+  (build_year >= 1978) * 10)
+{   0..4: vl11_get_spriteset_left;
+    5..6: vl11_v3_get_spriteset_left;
+       7: vl11_v5_get_spriteset_left;
+  10..14: vl11_v2_get_spriteset_left;
+  15..16: vl11_v4_get_spriteset_left;
+      17: vl11_v6_get_spriteset_left;
+          align_9_spriteset; // параллелепипед
+}
+
+switch (FEAT_TRAINS, SELF, vl11_get_spriteset_r,
+  cargo_subtype + 
+  (build_year >= 1978) * 10)
+{ 
+    0..4: vl11_get_spriteset_right;
+    5..6: vl11_v3_get_spriteset_right;
+       7: vl11_v5_get_spriteset_right;
+  10..14: vl11_v2_get_spriteset_right;
+  15..16: vl11_v4_get_spriteset_right;
+      17: vl11_v6_get_spriteset_right;
+          align_9_spriteset; // параллелепипед
+}
+
+engine_direction_template(vl11) 
+
+long_vehicle(vl11, )
+
+random_switch (FEAT_TRAINS, PARENT, vl11_colour_mapping_1, 0)
+{
+  1: return vl11_cc + 3;
+  1: return vl11_cc + 4;
+}
+
+random_switch (FEAT_TRAINS, PARENT, vl11_colour_mapping_2, 0)
+{
+  1: return vl11_cc + 5;
+  1: return vl11_cc + 6;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_colour_mapping,
+  cargo_subtype)
+{
+  0: return vl11_cc + 0;
+  1: return vl11_cc + 1;
+  2: return vl11_cc + 2;
+  3: vl11_colour_mapping_1; 
+  4: vl11_colour_mapping_2;
+  5: return vl11_cc + 1;
+  6: return vl11_cc + 5;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, vl11_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_53); 
+  2: string(STR_REFIT_TTD_5A);
+  3: string(STR_REFIT_TTD_9D);
+  4: string(STR_REFIT_TTD_62);
+  5: string(STR_REFIT_MOSCOW_RAILWAY, string(STR_REFIT_TTD_53));
+  6: string(STR_REFIT_MOSCOW_RAILWAY, string(STR_REFIT_TTD_63));
+  7: string(STR_REFIT_SVERDLOVSK_RAILWAY);
+     return CB_RESULT_NO_TEXT;
 }
 
 engine_speed(vl11, 100)
@@ -175,6 +134,8 @@ item (FEAT_TRAINS, vl11)
     purchase_speed: vl11_purchase_speed;
     bitmask_vehicle_info: vl11_bitmask_vehicle_info;
     cost_factor: return 89;
+    cargo_subtype_text: vl11_cargo_subtype_text;
+    colour_mapping: vl11_colour_mapping;
   }
 }
 

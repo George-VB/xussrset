@@ -136,6 +136,15 @@ spriteset (vl80t_r_v3_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, vl80t_get_purchase_spriteset,
+  (current_year >= 1972) +
+  (current_year >= 1978))
+{
+  0: vl80t_purchase_spriteset;
+  1: vl80t_v2_purchase_spriteset;
+     vl80t_v3_purchase_spriteset;
+}   
+
 switch (FEAT_TRAINS, SELF, vl80t_get_spriteset_l,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
@@ -165,28 +174,12 @@ switch (FEAT_TRAINS, SELF, vl80t_get_spriteset_r,
   3: vl80t_r_v2_spriteset;
   4: vl80t_r_v3_notpowered_spriteset;
   5: vl80t_r_v3_spriteset;
-  align_9_spriteset; // параллелепипед
+     align_9_spriteset; // параллелепипед
 }
    
 engine_direction_template(vl80t) 
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, vl80t_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  vl80t_get_spriteset_t;
-}
-
-switch (FEAT_TRAINS, SELF, vl80t_get_purchase_spriteset,
-  (current_year >= 1972) +
-  (current_year >= 1978))
-{
-  0: vl80t_purchase_spriteset;
-  1: vl80t_v2_purchase_spriteset;
-     vl80t_v3_purchase_spriteset;
-}   
+long_vehicle(vl80t, )
 
 engine_speed_with_reduce(vl80t, 110, 100, 30)
 

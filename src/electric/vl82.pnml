@@ -92,7 +92,13 @@ spriteset (vl82_r_v2_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-// расчёт ориентации секций локомотива. Первые 6 ориентируются парами, далее по номеру в составе. 
+switch (FEAT_TRAINS, SELF, vl82_get_purchase_spriteset,
+  (current_year >= 1972))
+{
+  0: vl82_purchase_spriteset;
+     vl82_v2_purchase_spriteset;
+}
+
 switch (FEAT_TRAINS, SELF, vl82_get_spriteset_l,
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
@@ -114,22 +120,8 @@ switch (FEAT_TRAINS, SELF, vl82_get_spriteset_r,
 
 engine_direction_template(vl82) 
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, vl82_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  vl82_get_spriteset_t;
-}
+long_vehicle(vl82, )
 
-switch (FEAT_TRAINS, SELF, vl82_get_purchase_spriteset,
-  (current_year >= 1972))
-{
-  0: vl82_purchase_spriteset;
-     vl82_v2_purchase_spriteset;
-}
-    
 engine_speed(vl82, 110)
 
 engine_penalise_speed(vl82, 3)
