@@ -28,6 +28,15 @@ spriteset (tanker_15_1547_v2_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
+#define IMAGEFILE  "src/freight/tanker-15-1547-1993-1997-2.png"
+
+spriteset (tanker_15_1547_v3_spriteset, IMAGEFILE)
+{
+  s7_template(0, 39, 0)
+}
+
+#undef IMAGEFILE
+
 switch (FEAT_TRAINS, SELF, tanker_15_1547_get_purchase_spriteset,
   build_year >= 1993)
 {
@@ -35,15 +44,29 @@ switch (FEAT_TRAINS, SELF, tanker_15_1547_get_purchase_spriteset,
      tanker_15_1547_v2_purchase_spriteset;
 }
 
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_line_random, 0 )
+{
+  3: tanker_15_1547_v3_spriteset;  
+   2: tanker_15_1547_v2_spriteset;  
+   1: tanker_15_1547_v3_spriteset;  
+  4: tanker_15_1547_v2_spriteset;  
+  7: tanker_15_1547_v3_spriteset;  
+  5: tanker_15_1547_v3_spriteset;  
+  5: tanker_15_1547_v2_spriteset;  
+  2: tanker_15_1547_v2_spriteset;  
+  1: tanker_15_1547_v2_spriteset;  
+}                      
+
 switch (FEAT_TRAINS, SELF, tanker_15_1547_get_spriteset, 
   build_year >= 1993)
 {
   0: tanker_15_1547_spriteset;
-     tanker_15_1547_v2_spriteset; 
+     tanker_15_1547_line_random; 
 }
 
 random_switch (FEAT_TRAINS, SELF, tanker_15_1547_random, 0 )
 {
+  dependent: tanker_15_1547_line_random;
   3: return ttd_cc + 4;  
   3: return ttd_cc + 6;  
   4: return ttd_cc + 80;  
@@ -95,7 +118,7 @@ item (FEAT_TRAINS, tanker_15_1547)
     retire_early: get_retire_early(1983,1997);
     vehicle_life: 32;
     reliability_decay: 20;
-    cargo_allow_refit: [PETR];
+    cargo_allow_refit: [PETR, RFPR];
     default_cargo_type: PETR;
     refit_cost: 0;
     cost_factor: get_car_cost_factor();
