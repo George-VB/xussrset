@@ -499,27 +499,21 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 #define  new_3x_train_start_stop(name)                                                                \
 switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                                      \
 [ set_offset_to(2),                                                                                   \
-  STORE_TEMP((prev_vehicle_type_id() == name) || ((prev_vehicle_type_id() == name##_m)), 0),          \
-  set_offset_to(4),                                                                                   \
-  ((prev_vehicle_type_id() == name) || (prev_vehicle_type_id() == name##_m)) && LOAD_TEMP(0) ])       \
+  prev_vehicle_type_id() == name##_m ])                                                               \
 { 1: any_start_stop;                                                                                  \
-  return string(STR_START_STOP_NEED_AT_LEAST_3_CONSECUTIVE_ENGINE); }                                 \
-switch (FEAT_TRAINS, PARENT, name##_start_stop1,                                                      \
-  (count_veh_id(name) >= 2) && (count_veh_id(name##_m) >= 1) )                                        \
-{ 1: name##_start_stop2;                                                                              \
-  return string(STR_START_STOP_NEED_2AND1_OR_MORE_ENGINE); }                                          \
+     return string(STR_START_STOP_NEED_2AND1_OR_MORE_ENGINE); }                                       \
 switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_age)                   \
 {  1: any_start_stop;                                                                                 \
-      name##_start_stop1; }                                                                           \
+      name##_start_stop2; }                                                                           \
 
 // не выпускать новые двойки с средней секцией                                                                                        
 
 #define  new_2x_train_start_stop(name, namem)                                                         \
 switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                                      \
 [ set_offset_to(2),                                                                                   \
-  STORE_TEMP((prev_vehicle_type_id() != namem), 0) ])                                                 \
+  prev_vehicle_type_id() != namem ])                                                                  \
 { 1: any_start_stop;                                                                                  \
-  return string(STR_START_STOP_NEED_NO_MIDDLE_SECTION); }                                             \
+     return string(STR_START_STOP_NEED_NO_MIDDLE_SECTION); }                                          \
 switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_age)                   \
 {  1: any_start_stop;                                                                                 \
       name##_start_stop2; }                                                                           \
