@@ -125,7 +125,7 @@ spriteset (ss_v4_speedoverTH_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, ss_get_spriteset2,
+switch (FEAT_TRAINS, SELF, ss_get_spriteset_2,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
@@ -150,27 +150,10 @@ switch (FEAT_TRAINS, SELF, ss_get_spriteset2,
      align_10_spriteset; // параллелепипед
 }
 
-switch (FEAT_TRAINS, PARENT, ss_get_spriteset1,
-[ STORE_TEMP(count_veh_id(ss), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  ss_get_spriteset2;
-}
+long_vehicle(ss, )
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, ss_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-     ss_get_spriteset1;
-}
-
-// покупка
 switch (FEAT_TRAINS, SELF, ss_get_purchase_spriteset,
-  (current_year >= 1933)
-)
+  current_year >= 1933 )
 {
   0: ss_purchase_spriteset;
      ss_v2_purchase_spriteset;
@@ -178,7 +161,7 @@ switch (FEAT_TRAINS, SELF, ss_get_purchase_spriteset,
 
 switch (FEAT_TRAINS, SELF, ss_cargo_subtype_text,
   (build_year >= 1933) +
-  (cargo_subtype * 2))
+  (cargo_subtype * 2) )
 {
   0: string(STR_REFIT_PREPRODUCTION);
   1: string(STR_REFIT_TTD_53);

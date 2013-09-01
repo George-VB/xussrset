@@ -47,15 +47,6 @@ spriteset (e5k_r_traveling_spriteset, IMAGEFILE)
   s11_template(440, 176, 0)
 } 
 
-/*
-// временно не используется
-spritegroup e5k_r_spritegroup
-{
-  loading: e5k_r_loading_spriteset;
-  loaded: e5k_r_traveling_spriteset;
-}
-*/
-
 spriteset (e5k_r_speedoverTH_spriteset, IMAGEFILE)
 {
   s11_template(440, 243, 0)
@@ -63,7 +54,7 @@ spriteset (e5k_r_speedoverTH_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, e5k_get_spriteset2,
+switch (FEAT_TRAINS, SELF, e5k_get_spriteset_2,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot)))
@@ -72,26 +63,10 @@ switch (FEAT_TRAINS, SELF, e5k_get_spriteset2,
   0: e5k_notpowered_spriteset;
   1: e5k_spritegroup;
   2: e5k_speedoverTH_spriteset;
-  align_11_spriteset; // параллелепипед
+     align_11_spriteset; // параллелепипед
 }
 
-switch (FEAT_TRAINS, PARENT, e5k_get_spriteset1,
-[
-  STORE_TEMP(current_speed, 1)
-])
-{
-  e5k_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, e5k_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  e5k_get_spriteset1;
-}
-
+long_vehicle(e5k, )
 
 engine_speed(e5k, 110)
 

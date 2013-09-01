@@ -99,15 +99,14 @@ spriteset (ep10_v3_speedoverTH_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, ep10_get_spriteset2,
+switch (FEAT_TRAINS, SELF, ep10_get_spriteset_2,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) *
     ((current_railtype != ERD1) && (current_railtype != ERD2) &&
       (current_railtype != ERD3)) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
   ((build_year >= 2004) * 3) +
-  ((build_year >= 2006) * 3)
-)
+  ((build_year >= 2006) * 3) )
 {
   0: ep10_notpowered_spriteset;
   1: ep10_spritegroup;
@@ -118,25 +117,10 @@ switch (FEAT_TRAINS, SELF, ep10_get_spriteset2,
   6: ep10_v3_notpowered_spriteset;
   7: ep10_v3_spritegroup;
   8: ep10_v3_speedoverTH_spriteset;
-  align_13_spriteset; // параллелепипед
+     align_13_spriteset; // параллелепипед
 }
 
-switch (FEAT_TRAINS, PARENT, ep10_get_spriteset1,
-[ STORE_TEMP(count_veh_id(ep10), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  ep10_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, ep10_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-     ep10_get_spriteset1;
-}
+long_vehicle(ep10, )
 
 switch (FEAT_TRAINS, SELF, ep10_get_purchase_spriteset,
   (current_year >= 2004) +
