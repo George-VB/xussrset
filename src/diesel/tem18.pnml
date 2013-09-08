@@ -117,13 +117,11 @@ spritegroup tem18_v3_r_spritegroup
   loaded: tem18_v3_r_traveling_spriteset;
 }
 
-
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, tem18_get_spriteset2,
+switch (FEAT_TRAINS, SELF, tem18_get_spriteset_2,
   ((LOAD_TEMP(0) - count_veh_id(tem18)) % 2) +
-  (cargo_subtype * 2)
-)
+  (cargo_subtype * 2) )
 {
   0: tem18_spritegroup;
   1: tem18_r_spritegroup;
@@ -134,22 +132,7 @@ switch (FEAT_TRAINS, SELF, tem18_get_spriteset2,
      align_10_spriteset; // параллелепипед
 }
 
-switch (FEAT_TRAINS, PARENT, tem18_get_spriteset1,
-[ STORE_TEMP(count_veh_id(tem18), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  tem18_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem18_get_spritegroup,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  tem18_get_spriteset1;
-}
+long_vehicle(tem18, )
  
 switch (FEAT_TRAINS, SELF, tem18_cargo_subtype_text,
   cargo_subtype)
@@ -157,7 +140,7 @@ switch (FEAT_TRAINS, SELF, tem18_cargo_subtype_text,
   0: string(STR_REFIT_TTD_0A);
   1: string(STR_REFIT_TTD_53);
   2: string(STR_REFIT_TTD_93);
-  return CB_RESULT_NO_TEXT;
+     return CB_RESULT_NO_TEXT;
 }
 
 engine_penalise_speed0(tem18)
@@ -191,7 +174,7 @@ item (FEAT_TRAINS, tem18)
     cargo_capacity: 1;
   }
   graphics {
-    default: tem18_get_spritegroup;
+    default: tem18_get_spriteset;
     purchase: tem18_purchase_spriteset;
     purchase_speed: return 100;
     articulated_part: articulated_part_dummy2;

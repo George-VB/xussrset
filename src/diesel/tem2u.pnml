@@ -84,42 +84,25 @@ spritegroup tem2u_v2_r_spritegroup
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, tem2u_get_spriteset2,
+switch (FEAT_TRAINS, SELF, tem2u_get_spriteset_2,
   ((LOAD_TEMP(0) - count_veh_id(tem2u)) % 2) + 
-  (cargo_subtype * 2)
-)
+  (cargo_subtype * 2) )
 {
   0: tem2u_spritegroup;
   1: tem2u_r_spritegroup;
   2: tem2u_v2_spritegroup;
   3: tem2u_v2_r_spritegroup;
      align_10_spriteset; // параллелепипед
-
 }
 
-switch (FEAT_TRAINS, PARENT, tem2u_get_spriteset1,
-[ STORE_TEMP(count_veh_id(tem2u), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  tem2u_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem2u_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-     tem2u_get_spriteset1;
-}
+long_vehicle(tem2u, )
 
 switch (FEAT_TRAINS, SELF, tem2u_cargo_subtype_text,
   cargo_subtype)
 {
   0: string(STR_REFIT_TTD_53);
   1: string(STR_REFIT_TTD_93);
-  return CB_RESULT_NO_TEXT;
+     return CB_RESULT_NO_TEXT;
 }
 
 engine_penalise_speed0(tem2u)

@@ -82,41 +82,24 @@ spritegroup tem1_r_v2_spritegroup
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, tem1_get_spriteset2,
+switch (FEAT_TRAINS, SELF, tem1_get_spriteset_2,
   ((LOAD_TEMP(0) - count_veh_id(tem1)) % 2) +
-  (build_year >= 1960) * 2
-)
+  (build_year >= 1960) * 2 )
 {
   0: tem1_spritegroup;
   1: tem1_r_spritegroup;
   2: tem1_v2_spritegroup;
-  tem1_r_v2_spritegroup;
+     tem1_r_v2_spritegroup;
 }
 
-switch (FEAT_TRAINS, PARENT, tem1_get_spriteset1,
-[ STORE_TEMP(count_veh_id(tem1), 0),                         
-  STORE_TEMP(current_speed, 1),                              
-  STORE_TEMP(date_of_last_service, 2) ])                     
-{
-  tem1_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, tem1_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  tem1_get_spriteset1;
-}
+long_vehicle(tem1, )
 
 // покупка
 switch (FEAT_TRAINS, SELF, tem1_get_purchase_spriteset,
-  (build_year >= 1960)
-)
+  build_year >= 1960)
 {
   0: tem1_purchase_spriteset;
-  tem1_v2_purchase_spriteset;
+     tem1_v2_purchase_spriteset;
 }
 
 // уменьшаем массу до 120 выпущенным после 1965 года
@@ -124,7 +107,7 @@ switch (FEAT_TRAINS, SELF, tem1_weight,
   build_year >= 1960)
 {
   1: return 120;
-  return 124;
+     return 124;
 }
 
 // меняем tec выпущенным после 1965 года из-за смены массы
@@ -132,7 +115,7 @@ switch (FEAT_TRAINS, SELF, tem1_tractive_effort_coefficient,
   build_year >= 1960)
 {
   0: return get_tec_int(120.0, 124);
-  return get_tec_int(120.0, 120);
+     return get_tec_int(120.0, 120);
 }
 
 engine_speed_change_build_after(tem1, 90, 100, 1965)       
