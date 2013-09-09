@@ -26,7 +26,6 @@ spritegroup d_m_spritegroup
   loaded: d_m_traveling_spriteset;
 }
 
-
 // развёрнутый моторный
 spriteset (d_rm_spriteset, IMAGEFILE)
 {
@@ -81,61 +80,44 @@ spriteset (d_c_cc_spriteset, IMAGEFILE)
 #undef IMAGEFILE
 
 // Если год постройки >= 1962, используем метельник
-switch (FEAT_TRAINS, SELF, d_c_get_spriteset1,
+switch (FEAT_TRAINS, SELF, d_c_get_spriteset_2,
   build_year >= 1962)
 {
   1: d_c_cc_spriteset;
-  d_c_spriteset;
+     d_c_spriteset;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, d_c_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  d_c_get_spriteset1;
-}
+long_vehicle(d_c, )
 
 // Определяем необходимость разворота моторного вагона по чётности его позиции
 // от начала состава
 // Если год постройки >= 1962, используем метельник
 switch (FEAT_TRAINS, SELF, d_m_get_spriteset2,
   ((LOAD_TEMP(0) - count_veh_id(d_m)) % 2) +
-  ((build_year >= 1962) * 2)
-)
+  ((build_year >= 1962) * 2) )
 {
   0: d_m_spritegroup;
   1: d_rm_spriteset;
-
   2: d_m_cc_spritegroup;
-  d_rm_cc_spriteset;
+     d_rm_cc_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, d_m_get_spriteset1,
+switch (FEAT_TRAINS, PARENT, d_m_get_spriteset_2,
   STORE_TEMP(count_veh_id(d_m), 0))
 {
   d_m_get_spriteset2;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, d_m_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  d_m_get_spriteset1;
-}
+long_vehicle(d_m, )
 
 switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon4,
 [
   set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   d_m: return CB_RESULT_ATTACH_ALLOW;
   d_c: return CB_RESULT_ATTACH_DISALLOW;
-  return CB_RESULT_ATTACH_DISALLOW;
+       return CB_RESULT_ATTACH_DISALLOW;
 }
 
 // Если в составе один локомотив, можно присоединить
@@ -143,7 +125,7 @@ switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon3,
   num_vehs_in_consist)
 {
   2: return CB_RESULT_ATTACH_ALLOW;
-  d_m_can_attach_wagon4;
+     d_m_can_attach_wagon4;
 }
 
 // Нельзя присоединить к чётному моторному, только к нечётному
@@ -151,7 +133,7 @@ switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon1,
   count_veh_id(d_m) % 2)
 {
   1: d_m_can_attach_wagon3;
-  return CB_RESULT_ATTACH_DISALLOW;
+     return CB_RESULT_ATTACH_DISALLOW;
 }
 
 // Что присоединяем?
@@ -160,7 +142,7 @@ switch (FEAT_TRAINS, SELF, d_m_can_attach_wagon,
 {
   d_m: return CB_RESULT_ATTACH_ALLOW;
   d_c: d_m_can_attach_wagon1;
-  return CB_RESULT_ATTACH_DISALLOW;
+       return CB_RESULT_ATTACH_DISALLOW;
 }
 
 // Кол-во моторных чётное?
@@ -168,14 +150,14 @@ switch (FEAT_TRAINS, PARENT, d_m_start_stop,
   count_veh_id(d_m) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
-  return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
 switch (FEAT_TRAINS, SELF, d_m_visual_effect_and_powered1,
   (LOAD_TEMP(0) - count_veh_id(d_m)) % 2)
 {
   0: return diesel_visual_effect_and_powered(-2);
-  return diesel_visual_effect_and_powered(7);
+     return diesel_visual_effect_and_powered(7);
 }
 
 switch (FEAT_TRAINS, PARENT, d_m_visual_effect_and_powered0,
@@ -190,7 +172,7 @@ switch (FEAT_TRAINS, PARENT, d_m_visual_effect_and_powered,
   )
 {
   1: d_m_visual_effect_and_powered0; 
-  return disable_visual_effect_and_powered();
+     return disable_visual_effect_and_powered();
 } 
 
 // Допускается эксплуатация с пассажирами только если голова - d_m 
@@ -199,38 +181,36 @@ switch (FEAT_TRAINS, PARENT, d_m_cargo_capacity,
 )
 {
   1: return 77;
-  return 0;
+     return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, d_c_cargo_capacity,
-  (vehicle_type_id == d_m)
-)
+  vehicle_type_id == d_m)
 {
   1: return 128;
-  return 0;
+     return 0;
 }
 
 switch (FEAT_TRAINS, SELF, d_m_purchase,
   build_year >= 1962)
 {
   1: d_m_cc_purchase_spriteset;
-  d_m_purchase_spriteset;
+     d_m_purchase_spriteset;
 }
 
 switch (FEAT_TRAINS, SELF, d_c_purchase,
   build_year >= 1962)
 {
   1: d_c_cc_purchase_spriteset;
-  d_c_purchase_spriteset;
+     d_c_purchase_spriteset;
 }
 
 // Даём тягу, только если локомотив - d_m 
 switch (FEAT_TRAINS, PARENT, d_m_power,
-  (vehicle_type_id == d_m)  
-  )
+  vehicle_type_id == d_m)
 {
   1: return get_power_in_cb(500); 
-  return 0;
+     return 0;
 } 
 
 

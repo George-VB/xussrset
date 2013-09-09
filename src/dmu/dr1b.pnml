@@ -35,7 +35,7 @@ spriteset (dr1b_rm_spriteset, IMAGEFILE)
 } 
 
 // прицепной
-spriteset (dr1b_c_spriteset, IMAGEFILE)
+spriteset (dr1b_c_get_spriteset_2, IMAGEFILE)
 {
   s15_template(82, 311, 0)
 } 
@@ -65,205 +65,173 @@ spriteset (dr1b_rn_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, dr1b_c_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  dr1b_c_spriteset;
-}
+long_vehicle(dr1b_c, )
 
 // Определяем необходимость разворота моторного вагона по чётности его позиции
 // от начала состава
 switch (FEAT_TRAINS, SELF, dr1b_m_get_spriteset2,
-  (LOAD_TEMP(0) - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2  
-)
+  (LOAD_TEMP(0) - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2 )
 {
   0: dr1b_m_spritegroup;
-  dr1b_rm_spriteset;
+     dr1b_rm_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1b_m_get_spriteset1,
-  STORE_TEMP(count_veh_id(dr1b_m) + count_veh_id(dr1b_n), 0))
+switch (FEAT_TRAINS, PARENT, dr1b_m_get_spriteset_2,
+  STORE_TEMP(count_veh_id(dr1b_m) + count_veh_id(dr1b_n), 0) )
 {
   dr1b_m_get_spriteset2;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, dr1b_m_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  dr1b_m_get_spriteset1;
-}
+long_vehicle(dr1b_m, )
 
 // Определяем необходимость разворота немоторного вагона по чётности его позиции
 // от начала состава
 switch (FEAT_TRAINS, SELF, dr1b_n_get_spriteset2,
-  (LOAD_TEMP(0) - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2  
-)
+  (LOAD_TEMP(0) - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2 )
 {
   0: dr1b_n_spritegroup;
-  dr1b_rn_spriteset;
+     dr1b_rn_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1b_n_get_spriteset1,
+switch (FEAT_TRAINS, PARENT, dr1b_n_get_spriteset_2,
   STORE_TEMP(count_veh_id(dr1b_m) + count_veh_id(dr1b_n), 0))
 {
   dr1b_n_get_spriteset2;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, dr1b_n_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  dr1b_n_get_spriteset1;
-}
+long_vehicle(dr1b_n, )
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon10,
 [
   set_offset_to(num_vehs_in_consist-8),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_ALLOW;
   dr1b_c: return CB_RESULT_ATTACH_DISALLOW;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon9,
   num_vehs_in_consist)
 {
   8: return CB_RESULT_ATTACH_ALLOW;
-  dr1b_m_can_attach_wagon10;
+     dr1b_m_can_attach_wagon10;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon8,
 [
   set_offset_to(num_vehs_in_consist-6),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_ALLOW;
   dr1b_c: dr1b_m_can_attach_wagon9;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon7,
   num_vehs_in_consist)
 {
   6: return CB_RESULT_ATTACH_ALLOW;
-  dr1b_m_can_attach_wagon8;
+     dr1b_m_can_attach_wagon8;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon6,
 [
   set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_ALLOW;
   dr1b_c: dr1b_m_can_attach_wagon7;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon5,
   num_vehs_in_consist)
 {
   4: return CB_RESULT_ATTACH_ALLOW;
-  dr1b_m_can_attach_wagon6;
+     dr1b_m_can_attach_wagon6;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon4,
 [
   set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_ALLOW;
   dr1b_c: dr1b_m_can_attach_wagon5;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon3,
   num_vehs_in_consist)
 {
   2: return CB_RESULT_ATTACH_ALLOW;
-  dr1b_m_can_attach_wagon4;
+     dr1b_m_can_attach_wagon4;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon1,
   (count_veh_id(dr1b_m) + count_veh_id(dr1b_n)) % 2)
 {
   1: dr1b_m_can_attach_wagon3;
-  return CB_RESULT_ATTACH_DISALLOW;
+     return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon16,
 [
   set_offset_to(num_vehs_in_consist-10),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_DISALLOW;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon15,
 [
   set_offset_to(num_vehs_in_consist-8),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_DISALLOW;
   dr1b_c: dr1b_m_can_attach_wagon16;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon14,
 [
   set_offset_to(num_vehs_in_consist-6),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_DISALLOW;
   dr1b_c: dr1b_m_can_attach_wagon15;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon13,
 [
   set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_DISALLOW;
   dr1b_c: dr1b_m_can_attach_wagon14;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon12,
 [
   set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: return CB_RESULT_ATTACH_DISALLOW;
   dr1b_c: dr1b_m_can_attach_wagon13;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 // количество голов чётное?
@@ -271,7 +239,7 @@ switch (FEAT_TRAINS, PARENT, dr1b_m_can_attach_wagon11,
   (count_veh_id(dr1b_m) + count_veh_id(dr1b_n)) % 2)
 {
   0: return CB_RESULT_ATTACH_ALLOW; // да
-  dr1b_m_can_attach_wagon12; // нет, проверяем последнюю на соответствие dr1b_m
+     dr1b_m_can_attach_wagon12; // нет, проверяем последнюю на соответствие dr1b_m
 }
 
 switch (FEAT_TRAINS, SELF, dr1b_m_can_attach_wagon,
@@ -280,21 +248,21 @@ switch (FEAT_TRAINS, SELF, dr1b_m_can_attach_wagon,
   dr1b_m: return CB_RESULT_ATTACH_ALLOW;
   dr1b_n: dr1b_m_can_attach_wagon11;
   dr1b_c: dr1b_m_can_attach_wagon1;
-  return CB_RESULT_ATTACH_DISALLOW;
+          return CB_RESULT_ATTACH_DISALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_start_stop,
   (count_veh_id(dr1b_m) + count_veh_id(dr1b_n)) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
-  return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
 switch (FEAT_TRAINS, SELF, dr1b_m_visual_effect_and_powered1,
   (LOAD_TEMP(0) - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2)
 {
   0: return diesel_visual_effect_and_powered(-2);
-  return diesel_visual_effect_and_powered(7);
+     return diesel_visual_effect_and_powered(7);
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_m_visual_effect_and_powered0,
@@ -305,45 +273,40 @@ switch (FEAT_TRAINS, PARENT, dr1b_m_visual_effect_and_powered0,
 
 // Визуализируем эффекты тяги только если локомотив - dr1b_m или dr1b_n
 switch (FEAT_TRAINS, PARENT, dr1b_m_visual_effect_and_powered,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) 
-  )
+  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
 {
   1: dr1b_m_visual_effect_and_powered0; 
-  return disable_visual_effect_and_powered();
+     return disable_visual_effect_and_powered();
 } 
 
 // Даём тягу, только если локомотив - dr1b_m или dr1b_n
 switch (FEAT_TRAINS, PARENT, dr1b_m_power,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) 
-  )
+  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
 {
   1: return get_power_in_cb(810); 
-  return 0;
+     return 0;
 } 
 
 // Допускается эксплуатация с пассажирами только если голова - dr1b_m или dr1b_n
 switch (FEAT_TRAINS, PARENT, dr1b_m_cargo_capacity,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n)
-)
+  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
 {
   1: return 68;
-  return 0;
+     return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_n_cargo_capacity,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n)
-)
+  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
 {
   1: return 96;
-  return 0;
+     return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_c_cargo_capacity,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n)
-)
+  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
 {
   1: return 124;
-  return 0;
+     return 0;
 }
 
 item (FEAT_TRAINS, dr1b_m) 

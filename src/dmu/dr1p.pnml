@@ -33,51 +33,30 @@ spriteset (dr1p_rm_spriteset, IMAGEFILE)
 } 
 
 // прицепной
-spriteset (dr1p_c_spriteset, IMAGEFILE)
+spriteset (dr1p_c_get_spriteset_2, IMAGEFILE)
 {
   s15_template(38, 165, 0)
 } 
 
 #undef IMAGEFILE
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, dr1p_c_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  dr1p_c_spriteset;
-}
+long_vehicle(dr1p_c, )
 
 // Определяем необходимость разворота моторного вагона по чётности его позиции
 // от начала состава
-switch (FEAT_TRAINS, SELF, dr1p_m_get_spriteset2,
+switch (FEAT_TRAINS, SELF, dr1p_m_get_spriteset_2,
   (LOAD_TEMP(0) - count_veh_id(dr1p_m)) % 2 )
 {
   0: dr1p_m_spritegroup;
-  dr1p_rm_spriteset;
+     dr1p_rm_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1p_m_get_spriteset1,
-  STORE_TEMP(count_veh_id(dr1p_m), 0))
-{
-  dr1p_m_get_spriteset2;
-}
-
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, dr1p_m_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-     dr1p_m_get_spriteset1;
-}
+long_vehicle(dr1p_m, )
 
 switch (FEAT_TRAINS, PARENT, dr1p_m_can_attach_wagon10,
 [
   set_offset_to(num_vehs_in_consist-8),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1p_m: return CB_RESULT_ATTACH_ALLOW;
   dr1p_c: return CB_RESULT_ATTACH_DISALLOW;
@@ -94,8 +73,7 @@ switch (FEAT_TRAINS, PARENT, dr1p_m_can_attach_wagon9,
 switch (FEAT_TRAINS, PARENT, dr1p_m_can_attach_wagon8,
 [
   set_offset_to(num_vehs_in_consist-6),
-  prev_vehicle_type_id()
-])
+  prev_vehicle_type_id() ])
 {
   dr1p_m: return CB_RESULT_ATTACH_ALLOW;
   dr1p_c: dr1p_m_can_attach_wagon9;
