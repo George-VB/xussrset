@@ -359,7 +359,7 @@ spriteset (ed9t_cr_v4_wrong_place_spriteset, IMAGEFILE)
 // Рисуем вариант в депо
 // R0 - длина  состава, R1 - позиция вагона в составе
 // R2 - кол-во элементов Г в составе --> позиция среди элементов Г в составе
-switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset5,
+switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset_depot2,
 [
   STORE_TEMP(LOAD_TEMP(0) - count_veh_id(ed9t_h) - count_veh_id(ed9t_m)
     - count_veh_id(ed9t_c), 1),
@@ -397,18 +397,18 @@ switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset5,
 }
 
 
-switch (FEAT_TRAINS, PARENT, ed9t_h_get_spriteset4,
+switch (FEAT_TRAINS, PARENT, ed9t_h_get_spriteset_depot,
 [
   STORE_TEMP(count_veh_id(ed9t_h) + count_veh_id(ed9t_m)
     + count_veh_id(ed9t_c), 0), // длина поезда в элементах ЭР2
   STORE_TEMP(count_veh_id(ed9t_h), 2) // для определения реверса
 ])
 {
-  ed9t_h_get_spriteset5;
+  ed9t_h_get_spriteset_depot2;
 }
 
 // Рисуем вариант не в депо, разворачиваем каждый второй
-switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset3,
+switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset_2,
 [
   ((LOAD_TEMP(0) - count_veh_id(ed9t_h)) % 2) +
   (cargo_subtype * 2)
@@ -422,35 +422,23 @@ switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset3,
   5: ed9t_hr_v3_spriteset;
   6: ed9t_h_v4_spriteset;
   7: ed9t_hr_v4_spriteset;
-  align_13_spriteset;
+     align_13_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, ed9t_h_get_spriteset2,
-  STORE_TEMP(count_veh_id(ed9t_h), 0)) // для определения реверса
-{
-  ed9t_h_get_spriteset3;
-}
-
-// рисуем на карте?
-switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset1,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  ed9t_h_get_spriteset2;
-}
+long_vehicle(ed9t_h, )
 
 // рисуем в депо?
-switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset,
+switch (FEAT_TRAINS, SELF, ed9t_h_get_spriteset_0,
   is_drawn_in_depot())
 {
-  1: ed9t_h_get_spriteset4;
-  ed9t_h_get_spriteset1;
+  1: ed9t_h_get_spriteset_depot;
+     ed9t_h_get_spriteset;
 }
 
 // Рисуем вариант в депо
 // R0 - длина  поезда, R1 - позиция вагона
 // R2 - кол-во элементов М в составе
-switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset5,
+switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset_depot2,
 [
   STORE_TEMP(LOAD_TEMP(0) - count_veh_id(ed9t_h) - count_veh_id(ed9t_m)
     - count_veh_id(ed9t_c), 1),
@@ -500,7 +488,7 @@ switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset5,
 }
 
 
-switch (FEAT_TRAINS, PARENT, ed9t_m_get_spriteset4,
+switch (FEAT_TRAINS, PARENT, ed9t_m_get_spriteset_depot,
 [
   STORE_TEMP(count_veh_id(ed9t_h) + count_veh_id(ed9t_m)
     + count_veh_id(ed9t_c), 0), // длина поезда в элементах ЭР2
@@ -508,7 +496,7 @@ switch (FEAT_TRAINS, PARENT, ed9t_m_get_spriteset4,
   STORE_TEMP(vehicle_type_id != ed9t_h, 4) // локомотив не ed9t_h
 ])
 {
-  ed9t_m_get_spriteset5;
+  ed9t_m_get_spriteset_depot2;
 }
 
 // Рисуем вариант не в депо
@@ -517,8 +505,8 @@ switch (FEAT_TRAINS, PARENT, ed9t_m_get_spriteset4,
 switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset3,
 [
   ((!(vehicle_is_not_powered || vehicle_is_in_depot)) && LOAD_TEMP(3)) +
-  (((LOAD_TEMP(2) - count_veh_id(ed9t_m)) >=
-    ((LOAD_TEMP(2) / 2) + (LOAD_TEMP(2) % 2))) * 2) +
+  (((LOAD_TEMP(0) - count_veh_id(ed9t_m)) >=
+    ((LOAD_TEMP(0) / 2) + (LOAD_TEMP(0) % 2))) * 2) +
   (cargo_subtype * 4) 
 ])
 {
@@ -542,30 +530,22 @@ switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset3,
   align_13_spriteset;
 }
 
-
-switch (FEAT_TRAINS, PARENT, ed9t_m_get_spriteset2,
+switch (FEAT_TRAINS, PARENT, ed9t_m_get_spriteset_2,
 [
-  STORE_TEMP(count_veh_id(ed9t_m), 2), // для определения реверса
   STORE_TEMP(vehicle_type_id == ed9t_h, 3) // для определения наличия тяги
 ])
 {
   ed9t_m_get_spriteset3;
 }
 
-// рисуем на карте?
-switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset1,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  ed9t_m_get_spriteset2;
-}
+long_vehicle(ed9t_m, )
 
 // рисуем в депо?
-switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset,
+switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset_0,
   is_drawn_in_depot())
 {
-  1: ed9t_m_get_spriteset4;
-  ed9t_m_get_spriteset1;
+  1: ed9t_m_get_spriteset_depot;
+     ed9t_m_get_spriteset;
 }
 
 // Рисуем вариант в депо
@@ -573,7 +553,7 @@ switch (FEAT_TRAINS, SELF, ed9t_m_get_spriteset,
 // R2 - кол-во элементов С в составе
 // R4 - кол-во элементов M в составе
 // Реверс для П считаем по М (R4 и R5)
-switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset5,
+switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset_depot2,
 [
   STORE_TEMP(LOAD_TEMP(0) - count_veh_id(ed9t_h) - count_veh_id(ed9t_m)
     - count_veh_id(ed9t_c), 1),
@@ -612,7 +592,7 @@ switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset5,
 }
 
 
-switch (FEAT_TRAINS, PARENT, ed9t_c_get_spriteset4,
+switch (FEAT_TRAINS, PARENT, ed9t_c_get_spriteset_depot,
 [
   STORE_TEMP(count_veh_id(ed9t_h) + count_veh_id(ed9t_m)
     + count_veh_id(ed9t_c), 0), // длина поезда в элементах ЭР2
@@ -620,7 +600,7 @@ switch (FEAT_TRAINS, PARENT, ed9t_c_get_spriteset4,
   STORE_TEMP(count_veh_id(ed9t_m), 4) // для определения реверса по М
 ])
 {
-  ed9t_c_get_spriteset5;
+  ed9t_c_get_spriteset_depot2;
 }
 
 // Рисуем вариант не в депо
@@ -628,8 +608,8 @@ switch (FEAT_TRAINS, PARENT, ed9t_c_get_spriteset4,
 // Реверс для П считаем по М
 switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset3,
 [
-  ((LOAD_TEMP(0) - count_veh_id(ed9t_m)) >
-    ((LOAD_TEMP(0) / 2) + (LOAD_TEMP(0) % 2))) +
+  ((LOAD_TEMP(3) - count_veh_id(ed9t_m)) >
+    ((LOAD_TEMP(3) / 2) + (LOAD_TEMP(3) % 2))) +
   (cargo_subtype * 2)
 ])
 {
@@ -641,30 +621,23 @@ switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset3,
   5: ed9t_cr_v3_spriteset;
   6: ed9t_c_v4_spriteset;
   7: ed9t_cr_v4_spriteset;
-  align_13_spriteset;
+     align_13_spriteset;
 }
 
-
-switch (FEAT_TRAINS, PARENT, ed9t_c_get_spriteset2,
-  STORE_TEMP(count_veh_id(ed9t_m), 0)) // для определения реверса
+switch (FEAT_TRAINS, PARENT, ed9t_c_get_spriteset_2,
+  STORE_TEMP(count_veh_id(ed9t_m), 3)) // для определения реверса
 {
   ed9t_c_get_spriteset3;
 }
 
-// рисуем на карте?
-switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset1,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  ed9t_c_get_spriteset2;
-}
+long_vehicle(ed9t_c, )
 
 // рисуем в депо?
-switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset,
+switch (FEAT_TRAINS, SELF, ed9t_c_get_spriteset_0,
   is_drawn_in_depot())
 {
-  1: ed9t_c_get_spriteset4;
-  ed9t_c_get_spriteset1;
+  1: ed9t_c_get_spriteset_depot;
+     ed9t_c_get_spriteset;
 }
 
 // Более 2-х головных вагонов нельзя
@@ -1003,7 +976,7 @@ item (FEAT_TRAINS, ed9t_h)
     visual_effect_and_powered: disable_visual_effect_and_powered();
   }
   graphics {
-    default: ed9t_h_get_spriteset;
+    default: ed9t_h_get_spriteset_0;
     purchase: ed9t_h_purchase_spriteset;
     articulated_part: articulated_part_dummy5;
     can_attach_wagon: ed9t_h_can_attach_wagon;
@@ -1047,7 +1020,7 @@ item (FEAT_TRAINS, ed9t_m)
     length: 8;
   }
   graphics {
-    default: ed9t_m_get_spriteset;
+    default: ed9t_m_get_spriteset_0;
     purchase: ed9t_m_purchase_spriteset;
     articulated_part: articulated_part_dummy5;
     can_attach_wagon: ed9t_m_can_attach_wagon;
@@ -1092,7 +1065,7 @@ item (FEAT_TRAINS, ed9t_c)
     visual_effect_and_powered: disable_visual_effect_and_powered();
   }
   graphics {
-    default: ed9t_c_get_spriteset;
+    default: ed9t_c_get_spriteset_0;
     purchase: ed9t_c_purchase_spriteset;
     articulated_part: articulated_part_dummy5;
     additional_text: return string(STR_ED9T_C_PURCHASE_HINT);

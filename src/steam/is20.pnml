@@ -117,7 +117,7 @@ spriteset (is20_t6p_v3_spriteset, IMAGEFILE)
 
 switch (FEAT_TRAINS, SELF, is20_get_spriteset2,
   (cargo_subtype * 4) +
-  LOAD_TEMP(0))
+  LOAD_TEMP(3))
 {
   0: is20_1_spriteset;
   1: is20_2_spriteset;
@@ -129,25 +129,18 @@ switch (FEAT_TRAINS, SELF, is20_get_spriteset2,
   7: is20_4_v2_spriteset;
   8: is20_1_v3_spriteset;
   9: is20_2_v3_spriteset;
-  10: is20_3_v3_spriteset;
-  11: is20_4_v3_spriteset;
-  align_10_spriteset;
+ 10: is20_3_v3_spriteset;
+ 11: is20_4_v3_spriteset;
+     align_10_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, is20_get_spriteset1,
-[ STORE_TEMP(motion_counter & 3, 0)])
+switch (FEAT_TRAINS, PARENT, is20_get_spriteset_2,
+[ STORE_TEMP(motion_counter & 3, 3)])
 {
   is20_get_spriteset2;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, is20_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  is20_get_spriteset1;
-}
+long_vehicle(is20, )
 
 engine_speed_change_after(is20, 110, 115, 1936)
 
@@ -159,36 +152,35 @@ switch (FEAT_TRAINS, SELF, is20_articulated_part,
   1: return dummy2;
   2: return unitb;
   3: return dummy1;
-  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 switch (FEAT_TRAINS, SELF, is20_get_tender_spriteset,
 [
   set_offset_to(-2),
   prev_vehicle_cargo_subtype() + 
-  ((build_year >= 1936) * 3)
-])
+  ((build_year >= 1936) * 3) ])
 {
   0: is20_t4o_spriteset;
   1: is20_t4o_v2_spriteset;
   2: is20_t4o_v3_spriteset;
   3: is20_t6p_spriteset;
   4: is20_t6p_v2_spriteset;
-  is20_t6p_v3_spriteset;
+     is20_t6p_v3_spriteset;
 }
 
 switch (FEAT_TRAINS, SELF, is20_get_tender_length,
   build_year >= 1936)
 {
   1: return 6;
-  return 5;
+     return 5;
 }
 
 switch (FEAT_TRAINS, SELF, is20_weight,
   build_year >= 1936)
 {
   1: return (133+123);
-  return (133+85);
+     return (133+85);
 }
 
 // ТУ=ту/вес/9.8
@@ -196,7 +188,7 @@ switch (FEAT_TRAINS, SELF, is20_tractive_effort_coefficient,
   build_year >= 1936)
 {
   0: return get_tec_int(151.0, 133+85);
-  return get_tec_int(151.0, 137+127);
+     return get_tec_int(151.0, 137+127);
 }
 
 switch (FEAT_TRAINS, SELF, is20_cargo_subtype_text,
@@ -205,7 +197,7 @@ switch (FEAT_TRAINS, SELF, is20_cargo_subtype_text,
   0: string(STR_REFIT_TTD_53);
   1: string(STR_REFIT_TTD_5A);
   2: string(STR_REFIT_RED_ARROW);
-  return CB_RESULT_NO_TEXT;
+     return CB_RESULT_NO_TEXT;
 }
 
 item (FEAT_TRAINS, is20) 
