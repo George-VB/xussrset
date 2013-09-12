@@ -9,7 +9,7 @@
 purchase_spriteset(rs5, 0, 0)
 
 // грузовой вагон
-spriteset (rs5_cargo_spriteset, IMAGEFILE)
+spriteset (rs5_get_spriteset_2, IMAGEFILE)
 {
   s13_template(112, 64, 0)
 }
@@ -24,21 +24,14 @@ spriteset (rs5_diesel_spriteset, IMAGEFILE)
 
 #undef IMAGEFILE
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, rs5_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  rs5_cargo_spriteset;
-}
+long_vehicle(rs5, )
 
 // секция из 5-ти вагонов
 switch (FEAT_TRAINS, SELF, rs5_articulated_part,
   extra_callback_info1)
 {
   1..9: return rs5int;
-  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+        return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 switch (FEAT_TRAINS, SELF, rs5int_length,
@@ -53,27 +46,20 @@ switch (FEAT_TRAINS, SELF, rs5int_length,
   6: return 5;
 //  7: return 8;
   8: return 5;
-  return 8;
+     return 8;
 }
 
-switch (FEAT_TRAINS, SELF, rs5int_get_spriteset1,
+switch (FEAT_TRAINS, SELF, rs5int_get_spriteset_2,
   position_in_vehid_chain)
 {
-  1: rs5_cargo_spriteset;
+  1: rs5_get_spriteset_2;
   3: rs5_diesel_spriteset;
-  5: rs5_cargo_spriteset;
-  7: rs5_cargo_spriteset;
-  dummy_spriteset;
+  5: rs5_get_spriteset_2;
+  7: rs5_get_spriteset_2;
+     dummy_spriteset;
 }
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, rs5int_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  rs5int_get_spriteset1;
-}
+long_vehicle(rs5int, )
 
 // Для задания нужных размеров частей и их рисования
 item (FEAT_TRAINS, rs5int)
