@@ -20,14 +20,14 @@ spriteset (epg_traveling_spriteset, IMAGEFILE)
   s11_template(200, 319, 0)
 } 
 
-spritegroup epg_spritegroup
+spritegroup epg_get_spriteset_2
 {
   loading: epg_loading_spriteset;
   loaded: epg_traveling_spriteset;
 }
 
 // обычный развёрнутый: погрузка/перемещение
-spriteset (epg_r_spriteset, IMAGEFILE)
+spriteset (epg_d_get_spriteset_2, IMAGEFILE)
 {
   s11_template(640, 252, 0)
 } 
@@ -57,28 +57,16 @@ spritegroup epg_c_spritegroup
 
 #undef IMAGEFILE
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, epg_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epg_spritegroup;
-}
+long_vehicle_simple(epg)
 
-switch (FEAT_TRAINS, SELF, epg_b_get_spriteset1,
+switch (FEAT_TRAINS, SELF, epg_b_get_spriteset_2,
   !(vehicle_is_not_powered || vehicle_is_in_depot))
 {
   0..1: epg_b_spriteset; // нет визуальной разницы
-  align_10_spriteset;
+        align_10_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, epg_b_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epg_b_get_spriteset1;
-}
+long_vehicle_simple(epg_b)
 
 switch (FEAT_TRAINS, SELF, epg_c_get_spriteset2,
   !(vehicle_is_not_powered || vehicle_is_in_depot
@@ -86,35 +74,25 @@ switch (FEAT_TRAINS, SELF, epg_c_get_spriteset2,
 {
   0: epg_c_loading_spriteset; // нет тяги
   1: epg_c_spritegroup;
-  align_10_spriteset;
+     align_10_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, epg_c_get_spriteset1,
+switch (FEAT_TRAINS, PARENT, epg_c_get_spriteset_2,
   STORE_TEMP(vehicle_type_id, 0))
 {
   epg_c_get_spriteset2;
 }
 
-switch (FEAT_TRAINS, SELF, epg_c_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epg_c_get_spriteset1;
-}
+long_vehicle_simple(epg_c)
 
-switch (FEAT_TRAINS, SELF, epg_d_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epg_r_spriteset;
-}
+long_vehicle_simple(epg_d)
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
   ((vehicle_type_id == epg) && (LOAD_TEMP(0) < 3)))
 {
   1: return CB_RESULT_ATTACH_ALLOW;
-  return CB_RESULT_ATTACH_DISALLOW;
+     return CB_RESULT_ATTACH_DISALLOW;
 }
 
 // считаем уже имеющиеся вагоны
@@ -135,7 +113,7 @@ switch (FEAT_TRAINS, SELF, epg_articulated_part,
   5: return dummy2;
   6: return unitd;
   7: return dummy3;
-  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 // даём тягу, если локомотив epg
@@ -143,7 +121,7 @@ switch (FEAT_TRAINS, PARENT, epg_power,
   vehicle_type_id == epg)
 {
   1: return get_power_in_cb(2719); // -37 Поправка, чтобы показывалось 2719
-  return 0;
+     return 0;
 }
 
 // показываем визуальные эффекты, если локомотив epg
@@ -151,16 +129,15 @@ switch (FEAT_TRAINS, PARENT, epg_c_visual_effect_and_powered,
   vehicle_type_id == epg)
 {
   1: return electric_visual_effect_and_powered(0);
-  return disable_visual_effect_and_powered();
+     return disable_visual_effect_and_powered();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - epg
 switch (FEAT_TRAINS, PARENT, epg_cargo_capacity,
-  (vehicle_type_id == epg)
-)
+  (vehicle_type_id == epg) )
 {
   1: return 260;
-  return 0;
+     return 0;
 }
 
 item (FEAT_TRAINS, epg) 

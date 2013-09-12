@@ -20,14 +20,14 @@ spriteset (epr_traveling_spriteset, IMAGEFILE)
   s11_template(200, 319, 0)
 } 
 
-spritegroup epr_spritegroup
+spritegroup epr_get_spriteset_2
 {
   loading: epr_loading_spriteset;
   loaded: epr_traveling_spriteset;
 }
 
 // обычный развёрнутый: погрузка/перемещение
-spriteset (epr_r_spriteset, IMAGEFILE)
+spriteset (epr_d_get_spriteset_2, IMAGEFILE)
 {
   s11_template(640, 252, 0)
 } 
@@ -57,28 +57,16 @@ spritegroup epr_c_spritegroup
 
 #undef IMAGEFILE
 
-// Если рисуем на карте и следующий в цепочке вагон скрыт, то
-// отдаём пустышку
-switch (FEAT_TRAINS, SELF, epr_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epr_spritegroup;
-}
+long_vehicle_simple(epr)
 
-switch (FEAT_TRAINS, SELF, epr_b_get_spriteset1,
+switch (FEAT_TRAINS, SELF, epr_b_get_spriteset_2,
   !(vehicle_is_not_powered || vehicle_is_in_depot))
 {
   0..1: epr_b_spriteset; // нет визуальной разницы
-  align_10_spriteset;
+        align_10_spriteset;
 }
 
-switch (FEAT_TRAINS, SELF, epr_b_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epr_b_get_spriteset1;
-}
+long_vehicle_simple(epr_b)
 
 switch (FEAT_TRAINS, SELF, epr_c_get_spriteset2,
   !(vehicle_is_not_powered || vehicle_is_in_depot
@@ -86,28 +74,18 @@ switch (FEAT_TRAINS, SELF, epr_c_get_spriteset2,
 {
   0: epr_c_loading_spriteset; // нет тяги
   1: epr_c_spritegroup;
-  align_10_spriteset;
+     align_10_spriteset;
 }
 
-switch (FEAT_TRAINS, PARENT, epr_c_get_spriteset1,
+switch (FEAT_TRAINS, PARENT, epr_c_get_spriteset_2,
   STORE_TEMP(vehicle_type_id, 0))
 {
   epr_c_get_spriteset2;
 }
 
-switch (FEAT_TRAINS, SELF, epr_c_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epr_c_get_spriteset1;
-}
+long_vehicle_simple(epr_c)
 
-switch (FEAT_TRAINS, SELF, epr_d_get_spriteset,
-  is_drawn_in_viewport() && is_hidden_at(1))
-{
-  1: dummy_spriteset;
-  epr_r_spriteset;
-}
+long_vehicle_simple(epr_d)
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epr_can_attach_wagon2,
