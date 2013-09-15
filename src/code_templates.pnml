@@ -521,11 +521,15 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_a
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то отдаём пустышку
 
 #define long_vehicle(name, spflag)                          \
+switch (FEAT_TRAINS, SELF, name##_get_spriteset_selfpos,    \
+[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ? var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ]) \
+{  name##_get_spriteset_2##spflag;  }                       \
 switch (FEAT_TRAINS, PARENT, name##_get_spriteset_parent,   \
 [ STORE_TEMP(count_veh_id(name), 0),                        \
   STORE_TEMP(current_speed, 1),                             \
-  STORE_TEMP(date_of_last_service, 2) ])                    \
-{  name##_get_spriteset_2##spflag;  }                       \
+  STORE_TEMP(date_of_last_service, 2),                      \
+])                                                          \
+{  name##_get_spriteset_selfpos; }                          \
 switch (FEAT_TRAINS, SELF, name##_get_spriteset,            \
   is_not_build_yet() ||                                     \
   (is_drawn_in_viewport() && is_hidden_at(1)) )             \
@@ -533,13 +537,17 @@ switch (FEAT_TRAINS, SELF, name##_get_spriteset,            \
      name##_get_spriteset_parent; }                         \
 
 #define short_vehicle(name, spflag)                         \
+switch (FEAT_TRAINS, SELF, name##_get_spriteset_selfpos,    \
+[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ? var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ]) \
+{  name##_get_spriteset_2##spflag;  }                       \
 switch (FEAT_TRAINS, PARENT, name##_get_spriteset_parent,   \
 [ STORE_TEMP(count_veh_id(name), 0),                        \
   STORE_TEMP(current_speed, 1),                             \
-  STORE_TEMP(date_of_last_service, 2) ])                    \
-{  name##_get_spriteset_2##spflag;  }                       \
+  STORE_TEMP(date_of_last_service, 2),                      \
+])                                                          \
+{  name##_get_spriteset_selfpos;    }                       \
 switch (FEAT_TRAINS, SELF, name##_get_spriteset,            \
-  is_not_build_yet() )                                      \
+  is_not_build_yet())                                       \
 { 1: dummy_spriteset;                                       \
      name##_get_spriteset_parent; }                         \
 
