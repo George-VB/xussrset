@@ -1,0 +1,131 @@
+ // flatbed_13_198_02
+
+/// Платформа
+// Платформа 13-401
+// flatbed
+
+#define IMAGEFILE  "src/freight/flatbed-13-198-02.png"
+
+// покупка
+purchase_spriteset(flatbed_13_198_02, 0, 0)
+
+// пусто
+spriteset (flatbed_13_198_02_empty_spriteset, IMAGEFILE)
+{
+  s8_template(0, 22, 0)
+}
+
+// шаблон груза, 1 вид загруженности
+#define flatbed_13_198_02_sprite_layout1_template(x, y, cargo)    \
+spriteset (flatbed_13_198_02_##cargo##_full_spriteset, IMAGEFILE) \
+{ s8_template(x, y, 0) }                                          \
+spritegroup flatbed_13_198_02_##cargo##_sprites                   \
+{ loading: [flatbed_13_198_02_empty_spriteset,                    \
+    flatbed_13_198_02_##cargo##_full_spriteset,                   \
+    flatbed_13_198_02_##cargo##_full_spriteset,                   \
+    flatbed_13_198_02_##cargo##_full_spriteset];                  \
+  loaded: [flatbed_13_198_02_empty_spriteset,                     \
+    flatbed_13_198_02_##cargo##_full_spriteset,                   \
+    flatbed_13_198_02_##cargo##_full_spriteset,                   \
+    flatbed_13_198_02_##cargo##_full_spriteset]; }                \
+
+flatbed_13_198_02_sprite_layout1_template(0, 54,  wood)    // лес
+flatbed_13_198_02_sprite_layout1_template(0, 86,  good1)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 118, good2)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 150, good3)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 182, good4)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 214, good5)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 246, good6)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 278, good7)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 310, good8)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 342, good9)   // товары
+flatbed_13_198_02_sprite_layout1_template(0, 374, good10)  // товары
+flatbed_13_198_02_sprite_layout1_template(0, 406, good11)  // товары
+flatbed_13_198_02_sprite_layout1_template(0, 438, good12)  // товары
+flatbed_13_198_02_sprite_layout1_template(0, 470, good13)  // товары
+
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_198_02_sprites_good,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  1: flatbed_13_198_02_good1_sprites;
+  1: flatbed_13_198_02_good2_sprites;
+  1: flatbed_13_198_02_good3_sprites;
+  1: flatbed_13_198_02_good4_sprites;
+  1: flatbed_13_198_02_good5_sprites;
+  1: flatbed_13_198_02_good6_sprites;
+  1: flatbed_13_198_02_good7_sprites;
+  1: flatbed_13_198_02_good8_sprites;
+  1: flatbed_13_198_02_good9_sprites;
+  1: flatbed_13_198_02_good10_sprites;
+  1: flatbed_13_198_02_good11_sprites;
+  1: flatbed_13_198_02_good12_sprites;
+  1: flatbed_13_198_02_good13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_198_02_sprites_2,
+  cargo_type_in_veh)
+{
+  GOOD: flatbed_13_198_02_sprites_good;
+  PAPR: flatbed_13_198_02_sprites_good;
+  ENSP: flatbed_13_198_02_sprites_good;
+  MNSP: flatbed_13_198_02_sprites_good;
+  GLAS: flatbed_13_198_02_sprites_good;
+  BDMT: flatbed_13_198_02_sprites_good;
+  WOOL: flatbed_13_198_02_sprites_good;
+  WOOD: flatbed_13_198_02_wood_sprites;
+        align_9_spriteset;
+}
+
+short_vehicle(flatbed_13_198_02, )
+
+item (FEAT_TRAINS, flatbed_13_198_02) 
+{
+  property
+  {
+    name: string(STR_FLATBED_13_198_02_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(2014), 1, 1);
+    model_life: get_model_life(2014,2050);
+    retire_early: get_retire_early(2014,2050);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, PAPR, ENSP, MNSP, GLAS, BDMT, WOOL, WOOD]; // WDPR VEHI
+    default_cargo_type: WOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 65;
+    weight: 21 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: flatbed_13_198_02_sprites;
+    purchase: flatbed_13_198_02_purchase_spriteset;
+    additional_text: return string(STR_FLATBED_13_198_02_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: ttd_cc_cargo_subtype_text;
+    colour_mapping: ttd_cc_colour_mapping;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, flatbed_13_198_02)
+  {
+    property
+    { name: string(STR_FLATBED_13_198_02_NAME_LONG); }
+  }
+}
+
