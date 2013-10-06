@@ -298,7 +298,21 @@ switch (FEAT_TRAINS, SELF, tem2_tractive_effort_coefficient,
 
 engine_speed(tem2, 100)
 
-engine_penalise_speed0(tem2)
+engine_penalise_speed(tem2, 2)
+
+switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_pre1971,  
+  (position_in_consist == 0) || vehicle_is_not_powered)
+{ 
+  1: return 0;                                         
+     return FLAG_PENALISE_SPEED; 
+}                     
+
+switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_year,
+  build_year >= 1971)
+{
+  0: tem2_bitmask_vehicle_info_pre1971;
+     tem2_bitmask_vehicle_info;
+}
 
 item (FEAT_TRAINS, tem2)
 {
@@ -338,7 +352,7 @@ item (FEAT_TRAINS, tem2)
     purchase_speed: tem2_purchase_speed;
     additional_text: return string(STR_TEM2_PURCHASE_HINT);
     tractive_effort_coefficient: tem2_tractive_effort_coefficient;
-    bitmask_vehicle_info: tem2_bitmask_vehicle_info;
+    bitmask_vehicle_info: tem2_bitmask_vehicle_info_year;
     cargo_subtype_text: tem2_cargo_subtype_text;
     cargo_capacity: return 0;
     cost_factor: return 30;

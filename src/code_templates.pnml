@@ -471,7 +471,7 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 [ STORE_TEMP(get_max_speed(life, speed_r, speed), 0),                                                \
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
 { return; }                                                                                          \
-                                                                                                     
+
 // Определение скорости со снижением для старых и изменением скорости по году постройки
 
 #define engine_speed_with_reduce_change_build_after(name, speed, speed_r, life, new_speed, year)      \
@@ -494,7 +494,7 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                           \
 { return; }                                                                                           \
 
-// не выпускать новые тройники без средней секции                                                                                        
+// не выпускать новые тройники без средней секции
 
 #define  new_3x_train_start_stop(name)                                                                \
 switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                                      \
@@ -506,7 +506,7 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_a
 {  1: any_start_stop;                                                                                 \
       name##_start_stop2; }                                                                           \
 
-// не выпускать новые двойки с средней секцией                                                                                        
+// не выпускать новые двойки с средней секцией
 
 #define  new_2x_train_start_stop(name, namem)                                                         \
 switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                                      \
@@ -520,42 +520,46 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_a
 
 // Если рисуем на карте и следующий в цепочке вагон скрыт, то отдаём пустышку
 
+// пляски с 0x9C и 0x9A для паровозов, чтобы клёса крутились в зависимости от положения, а не от времени.
+
 #define long_vehicle(name, spflag)                          \
-switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,    \
-[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ? var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ]) \
-{  name##_sprites_2##spflag;  }                       \
-switch (FEAT_TRAINS, PARENT, name##_sprites_parent,   \
+switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,          \
+[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ?              \
+  var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ])    \
+{  name##_sprites_2##spflag;  }                             \
+switch (FEAT_TRAINS, PARENT, name##_sprites_parent,         \
 [ STORE_TEMP(count_veh_id(name), 0),                        \
   STORE_TEMP(current_speed, 1),                             \
   STORE_TEMP(date_of_last_service, 2),                      \
 ])                                                          \
-{  name##_sprites_selfpos; }                          \
-switch (FEAT_TRAINS, SELF, name##_sprites,            \
+{  name##_sprites_selfpos; }                                \
+switch (FEAT_TRAINS, SELF, name##_sprites,                  \
   is_not_build_yet() ||                                     \
   (is_drawn_in_viewport() && is_hidden_at(1)) )             \
 { 1: dummy_spriteset;                                       \
-     name##_sprites_parent; }                         \
+     name##_sprites_parent; }                               \
 
 #define short_vehicle(name, spflag)                         \
-switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,    \
-[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ? var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ]) \
-{  name##_sprites_2##spflag;  }                       \
-switch (FEAT_TRAINS, PARENT, name##_sprites_parent,   \
+switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,          \
+[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ?              \
+  var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ])    \
+{  name##_sprites_2##spflag;  }                             \
+switch (FEAT_TRAINS, PARENT, name##_sprites_parent,         \
 [ STORE_TEMP(count_veh_id(name), 0),                        \
   STORE_TEMP(current_speed, 1),                             \
   STORE_TEMP(date_of_last_service, 2),                      \
 ])                                                          \
-{  name##_sprites_selfpos;    }                       \
-switch (FEAT_TRAINS, SELF, name##_sprites,            \
+{  name##_sprites_selfpos;    }                             \
+switch (FEAT_TRAINS, SELF, name##_sprites,                  \
   is_not_build_yet()||                                      \
   (is_drawn_in_viewport() && is_hidden_at(0)) )             \
 { 1: dummy_spriteset;                                       \
-     name##_sprites_parent; }                         \
+     name##_sprites_parent; }                               \
 
 #define long_vehicle_simple(name)                           \
-switch (FEAT_TRAINS, SELF, name##_sprites,            \
+switch (FEAT_TRAINS, SELF, name##_sprites,                  \
   is_not_build_yet() ||                                     \
   (is_drawn_in_viewport() && is_hidden_at(1)) )             \
 { 1: dummy_spriteset;                                       \
-     name##_sprites_2; }                              \
+     name##_sprites_2; }                                    \
 
