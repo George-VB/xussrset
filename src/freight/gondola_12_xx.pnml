@@ -4,78 +4,35 @@
 // выпуска 1935-1941 годов. 
 // gondola
 
-#define IMAGEFILE  "src/freight/gondola-12-xx-1935-1941.png"
+#define IMAGEFILE  "src/freight/gondola-12-xx_12-37.png"
 
 // покупка
 purchase_spriteset(gondola_12_xx, 0, 0)
 
 // пусто
-spriteset (gondola_12_xx_empty_spriteset, IMAGEFILE)
+spriteset (gondola_12_xx_empty_sprites, IMAGEFILE)
 {
   s8_template(125, 56, 0)
 }
 
-spriteset (gondola_12_xx_v2_empty_spriteset, IMAGEFILE)
-{
-  s8_template(125, 92, 0)
-}
-
 // шаблон груза, 2 ливреи, 3 вида загруженности
 // 25-49%, 50-74%, полный
-#define gondola_12_xx_sprite_layout_template(x, y, cargo) \
-spriteset (gondola_12_xx_##cargo##_1_spriteset, IMAGEFILE) \
-{ \
-  s8_template(x, y, 0) \
-} \
- \
-spriteset (gondola_12_xx_v2_##cargo##_1_spriteset, IMAGEFILE) \
-{ \
-  s8_template(x, y+36, 0) \
-} \
- \
-spriteset (gondola_12_xx_##cargo##_2_spriteset, IMAGEFILE) \
-{ \
-  s8_template(x+298, y, 0) \
-} \
- \
-spriteset (gondola_12_xx_v2_##cargo##_2_spriteset, IMAGEFILE) \
-{ \
-  s8_template(x+298, y+36, 0) \
-} \
- \
-spriteset (gondola_12_xx_##cargo##_full_spriteset, IMAGEFILE) \
-{ \
-  s8_template(x+596, y, 0) \
-} \
- \
-spriteset (gondola_12_xx_v2_##cargo##_full_spriteset, IMAGEFILE) \
-{ \
-  s8_template(x+596, y+36, 0) \
-} \
- \
-spritegroup gondola_12_xx_##cargo##_spritegroup \
-{ \
-  loading: [gondola_12_xx_empty_spriteset, \
-    gondola_12_xx_##cargo##_1_spriteset, \
-    gondola_12_xx_##cargo##_2_spriteset, \
-    gondola_12_xx_##cargo##_full_spriteset]; \
-  loaded: [gondola_12_xx_empty_spriteset, \
-    gondola_12_xx_##cargo##_1_spriteset, \
-    gondola_12_xx_##cargo##_2_spriteset, \
-    gondola_12_xx_##cargo##_full_spriteset]; \
-} \
- \
-spritegroup gondola_12_xx_v2_##cargo##_spritegroup \
-{ \
-  loading: [gondola_12_xx_v2_empty_spriteset, \
-    gondola_12_xx_v2_##cargo##_1_spriteset, \
-    gondola_12_xx_v2_##cargo##_2_spriteset, \
-    gondola_12_xx_v2_##cargo##_full_spriteset]; \
-  loaded: [gondola_12_xx_v2_empty_spriteset, \
-    gondola_12_xx_v2_##cargo##_1_spriteset, \
-    gondola_12_xx_v2_##cargo##_2_spriteset, \
-    gondola_12_xx_v2_##cargo##_full_spriteset]; \
-} \
+#define gondola_12_xx_sprite_layout_template(x, y, cargo)   \
+spriteset (gondola_12_xx_##cargo##_1_sprites, IMAGEFILE)    \
+{ s8_template(x, y, 0) }                                    \
+spriteset (gondola_12_xx_##cargo##_2_sprites, IMAGEFILE)    \
+{ s8_template(x+298, y, 0) }                                \
+spriteset (gondola_12_xx_##cargo##_full_sprites, IMAGEFILE) \
+{ s8_template(x+596, y, 0) }                                \
+spritegroup gondola_12_xx_##cargo##_sprites                 \
+{ loading: [gondola_12_xx_empty_sprites,                    \
+    gondola_12_xx_##cargo##_1_sprites,                      \
+    gondola_12_xx_##cargo##_2_sprites,                      \
+    gondola_12_xx_##cargo##_full_sprites];                  \
+  loaded: [gondola_12_xx_empty_sprites,                     \
+    gondola_12_xx_##cargo##_1_sprites,                      \
+    gondola_12_xx_##cargo##_2_sprites,                      \
+    gondola_12_xx_##cargo##_full_sprites]; }                \
 
 gondola_12_xx_sprite_layout_template(423, 56, coal)    // уголь
 gondola_12_xx_sprite_layout_template(423, 205, iore)   // жел. руда
@@ -90,7 +47,7 @@ gondola_12_xx_sprite_layout_template(423, 1397, sand)  // песок
 gondola_12_xx_sprite_layout_template(423, 1546, sulp)  // сера
 gondola_12_xx_sprite_layout_template(423, 1695, brck)  // кирпичи
 gondola_12_xx_sprite_layout_template(423, 1844, wdpr)  // лесоматериалы
-gondola_12_xx_sprite_layout_template(423, 1993, stel)  // сталь
+gondola_12_xx_sprite_layout_template(423, 1993, stel1) // сталь
 gondola_12_xx_sprite_layout_template(423, 2142, stel2) // сталь
 gondola_12_xx_sprite_layout_template(423, 2291, stel3) // сталь
 gondola_12_xx_sprite_layout_template(423, 2440, stel4) // сталь
@@ -98,89 +55,78 @@ gondola_12_xx_sprite_layout_template(423, 2589, wood)  // древесина
 
 #undef IMAGEFILE
 
-random_switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites4,
+random_switch (FEAT_TRAINS, SELF, gondola_12_xx_stel_sprites,
   bitmask(TRIGGER_VEHICLE_NEW_LOAD))
 {
-  32: gondola_12_xx_v2_stel_spritegroup;
-  32: gondola_12_xx_v2_stel2_spritegroup;
-  32: gondola_12_xx_v2_stel3_spritegroup;
-  32: gondola_12_xx_v2_stel4_spritegroup;
-}
-
-random_switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites3,
-  bitmask(TRIGGER_VEHICLE_NEW_LOAD))
-{
-  32: gondola_12_xx_stel_spritegroup;
-  32: gondola_12_xx_stel2_spritegroup;
-  32: gondola_12_xx_stel3_spritegroup;
-  32: gondola_12_xx_stel4_spritegroup;
-}
-
-switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites2,
-  cargo_type_in_veh)
-{
-  COAL: gondola_12_xx_v2_coal_spritegroup;
-  IORE: gondola_12_xx_v2_iore_spritegroup;
-  CORE: gondola_12_xx_v2_core_spritegroup;
-  AORE: gondola_12_xx_v2_aore_spritegroup;
-  CLAY: gondola_12_xx_v2_clay_spritegroup;
-  FERT: gondola_12_xx_v2_fert_spritegroup;
-  GRVL: gondola_12_xx_v2_grvl_spritegroup;
-  LIME: gondola_12_xx_v2_lime_spritegroup;
-  POTA: gondola_12_xx_v2_pota_spritegroup;
-  SAND: gondola_12_xx_v2_sand_spritegroup;
-  SULP: gondola_12_xx_v2_sulp_spritegroup;
-  BRCK: gondola_12_xx_v2_brck_spritegroup;
-  WDPR: gondola_12_xx_v2_wdpr_spritegroup;
-  STEL: gondola_12_xx_sprites4;
-  WOOD: gondola_12_xx_v2_wood_spritegroup;
-        align_8_spriteset;
-}
-
-switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites1,
-  cargo_type_in_veh)
-{
-  COAL: gondola_12_xx_coal_spritegroup;
-  IORE: gondola_12_xx_iore_spritegroup;
-  CORE: gondola_12_xx_core_spritegroup;
-  AORE: gondola_12_xx_aore_spritegroup;
-  CLAY: gondola_12_xx_clay_spritegroup;
-  FERT: gondola_12_xx_fert_spritegroup;
-  GRVL: gondola_12_xx_grvl_spritegroup;
-  LIME: gondola_12_xx_lime_spritegroup;
-  POTA: gondola_12_xx_pota_spritegroup;
-  SAND: gondola_12_xx_sand_spritegroup;
-  SULP: gondola_12_xx_sulp_spritegroup;
-  BRCK: gondola_12_xx_brck_spritegroup;
-  WDPR: gondola_12_xx_wdpr_spritegroup;
-  STEL: gondola_12_xx_sprites3;
-  WOOD: gondola_12_xx_wood_spritegroup;
-        align_8_spriteset;
-}
-
-random_switch (FEAT_TRAINS, SELF, gondola_12_xx_random, 0 )
-{
-  3: gondola_12_xx_sprites1;
-  2: gondola_12_xx_sprites2;
+  1: gondola_12_xx_stel1_sprites;
+  1: gondola_12_xx_stel2_sprites;
+  1: gondola_12_xx_stel3_sprites;
+  1: gondola_12_xx_stel4_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites_2,
-  cargo_subtype)
+  cargo_type_in_veh)
 {
-  0: gondola_12_xx_random;
-  1: gondola_12_xx_sprites1;
-  2: gondola_12_xx_sprites2;
-     align_8_spriteset;
+  COAL: gondola_12_xx_coal_sprites;
+  IORE: gondola_12_xx_iore_sprites;
+  CORE: gondola_12_xx_core_sprites;
+  AORE: gondola_12_xx_aore_sprites;
+  CLAY: gondola_12_xx_clay_sprites;
+  FERT: gondola_12_xx_fert_sprites;
+  GRVL: gondola_12_xx_grvl_sprites;
+  LIME: gondola_12_xx_lime_sprites;
+  POTA: gondola_12_xx_pota_sprites;
+  SAND: gondola_12_xx_sand_sprites;
+  SULP: gondola_12_xx_sulp_sprites;
+  BRCK: gondola_12_xx_brck_sprites;
+  WDPR: gondola_12_xx_wdpr_sprites;
+  STEL: gondola_12_xx_stel_sprites;
+  WOOD: gondola_12_xx_wood_sprites;
+        align_8_spriteset;
 }
 
 short_vehicle(gondola_12_xx, )
+
+random_switch (FEAT_TRAINS, SELF, gondola_12_xx_RND, 0 )
+{
+  independent: gondola_12_xx_stel_sprites;
+  1: return ttdall_cc + 0x1A;
+  1: return ttdall_cc + 0x6C;
+  1: return ttdall_cc + 0x6D;
+  1: return ttdall_cc + 0x71;
+  1: return ttdall_cc + 0x73;
+  1: return ttdall_cc + 0x4B;
+  1: return ttdall_cc + 0x3F;
+  1: return ttdall_cc + 0x53;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_xx_colour_mapping,
+  cargo_subtype)
+{
+  0: gondola_12_xx_RND;  
+  1: return ttdall_cc + 0x1A;
+  2: return ttdall_cc + 0x6C;
+  3: return ttdall_cc + 0x6D;
+  4: return ttdall_cc + 0x71;
+  5: return ttdall_cc + 0x73;
+  6: return ttdall_cc + 0x4B;
+  7: return ttdall_cc + 0x3F;
+  8: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
 
 switch (FEAT_TRAINS, SELF, gondola_12_xx_cargo_subtype_text,
   cargo_subtype)
 {
   0: string(STR_REFIT_FACTORY);
-  1: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_1B));
+  1: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_1A));
   2: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_6C));
+  3: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_6D));
+  4: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_71));
+  5: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_73));
+  6: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_4B));
+  7: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_3F));
+  8: string(STR_REFIT_WOOD_PANELING, string(STR_REFIT_TTD_53));
      return CB_RESULT_NO_TEXT;
 }
 
@@ -228,6 +174,7 @@ item (FEAT_TRAINS, gondola_12_xx)
     cargo_subtype_text: gondola_12_xx_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_capacity: gondola_12_xx_cargo_capacity;
+    colour_mapping: gondola_12_xx_colour_mapping;
   }
 }
 
