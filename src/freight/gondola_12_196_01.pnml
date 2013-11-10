@@ -1,0 +1,187 @@
+ // gondola_12_196_01
+
+/// Вагон
+// 4-осный полувагон	12-196-01 (УВЗ)
+// gondola
+
+#define IMAGEFILE  "src/freight/gondola-12-196-01.png"
+
+// покупка
+purchase_sprites(gondola_12_196_01, 0, 0)
+
+// пусто
+spriteset (gondola_12_196_01_empty_sprites, IMAGEFILE)
+{
+  s8_template(125, 56, 0)
+}
+
+// шаблон груза 3 вида загруженности
+// 25-49%, 50-74%, полный
+#define gondola_12_196_01_sprite_layout_template(x, y, cargo)    \
+spriteset (gondola_12_196_01_##cargo##_1_sprites, IMAGEFILE)     \
+{ s8_template(x, y, 0) }                                      \
+spriteset (gondola_12_196_01_##cargo##_2_sprites, IMAGEFILE)     \
+{ s8_template(x+298, y, 0) }                                  \
+spriteset (gondola_12_196_01_##cargo##_full_sprites, IMAGEFILE)  \
+{ s8_template(x+596, y, 0) }                                  \
+spritegroup gondola_12_196_01_##cargo##_sprites                  \
+{ loading: [gondola_12_196_01_empty_sprites,                     \
+    gondola_12_196_01_##cargo##_1_sprites,                       \
+    gondola_12_196_01_##cargo##_2_sprites,                       \
+    gondola_12_196_01_##cargo##_full_sprites];                   \
+  loaded: [gondola_12_196_01_empty_sprites,                      \
+    gondola_12_196_01_##cargo##_1_sprites,                       \
+    gondola_12_196_01_##cargo##_2_sprites,                       \
+    gondola_12_196_01_##cargo##_full_sprites]; }                 \
+
+gondola_12_196_01_sprite_layout_template(423, 56, coal)    // уголь
+gondola_12_196_01_sprite_layout_template(423, 205, iore)   // жел. руда
+gondola_12_196_01_sprite_layout_template(423, 354, core)   // медн. руда
+gondola_12_196_01_sprite_layout_template(423, 503, aore)   // бокситы
+gondola_12_196_01_sprite_layout_template(423, 652, clay)   // глина
+gondola_12_196_01_sprite_layout_template(423, 801, fert)   // удобрения
+gondola_12_196_01_sprite_layout_template(423, 950, grvl)   // гравий
+gondola_12_196_01_sprite_layout_template(423, 1099, lime)  // известняк
+gondola_12_196_01_sprite_layout_template(423, 1248, pota)  // поташ
+gondola_12_196_01_sprite_layout_template(423, 1397, sand)  // песок
+gondola_12_196_01_sprite_layout_template(423, 1546, sulp)  // сера
+gondola_12_196_01_sprite_layout_template(423, 1695, brck)  // кирпичи
+gondola_12_196_01_sprite_layout_template(423, 1844, wdpr)  // лесоматериалы
+gondola_12_196_01_sprite_layout_template(423, 1993, stel1) // сталь
+gondola_12_196_01_sprite_layout_template(423, 2142, stel2) // сталь
+gondola_12_196_01_sprite_layout_template(423, 2291, stel3) // сталь
+gondola_12_196_01_sprite_layout_template(423, 2440, stel4) // сталь
+
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, gondola_12_196_01_stel_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  1: gondola_12_196_01_stel1_sprites;
+  1: gondola_12_196_01_stel2_sprites;
+  1: gondola_12_196_01_stel3_sprites;
+  1: gondola_12_196_01_stel4_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_196_01_sprites_2,
+  cargo_type_in_veh)
+{
+  COAL: gondola_12_196_01_coal_sprites;
+  IORE: gondola_12_196_01_iore_sprites;
+  CORE: gondola_12_196_01_core_sprites;
+  AORE: gondola_12_196_01_aore_sprites;
+  CLAY: gondola_12_196_01_clay_sprites;
+  FERT: gondola_12_196_01_fert_sprites;
+  GRVL: gondola_12_196_01_grvl_sprites;
+  LIME: gondola_12_196_01_lime_sprites;
+  POTA: gondola_12_196_01_pota_sprites;
+  SAND: gondola_12_196_01_sand_sprites;
+  SULP: gondola_12_196_01_sulp_sprites;
+  BRCK: gondola_12_196_01_brck_sprites;
+  WDPR: gondola_12_196_01_wdpr_sprites;
+  STEL: gondola_12_196_01_stel_sprites;
+        align_8_sprites;
+}
+
+short_vehicle(gondola_12_196_01, )
+
+random_switch (FEAT_TRAINS, SELF, gondola_12_196_01_RND, 0 )
+{
+  independent: gondola_12_196_01_stel_sprites;
+  3: return ttdall_cc + 0x7C;
+  3: return ttdall_cc + 0x4B;
+  3: return ttdall_cc + 0x7B;
+  2: return ttdall_cc + 0x73;
+  2: return ttdall_cc + 0x74;
+  1: return ttdall_cc + 0x72;
+  1: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x5A;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_196_01_colour_mapping,
+  cargo_subtype)
+{
+  0: gondola_12_196_01_RND;  
+  1: return ttdall_cc + 0x7C;
+  2: return ttdall_cc + 0x4B;
+  3: return ttdall_cc + 0x7B;
+  4: return ttdall_cc + 0x73;
+  5: return ttdall_cc + 0x74;
+  6: return ttdall_cc + 0x72;
+  7: return ttdall_cc + 0x53;
+  8: return ttdall_cc + 0x5A;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_196_01_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_7C);
+  2: string(STR_REFIT_TTD_4B);
+  3: string(STR_REFIT_TTD_7B);
+  4: string(STR_REFIT_TTD_73);
+  5: string(STR_REFIT_TTD_74);
+  6: string(STR_REFIT_TTD_72);
+  7: string(STR_REFIT_TTD_53);
+  8: string(STR_REFIT_TTD_5A);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_196_01_cargo_capacity, cargo_type_in_veh)
+{
+  COAL: return 71;
+  FERT: return 71;
+        return 75;
+}
+
+item (FEAT_TRAINS, gondola_12_196_01) 
+{
+  property
+  {
+    name: string(STR_GONDOLA_12_196_01_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(2014), 1, 1);
+    model_life: get_model_life(2014,2050);
+    retire_early: get_retire_early(2014,2050);
+    vehicle_life: 22;
+    reliability_decay: 20;
+    cargo_allow_refit: [COAL, FERT, AORE, CORE, IORE, BRCK, CLAY, GRVL, LIME, POTA, SAND, STEL, SULP, WDPR];
+    default_cargo_type: COAL;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 75;
+    weight: 24 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: gondola_12_196_01_sprites;
+    purchase: gondola_12_196_01_purchase_sprites;
+    additional_text: return string(STR_GONDOLA_12_196_01_PURCHASE_HINT);
+    cargo_subtype_text: gondola_12_196_01_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: gondola_12_196_01_cargo_capacity;
+    colour_mapping: gondola_12_196_01_colour_mapping;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, gondola_12_196_01)
+  {
+    property
+    { name: string(STR_GONDOLA_12_196_01_NAME_LONG); }
+  }
+}
+
