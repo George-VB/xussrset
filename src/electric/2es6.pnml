@@ -1,158 +1,53 @@
  // 2es6
 
-// Спрайты
-
 #define IMAGEFILE  "src/electric/2es6.png"
 
-// покупка
-purchase_sprites(_2es6, 0, 0)
+purchase_sprites(_2es6_v1, 0, 0)
+purchase_sprites(_2es6_v2, 136, 0)
+purchase_sprites(_2es6_v3, 272, 0)
+purchase_sprites(_2es6_v4, 409, 0)
 
-// нет тока
-spriteset (_2es6_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(105, 30, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2es6_loading_spriteset, IMAGEFILE)
-{
-  s10_template(105, 97, 0)
-} 
-
-spriteset (_2es6_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(105, 164, 0)
-} 
-
-spritegroup _2es6_spritegroup
-{
-  loading: _2es6_loading_spriteset;
-  loaded: _2es6_traveling_spriteset;
-}
-
-spriteset (_2es6_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(105, 231, 0)
-} 
-
-// нет тока
-spriteset (_2es6_b_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(563, 30, 0)
-} 
-
-// секция Б: погрузка
-spriteset (_2es6_b_spriteset, IMAGEFILE)
-{
-  s10_template(563, 97, 0)
-} 
-
-// нет тока
-spriteset (_2es6_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(105, 298, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2es6_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(105, 365, 0)
-} 
-
-spriteset (_2es6_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(105, 432, 0)
-} 
-
-spritegroup _2es6_v2_spritegroup
-{
-  loading: _2es6_v2_loading_spriteset;
-  loaded: _2es6_v2_traveling_spriteset;
-}
-
-spriteset (_2es6_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(105, 499, 0)
-} 
-
-// нет тока
-spriteset (_2es6_b_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(563, 298, 0)
-} 
-
-// секция Б: погрузка
-spriteset (_2es6_b_v2_spriteset, IMAGEFILE)
-{
-  s10_template(563, 365, 0)
-} 
-
-// нет тока
-spriteset (_2es6_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(105, 566, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2es6_v3_loading_spriteset, IMAGEFILE)
-{
-  s10_template(105, 633, 0)
-} 
-
-spriteset (_2es6_v3_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(105, 700, 0)
-} 
-
-spritegroup _2es6_v3_spritegroup
-{
-  loading: _2es6_v3_loading_spriteset;
-  loaded: _2es6_v3_traveling_spriteset;
-}
-
-spriteset (_2es6_v3_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(105, 767, 0)
-} 
-
-// нет тока
-spriteset (_2es6_b_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(563, 566, 0)
-} 
-
-// секция Б: погрузка
-spriteset (_2es6_b_v3_spriteset, IMAGEFILE)
-{
-  s10_template(563, 633, 0)
-} 
+electric2_sprites(10, _2es6_v1, 105, 30)
+electric2_sprites(10, _2es6_v2, 105, 298)
+electric2_sprites(10, _2es6_v3, 105, 566)
+electric2_sprites(10, _2es6_v4, 105, 834)
 
 #undef IMAGEFILE
 
-// расчёт ориентации секций локомотива
+switch (FEAT_TRAINS, SELF, _2es6_purchase_sprites,
+  ((vehicle_is_testing == 1) * 10) + 
+  (current_year >= 2009) +
+  (current_year >= 2012))
+{
+  0: _2es6_v2_purchase_sprites;
+  1: _2es6_v3_purchase_sprites;
+  2: _2es6_v4_purchase_sprites;
+     _2es6_v1_purchase_sprites;
+}
+
 switch (FEAT_TRAINS, SELF, _2es6_sprites_l,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  (cargo_subtype * 3))
-{ 0: _2es6_notpowered_spriteset;
-  1: _2es6_spritegroup;
-  2: _2es6_speedoverTH_spriteset;
-  3: _2es6_v2_notpowered_spriteset;
-  4: _2es6_v2_spritegroup;
-  5: _2es6_v2_speedoverTH_spriteset;	 
-  6: _2es6_v3_notpowered_spriteset;
-  7: _2es6_v3_spritegroup;
-     _2es6_v3_speedoverTH_spriteset; }
+  ((built_during_preview == 1) *10) + 
+  (build_year >= 2009) +
+  (build_year >= 2012))
+{      
+       0: _2es6_v2_sprites_left;
+       1: _2es6_v3_sprites_left;
+       2: _2es6_v4_sprites_left;
+  10..12: _2es6_v1_sprites_left;
+          align_10_sprites; 
+}
 
 switch (FEAT_TRAINS, SELF, _2es6_sprites_r,
-  ((!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  (cargo_subtype * 2))
-{ 0: _2es6_b_notpowered_spriteset;
-  1: _2es6_b_spriteset;
-  2: _2es6_b_v2_notpowered_spriteset;
-  3: _2es6_b_v2_spriteset;
-  4: _2es6_b_v3_notpowered_spriteset;
-     _2es6_b_v3_spriteset; }
+  ((built_during_preview == 1) *10) + 
+  (build_year >= 2009) +
+  (build_year >= 2012))
+{ 
+       0: _2es6_v2_sprites_right;
+       1: _2es6_v3_sprites_right;
+       2: _2es6_v4_sprites_right;
+  10..12: _2es6_v1_sprites_right;
+          align_10_sprites; 
+}
 
 engine_direction_template(_2es6) 
 
