@@ -206,18 +206,25 @@ long_vehicle_simple(sn_c)
 
 // Можно ли ещё присоединить?
 switch (FEAT_TRAINS, SELF, sn_can_attach_wagon2,
-  ((vehicle_type_id == sn) && (LOAD_TEMP(0) < 3)))
+  LOAD_TEMP(0) < 3)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
-     return CB_RESULT_ATTACH_DISALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
 }
 
 // считаем уже имеющиеся вагоны
 
-switch (FEAT_TRAINS, PARENT, sn_can_attach_wagon,
-  STORE_TEMP(count_veh_id(sn)/2, 0))
+switch (FEAT_TRAINS, PARENT, sn_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(sn), 0))
 {
   sn_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, sn_can_attach_wagon,
+  vehicle_type_id == sn)
+{
+  1: sn_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, SELF, sn_cargo_subtype_text,

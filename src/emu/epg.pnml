@@ -89,19 +89,27 @@ long_vehicle_simple(epg_d)
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
-  ((vehicle_type_id == epg) && (LOAD_TEMP(0) < 3)))
+  LOAD_TEMP(0) < 3)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
-     return CB_RESULT_ATTACH_DISALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
 }
 
 // считаем уже имеющиеся вагоны
 
-switch (FEAT_TRAINS, PARENT, epg_can_attach_wagon,
-  STORE_TEMP(count_veh_id(epg)/2, 0))
+switch (FEAT_TRAINS, PARENT, epg_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(epg), 0))
 {
   epg_can_attach_wagon2;
 }
+
+switch (FEAT_TRAINS, PARENT, epg_can_attach_wagon,
+  vehicle_type_id == epg)
+{
+  1: epg_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
 
 switch (FEAT_TRAINS, SELF, epg_articulated_part,
   extra_callback_info1)

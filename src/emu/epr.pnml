@@ -89,18 +89,25 @@ long_vehicle_simple(epr_d)
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epr_can_attach_wagon2,
-  ((vehicle_type_id == epr) && (LOAD_TEMP(0) < 3)))
+  LOAD_TEMP(0) < 3)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
-  return CB_RESULT_ATTACH_DISALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
 }
 
 // считаем уже имеющиеся вагоны
 
-switch (FEAT_TRAINS, PARENT, epr_can_attach_wagon,
-  STORE_TEMP(count_veh_id(epr)/2, 0))
+switch (FEAT_TRAINS, PARENT, epr_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(epr), 0))
 {
   epr_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, epr_can_attach_wagon,
+  vehicle_type_id == epr)
+{
+  1: epr_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, SELF, epr_articulated_part,
@@ -113,7 +120,7 @@ switch (FEAT_TRAINS, SELF, epr_articulated_part,
   5: return dummy2;
   6: return unitd;
   7: return dummy3;
-  return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 // даём тягу, если локомотив epr
@@ -121,7 +128,7 @@ switch (FEAT_TRAINS, PARENT, epr_power,
   vehicle_type_id == epr)
 {
   1: return get_power_in_cb(2719); // -37 Поправка, чтобы показывалось 2719
-  return 0;
+     return 0;
 }
 
 // показываем визуальные эффекты, если локомотив epr
@@ -129,16 +136,15 @@ switch (FEAT_TRAINS, PARENT, epr_c_visual_effect_and_powered,
   vehicle_type_id == epr)
 {
   1: return electric_visual_effect_and_powered(0);
-  return disable_visual_effect_and_powered();
+     return disable_visual_effect_and_powered();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - epr
 switch (FEAT_TRAINS, PARENT, epr_cargo_capacity,
-  (vehicle_type_id == epr)
-)
+  (vehicle_type_id == epr))
 {
   1: return 217;
-  return 0;
+     return 0;
 }
 
 item (FEAT_TRAINS, epr) 
