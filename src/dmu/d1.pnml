@@ -552,60 +552,45 @@ switch (FEAT_TRAINS, SELF, d1_c_purchase_sprites,
      d1_c_v30_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, PARENT, d1_m_can_attach_wagon7,
+switch (FEAT_TRAINS, PARENT, d1_can_attach_wagon_length,
   count_veh_id(d1_m) > 3)
 {
   0: CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
-switch (FEAT_TRAINS, PARENT, d1_m_can_attach_wagon6,
+switch (FEAT_TRAINS, PARENT, d1_c_can_attach_wagon1,
 [
   set_offset_to(num_vehs_in_consist-4),
   prev_vehicle_type_id() ])
 {
-  d1_m: return d1_m_can_attach_wagon7;
   d1_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_4D);
-        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+          return CB_RESULT_ATTACH_ALLOW;
 }
 
-switch (FEAT_TRAINS, PARENT, d1_m_can_attach_wagon5,
-  num_vehs_in_consist)
+switch (FEAT_TRAINS, PARENT, d1_c_can_attach_wagon_h,
+  count_veh_id(d1_m) % 2)
 {
-  4: return CB_RESULT_ATTACH_ALLOW;
-     d1_m_can_attach_wagon6;
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     d1_c_can_attach_wagon1;
 }
 
-switch (FEAT_TRAINS, PARENT, d1_m_can_attach_wagon4,
+switch (FEAT_TRAINS, PARENT, d1_c_can_attach_wagon,
 [
   set_offset_to(num_vehs_in_consist-2),
   prev_vehicle_type_id() ])
 {
-  d1_m: return CB_RESULT_ATTACH_ALLOW;
-  d1_c: d1_m_can_attach_wagon5;
-        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  d1_c: d1_c_can_attach_wagon1;
+  d1_m: d1_c_can_attach_wagon_h;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, d1_m_can_attach_wagon3,
-  num_vehs_in_consist)
-{
-  2: return CB_RESULT_ATTACH_ALLOW;
-     d1_m_can_attach_wagon4;
-}
-
-switch (FEAT_TRAINS, PARENT, d1_m_can_attach_wagon1,
-  count_veh_id(d1_m) % 2)
-{
-  1: d1_m_can_attach_wagon3;
-     return string(STR_CAN_ATTACH_HEAD_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, d1_m_can_attach_wagon,
+switch (FEAT_TRAINS, SELF, d1_can_attach_wagon,
   vehicle_type_id)
 {
-  d1_m: return d1_m_can_attach_wagon7;
-  d1_c: d1_m_can_attach_wagon1;
-        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  d1_m: d1_can_attach_wagon_length;
+  d1_c: d1_c_can_attach_wagon;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, d1_m_start_stop,
@@ -746,7 +731,7 @@ item (FEAT_TRAINS, d1_m)
     default: d1_m_sprites;
     purchase: d1_m_purchase_sprites;
     articulated_part: articulated_part_dummy7;
-    can_attach_wagon: d1_m_can_attach_wagon;
+    can_attach_wagon: d1_can_attach_wagon;
     start_stop: d1_m_start_stop;
     visual_effect_and_powered: d1_m_visual_effect_and_powered;
     speed: speed_after20_120to110;
@@ -795,7 +780,7 @@ item (FEAT_TRAINS, d1_c)
     speed: speed_after20_120to110;
     purchase_speed: return 120;
     power: return 0;
-    can_attach_wagon: return CB_RESULT_ATTACH_ALLOW;
+    can_attach_wagon: d1_can_attach_wagon;
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
     additional_text: return string(STR_D1_M_PURCHASE_HINT);
     cargo_capacity: d1_c_cargo_capacity;

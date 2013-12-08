@@ -110,45 +110,35 @@ switch (FEAT_TRAINS, PARENT, d_m_sprites_2,
 
 long_vehicle(d_m, )
 
-switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon5,
+switch (FEAT_TRAINS, PARENT, d_can_attach_wagon_length,
   count_veh_id(d_m) > 3)
 {
   0: CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
-switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon4,
+switch (FEAT_TRAINS, PARENT, d_c_can_attach_wagon_h,
+  count_veh_id(d_m) % 2)
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, d_c_can_attach_wagon,
 [
   set_offset_to(num_vehs_in_consist-2),
   prev_vehicle_type_id() ])
 {
-  d_m: return d_m_can_attach_wagon5;
   d_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3D);
+  d_m: d_c_can_attach_wagon_h;
        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-// Если в составе один локомотив, можно присоединить
-switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon3,
-  num_vehs_in_consist)
-{
-  2: return CB_RESULT_ATTACH_ALLOW;
-     d_m_can_attach_wagon4;
-}
-
-// Нельзя присоединить к чётному моторному, только к нечётному
-switch (FEAT_TRAINS, PARENT, d_m_can_attach_wagon1,
-  count_veh_id(d_m) % 2)
-{
-  1: d_m_can_attach_wagon3;
-     return string(STR_CAN_ATTACH_HEAD_ONLY);
-}
-
-// Что присоединяем?
-switch (FEAT_TRAINS, SELF, d_m_can_attach_wagon,
+switch (FEAT_TRAINS, SELF, d_can_attach_wagon,
   vehicle_type_id)
 {
-  d_m: return d_m_can_attach_wagon5;
-  d_c: d_m_can_attach_wagon1;
+  d_m: d_can_attach_wagon_length;
+  d_c: d_c_can_attach_wagon;
        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
@@ -256,7 +246,7 @@ item (FEAT_TRAINS, d_m)
     default: d_m_sprites;
     purchase: d_m_purchase;
     articulated_part: articulated_part_dummy7;
-    can_attach_wagon: d_m_can_attach_wagon;
+    can_attach_wagon: d_can_attach_wagon;
     start_stop: d_m_start_stop;
     visual_effect_and_powered: d_m_visual_effect_and_powered;
     speed: speed_after20_120to100;
@@ -304,7 +294,7 @@ item (FEAT_TRAINS, d_c)
     speed: speed_after20_120to100;
     purchase_speed: return 120;
     power: return 0;
-    can_attach_wagon: return CB_RESULT_ATTACH_ALLOW;
+    can_attach_wagon: d_can_attach_wagon;
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
     additional_text: return string(STR_D_M_PURCHASE_HINT);
     cargo_capacity: d_c_cargo_capacity;
