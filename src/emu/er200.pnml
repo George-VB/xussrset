@@ -3,558 +3,126 @@
 // Спрайты
 
 #define IMAGEFILE  "src/emu/er200.png"
-
-/// Головной
 purchase_sprites(er200_h, 0, 0)
-
-spriteset (er200_h_notpowered_spriteset, IMAGEFILE)
-{
-  s15_template(30, 55, 0)
-} 
-
-spriteset (er200_h_spriteset, IMAGEFILE)
-{
-  s15_template(470, 55, 0)
-} 
-
-spriteset (er200_hr_notpowered_spriteset, IMAGEFILE)
-{
-  s15_template(30, 122, 0)
-} 
-
-spriteset (er200_hr_spriteset, IMAGEFILE)
-{
-  s15_template(470, 122, 0)
-} 
-
-/// Моторный с пантографом
 purchase_sprites(er200_m, 120, 0)
-
-spriteset (er200_m_notpowered_spriteset, IMAGEFILE)
-{
-  s15_template(30, 189, 0)
-} 
-
-spriteset (er200_m_spriteset, IMAGEFILE)
-{
-  s15_template(470, 189, 0)
-} 
-
-spriteset (er200_mr_notpowered_spriteset, IMAGEFILE)
-{
-  s15_template(30, 256, 0)
-}                    	
-
-spriteset (er200_mr_spriteset, IMAGEFILE)
-{
-  s15_template(470, 256, 0)
-} 
-
-/// Моторный без пантографа
-
 purchase_sprites(er200_c, 240, 0)
 
-spriteset (er200_c_spriteset, IMAGEFILE)
-{
-  s15_template(470, 323, 0)
-} 
-
-spriteset (er200_cr_spriteset, IMAGEFILE)
-{
-  s15_template(470, 390, 0)
-} 
-
-/// паззл
-// головной
-spriteset (er200_h_wrong_place_spriteset, IMAGEFILE)
-{
-  s15ui1_template(933, 55, 0)
-} 
-
-spriteset (er200_hr_wrong_place_spriteset, IMAGEFILE)
-{
-  s15ui1_template(933, 122, 0)
-} 
-
-// моторный
-spriteset (er200_m_wrong_place_spriteset, IMAGEFILE)
-{
-  s15ui1_template(933, 189, 0)
-} 
-
-spriteset (er200_mr_wrong_place_spriteset, IMAGEFILE)
-{
-  s15ui1_template(933, 256, 0)
-} 
-
-// прицепной
-spriteset (er200_c_wrong_place_spriteset, IMAGEFILE)
-{
-  s15ui1_template(933, 323, 0)
-} 
-
-spriteset (er200_cr_wrong_place_spriteset, IMAGEFILE)
-{
-  s15ui1_template(933, 390, 0)
-} 
-
+emu_3_3_2_sprites(15, er200, 60, 40)
 #undef IMAGEFILE
 
-// Рисуем вариант в депо
-// R0 - длина  состава, R1 - позиция вагона в составе
-// R2 - кол-во элементов Г в составе --> позиция среди элементов Г в составе
-switch (FEAT_TRAINS, SELF, er200_h_sprites_depot2,
-[
-  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(er200_h) - count_veh_id(er200_m)
-    - count_veh_id(er200_c), 1),
-  STORE_TEMP(LOAD_TEMP(2) - count_veh_id(er200_h), 2),
-  ((LOAD_TEMP(1) == 0) || (
-    LOAD_TEMP(1) == 3 ? LOAD_TEMP(0) <= 4 :
-    LOAD_TEMP(1) == 5 ? LOAD_TEMP(0) <= 6 :
-    LOAD_TEMP(1) == 6 ? LOAD_TEMP(0) <= 7 :
-    LOAD_TEMP(1) == 7 ? LOAD_TEMP(0) <= 8 :
-    LOAD_TEMP(1) == 8 ? LOAD_TEMP(0) <= 9 :
-    LOAD_TEMP(1) == 9 ? LOAD_TEMP(0) <= 10 :
-    LOAD_TEMP(1) == 10 ? LOAD_TEMP(0) <= 11 :
-    LOAD_TEMP(1) == 11 ? LOAD_TEMP(0) <= 12 : 0) * (LOAD_TEMP(2) < 2)) +
-  ((LOAD_TEMP(2) % 2) * 2) 
-   ])
-{
-  0: er200_h_wrong_place_spriteset;
-  1: er200_h_spriteset;
-  2: er200_hr_wrong_place_spriteset;
-  3: er200_hr_spriteset;
-     align_15_sprites;
-}
-
-switch (FEAT_TRAINS, PARENT, er200_h_sprites_depot,
-[
-  STORE_TEMP(count_veh_id(er200_h) + count_veh_id(er200_m)
-    + count_veh_id(er200_c), 0), // длина поезда в элементах ЭР2
-  STORE_TEMP(count_veh_id(er200_h), 2) // для определения реверса
-])
-{
-  er200_h_sprites_depot2;
-}
-
-// Рисуем вариант не в депо, разворачиваем каждый второй
 switch (FEAT_TRAINS, SELF, er200_h_sprites_2,
 [
   ((LOAD_TEMP(0) - count_veh_id(er200_h)) % 2) 
 ])
 {
-  0: er200_h_spriteset;
-  1: er200_hr_spriteset;
+  0: er200_h_sprites_left;
+  1: er200_h_sprites_right;
      align_15_sprites;
 }
 
 long_vehicle(er200_h, )
 
-// рисуем в депо?
-switch (FEAT_TRAINS, SELF, er200_h_sprites_0,
-  is_drawn_in_depot())
+switch (FEAT_TRAINS, SELF, er200_m_sprites_3,
+  (LOAD_TEMP(0) - count_veh_id(er200_m)) >=
+  (LOAD_TEMP(4) - count_veh_id(er200_c)) )
 {
-  1: er200_h_sprites_depot;
-     er200_h_sprites;
-}
-
-// Рисуем вариант в депо
-// R0 - длина  поезда, R1 - позиция вагона
-// R2 - кол-во элементов М в составе
-switch (FEAT_TRAINS, SELF, er200_m_sprites_depot2,
-[
-  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(er200_h) - count_veh_id(er200_m)
-    - count_veh_id(er200_c), 1),
-  STORE_TEMP(LOAD_TEMP(2) - count_veh_id(er200_m), 3),
-  (((LOAD_TEMP(1) == 1) || (
-    LOAD_TEMP(1) == 2 ? LOAD_TEMP(0) <= 4 :
-    LOAD_TEMP(1) == 3 ? (LOAD_TEMP(0) <= 6) || (LOAD_TEMP(0) >= 8) :
-    LOAD_TEMP(1) == 4 ? (LOAD_TEMP(0) > 4) && (LOAD_TEMP(0) <= 9) :
-    LOAD_TEMP(1) == 5 ? (LOAD_TEMP(0) == 7) || (LOAD_TEMP(0) >= 10) :
-    LOAD_TEMP(1) == 6 ? (LOAD_TEMP(0) == 8) || (LOAD_TEMP(0) >= 10) :
-    LOAD_TEMP(1) == 7 ? LOAD_TEMP(0) == 9 :
-    LOAD_TEMP(1) == 8 ? (LOAD_TEMP(0) == 10) || (LOAD_TEMP(0) == 12) :
-    LOAD_TEMP(1) == 9 ? LOAD_TEMP(0) == 11 :
-    LOAD_TEMP(1) == 10 ? LOAD_TEMP(0) > 11 : 0)) *
-    ((!(vehicle_is_not_powered || vehicle_is_in_depot || LOAD_TEMP(4))) + 1) *
-    (LOAD_TEMP(3) < 6)) +
-  ((LOAD_TEMP(3) >= ((LOAD_TEMP(2) / 2) + (LOAD_TEMP(2) % 2))) * 3) 
-  
-])
-{
-  0: er200_m_wrong_place_spriteset;
-  1: er200_m_notpowered_spriteset;
-  2: er200_m_spriteset;
-  3: er200_mr_wrong_place_spriteset;
-  4: er200_mr_notpowered_spriteset;
-  5: er200_mr_spriteset;
-     align_15_sprites;
-}
-
-
-switch (FEAT_TRAINS, PARENT, er200_m_sprites_depot,
-[
-  STORE_TEMP(count_veh_id(er200_h) + count_veh_id(er200_m)
-    + count_veh_id(er200_c), 0), // длина поезда в элементах ЭР2
-  STORE_TEMP(count_veh_id(er200_m), 2), // для определения реверса
-  STORE_TEMP(vehicle_type_id != er200_h, 4) // локомотив не er200_h
-])
-{
-  er200_m_sprites_depot2;
-}
-
-// Рисуем вариант не в депо
-// R2 - кол-во элементов Г в составе
-// R3 - наличие тяги (локомотив er200_h)
-switch (FEAT_TRAINS, SELF, er200_m_sprites3,
-[
-  ((!(vehicle_is_not_powered || vehicle_is_in_depot)) && LOAD_TEMP(3)) +
-  (((LOAD_TEMP(0) - count_veh_id(er200_m)) >=
-    ((LOAD_TEMP(0) / 2) + (LOAD_TEMP(0) % 2))) * 2) 
-
-])
-{
-  0: er200_m_notpowered_spriteset;
-  1: er200_m_spriteset;
-  2: er200_mr_notpowered_spriteset;
-  3: er200_mr_spriteset;
+  0: er200_m_sprites_left;
+  1: er200_m_sprites_right;
      align_15_sprites;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_m_sprites_2,
-[
-  STORE_TEMP(vehicle_type_id == er200_h, 3) // для определения наличия тяги
-])
-{
-  er200_m_sprites3;
-}
+[ 
+  STORE_TEMP(count_veh_id(er200_c), 4)
+])                                                          
+{ 
+  er200_m_sprites_3; 
+}                               
 
 long_vehicle(er200_m, )
 
-// рисуем в депо?
-switch (FEAT_TRAINS, SELF, er200_m_sprites_0,
-  is_drawn_in_depot())
+switch (FEAT_TRAINS, SELF, er200_c_sprites_3,
+  (LOAD_TEMP(0) - count_veh_id(er200_m)) >=
+  (LOAD_TEMP(4) - count_veh_id(er200_c)) )
 {
-  1: er200_m_sprites_depot;
-     er200_m_sprites;
-}
-
-// Рисуем вариант в депо
-// R0 - длина  поезда, R1 - позиция вагона
-// R2 - кол-во элементов С в составе
-// R4 - кол-во элементов M в составе
-// Реверс для П считаем по М (R4 и R5)
-switch (FEAT_TRAINS, SELF, er200_c_sprites_depot2,
-[
-  STORE_TEMP(LOAD_TEMP(0) - count_veh_id(er200_h) - count_veh_id(er200_m)
-    - count_veh_id(er200_c), 1),
-  STORE_TEMP(LOAD_TEMP(2) - count_veh_id(er200_c), 3),
-  STORE_TEMP(LOAD_TEMP(4) - count_veh_id(er200_m), 5),
-  ((LOAD_TEMP(1) == 2 ? (LOAD_TEMP(0) > 4) :
-    LOAD_TEMP(1) == 3 ? LOAD_TEMP(0) == 7 :
-    LOAD_TEMP(1) == 4 ? LOAD_TEMP(0) > 9 :
-    LOAD_TEMP(1) == 5 ? (LOAD_TEMP(0) > 7) && (LOAD_TEMP(0) <= 9) :
-    LOAD_TEMP(1) == 6 ? LOAD_TEMP(0) == 9 :
-    LOAD_TEMP(1) == 7 ? LOAD_TEMP(0) > 9 :
-    LOAD_TEMP(1) == 8 ? LOAD_TEMP(0) == 11 :
-    LOAD_TEMP(1) == 9 ? LOAD_TEMP(0) > 11 : 0) * (LOAD_TEMP(3) < 4)) +
-  ((LOAD_TEMP(5) > ((LOAD_TEMP(4) / 2) + (LOAD_TEMP(4) % 2))) * 2)   
-])
-{
-  0: er200_c_wrong_place_spriteset;
-  1: er200_c_spriteset;
-  2: er200_cr_wrong_place_spriteset;
-  3: er200_cr_spriteset;
+  0: er200_c_sprites_left;
+  1: er200_c_sprites_right;
      align_15_sprites;
 }
-
-switch (FEAT_TRAINS, PARENT, er200_c_sprites_depot,
-[
-  STORE_TEMP(count_veh_id(er200_h) + count_veh_id(er200_m)
-    + count_veh_id(er200_c), 0), // длина поезда в элементах ЭР2
-  STORE_TEMP(count_veh_id(er200_c), 2), // для определения реверса
-  STORE_TEMP(count_veh_id(er200_m), 4) // для определения реверса по М
-])
-{
-  er200_c_sprites_depot2;
-}
-
-// Рисуем вариант не в депо
-// R0 - кол-во элементов Г в составе
-// Реверс для П считаем по М
-switch (FEAT_TRAINS, SELF, er200_c_sprites3,
-[
-  ((LOAD_TEMP(3) - count_veh_id(er200_m)) >
-    ((LOAD_TEMP(3) / 2) + (LOAD_TEMP(3) % 2))) 
-])
-{
-  0: er200_c_spriteset;
-  1: er200_cr_spriteset;
-     align_15_sprites;
-}
-
 
 switch (FEAT_TRAINS, PARENT, er200_c_sprites_2,
-  STORE_TEMP(count_veh_id(er200_m), 3)) // для определения реверса
-{
-  er200_c_sprites3;
-}
+[ 
+  STORE_TEMP(count_veh_id(er200_m), 4)
+])                                                          
+{ 
+  er200_c_sprites_3; 
+}                               
 
 long_vehicle(er200_c, )
 
-// рисуем в депо?
-switch (FEAT_TRAINS, SELF, er200_c_sprites_0,
-  is_drawn_in_depot())
+switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon_2, 
+[  set_offset_to(num_vehs_in_consist-2),
+   prev_vehicle_type_id()])
 {
-  1: er200_c_sprites_depot;
-     er200_c_sprites;
+  er200_h: return string(STR_CAN_ATTACH_CAR_ONLY);
+           return CB_RESULT_ATTACH_ALLOW;
 }
 
-// Более 2-х головных вагонов нельзя
-// После головного присоединять нельзя
-// Более 12 вагонов в составе нельзя
-switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon1,
-  (count_veh_id(er200_h) > 1) ? (LOAD_TEMP(0) == er200_h ? 0 : 1) :
-    (num_vehs_in_consist >= 12 * 2) ? 2 : 3
-)
+switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon, 
+  (count_veh_id(er200_h) > 1) ? 0 : 
+  (((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) < 5) ||
+  ((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) % 2 == 0 ) ) ? 1 : 2)
 {
   0: return string(STR_CAN_ATTACH_NO_MORE_THAN_2_HEAD);
-  1: return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
-  2: return string(STR_CAN_ATTACH_NO_MORE_THAN_12_UNITS);
-     return CB_RESULT_ATTACH_ALLOW;
+  1: return string(STR_CAN_ATTACH_CAR_ONLY);
+     er200_h_can_attach_wagon_2;
 }
 
-// Можно присоединять только компоненты ЭР1
-switch (FEAT_TRAINS, SELF, er200_h_can_attach_wagon,
-  STORE_TEMP(vehicle_type_id, 0))
+switch (FEAT_TRAINS, PARENT, er200_m_can_attach_wagon, 
+[  set_offset_to(num_vehs_in_consist-2),
+   prev_vehicle_type_id()])
 {
-  er200_h: er200_h_can_attach_wagon1;
-  er200_m: er200_h_can_attach_wagon1;
-  er200_c: er200_h_can_attach_wagon1;
-     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  er200_m: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+           return CB_RESULT_ATTACH_ALLOW;
 }
 
-// Можно присоединять только компоненты ЭР1
-switch (FEAT_TRAINS, SELF, er200_m_can_attach_wagon,
+switch (FEAT_TRAINS, PARENT, er200_c_can_attach_wagon, 
+[  set_offset_to(num_vehs_in_consist-2),
+   prev_vehicle_type_id()])
+{
+  er200_c: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+           return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, SELF, er200_can_attach_wagon2,
   vehicle_type_id)
 {
-  er200_h: return CB_RESULT_ATTACH_ALLOW;
-  er200_m: return CB_RESULT_ATTACH_ALLOW;
-  er200_c: return CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  er200_h: er200_h_can_attach_wagon;
+  er200_m: er200_m_can_attach_wagon;
+  er200_c: er200_c_can_attach_wagon;
+           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-// TL == 12
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop8,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(12),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(14),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(16),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(18),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(20),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(22),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
+switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon1,
+  (count_veh_id(er200_h) > 1) ? 0 : 
+  (((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) >= 9) && (LOAD_TEMP(0) != er200_h)) ? 1 : 2)
 {
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_12);
+  0: return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+  1: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     er200_can_attach_wagon2;
 }
 
-// TL == 11
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop7,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(12),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(14),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(16),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(18),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(20),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
+switch (FEAT_TRAINS, SELF, er200_can_attach_wagon,
+  STORE_TEMP(vehicle_type_id, 0))
 {
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_11);
-}
-
-// TL == 10
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop6,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(12),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(14),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(16),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(18),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
-{
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_10);
-}
-
-// TL == 9
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop5,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(12),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(14),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(16),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
-{
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_9);
-}
-
-// TL == 8
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop4,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(12),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(14),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
-{
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_8);
-}
-
-// TL == 7
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop3,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(12),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
-{
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_7);
-}
-
-// TL == 6
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop2,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_c), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(8),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(10),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
-{
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_6);
-}
-
-// TL == 4
-switch (FEAT_TRAINS, PARENT, er200_h_start_stop1,
-[
-  set_offset_to(2),
-  STORE_TEMP(prev_vehicle_type_id() == er200_m, 0),
-  set_offset_to(4),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_m), 0),
-  set_offset_to(6),
-  STORE_TEMP(LOAD_TEMP(0) && (prev_vehicle_type_id() == er200_h), 0),
-  LOAD_TEMP(0)
-])
-{
-  1: return CB_RESULT_NO_TEXT;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_4);
+  er200_can_attach_wagon1;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_h_start_stop,
-  // длина состава в элементах ЭР2
-  count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c))
+  count_veh_id(er200_h))
 {
-  4: er200_h_start_stop1;
-  6: er200_h_start_stop2;
-  7: er200_h_start_stop3;
-  8: er200_h_start_stop4;
-  9: er200_h_start_stop5;
-  10: er200_h_start_stop6;
-  11: er200_h_start_stop7;
-  12: er200_h_start_stop8;
-     return string(STR_START_STOP_WRONG_TRAIN_LENGTH_SHOULD_BE_4_6_7_8_9_10_11_12);
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
 // Моторный самостоятельно выпускать из депо нельзя
@@ -636,10 +204,10 @@ item (FEAT_TRAINS, er200_h)
     visual_effect_and_powered: disable_visual_effect_and_powered();
   }
   graphics {
-    default: er200_h_sprites_0;
+    default: er200_h_sprites;
     purchase: er200_h_purchase_sprites;
     articulated_part: articulated_part_dummy7;
-    can_attach_wagon: er200_h_can_attach_wagon;
+    can_attach_wagon: er200_can_attach_wagon;
     start_stop: er200_h_start_stop;
     speed: return 200;
     purchase_speed: return 200;
@@ -679,10 +247,10 @@ item (FEAT_TRAINS, er200_m)
     length: 8;
   }
   graphics {
-    default: er200_m_sprites_0;
+    default: er200_m_sprites;
     purchase: er200_m_purchase_sprites;
     articulated_part: articulated_part_dummy7;
-    can_attach_wagon: er200_m_can_attach_wagon;
+    can_attach_wagon: er200_can_attach_wagon;
     start_stop: er200_m_start_stop;
     speed: return 200;
     purchase_speed: return 200;
@@ -723,13 +291,13 @@ item (FEAT_TRAINS, er200_c)
     visual_effect_and_powered: disable_visual_effect_and_powered();
   }
   graphics {
-    default: er200_c_sprites_0;
+    default: er200_c_sprites;
     purchase: er200_c_purchase_sprites;
     articulated_part: articulated_part_dummy7;
     additional_text: return string(STR_ER200_C_PURCHASE_HINT);
     speed: return 200;
     purchase_speed: return 200;
-    can_attach_wagon: er200_m_can_attach_wagon;
+    can_attach_wagon: er200_can_attach_wagon;
     start_stop: er200_m_start_stop;
     power: er200_m_power;
     cargo_capacity: er200_c_cargo_capacity;
