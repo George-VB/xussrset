@@ -12,8 +12,8 @@ switch (FEAT_TRAINS, SELF, name##_purchase_sprites,                \
 {  1: name##_purchase_graphics_ico;                                \
       name##_purchase_graphics_noico;}                             \
 
-// 2-хсекционный электровоз
-#define electric2_sprites(n, name, x, y)                                             \
+// 2-хсекционный электровоз с 2 пантографами
+#define electric2_2_sprites(n, name, x, y)                                           \
 spriteset (name##_notpowered_sprites, IMAGEFILE)                                     \
 { s##n##_template(x, y, 0) }                                                         \
 spriteset (name##_loading_sprites, IMAGEFILE)                                        \
@@ -25,19 +25,189 @@ spritegroup name##_normal_sprites                                               
   loaded: name##_traveling_sprites; }                                                \
 spriteset (name##_speedoverTH_sprites, IMAGEFILE)                                    \
 { s##n##_template(x, y+201, 0) }                                                     \
+                                                                                     \
 spriteset (name##_r_notpowered_sprites, IMAGEFILE)                                   \
 { s##n##_template(x+440, y, 0) }                                                     \
-spriteset (name##_r_sprites, IMAGEFILE)                                              \
+spriteset (name##_r_loading_sprites, IMAGEFILE)                                      \
 { s##n##_template(x+440, y+67, 0) }                                                  \
+spriteset (name##_r_traveling_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x+440, y+134, 0) }                                                 \
+spritegroup name##_r_normal_sprites                                                  \
+{ loading: name##_r_loading_sprites;                                                 \
+  loaded: name##_r_traveling_sprites; }                                              \
+spriteset (name##_r_speedoverTH_sprites, IMAGEFILE)                                  \
+{ s##n##_template(x+440, y+201, 0) }                                                 \
+                                                                                     \
 switch (FEAT_TRAINS, SELF, name##_sprites_left,                                      \
   ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *                                      \
-  (!(vehicle_is_not_powered || vehicle_is_in_depot || (position_in_consist > 0))) )  \
-{ 0: name##_notpowered_sprites;                                                      \
-  1: name##_normal_sprites;                                                          \
-  2: name##_speedoverTH_sprites; }                                                   \
+  ((position_in_consist > 0) * 2 + 1) *                                              \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_normal_sprites;                                                          \
+  2: name##_speedoverTH_sprites;                                                     \
+  3: name##_loading_sprites;                                                         \
+     name##_notpowered_sprites; }                                                    \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_right,                                     \
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *                                      \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_r_normal_sprites;                                                        \
+  2: name##_r_speedoverTH_sprites;                                                   \
+     name##_r_notpowered_sprites; }                                                  \
+
+// 2-хсекционный электровоз с 1 пантографом
+#define electric2_1_sprites(n, name, x, y)                                           \
+spriteset (name##_notpowered_sprites, IMAGEFILE)                                     \
+{ s##n##_template(x, y, 0) }                                                         \
+spriteset (name##_loading_sprites, IMAGEFILE)                                        \
+{ s##n##_template(x, y+67, 0) }                                                      \
+spriteset (name##_traveling_sprites, IMAGEFILE)                                      \
+{ s##n##_template(x, y+134, 0) }                                                     \
+spritegroup name##_normal_sprites                                                    \
+{ loading: name##_loading_sprites;                                                   \
+  loaded: name##_traveling_sprites; }                                                \
+spriteset (name##_speedoverTH_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x, y+201, 0) }                                                     \
+                                                                                     \
+spriteset (name##_r_notpowered_sprites, IMAGEFILE)                                   \
+{ s##n##_template(x+440, y, 0) }                                                     \
+spriteset (name##_r_normal_sprites, IMAGEFILE)                                       \
+{ s##n##_template(x+440, y+67, 0) }                                                  \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_left,                                      \
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *                                      \
+  ((position_in_consist > 0) * 2 + 1) *                                              \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_normal_sprites;                                                          \
+  2: name##_speedoverTH_sprites;                                                     \
+  3: name##_loading_sprites;                                                         \
+     name##_notpowered_sprites; }                                                    \
+                                                                                     \
 switch (FEAT_TRAINS, SELF, name##_sprites_right,                                     \
   (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
-{ 0: name##_r_notpowered_sprites;                                                    \
-  1: name##_r_sprites; }                                                             \
+{ 1: name##_r_normal_sprites;                                                        \
+     name##_r_notpowered_sprites; }                                                  \
 
+// 2-хсекционный электровоз без пантографа
+#define electric2_0_sprites(n, name, x, y)                                           \
+spriteset (name##_notpowered_sprites, IMAGEFILE)                                     \
+{ s##n##_template(x, y, 0) }                                                         \
+spriteset (name##_loading_sprites, IMAGEFILE)                                        \
+{ s##n##_template(x, y+67, 0) }                                                      \
+spriteset (name##_traveling_sprites, IMAGEFILE)                                      \
+{ s##n##_template(x, y+134, 0) }                                                     \
+spritegroup name##_normal_sprites                                                    \
+{ loading: name##_loading_sprites;                                                   \
+  loaded: name##_traveling_sprites; }                                                \
+spriteset (name##_speedoverTH_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x, y+201, 0) }                                                     \
+                                                                                     \
+spriteset (name##_r_notpowered_sprites, IMAGEFILE)                                   \
+{ s##n##_template(x+440, y, 0) }                                                     \
+spriteset (name##_r_normal_sprites, IMAGEFILE)                                       \
+{ s##n##_template(x+440, y+67, 0) }                                                  \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_left,                                      \
+  ((position_in_consist > 0) + 1) *                                                  \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_normal_sprites;                                                          \
+     name##_notpowered_sprites; }                                                    \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_right,                                     \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_r_normal_sprites;                                                        \
+     name##_r_notpowered_sprites; }                                                  \
 
+// ЭМВПС 3 головных 3 мотоных 2 немоторных (HMC) 
+// если голова неверная, то тяги нет по определению
+#define emu_3_3_2_sprites(n, name, x, y)                                             \
+spriteset (name##_h_notpowered_sprites, IMAGEFILE)                                   \
+{ s##n##_template(x, y, 0) }                                                         \
+spriteset (name##_h_loading_sprites, IMAGEFILE)                                      \
+{ s##n##_template(x, y+67, 0) }                                                      \
+spriteset (name##_h_traveling_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x, y+134, 0) }                                                     \
+spritegroup name##_h_normal_sprites                                                  \
+{ loading: name##_h_loading_sprites;                                                 \
+  loaded: name##_h_traveling_sprites; }                                              \
+                                                                                     \
+spriteset (name##_h_r_notpowered_sprites, IMAGEFILE)                                 \
+{ s##n##_template(x+440, y, 0) }                                                     \
+spriteset (name##_h_r_loading_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x+440, y+67, 0) }                                                  \
+spriteset (name##_h_r_traveling_sprites, IMAGEFILE)                                  \
+{ s##n##_template(x+440, y+134, 0) }                                                 \
+spritegroup name##_h_r_normal_sprites                                                \
+{ loading: name##_h_r_loading_sprites;                                               \
+  loaded: name##_h_r_traveling_sprites; }                                            \
+                                                                                     \
+spriteset (name##_m_notpowered_sprites, IMAGEFILE)                                   \
+{ s##n##_template(x+880, y, 0) }                                                     \
+spriteset (name##_m_loading_sprites, IMAGEFILE)                                      \
+{ s##n##_template(x+880, y+67, 0) }                                                  \
+spriteset (name##_m_traveling_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x+880, y+134, 0) }                                                 \
+spritegroup name##_m_normal_sprites                                                  \
+{ loading: name##_m_loading_sprites;                                                 \
+  loaded: name##_m_traveling_sprites; }                                              \
+                                                                                     \
+spriteset (name##_m_r_notpowered_sprites, IMAGEFILE)                                 \
+{ s##n##_template(x+1320, y, 0) }                                                    \
+spriteset (name##_m_r_loading_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x+1320, y+67, 0) }                                                 \
+spriteset (name##_m_r_traveling_sprites, IMAGEFILE)                                  \
+{ s##n##_template(x+1320, y+134, 0) }                                                \
+spritegroup name##_m_r_normal_sprites                                                \
+{ loading: name##_m_r_loading_sprites;                                               \
+  loaded: name##_m_r_traveling_sprites; }                                            \
+                                                                                     \
+spriteset (name##_c_notpowered_sprites, IMAGEFILE)                                   \
+{ s##n##_template(x+1760, y, 0) }                                                    \
+spriteset (name##_c_loading_sprites, IMAGEFILE)                                      \
+{ s##n##_template(x+1760, y+67, 0) }                                                 \
+spritegroup name##_c_normal_sprites                                                  \
+{ loading: name##_c_loading_sprites;                                                 \
+  loaded: name##_c_notpowered_sprites; }                                             \
+                                                                                     \
+spriteset (name##_c_r_notpowered_sprites, IMAGEFILE)                                 \
+{ s##n##_template(x+2200, y, 0) }                                                    \
+spriteset (name##_c_r_loading_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x+2200, y+67, 0) }                                                 \
+spritegroup name##_c_r_normal_sprites                                                \
+{ loading: name##_c_r_loading_sprites;                                               \
+  loaded: name##_c_r_notpowered_sprites; }                                           \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_h_sprites_left,                                    \
+  ((position_in_consist > 0) + 1) *                                                  \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_h_normal_sprites;                                                        \
+     name##_h_notpowered_sprites; }                                                  \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_h_sprites_right,                                   \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_h_r_normal_sprites;                                                      \
+     name##_h_r_notpowered_sprites; }                                                \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_m_sprites_left,                                    \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_m_normal_sprites;                                                        \
+     name##_m_notpowered_sprites; }                                                  \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_m_sprites_right,                                   \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_m_r_normal_sprites;                                                      \
+     name##_m_r_notpowered_sprites; }                                                \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_c_sprites_left,                                    \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_c_normal_sprites;                                                        \
+     name##_c_notpowered_sprites; }                                                  \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_c_sprites_right,                                   \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_c_r_normal_sprites;                                                      \
+     name##_c_r_notpowered_sprites; }                                                \
+
+//switch (FEAT_TRAINS, PARENT, name##_m_sprites,
+//[
+//  STORE_TEMP(vehicle_type_id == name##_h, 3) // для определения наличия тяги
+//])
