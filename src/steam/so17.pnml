@@ -1,0 +1,200 @@
+ // em
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/so17.png"
+
+// v1
+
+purchase_sprites(so17_v1, 315, 0)
+                             
+spriteset (so17_v1_1_spriteset, IMAGEFILE)
+{ s7_template(4, 4, 0) } 
+
+spriteset (so17_v1_2_spriteset, IMAGEFILE)
+{ s7_template(4, 45, 0) } 
+
+spriteset (so17_v1_3_spriteset, IMAGEFILE)
+{ s7_template(4, 86, 0) } 
+
+spriteset (so17_v1_4_spriteset, IMAGEFILE)
+{ s7_template(4, 127, 0) } 
+
+// v2
+
+purchase_sprites(so17_v2, 315, 20)
+                             
+spriteset (so17_v2_1_spriteset, IMAGEFILE)
+{ s7_template(4, 183, 0) } 
+
+spriteset (so17_v2_2_spriteset, IMAGEFILE)
+{ s7_template(4, 224, 0) } 
+
+spriteset (so17_v2_3_spriteset, IMAGEFILE)
+{ s7_template(4, 265, 0) } 
+
+spriteset (so17_v2_4_spriteset, IMAGEFILE)
+{ s7_template(4, 306, 0) } 
+
+// v3
+
+purchase_sprites(so17_v3, 315, 40)
+                             
+spriteset (so17_v3_1_spriteset, IMAGEFILE)
+{ s7_template(4, 361, 0) } 
+
+spriteset (so17_v3_2_spriteset, IMAGEFILE)
+{ s7_template(4, 402, 0) } 
+
+spriteset (so17_v3_3_spriteset, IMAGEFILE)
+{ s7_template(4, 443, 0) } 
+
+spriteset (so17_v3_4_spriteset, IMAGEFILE)
+{ s7_template(4, 484, 0) } 
+
+//t
+
+spriteset (so17_t_spriteset, IMAGEFILE)
+{ s6_template(4, 547, 0) } 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, PARENT, so17_v1_sprites,
+  LOAD_TEMP(3))
+{
+  0: so17_v1_1_spriteset;
+  1: so17_v1_2_spriteset;
+  2: so17_v1_3_spriteset;
+     so17_v1_4_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, so17_v2_sprites,
+  LOAD_TEMP(3))
+{
+  0: so17_v2_1_spriteset;
+  1: so17_v2_2_spriteset;
+  2: so17_v2_3_spriteset;
+     so17_v2_4_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, so17_v3_sprites,
+  LOAD_TEMP(3))
+{
+  0: so17_v3_1_spriteset;
+  1: so17_v3_2_spriteset;
+  2: so17_v3_3_spriteset;
+     so17_v3_4_spriteset;
+}
+
+switch (FEAT_TRAINS, PARENT, so17_purchase_sprites,
+  (build_year >= 1946) +
+  (build_year >= 1948))
+{
+  0: so17_v1_purchase_sprites;
+  1: so17_v2_purchase_sprites;
+     so17_v3_purchase_sprites;
+} 
+
+switch (FEAT_TRAINS, PARENT, so17_sprites_2,
+  (build_year >= 1946) +
+  (build_year >= 1948))
+{
+  0: so17_v1_sprites;
+  1: so17_v2_sprites;
+     so17_v3_sprites;
+} 
+
+short_vehicle(so17, )
+
+switch (FEAT_TRAINS, SELF, so17_weight,
+  (build_year >= 1942) +
+  (build_year >= 1948))
+{
+  0: return (97+68);
+  1: return (103+68);
+     return (103+82);
+}
+
+switch (FEAT_TRAINS, SELF, so17_tractive_effort_coefficient,
+  (build_year >= 1942) +
+  (build_year >= 1948))
+{
+  0: return get_tec_int(193.0, 97+68);
+  1: return get_tec_int(203.0, 103+68);
+     return get_tec_int(203.0, 103+82);
+}
+
+engine_speed_change_after2(so17, 65, 70, 1935, 75, 1936)
+
+engine_penalise_speed0(so17)
+
+switch (FEAT_TRAINS, SELF, so17_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy1;
+  2: return unitb;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item (FEAT_TRAINS, so17) 
+{
+  property
+  {
+    name: string(STR_SO17_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1934), 1, 1);
+    model_life: get_model_life(1934,1951);
+    retire_early: get_retire_early(1934,1951);
+    vehicle_life: 30; // срок службы
+    reliability_decay: 20;
+    cost_factor: 15;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1970 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (97+68) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(193.0, 97+68);
+    length: 6;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+
+  graphics {
+    default: so17_sprites;
+    purchase: so17_purchase_sprites;
+    articulated_part: so17_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_SO17_PURCHASE_HINT);
+    speed: so17_speed;
+    purchase_speed: so17_purchase_speed;
+    bitmask_vehicle_info: so17_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    tractive_effort_coefficient: so17_tractive_effort_coefficient;
+    weight: so17_weight;
+  }
+
+  livery_override(unitb)
+  {
+    length: return 5;
+    so17_t_spriteset;
+  }
+
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, so17)
+  {
+    property
+    { name: string(STR_SO17_NAME_LONG); }
+  }
+}
+
