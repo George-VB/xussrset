@@ -8,29 +8,29 @@
 purchase_sprites(er_e, 315, 60)
 
 // паровоз, анимация из 4-х фреймов
-spriteset (er_e_1_spriteset, IMAGEFILE)
+spriteset (er_e_1_sprites, IMAGEFILE)
 {
   s7_template(3, 558, 0)
 } 
 
-spriteset (er_e_2_spriteset, IMAGEFILE)
+spriteset (er_e_2_sprites, IMAGEFILE)
 {
   s7_template(3, 603, 0)
 } 
 
-spriteset (er_e_3_spriteset, IMAGEFILE)
+spriteset (er_e_3_sprites, IMAGEFILE)
 {
   s7_template(3, 649, 0)
 } 
 
-spriteset (er_e_4_spriteset, IMAGEFILE)
+spriteset (er_e_4_sprites, IMAGEFILE)
 {
   s7_template(3, 696, 0)
 } 
 
 // тендер
 
-spriteset (er_t_spriteset, IMAGEFILE)
+spriteset (er_t_sprites, IMAGEFILE)
 {
   s6_template(3, 778, 0)
 } 
@@ -40,19 +40,29 @@ spriteset (er_t_spriteset, IMAGEFILE)
 switch (FEAT_TRAINS, PARENT, er_e_sprites_2,
   LOAD_TEMP(3))
 {
-  0: er_e_1_spriteset;
-  1: er_e_2_spriteset;
-  2: er_e_3_spriteset;
-     er_e_4_spriteset;
+  0: er_e_1_sprites;
+  1: er_e_2_sprites;
+  2: er_e_3_sprites;
+     er_e_4_sprites;
 }
 
 short_vehicle(er_e, )
 
 switch (FEAT_TRAINS, SELF, er_e_weight,
-  (build_year >= 1946))
+  (build_year >= 1946) +
+  (build_year >= 1948))
 {
-  0: return (84+82);
+  0: return (84+68);
+  1: return (85+68);
      return (85+82);
+}
+
+switch (FEAT_TRAINS, SELF, er_e_tractive_effort_coefficient,
+  build_year >= 1948)
+{
+  0: return get_tec_int(186.0, 84+68);
+  1: return get_tec_int(186.0, 85+68);
+     return get_tec_int(186.0, 85+82);
 }
 
 engine_speed_change_after(er_e, 55, 65, 1936)
@@ -66,6 +76,21 @@ switch (FEAT_TRAINS, SELF, er_e_articulated_part,
   2: return unitb;
   3: return dummy1;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+
+switch (FEAT_TRAINS, SELF, er_tender_sprites,
+  build_year >= 1948)
+{
+  0: e_t_sprites;
+     er_t_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er_tender_length,
+  build_year >= 1948)
+{
+  0: return 4;
+     return 5;
 }
 
 item (FEAT_TRAINS, er_e) 
@@ -89,7 +114,7 @@ item (FEAT_TRAINS, er_e)
     running_cost_base: RUNNING_COST_STEAM;
     weight: (84+82) ton;
     engine_class: ENGINE_CLASS_STEAM;
-    tractive_effort_coefficient: get_tec(186.0, 84+82);
+    tractive_effort_coefficient: get_tec(186.0, 84+68);
     length: 6;
     visual_effect_and_powered: steam_visual_effect_and_powered(-4);
     cargo_allow_refit: [GOOD];
@@ -104,6 +129,7 @@ item (FEAT_TRAINS, er_e)
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_ER_PURCHASE_HINT);
+    tractive_effort_coefficient: er_e_tractive_effort_coefficient;
     speed: er_e_speed;
     purchase_speed: er_e_purchase_speed;
     bitmask_vehicle_info: er_e_bitmask_vehicle_info;
@@ -113,8 +139,8 @@ item (FEAT_TRAINS, er_e)
 
   livery_override(unitb)
   {
-    length: return 5;
-    er_t_spriteset;
+    length: er_tender_length;
+            er_tender_sprites;
   }
 
 }
