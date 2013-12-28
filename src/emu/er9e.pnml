@@ -1,0 +1,349 @@
+ // er9e
+
+switch (FEAT_TRAINS, PARENT, er9e_h_can_attach_wagon3, 
+[  set_offset_to(num_vehs_in_consist-4),
+   prev_vehicle_type_id()])
+{
+  er9e_c: return CB_RESULT_ATTACH_ALLOW;
+          return string(STR_CAN_ATTACH_CAR_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_h_can_attach_wagon2, 
+[  set_offset_to(num_vehs_in_consist-2),
+   prev_vehicle_type_id()])
+{
+  er9e_h: return string(STR_CAN_ATTACH_CAR_ONLY);
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_h_can_attach_wagon, 
+  (count_veh_id(er9e_h) > 1) ? 0 : 
+  (((count_veh_id(er9e_h) + count_veh_id(er9e_m) + count_veh_id(er9e_c)) < 3) ||
+  ((count_veh_id(er9e_h) + count_veh_id(er9e_m) + count_veh_id(er9e_c)) % 2 == 0 ) ) ? 1 : (2 + count_veh_id(er9e_m)) )
+{
+     0: return string(STR_CAN_ATTACH_NO_MORE_THAN_2_HEAD);
+     1: return string(STR_CAN_ATTACH_CAR_ONLY);
+     2: er9e_h_can_attach_wagon2;
+  6..8: er9e_h_can_attach_wagon3;
+        return CB_RESULT_ATTACH_ALLOW; 
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_m_can_attach_wagon, 
+  ((count_veh_id(er9e_m) - count_veh_id(er9e_c) - count_veh_id(er9e_h)) < 1 ) * (1 + count_veh_id(er9e_m)))
+{
+  0: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+     return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_can_attach_wagon4, 
+[  set_offset_to(num_vehs_in_consist-8),
+   prev_vehicle_type_id()])
+{
+  er9e_m: return CB_RESULT_ATTACH_ALLOW;
+          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_can_attach_wagon3, 
+[  set_offset_to(num_vehs_in_consist-4),
+   prev_vehicle_type_id()])
+{
+  er9e_m: return CB_RESULT_ATTACH_ALLOW;
+          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_can_attach_wagon2, 
+[  set_offset_to(num_vehs_in_consist-4),
+   prev_vehicle_type_id()])
+{
+  er9e_m: return CB_RESULT_ATTACH_ALLOW;
+          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_can_attach_wagon1, 
+[  set_offset_to(num_vehs_in_consist-4),
+   prev_vehicle_type_id()])
+{
+  er9e_c: return CB_RESULT_ATTACH_ALLOW;
+          return string(STR_CAN_ATTACH_HEAD_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_can_attach_wagon0, 
+  ((count_veh_id(er9e_m) - count_veh_id(er9e_c) - count_veh_id(er9e_h)) >= 0 ) * (count_veh_id(er9e_m)))
+{
+  0: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+  1: return CB_RESULT_ATTACH_ALLOW;
+  2: er9e_c_can_attach_wagon1;
+  3: er9e_c_can_attach_wagon2;
+  4: er9e_c_can_attach_wagon3;
+  5: er9e_c_can_attach_wagon4;
+     return string(STR_CAN_ATTACH_HEAD_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_can_attach_wagon, 
+[  set_offset_to(num_vehs_in_consist-2),
+   prev_vehicle_type_id()])
+{
+  er9e_m: er9e_c_can_attach_wagon0;
+          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+}
+
+
+switch (FEAT_TRAINS, SELF, er9e_can_attach_wagon2,
+  vehicle_type_id)
+{
+  er9e_h: er9e_h_can_attach_wagon;
+  er9e_m: er9e_m_can_attach_wagon;
+  er9e_c: er9e_c_can_attach_wagon;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_can_attach_wagon1,
+  (count_veh_id(er9e_h) > 1) ? 0 : 
+  (((count_veh_id(er9e_h) + count_veh_id(er9e_m) + count_veh_id(er9e_c)) >= 11) && (LOAD_TEMP(0) != er9e_h)) ? 1 : 2)
+{
+  0: return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+  1: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     er9e_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, er9e_can_attach_wagon,
+  STORE_TEMP(vehicle_type_id, 0))
+{
+  er9e_can_attach_wagon1;
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_h_start_stop,
+  count_veh_id(er9e_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+// Моторный самостоятельно выпускать из депо нельзя
+switch (FEAT_TRAINS, SELF, er9e_m_start_stop,
+  0)
+{
+     return string(STR_START_STOP_MOTORIZED_CAR_CANNOT_LEAVE_DEPOT);
+}
+
+// Визуализируем эффекты тяги у er9e_m, только если локомотив - er9e_h
+switch (FEAT_TRAINS, SELF, er9e_m_visual_effect_and_powered2,
+  (count_veh_id(er9e_m) * 2) <= LOAD_TEMP(0) )
+{
+  0: return electric_visual_effect_and_powered(-3);
+     return electric_visual_effect_and_powered(7);
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_m_visual_effect_and_powered1,
+[ 
+  STORE_TEMP(count_veh_id(er9e_m), 0)
+])                                                          
+{
+  er9e_m_visual_effect_and_powered2;
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_m_visual_effect_and_powered,
+  vehicle_type_id == er9e_h)
+{
+  1: er9e_m_visual_effect_and_powered1;
+     return disable_visual_effect_and_powered();
+}
+
+// Даём тягу, только если локомотив - er9e_h
+switch (FEAT_TRAINS, PARENT, er9e_m_power,
+  vehicle_type_id == er9e_h)
+{
+  1: return get_power_in_cb(826); 
+     return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - er9e_h
+switch (FEAT_TRAINS, PARENT, er9e_h_cargo_capacity,
+  (vehicle_type_id == er9e_h) )
+{
+  1: return 88;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_m_cargo_capacity,
+  (vehicle_type_id == er9e_h) )
+{
+  1: return 107;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, er9e_c_cargo_capacity,
+  (vehicle_type_id == er9e_h) )
+{
+  1: return 108;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, er9e_cargo_subtype_text1,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY_62255, string(STR_REFIT_TTD_53));
+  1: string(STR_REFIT_FACTORY_62255, string(STR_REFIT_UKRAINIAN_RAILWAY));
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, er9e_cargo_subtype_text,
+  (current_year >= 1990) )
+{
+  0: string(STR_REFIT_FACTORY_62255, string(STR_REFIT_TTD_53));
+     er9e_cargo_subtype_text1;
+}
+
+item (FEAT_TRAINS, er9e_h) 
+{
+  property
+  {
+    name: string(STR_ER9E_H_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1982), 1, 1);
+    model_life: get_model_life(1982,1988);
+    retire_early: get_retire_early(1982,1988);
+    vehicle_life: 30; // срок службы
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    loading_speed: 12; 
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 130 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 88;
+    weight: 39 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+  }
+  graphics {
+    default: er9m_h_sprites;
+    purchase: er9m_h_purchase_sprites;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: er9e_can_attach_wagon;
+    start_stop: er9e_h_start_stop;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    additional_text: return string(STR_ER9E_H_PURCHASE_HINT);
+    power: return 0;
+    cargo_capacity: er9e_h_cargo_capacity;
+    cargo_subtype_text: er9e_cargo_subtype_text;
+  }
+}
+
+item (FEAT_TRAINS, er9e_m) 
+{
+  property
+  {
+    name: string(STR_ER9E_M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1982), 1, 1);
+    model_life: get_model_life(1982,1988);
+    retire_early: get_retire_early(1982,1988);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    loading_speed: 12;
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 826 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 107;
+    weight: 57 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(47.0, 57);
+    length: 8;
+  }
+  graphics {
+    default: er9m_m_sprites;
+    purchase: er9m_m_purchase_sprites;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: er9e_can_attach_wagon;
+    start_stop: er9e_m_start_stop;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    additional_text: return string(STR_ER9E_M_PURCHASE_HINT);
+    visual_effect_and_powered: er9e_m_visual_effect_and_powered;
+    power: er9e_m_power;
+    cargo_capacity: er9e_m_cargo_capacity;
+    cargo_subtype_text: er9e_cargo_subtype_text;
+  }
+}
+
+item (FEAT_TRAINS, er9e_c) 
+{
+  property
+  {
+    name: string(STR_ER9E_C_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1982), 1, 1);
+    model_life: get_model_life(1982,1988);
+    retire_early: get_retire_early(1982,1988);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    loading_speed: 12;
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 108;
+    weight: 37 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+  }
+  graphics {
+    default: er9m_c_sprites;
+    purchase: er9m_c_purchase_sprites;
+    articulated_part: articulated_part_dummy4;
+    additional_text: return string(STR_ER9E_C_PURCHASE_HINT);
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    can_attach_wagon: er9e_can_attach_wagon;
+    start_stop: er9e_m_start_stop;
+    power: return 0;
+    cargo_capacity: er9e_c_cargo_capacity;
+    cargo_subtype_text: er9e_cargo_subtype_text;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, er9e_h)
+  {
+    property
+    { name: string(STR_ER9E_H_NAME_LONG); }
+  }
+  item (FEAT_TRAINS, er9e_m)
+  {
+    property
+    { name: string(STR_ER9E_M_NAME_LONG); }
+  }
+  item (FEAT_TRAINS, er9e_c)
+  {
+    property
+    { name: string(STR_ER9E_C_NAME_LONG); }
+  }
+}
+
