@@ -1,6 +1,6 @@
 readme
 
-xUSSR Railway Set Alpha
+xUSSR Railway Set v0.2
 
 The xUSSR Railway Set includes locomotives, DMUs, EMUs and other rolling stock
 from the former Russian Empire, Soviet Union and several countries containing
@@ -12,7 +12,8 @@ functionality of real vehicles.
 Copyright (C) 2004-2013 by AgRiG, George (George V. Bagaev), Wowan (Vladimir
 Guryanov), Simozzz (Andrey Kashirin), dvornik (Alexander Kozlov), Joyrider
 (Anton Murashov), Ghost (Serguei Stepanov), Rubiroid (Alexander Tkachuk),
-Engineer_Keen (Vasiliy Verigin), Otecan (Andrey Pichugin).
+Engineer_Keen (Vasiliy Verigin), Otecan (Andrey Pichugin), LitNik (Nicolai 
+Leetvinenko), pi1985 (Ivan Piskovoi).
 
 Web: www.ttdrussia.net
 
