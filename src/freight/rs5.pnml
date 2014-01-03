@@ -3,28 +3,86 @@
 /// Вагон
 // РС-5 рефрижераторная секция 5-вагонная (1986-2000)
 
-#define IMAGEFILE  "src/freight/rs5-refrigerator-section-1986-2000.png"
+#define IMAGEFILE  "src/freight/rs-refrigerator-section.png"
 
 // покупка
-purchase_sprites(rs5, 0, 0)
+purchase_sprites(rs5, 0, 38)
 
-// грузовой вагон
-spriteset (rs5_sprites_2, IMAGEFILE)
+// шаблон: движение/100%, 33%, 66%, 99%
+#define rs5_sprite_layout_template(x, y, v)    \
+spriteset (rs5##v##_sprites, IMAGEFILE)        \
+{ s13_template(x, y, 0) }                      \
+spriteset (rs5_1##v##_sprites, IMAGEFILE)      \
+{ s13_template(x, y+67, 0) }                   \
+spriteset (rs5_2##v##_sprites, IMAGEFILE)      \
+{ s13_template(x, y+134, 0) }                  \
+spriteset (rs5_3##v##_sprites, IMAGEFILE)      \
+{ s13_template(x, y+201, 0) }                  \
+spritegroup rs5##v##_sprites_l                 \
+{ loading: [rs5_1##v##_sprites,                \
+    rs5_1##v##_sprites,                        \
+    rs5_1##v##_sprites,                        \
+    rs5_2##v##_sprites,                        \
+    rs5_2##v##_sprites,                        \
+    rs5_2##v##_sprites,                        \
+    rs5_3##v##_sprites,                        \
+    rs5_3##v##_sprites,                        \
+    rs5_3##v##_sprites,                        \
+    rs5##v##_sprites];                         \
+  loaded: [rs5##v##_sprites]; }                \
+                                               \
+spriteset (rs5##v##_r_sprites, IMAGEFILE)      \
+{ s13_r_template(x, y, 0) }                    \
+spriteset (rs5_1##v##_r_sprites, IMAGEFILE)    \
+{ s13_r_template(x, y+67, 0) }                 \
+spriteset (rs5_2##v##_r_sprites, IMAGEFILE)    \
+{ s13_r_template(x, y+134, 0) }                \
+spriteset (rs5_3##v##_r_sprites, IMAGEFILE)    \
+{ s13_r_template(x, y+201, 0) }                \
+spritegroup rs5##v##_sprites_r                 \
+{ loading: [rs5_1##v##_r_sprites,              \
+    rs5_1##v##_r_sprites,                      \
+    rs5_1##v##_r_sprites,                      \
+    rs5_2##v##_r_sprites,                      \
+    rs5_2##v##_r_sprites,                      \
+    rs5_2##v##_r_sprites,                      \
+    rs5_3##v##_r_sprites,                      \
+    rs5_3##v##_r_sprites,                      \
+    rs5_3##v##_r_sprites,                      \
+    rs5##v##_r_sprites];                       \
+  loaded: [rs5##v##_r_sprites]; }              \
+
+// ливреи
+rs5_sprite_layout_template(113, 103, _v1)
+
+random_switch (FEAT_TRAINS, SELF, rs5_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  s13_template(112, 64, 0)
+  1: rs5_v1_sprites_l;
+  1: rs5_v1_sprites_r;
 }
 
 // дизельный вагон
-spriteset (rs5_diesel_spriteset, IMAGEFILE)
+spriteset (rs5_diesel_sprites_l, IMAGEFILE)
 {
-  s10_template(112, 131, 0)
+  s10_template(113, 371, 0)
+}
+spriteset (rs5_diesel_sprites_r, IMAGEFILE)
+{
+  s10_r_template(113, 371, 0)
 }
 
-// Реверс: (552, y, 0)
+switch (FEAT_TRAINS, SELF, rs5_diesel_sprites, 
+[  set_offset_to(-position_in_vehid_chain-1),
+   (prev_vehicle_randombits() % 2)])
+{
+  0: rs5_diesel_sprites_l;
+     rs5_diesel_sprites_r;
+}
 
 #undef IMAGEFILE
 
-long_vehicle(rs5, )
+long_vehicle_RND(rs5, rs5_sprites_2)
 
 // секция из 5-ти вагонов
 switch (FEAT_TRAINS, SELF, rs5_articulated_part,
@@ -49,17 +107,25 @@ switch (FEAT_TRAINS, SELF, rs5int_length,
      return 8;
 }
 
+switch (FEAT_TRAINS, SELF, rs5int_prev_sprites, 
+[  set_offset_to(-position_in_vehid_chain-1),
+   (prev_vehicle_randombits() % 2)])
+{
+  0: rs5_v1_sprites_l;
+     rs5_v1_sprites_r;
+}
+
 switch (FEAT_TRAINS, SELF, rs5int_sprites_2,
   position_in_vehid_chain)
 {
-  1: rs5_sprites_2;
-  3: rs5_diesel_spriteset;
-  5: rs5_sprites_2;
-  7: rs5_sprites_2;
+  1: rs5int_prev_sprites;
+  3: rs5_diesel_sprites;
+  5: rs5int_prev_sprites;
+  7: rs5int_prev_sprites;
      dummy_sprites;
 }
 
-long_vehicle(rs5int, )
+long_vehicle(rs5int)
 
 // Для задания нужных размеров частей и их рисования
 item (FEAT_TRAINS, rs5int)
