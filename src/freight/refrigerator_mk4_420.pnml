@@ -1,0 +1,159 @@
+ // refrigerator_mk4_420
+
+/// Вагон-ледник
+// refrigerator van
+
+#define IMAGEFILE  "src/freight/refrigerator-mk4-420.png"
+
+// покупка
+purchase_sprites(refrigerator_mk4_420, 0, 0)
+
+spriteset (refrigerator_mk4_420_0_sprites, IMAGEFILE)      
+{ s13_template(44, 113, 0) }                                       
+spriteset (refrigerator_mk4_420_1_sprites, IMAGEFILE)    
+{ s13_template(44, 180, 0) }                                       
+spriteset (refrigerator_mk4_420_0_r_sprites, IMAGEFILE)      
+{ s13_r_template(44, 113, 0) }                                       
+spriteset (refrigerator_mk4_420_1_r_sprites, IMAGEFILE)    
+{ s13_r_template(44, 180, 0) }                                       
+
+#define refrigerator_mk4_420_sprite_layout_template(x, y, cargo)   \
+spriteset (refrigerator_mk4_420_2_##cargo##_sprites, IMAGEFILE)    \
+{ s13_template(x, y, 0) }                                          \
+spriteset (refrigerator_mk4_420_3_##cargo##_sprites, IMAGEFILE)    \
+{ s13_template(x, y+67, 0) }                                       \
+spritegroup refrigerator_mk4_420_##cargo##_sprites_l               \
+{ loading: [refrigerator_mk4_420_1_sprites,                        \
+    refrigerator_mk4_420_1_sprites,                                \
+    refrigerator_mk4_420_1_sprites,                                \
+    refrigerator_mk4_420_2_##cargo##_sprites,                      \
+    refrigerator_mk4_420_2_##cargo##_sprites,                      \
+    refrigerator_mk4_420_2_##cargo##_sprites,                      \
+    refrigerator_mk4_420_3_##cargo##_sprites,                      \
+    refrigerator_mk4_420_3_##cargo##_sprites,                      \
+    refrigerator_mk4_420_3_##cargo##_sprites,                      \
+    refrigerator_mk4_420_0_sprites];                               \
+  loaded: [refrigerator_mk4_420_0_sprites]; }                      \
+                                                                   \
+spriteset (refrigerator_mk4_420_2_r_##cargo##_sprites, IMAGEFILE)  \
+{ s13_r_template(x, y, 0) }                                        \
+spriteset (refrigerator_mk4_420_3_r_##cargo##_sprites, IMAGEFILE)  \
+{ s13_r_template(x, y+67, 0) }                                     \
+spritegroup refrigerator_mk4_420_##cargo##_sprites_r               \
+{ loading: [refrigerator_mk4_420_1_r_sprites,                      \
+    refrigerator_mk4_420_1_r_sprites,                              \
+    refrigerator_mk4_420_1_r_sprites,                              \
+    refrigerator_mk4_420_2_r_##cargo##_sprites,                    \
+    refrigerator_mk4_420_2_r_##cargo##_sprites,                    \
+    refrigerator_mk4_420_2_r_##cargo##_sprites,                    \
+    refrigerator_mk4_420_3_r_##cargo##_sprites,                    \
+    refrigerator_mk4_420_3_r_##cargo##_sprites,                    \
+    refrigerator_mk4_420_3_r_##cargo##_sprites,                    \
+    refrigerator_mk4_420_0_r_sprites];                             \
+  loaded: [refrigerator_mk4_420_0_r_sprites]; }                    \
+                                                                
+// ливреи
+refrigerator_mk4_420_sprite_layout_template(44,  298, fruit1)
+refrigerator_mk4_420_sprite_layout_template(44,  482, fruit2)
+refrigerator_mk4_420_sprite_layout_template(44,  666, fruit3)
+refrigerator_mk4_420_sprite_layout_template(44,  850, fish)
+refrigerator_mk4_420_sprite_layout_template(44, 1035, food)
+
+#undef IMAGEFILE                   	
+
+random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_fruit_sprites_l,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  2: refrigerator_mk4_420_fruit1_sprites_l;
+  1: refrigerator_mk4_420_fruit2_sprites_l;
+  2: refrigerator_mk4_420_fruit3_sprites_l;
+}
+
+random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_fruit_sprites_r,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: refrigerator_mk4_420_fruit_sprites_l;
+  2: refrigerator_mk4_420_fruit1_sprites_r;
+  1: refrigerator_mk4_420_fruit2_sprites_r;
+  2: refrigerator_mk4_420_fruit3_sprites_r;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_sprites_l,
+  cargo_type_in_veh)
+{
+  FRVG: refrigerator_mk4_420_fruit_sprites_l;
+  FRUT: refrigerator_mk4_420_fruit_sprites_l;
+  FISH: refrigerator_mk4_420_fish_sprites_l;
+  FOOD: refrigerator_mk4_420_food_sprites_l;
+        align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_sprites_r,
+  cargo_type_in_veh)
+{
+  FRVG: refrigerator_mk4_420_fruit_sprites_r;
+  FRUT: refrigerator_mk4_420_fruit_sprites_r;
+  FISH: refrigerator_mk4_420_fish_sprites_r;
+  FOOD: refrigerator_mk4_420_food_sprites_r;
+        align_13_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  independent: refrigerator_mk4_420_fruit_sprites_l;
+  1: refrigerator_mk4_420_sprites_l;
+  1: refrigerator_mk4_420_sprites_r;
+}
+
+
+long_vehicle_RND(refrigerator_mk4_420, refrigerator_mk4_420_sprites_2)
+
+item (FEAT_TRAINS, refrigerator_mk4_420) 
+{
+  property
+  {
+    name: string(STR_REFRIGERATOR_MK4_420_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1971), 1, 1);
+    model_life: get_model_life(1971,1972);
+    retire_early: get_retire_early(1971,1972);
+    vehicle_life: 25;
+    reliability_decay: 20;
+    cargo_allow_refit: [FOOD, FRUT, FRVG, FISH];
+    default_cargo_type: FOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 15;
+    cargo_capacity: 42;
+    weight: 42 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: refrigerator_mk4_420_sprites;
+    purchase: refrigerator_mk4_420_purchase_sprites;
+    articulated_part: articulated_part_dummy5;
+    additional_text: return string(STR_REFRIGERATOR_MK4_420_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, refrigerator_mk4_420)
+  {
+    property
+    { name: string(STR_REFRIGERATOR_MK4_420_NAME_LONG); }
+  }
+}
+
