@@ -2,74 +2,95 @@
 
 /// Вагон
 
-#define IMAGEFILE  "src/freight/rs-refrigerator-section.png"
+#define IMAGEFILE  "src/freight/rs1-refrigerator-section.png"
 
 // покупка
 purchase_sprites(rs1, 0, 0)
 
-// шаблон: движение/100%, 33%, 66%, 99%
-#define rs1_sprite_layout_template(x, y, v)    \
-spriteset (rs1##v##_sprites, IMAGEFILE)        \
-{ s13_template(x, y, 0) }                      \
-spriteset (rs1_1##v##_sprites, IMAGEFILE)      \
-{ s13_template(x, y+67, 0) }                   \
-spriteset (rs1_2##v##_sprites, IMAGEFILE)      \
-{ s13_template(x, y+134, 0) }                  \
-spriteset (rs1_3##v##_sprites, IMAGEFILE)      \
-{ s13_template(x, y+201, 0) }                  \
-spritegroup rs1##v##_sprites_l                 \
-{ loading: [rs1_1##v##_sprites,                \
-    rs1_1##v##_sprites,                        \
-    rs1_1##v##_sprites,                        \
-    rs1_2##v##_sprites,                        \
-    rs1_2##v##_sprites,                        \
-    rs1_2##v##_sprites,                        \
-    rs1_3##v##_sprites,                        \
-    rs1_3##v##_sprites,                        \
-    rs1_3##v##_sprites,                        \
-    rs1##v##_sprites];                         \
-  loaded: [rs1##v##_sprites]; }                \
-                                               \
-spriteset (rs1##v##_r_sprites, IMAGEFILE)      \
-{ s13_r_template(x, y, 0) }                    \
-spriteset (rs1_1##v##_r_sprites, IMAGEFILE)    \
-{ s13_r_template(x, y+67, 0) }                 \
-spriteset (rs1_2##v##_r_sprites, IMAGEFILE)    \
-{ s13_r_template(x, y+134, 0) }                \
-spriteset (rs1_3##v##_r_sprites, IMAGEFILE)    \
-{ s13_r_template(x, y+201, 0) }                \
-spritegroup rs1##v##_sprites_r                 \
-{ loading: [rs1_1##v##_r_sprites,              \
-    rs1_1##v##_r_sprites,                      \
-    rs1_1##v##_r_sprites,                      \
-    rs1_2##v##_r_sprites,                      \
-    rs1_2##v##_r_sprites,                      \
-    rs1_2##v##_r_sprites,                      \
-    rs1_3##v##_r_sprites,                      \
-    rs1_3##v##_r_sprites,                      \
-    rs1_3##v##_r_sprites,                      \
-    rs1##v##_r_sprites];                       \
-  loaded: [rs1##v##_r_sprites]; }              \
+#define rs1_sprite_layout_template(x, y, cargo)     \
+spriteset (rs1_##cargo##_sprites_l0, IMAGEFILE)     \
+{ s13_template(x, y, 0) }                           \
+spriteset (rs1_1_##cargo##_sprites, IMAGEFILE)      \
+{ s13_template(x, y+67, 0) }                        \
+spriteset (rs1_2_##cargo##_sprites, IMAGEFILE)      \
+{ s13_template(x, y+134, 0) }                       \
+spriteset (rs1_3_##cargo##_sprites, IMAGEFILE)      \
+{ s13_template(x, y+201, 0) }                       \
+                                                    \
+spritegroup rs1_##cargo##_sprites_l1                \
+{ loading: [rs1_1_##cargo##_sprites];               \
+  loaded: [rs1_##cargo##_sprites_l0]; }             \
+                                                    \
+spritegroup rs1_##cargo##_sprites_l2                \
+{ loading: [rs1_2_##cargo##_sprites];               \
+  loaded: [rs1_##cargo##_sprites_l0]; }             \
+                                                    \
+spritegroup rs1_##cargo##_sprites_l3                \
+{ loading: [rs1_3_##cargo##_sprites];               \
+  loaded: [rs1_##cargo##_sprites_l0]; }             \
+                                                    \
+spriteset (rs1_##cargo##_sprites_r0, IMAGEFILE)     \
+{ s13_r_template(x, y, 0) }                         \
+spriteset (rs1_1_##cargo##_sprites_r, IMAGEFILE)    \
+{ s13_r_template(x, y+67, 0) }                      \
+spriteset (rs1_2_##cargo##_sprites_r, IMAGEFILE)    \
+{ s13_r_template(x, y+134, 0) }                     \
+spriteset (rs1_3_##cargo##_sprites_r, IMAGEFILE)    \
+{ s13_r_template(x, y+201, 0) }                     \
+                                                    \
+spritegroup rs1_##cargo##_sprites_r1                \
+{ loading: [rs1_1_##cargo##_sprites_r];             \
+  loaded: [rs1_##cargo##_sprites_r0]; }             \
+                                                    \
+spritegroup rs1_##cargo##_sprites_r2                \
+{ loading: [rs1_2_##cargo##_sprites_r];             \
+  loaded: [rs1_##cargo##_sprites_r0]; }             \
+                                                    \
+spritegroup rs1_##cargo##_sprites_r3                \
+{ loading: [rs1_3_##cargo##_sprites_r];             \
+  loaded: [rs1_##cargo##_sprites_r0]; }             \
 
 // ливреи
-rs1_sprite_layout_template(113, 447, _v1)
-
-random_switch (FEAT_TRAINS, SELF, rs1_sprites_2, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: rs1_v1_sprites_l;
-  1: rs1_v1_sprites_r;
-}
+rs1_sprite_layout_template(113, 65, food)
 
 // дизельный вагон
 spriteset (rs1_diesel_sprites_l, IMAGEFILE)
 {
-  s10_template(113, 715, 0)
+  s10_template(113, 333, 0)
 }
 spriteset (rs1_diesel_sprites_r, IMAGEFILE)
 {
-  s10_r_template(113, 715, 0)
+  s10_r_template(113, 333, 0)
 }
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, rs1_food_sprites_l, 
+  cargo_count)
+{
+     0..59: rs1_food_sprites_l1;
+   60..119: rs1_food_sprites_l2;
+  120..179: rs1_food_sprites_l3;
+            rs1_food_sprites_l0;
+} 
+
+switch (FEAT_TRAINS, SELF, rs1_food_sprites_r, 
+  cargo_count)
+{
+     0..59: rs1_food_sprites_r1;
+   60..119: rs1_food_sprites_r2;
+  120..179: rs1_food_sprites_r3;
+            rs1_food_sprites_r0;
+} 
+
+random_switch (FEAT_TRAINS, SELF, rs1_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: rs1_food_sprites_l;
+  1: rs1_food_sprites_r;
+}
+
+long_vehicle_RND(rs1, rs1_sprites_2)
 
 switch (FEAT_TRAINS, SELF, rs1_diesel_sprites, 
 [  set_offset_to(-position_in_vehid_chain-1),
@@ -79,10 +100,45 @@ switch (FEAT_TRAINS, SELF, rs1_diesel_sprites,
      rs1_diesel_sprites_r;
 }
 
-#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, rs1_food_sprites_l_prev, 
+[  set_offset_to(-position_in_vehid_chain-1),
+   (prev_vehicle_cargo_load() )])
+{
+     0..59: rs1_food_sprites_l1;
+   60..119: rs1_food_sprites_l2;
+  120..179: rs1_food_sprites_l3;
+            rs1_food_sprites_l0;
+} 
 
-long_vehicle_RND(rs1, rs1_sprites_2)
+switch (FEAT_TRAINS, SELF, rs1_food_sprites_r_prev, 
+[  set_offset_to(-position_in_vehid_chain-1),
+   (prev_vehicle_cargo_load() )])
+{
+     0..59: rs1_food_sprites_r1;
+   60..119: rs1_food_sprites_r2;
+  120..179: rs1_food_sprites_r3;
+            rs1_food_sprites_r0;
+} 
 
+switch (FEAT_TRAINS, SELF, rs1int_prev_sprites, 
+[  set_offset_to(-position_in_vehid_chain-1),
+   (prev_vehicle_randombits() % 2)])
+{
+  0: rs1_food_sprites_l_prev;
+     rs1_food_sprites_r_prev;
+}
+
+switch (FEAT_TRAINS, SELF, rs1int_sprites_2,
+  position_in_vehid_chain)
+{
+  1: rs1int_prev_sprites;
+  3: rs1_diesel_sprites;
+  5: rs1int_prev_sprites;
+  7: rs1int_prev_sprites;
+     dummy_sprites;
+}
+
+long_vehicle(rs1int)
 // секция из 5-ти вагонов
 switch (FEAT_TRAINS, SELF, rs1_articulated_part,
   extra_callback_info1)
@@ -105,26 +161,6 @@ switch (FEAT_TRAINS, SELF, rs1int_length,
   8: return 5;
      return 8;
 }
-
-switch (FEAT_TRAINS, SELF, rs1int_prev_sprites, 
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
-{
-  0: rs1_v1_sprites_l;
-     rs1_v1_sprites_r;
-}
-
-switch (FEAT_TRAINS, SELF, rs1int_sprites_2,
-  position_in_vehid_chain)
-{
-  1: rs1int_prev_sprites;
-  3: rs1_diesel_sprites;
-  5: rs1int_prev_sprites;
-  7: rs1int_prev_sprites;
-     dummy_sprites;
-}
-
-long_vehicle(rs1int)
 
 // Для задания нужных размеров частей и их рисования
 item (FEAT_TRAINS, rs1int)
