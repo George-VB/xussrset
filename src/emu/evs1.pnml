@@ -1,0 +1,156 @@
+ // evs1
+
+// Спрайты
+
+#define IMAGEFILE  "src/emu/evs.png"
+
+purchase_sprites(evs1, 0, 0)
+
+emu_3_0_0_sprites(14, evs1_gbt, 60, 40)
+emu_0_3_0_sprites(15, evs1_dt,  60, 40)
+emu_0_0_2_sprites(15, evs1_t,   60, 40)
+emu_0_3_0_sprites(15, evs1_ttr, 60, 241)
+emu_0_0_2_sprites(15, evs1_tt,  60, 241)
+emu_0_0_2_sprites(15, evs1_ta,  60, 442)
+emu_0_0_2_sprites(15, evs1_tab, 60, 643)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, evs1_sprites_2, 0)
+{
+  evs1_gbt_h_sprites_left;
+}
+
+long_vehicle(evs1)
+
+switch (FEAT_TRAINS, SELF, evs1_b_sprites_2,
+  position_in_articulated_veh)
+{
+   2: evs1_dt_m_sprites_left;
+   4: evs1_t_c_sprites_left;
+   6: evs1_tt_c_sprites_left;
+   8: evs1_ta_c_sprites_left;
+  10: evs1_tab_c_sprites_right;
+  12: evs1_tt_c_sprites_right;
+  14: evs1_t_c_sprites_right;
+  16: evs1_dt_m_sprites_right;
+  18: evs1_gbt_h_sprites_right;
+      align_15_sprites;
+}
+
+long_vehicle(evs1_b)
+
+switch (FEAT_TRAINS, SELF, evs1_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy7;
+  2: return unitb;
+  3: return dummy7;
+  4: return unitb;
+  5: return dummy7;
+  6: return unitb;
+  7: return dummy7;
+  8: return unitb;
+  9: return dummy7;
+ 10: return unitb;
+ 11: return dummy7;
+ 12: return unitb;
+ 13: return dummy7;
+ 14: return unitb;
+ 15: return dummy7;
+ 16: return unitb;
+ 17: return dummy7;
+ 18: return unitb;
+ 19: return dummy6;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+// даём тягу, если локомотив evs1
+switch (FEAT_TRAINS, PARENT, evs1_power,
+  vehicle_type_id == evs1)
+{
+  1: return get_power_in_cb(10876); 
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, evs1_b_visual_effect_and_powered0,
+  position_in_articulated_veh)
+{
+   2: return electric_visual_effect_and_powered(7);
+  16: return electric_visual_effect_and_powered(-3);
+      return disable_visual_effect_and_powered();
+}
+
+// показываем визуальные эффекты, если локомотив evs1
+switch (FEAT_TRAINS, PARENT, evs1_b_visual_effect_and_powered,
+  vehicle_type_id == evs1)
+{
+  1: evs1_b_visual_effect_and_powered0;
+     return disable_visual_effect_and_powered();
+}
+
+// Допускается эксплуатация с пассажирами только если голова - evs1
+switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
+  (vehicle_type_id == evs1) )
+{
+  1: return 604;
+     return 0;
+}
+
+item (FEAT_TRAINS, evs1) 
+{
+  property
+  {
+    name: string(STR_EVS1_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(2009), 1, 1);
+    vehicle_life: 30; // срок службы
+    model_life: get_model_life(2009,2050);
+    retire_early: get_retire_early(2009,2050); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 156 mph;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 10876 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    loading_speed: (260/8);
+    cargo_capacity: 255; // 260
+    weight: 651 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(380.0, 651);
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+  }
+  graphics {
+    default: evs1_sprites;
+    purchase: evs1_purchase_sprites;
+    articulated_part: evs1_articulated_part;
+    can_attach_wagon: string(STR_CAN_ATTACH_NO_MORE);
+    additional_text: return string(STR_EVS1_PURCHASE_HINT);
+    power: evs1_power;
+    cargo_capacity: evs1_cargo_capacity;
+    cost_factor: return 1344;
+  }
+  livery_override(unitb)
+  {
+    length: return 8;
+    visual_effect_and_powered: evs1_b_visual_effect_and_powered;
+            evs1_b_sprites;
+  }  
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, evs1)
+  {
+    property
+    { name: string(STR_EVS1_NAME_LONG); }
+  }
+}
+
