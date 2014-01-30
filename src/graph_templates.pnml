@@ -12,6 +12,29 @@ switch (FEAT_TRAINS, SELF, name##_purchase_sprites,                \
 {  1: name##_purchase_graphics_ico;                                \
       name##_purchase_graphics_noico;}                             \
 
+// 1-осекционный электровоз с 2 пантографами
+#define electric1_2_sprites(n, name, x, y)                                           \
+spriteset (name##_notpowered_sprites, IMAGEFILE)                                     \
+{ s##n##_template(x, y, 0) }                                                         \
+spriteset (name##_loading_sprites, IMAGEFILE)                                        \
+{ s##n##_template(x, y+67, 0) }                                                      \
+spriteset (name##_traveling_sprites, IMAGEFILE)                                      \
+{ s##n##_template(x, y+134, 0) }                                                     \
+spritegroup name##_normal_sprites                                                    \
+{ loading: name##_loading_sprites;                                                   \
+  loaded: name##_traveling_sprites; }                                                \
+spriteset (name##_speedoverTH_sprites, IMAGEFILE)                                    \
+{ s##n##_template(x, y+201, 0) }                                                     \
+                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_left,                                      \
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *                                      \
+  ((position_in_consist > 0) * 2 + 1) *                                              \
+  (!(vehicle_is_not_powered || vehicle_is_in_depot)) )                               \
+{ 1: name##_normal_sprites;                                                          \
+  2: name##_speedoverTH_sprites;                                                     \
+  3: name##_loading_sprites;                                                         \
+     name##_notpowered_sprites; }                                                    \
+
 // 2-хсекционный электровоз с 2 пантографами
 #define electric2_2_sprites(n, name, x, y)                                           \
 spriteset (name##_notpowered_sprites, IMAGEFILE)                                     \

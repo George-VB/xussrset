@@ -5,83 +5,81 @@
 #define IMAGEFILE  "src/electric/ep2k.png"
 
 // покупка
-purchase_sprites(ep2k, 0, 0)
+purchase_sprites(ep2k_v1, 0, 0)
+purchase_sprites(ep2k_v2, 0, 307)
+purchase_sprites(ep2k_v4, 101, 307)
 
-// нет тока
-spriteset (ep2k_notpowered_spriteset, IMAGEFILE)
-{
-  s13_template(0, 37, 0)
-} 
-
-// аверс: погрузка/перемещение
-spriteset (ep2k_loading_spriteset, IMAGEFILE)
-{
-  s13_template(0, 104, 0)
-} 
-
-spriteset (ep2k_traveling_spriteset, IMAGEFILE)
-{
-  s13_template(0, 171, 0)
-} 
-
-spritegroup ep2k_spritegroup
-{
-  loading: ep2k_loading_spriteset;
-  loaded: ep2k_traveling_spriteset;
-}
-
-spriteset (ep2k_speedoverTH_spriteset, IMAGEFILE)
-{
-  s13_template(0, 238, 0)
-} 
-
-// нет тока
-spriteset (ep2k_b_notpowered_spriteset, IMAGEFILE)
-{
-  s13_template(452, 37, 0)
-} 
-
-// аверс: погрузка/перемещение
-spriteset (ep2k_b_loading_spriteset, IMAGEFILE)
-{
-  s13_template(452, 104, 0)
-} 
-
-spriteset (ep2k_b_traveling_spriteset, IMAGEFILE)
-{
-  s13_template(452, 171, 0)
-} 
-
-spritegroup ep2k_b_spritegroup
-{
-  loading: ep2k_b_loading_spriteset;
-  loaded: ep2k_b_traveling_spriteset;
-}
-
-spriteset (ep2k_b_speedoverTH_spriteset, IMAGEFILE)
-{
-  s13_template(452, 238, 0)
-} 
+electric1_2_sprites(13, ep2k_v1, 0, 37)
+electric1_2_sprites(13, ep2k_v2, 0, 344)
+electric1_2_sprites(13, ep2k_v3, 0, 634)
+electric1_2_sprites(13, ep2k_v4, 0, 913)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, ep2k_sprites_2,
-  (((LOAD_TEMP(0) - count_veh_id(ep2k)) % 2) * 3) +
-  // поправка на нет тока
-  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))
-)
+switch (FEAT_TRAINS, SELF, ep2k_purchase_sprites,
+  (current_year >= 2009) +
+  (current_year >= 2012) )
 {
-  0: ep2k_notpowered_spriteset;
-  1: ep2k_spritegroup;
-  2: ep2k_speedoverTH_spriteset;
-  3: ep2k_b_notpowered_spriteset;
-  4: ep2k_b_spritegroup;
-  5: ep2k_b_speedoverTH_spriteset;
+  0: ep2k_v1_purchase_sprites;
+  1: ep2k_v2_purchase_sprites;
+     ep2k_v4_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ep2k_sprites2,
+  cargo_subtype)
+{
+  0: ep2k_v2_sprites_left;
+  1: ep2k_v3_sprites_left;
+  2: ep2k_v4_sprites_left;
+     align_13_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, ep2k_sprites_2,
+  (build_year>= 2009) +
+  (build_year>= 2012) )
+{
+  0: ep2k_v1_sprites_left;
+  1: ep2k_sprites2;
+  2: ep2k_v4_sprites_left;
      align_13_sprites; 
 }
 
 long_vehicle(ep2k)
+
+switch (FEAT_TRAINS, SELF, ep2k_cargo_subtype_text4,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_OCTOBER_RAILWAY);
+  1: string(STR_REFIT_WEST_SIBERIAN_RAILWAY);
+  2: string(STR_REFIT_RZD_PID);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, ep2k_cargo_subtype_text3,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_OCTOBER_RAILWAY);
+  1: string(STR_REFIT_WEST_SIBERIAN_RAILWAY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, ep2k_cargo_subtype_text2,
+  (current_year>= 2012))
+{
+  0: ep2k_cargo_subtype_text3;
+  1: ep2k_cargo_subtype_text4;
+     return CB_RESULT_NO_TEXT;
+} 
+
+switch (FEAT_TRAINS, SELF, ep2k_cargo_subtype_text,
+  (build_year>= 2009) +
+  (build_year>= 2012) )
+{
+  0: string(STR_REFIT_OCTOBER_RAILWAY);
+  1: ep2k_cargo_subtype_text2;
+  2: string(STR_REFIT_RZD_PID);
+     return CB_RESULT_NO_TEXT;
+}
 
 engine_speed_with_reduce(ep2k, 160, 130, 30)
 
@@ -128,6 +126,7 @@ item (FEAT_TRAINS, ep2k)
     bitmask_vehicle_info: ep2k_bitmask_vehicle_info;
     cargo_capacity: return 0;
     cost_factor: return 432;
+    cargo_subtype_text: ep2k_cargo_subtype_text;
   }
 }
 
