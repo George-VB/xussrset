@@ -5,46 +5,34 @@
 
 #define IMAGEFILE  "src/freight/luggage-37sb-1967-1977.png"
 
-// покупка
 purchase_sprites(luggage_37sb, 0, 0)
 
-// вид 1
-spriteset (luggage_37sb_spriteset, IMAGEFILE)
-{
-  s14_template(0, 46, 0)
-}
-
-// вид 2
-spriteset (luggage_37sb_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 118, 0)
-}
-
-// Реверс: (430, y, 0)
-
-// Хвост: вид 1
-spriteset (luggage_37sb_tail_spriteset, IMAGEFILE)
-{
-  s14_template(0, 200, 0)
-}
-
-// вид 2
-spriteset (luggage_37sb_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 272, 0)
-}
+pass_wagon_sprites(14, luggage_37sb_v1, 32, 40)
+pass_wagon_sprites(14, luggage_37sb_v2, 32, 308)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_left,
+  cargo_subtype )
 {
-  0: luggage_37sb_spriteset;
-  1: luggage_37sb_tail_spriteset;
-  2: luggage_37sb_v2_spriteset;
-  3: luggage_37sb_tail_v2_spriteset;
+  0: luggage_37sb_v1_sprites_left;
+  1: luggage_37sb_v2_sprites_left;
      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_right,
+  cargo_subtype )
+{
+  0: luggage_37sb_v1_sprites_right;
+  1: luggage_37sb_v2_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: luggage_37sb_sprites_left;
+  1: luggage_37sb_sprites_right;
 }
 
 long_vehicle(luggage_37sb)
