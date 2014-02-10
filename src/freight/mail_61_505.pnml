@@ -6,43 +6,34 @@
 
 #define IMAGEFILE  "src/freight/mail-61-505-1971-1979.png"
 
-// покупка
 purchase_sprites(mail_61_505, 0, 0)
 
-// вид 1
-spriteset (mail_61_505_spriteset, IMAGEFILE)
-{
-  s14_template(0, 46, 0)
-}
-
-// вид 2
-spriteset (mail_61_505_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 118, 0)
-}
-
-// хвост
-spriteset (mail_61_505_tail_spriteset, IMAGEFILE)
-{
-  s14_template(0, 200, 0)
-}
-
-spriteset (mail_61_505_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 272, 0)
-}
+pass_wagon_sprites(14, mail_61_505_v1, 32, 40)
+pass_wagon_sprites(14, mail_61_505_v2, 32, 308)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, mail_61_505_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, mail_61_505_sprites_left,
+  cargo_subtype )
 {
-  0: mail_61_505_spriteset;
-  1: mail_61_505_tail_spriteset;
-  2: mail_61_505_v2_spriteset;
-  3: mail_61_505_tail_v2_spriteset;
+  0: mail_61_505_v1_sprites_left;
+  1: mail_61_505_v2_sprites_left;
      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, mail_61_505_sprites_right,
+  cargo_subtype )
+{
+  0: mail_61_505_v1_sprites_right;
+  1: mail_61_505_v2_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, mail_61_505_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: mail_61_505_sprites_left;
+  1: mail_61_505_sprites_right;
 }
 
 long_vehicle(mail_61_505)
