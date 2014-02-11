@@ -6,72 +6,43 @@
 
 #define IMAGEFILE  "src/freight/mail-22sb-1960-1970.png"
 
-// покупка
 purchase_sprites(mail_22sb_v1, 0, 0)
+purchase_sprites(mail_22sb_v2, 100, 0)
 
-purchase_sprites(mail_22sb_v3, 100, 0)
-
-// вид 1
-spriteset (mail_22sb_spriteset, IMAGEFILE)
-{
-  s14_template(0, 46, 0)
-}
-
-// вид 2
-spriteset (mail_22sb_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 118, 0)
-}
-
-// вид 3
-spriteset (mail_22sb_v3_spriteset, IMAGEFILE)
-{
-  s14_template(0, 200, 0)
-}
-
-// вид 4
-spriteset (mail_22sb_v4_spriteset, IMAGEFILE)
-{
-  s14_template(0, 272, 0)
-}
-
-// хвост
-spriteset (mail_22sb_tail_spriteset, IMAGEFILE)
-{
-  s14_template(0, 364, 0)
-}
-
-spriteset (mail_22sb_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 436, 0)
-}
-
-spriteset (mail_22sb_tail_v3_spriteset, IMAGEFILE)
-{
-  s14_template(0, 518, 0)
-}
-
-spriteset (mail_22sb_tail_v4_spriteset, IMAGEFILE)
-{
-  s14_template(0, 590, 0)
-}
+pass_wagon_sprites(14, mail_22sb_v1, 32, 40)
+pass_wagon_sprites(14, mail_22sb_v2, 32, 308)
+pass_wagon_sprites(14, mail_22sb_v3, 32, 576)
+pass_wagon_sprites(14, mail_22sb_v4, 32, 844)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, mail_22sb_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) +
-  ((LOAD_TEMP(2) >= date(1967,1,1)) * 4) )
+switch (FEAT_TRAINS, SELF, mail_22sb_sprites_left,
+  ((LOAD_TEMP(2) >= date(1967,1,1)) * 4) +
+  (cargo_subtype *2) )
 {
-  0: mail_22sb_spriteset;
-  1: mail_22sb_tail_spriteset;
-  2: mail_22sb_v2_spriteset;
-  3: mail_22sb_tail_v2_spriteset;
-  4: mail_22sb_v3_spriteset;
-  5: mail_22sb_tail_v3_spriteset;
-  6: mail_22sb_v4_spriteset;
-  7: mail_22sb_tail_v4_spriteset;
+  0: mail_22sb_v1_sprites_left;
+  1: mail_22sb_v2_sprites_left;
+  2: mail_22sb_v3_sprites_left;
+  3: mail_22sb_v4_sprites_left;
      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, mail_22sb_sprites_right,
+  ((LOAD_TEMP(2) >= date(1967,1,1)) * 4) +
+  (cargo_subtype *2) )
+{
+  0: mail_22sb_v1_sprites_right;
+  1: mail_22sb_v2_sprites_right;
+  2: mail_22sb_v3_sprites_right;
+  3: mail_22sb_v4_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, mail_22sb_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: mail_22sb_sprites_left;
+  1: mail_22sb_sprites_right;
 }
 
 long_vehicle(mail_22sb)
@@ -79,7 +50,7 @@ long_vehicle(mail_22sb)
 switch (FEAT_TRAINS, SELF, mail_22sb_purchase_sprites,
   current_year >= 1967)
 {
-  1: mail_22sb_v3_purchase_sprites;
+  1: mail_22sb_v2_purchase_sprites;
      mail_22sb_v1_purchase_sprites;
 }
 
