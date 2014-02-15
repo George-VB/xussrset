@@ -1,0 +1,121 @@
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/l150.png"
+
+// v1
+
+purchase_sprites(l150, 0, 0)
+                             
+spriteset (l150_v1_1_sprites, IMAGEFILE)
+{ s8_template(0, 40, 0) } 
+
+spriteset (l150_v1_2_sprites, IMAGEFILE)
+{ s8_template(0, 75, 0) } 
+
+spriteset (l150_v1_3_sprites, IMAGEFILE)
+{ s8_template(0, 110, 0) } 
+
+spriteset (l150_v1_4_sprites, IMAGEFILE)
+{ s8_template(0, 145, 0) } 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, PARENT, l150_sprites_2,
+  LOAD_TEMP(3))
+{
+  0: l150_v1_1_sprites;
+  1: l150_v1_2_sprites;
+  2: l150_v1_3_sprites;
+     l150_v1_4_sprites;
+}
+
+short_vehicle(l150)
+
+switch (FEAT_TRAINS, SELF, l150_weight,
+  (build_year >= 1952))
+{
+  0: return (102+82);
+     return (103+82);
+}
+
+switch (FEAT_TRAINS, SELF, l150_tractive_effort_coefficient,
+  (build_year >= 1952))
+{
+  0: return get_tec_int(199.0, 102+82);
+     return get_tec_int(199.0, 103+82);
+}
+
+engine_speed_change_after(l150, 80, 90, 1956)
+
+engine_penalise_speed0(l150)
+
+switch (FEAT_TRAINS, SELF, l150_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy1;
+  2: return unitb;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item (FEAT_TRAINS, l150) 
+{
+  property
+  {
+    name: string(STR_L150_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1945), 1, 1);
+    model_life: get_model_life(1945,1955);
+    retire_early: get_retire_early(1945,1955);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cost_factor: 15;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2200 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (102+82) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(199.0, 102+82);
+    length: 7;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+
+  graphics {
+    default: l150_sprites;
+    purchase: l150_purchase_sprites;
+    articulated_part: l150_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_L150_PURCHASE_HINT);
+    speed: l150_speed;
+    purchase_speed: l150_purchase_speed;
+    bitmask_vehicle_info: l150_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    tractive_effort_coefficient: l150_tractive_effort_coefficient;
+    weight: l150_weight;
+  }
+
+  livery_override(unitb)
+  {
+    length: er_tender_length;
+            er_tender_sprites;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, l150)
+  {
+    property
+    { name: string(STR_L150_NAME_LONG); }
+  }
+}
+
