@@ -1,65 +1,41 @@
  // 61_4458
 
 /// Вагон
-// 61-4458. Ныне выпускаемый сидячий вагон Тверского завода.
+// 61-4458. сидячий вагон Тверского завода.
 /// 61-4458 (2009)
 
 #define IMAGEFILE  "src/coach/61-4458-2009.png"
-
-// покупка
 purchase_sprites(_61_4458, 0, 0)
 
-// вид 1
-spriteset (_61_4458_spriteset, IMAGEFILE)
-{
-  s15_template(110, 65, 0)
-}
-
-// вид 2
-spriteset (_61_4458_v2_spriteset, IMAGEFILE)
-{
-  s15_template(110, 135, 0)
-}
-
-// вид 3
-spriteset (_61_4458_v3_spriteset, IMAGEFILE)
-{
-  s15_template(110, 205, 0)
-}
-
-// Реверс: (567, y, 0)
-
-// Хвост: вид 1
-spriteset (_61_4458_tail_spriteset, IMAGEFILE)
-{
-  s15_template(110, 322, 0)
-}
-
-// вид 2
-spriteset (_61_4458_tail_v2_spriteset, IMAGEFILE)
-{
-  s15_template(110, 392, 0)
-}
-
-// вид 3
-spriteset (_61_4458_tail_v3_spriteset, IMAGEFILE)
-{
-  s15_template(110, 462, 0)
-}
+pass_wagon_sprites(15, _61_4458_v1, 32, 40)
+pass_wagon_sprites(15, _61_4458_v2, 32, 40+268  )
+pass_wagon_sprites(15, _61_4458_v3, 32, 40+268*2)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _61_4458_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, _61_4458_sprites_left,
+  cargo_subtype)
 {
-  0: _61_4458_spriteset;
-  1: _61_4458_tail_spriteset;
-  2: _61_4458_v2_spriteset;
-  3: _61_4458_tail_v2_spriteset;
-  4: _61_4458_v3_spriteset;
-  5: _61_4458_tail_v3_spriteset;
+  0: _61_4458_v1_sprites_left;
+  1: _61_4458_v2_sprites_left;
+  2: _61_4458_v3_sprites_left;
      align_15_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _61_4458_sprites_right,
+  cargo_subtype)
+{
+  0: _61_4458_v1_sprites_right;
+  1: _61_4458_v2_sprites_right;
+  2: _61_4458_v3_sprites_right;
+     align_15_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, _61_4458_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: _61_4458_sprites_left;
+  1: _61_4458_sprites_right;
 }
 
 long_vehicle(_61_4458)
