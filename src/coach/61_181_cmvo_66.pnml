@@ -6,47 +6,34 @@
 /// 61-181 ЦМВО-66
 
 #define IMAGEFILE  "src/coach/61-181-cmvo-66.png"
+purchase_sprites(_61_181_cmvo_66, 0, 0)
 
-// покупка
-purchase_sprites(_61_181_cmvo_66, 0, 0)                       
-
-// вид 1
-spriteset (_61_181_cmvo_66_spriteset, IMAGEFILE)
-{
-  s14_template(10, 75, 0)
-}
-
-// вид 2
-spriteset (_61_181_cmvo_66_v2_spriteset, IMAGEFILE)
-{
-  s14_template(10, 152, 0)
-}
-
-// Реверс: (469, y, 0)
-
-// Хвост: вид 1
-spriteset (_61_181_cmvo_66_tail_spriteset, IMAGEFILE)
-{
-  s14_template(10, 258, 0)
-}
-
-// вид 2
-spriteset (_61_181_cmvo_66_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(10, 335, 0)
-}
+pass_wagon_sprites(14, _61_181_cmvo_66_v1, 32, 40)
+pass_wagon_sprites(14, _61_181_cmvo_66_v2, 32, 40+268)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_sprites_left,
+  cargo_subtype)
 {
-  0: _61_181_cmvo_66_spriteset;
-  1: _61_181_cmvo_66_tail_spriteset;
-  2: _61_181_cmvo_66_v2_spriteset;
-  3: _61_181_cmvo_66_tail_v2_spriteset;
+  0: _61_181_cmvo_66_v1_sprites_left;
+  1: _61_181_cmvo_66_v2_sprites_left;
      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_sprites_right,
+  cargo_subtype)
+{
+  0: _61_181_cmvo_66_v1_sprites_right;
+  1: _61_181_cmvo_66_v2_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, _61_181_cmvo_66_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: _61_181_cmvo_66_sprites_left;
+  1: _61_181_cmvo_66_sprites_right;
 }
 
 long_vehicle(_61_181_cmvo_66)

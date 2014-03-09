@@ -7,47 +7,34 @@
 /// Жесткий некупейный 2 выпуска, КВЗ (1950-1965)
 
 #define IMAGEFILE  "src/coach/hnc-issue2-1950-1965.png"
-
-// покупка
 purchase_sprites(hnc_issue2, 0, 0)
 
-// вид 1
-spriteset (hnc_issue2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 42, 0)
-}
-
-// вид 2
-spriteset (hnc_issue2_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 114, 0)
-}
-
-// Реверс: (459, y, 0)
-
-// Хвост: вид 1
-spriteset (hnc_issue2_tail_spriteset, IMAGEFILE)
-{
-  s14_template(0, 186, 0)
-}
-
-// вид 2
-spriteset (hnc_issue2_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 258, 0)
-}
+pass_wagon_sprites(14, hnc_issue2_v1, 32, 40)
+pass_wagon_sprites(14, hnc_issue2_v2, 32, 40+268)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, hnc_issue2_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, hnc_issue2_sprites_left,
+  cargo_subtype)
 {
-  0: hnc_issue2_spriteset;
-  1: hnc_issue2_tail_spriteset;
-  2: hnc_issue2_v2_spriteset;
-  3: hnc_issue2_tail_v2_spriteset;
+  0: hnc_issue2_v1_sprites_left;
+  1: hnc_issue2_v2_sprites_left;
      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, hnc_issue2_sprites_right,
+  cargo_subtype)
+{
+  0: hnc_issue2_v1_sprites_right;
+  1: hnc_issue2_v2_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, hnc_issue2_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: hnc_issue2_sprites_left;
+  1: hnc_issue2_sprites_right;
 }
 
 long_vehicle(hnc_issue2)

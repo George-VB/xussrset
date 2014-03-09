@@ -10,84 +10,47 @@
 /// 61-425 ПН (1980-1983)
 
 #define IMAGEFILE  "src/coach/61-425-pn-1975-1980.png"
-
-// покупка
 purchase_sprites(_61_425_pn_v1, 0, 0)
 
-// вид 1
-spriteset (_61_425_pn_spriteset, IMAGEFILE)
-{
-  s14_template(10, 75, 0)
-}
-
-// вид 2
-spriteset (_61_425_pn_v2_spriteset, IMAGEFILE)
-{
-  s14_template(10, 152, 0)
-}
-
-// Реверс: (469, y, 0)
-
-// Хвост: вид 1
-spriteset (_61_425_pn_tail_spriteset, IMAGEFILE)
-{
-  s14_template(10, 258, 0)
-}
-
-// вид 2
-spriteset (_61_425_pn_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(10, 335, 0)
-}
+pass_wagon_sprites(14, _61_425_pn_v1, 32, 40)
+pass_wagon_sprites(14, _61_425_pn_v2, 32, 40+268  )
 
 #undef IMAGEFILE
 #define IMAGEFILE  "src/coach/61-425-pn-1980-1983.png"
-
-// покупка
 purchase_sprites(_61_425_pn_v3, 0, 0)
 
-// вид 1
-spriteset (_61_425_pn_v3_spriteset, IMAGEFILE)
-{
-  s14_template(10, 75, 0)
-}
-
-// вид 2
-spriteset (_61_425_pn_v4_spriteset, IMAGEFILE)
-{
-  s14_template(10, 152, 0)
-}
-
-// Реверс: (469, y, 0)
-
-// Хвост: вид 1
-spriteset (_61_425_pn_tail_v3_spriteset, IMAGEFILE)
-{
-  s14_template(10, 258, 0)
-}
-
-// вид 2
-spriteset (_61_425_pn_tail_v4_spriteset, IMAGEFILE)
-{
-  s14_template(10, 335, 0)
-}
+pass_wagon_sprites(14, _61_425_pn_v3, 32, 40)
+pass_wagon_sprites(14, _61_425_pn_v4, 32, 40+268  )
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _61_425_pn_sprites_2,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  ((build_year >= 1980) * 4) +
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, _61_425_pn_sprites_left,
+  ((build_year >= 1980) * 2) +
+  cargo_subtype )
 {
-  0: _61_425_pn_spriteset;
-  1: _61_425_pn_tail_spriteset;
-  2: _61_425_pn_v2_spriteset;
-  3: _61_425_pn_tail_v2_spriteset;
-  4: _61_425_pn_v3_spriteset;
-  5: _61_425_pn_tail_v3_spriteset;
-  6: _61_425_pn_v4_spriteset;
-  7: _61_425_pn_tail_v4_spriteset;
+  0: _61_425_pn_v1_sprites_left;
+  1: _61_425_pn_v2_sprites_left;
+  2: _61_425_pn_v3_sprites_left;
+  3: _61_425_pn_v4_sprites_left;
      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _61_425_pn_sprites_right,
+  ((build_year >= 1980) * 2) +
+  cargo_subtype )
+{
+  0: _61_425_pn_v1_sprites_right;
+  1: _61_425_pn_v2_sprites_right;
+  2: _61_425_pn_v3_sprites_right;
+  3: _61_425_pn_v4_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, _61_425_pn_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: _61_425_pn_sprites_left;
+  1: _61_425_pn_sprites_right;
 }
 
 long_vehicle(_61_425_pn)
