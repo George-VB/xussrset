@@ -2,128 +2,52 @@
 
 /// Вагон-ледник
 // refrigerator van
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
 
 #define IMAGEFILE  "src/freight/refrigerator-mk4-417.png"
 
 // покупка
 purchase_sprites(refrigerator_mk4_417, 0, 0)
 
-spriteset (refrigerator_mk4_417_0_sprites, IMAGEFILE)      
-{ s12_template(14, 113, 0) }                                       
-spriteset (refrigerator_mk4_417_1_sprites, IMAGEFILE)    
-{ s12_template(14, 180, 0) }                                       
-spriteset (refrigerator_mk4_417_0_r_sprites, IMAGEFILE)      
-{ s12_r_template(14, 113, 0) }                                       
-spriteset (refrigerator_mk4_417_1_r_sprites, IMAGEFILE)    
-{ s12_r_template(14, 180, 0) }                                       
+box_empty_layout_template(refrigerator_mk4_417, 12, 14, 113) 
 
-#define refrigerator_mk4_417_sprite_layout_template(x, y, cargo)   \
-spriteset (refrigerator_mk4_417_2_##cargo##_sprites, IMAGEFILE)    \
-{ s12_template(x, y, 0) }                                          \
-spriteset (refrigerator_mk4_417_3_##cargo##_sprites, IMAGEFILE)    \
-{ s12_template(x, y+67, 0) }                                       \
-spritegroup refrigerator_mk4_417_##cargo##_sprites_l               \
-{ loading: [refrigerator_mk4_417_1_sprites,                        \
-    refrigerator_mk4_417_1_sprites,                                \
-    refrigerator_mk4_417_1_sprites,                                \
-    refrigerator_mk4_417_2_##cargo##_sprites,                      \
-    refrigerator_mk4_417_2_##cargo##_sprites,                      \
-    refrigerator_mk4_417_2_##cargo##_sprites,                      \
-    refrigerator_mk4_417_3_##cargo##_sprites,                      \
-    refrigerator_mk4_417_3_##cargo##_sprites,                      \
-    refrigerator_mk4_417_3_##cargo##_sprites,                      \
-    refrigerator_mk4_417_0_sprites];                               \
-  loaded: [refrigerator_mk4_417_0_sprites]; }                      \
-                                                                   \
-spriteset (refrigerator_mk4_417_2_r_##cargo##_sprites, IMAGEFILE)  \
-{ s12_r_template(x, y, 0) }                                        \
-spriteset (refrigerator_mk4_417_3_r_##cargo##_sprites, IMAGEFILE)  \
-{ s12_r_template(x, y+67, 0) }                                     \
-spritegroup refrigerator_mk4_417_##cargo##_sprites_r               \
-{ loading: [refrigerator_mk4_417_1_r_sprites,                      \
-    refrigerator_mk4_417_1_r_sprites,                              \
-    refrigerator_mk4_417_1_r_sprites,                              \
-    refrigerator_mk4_417_2_r_##cargo##_sprites,                    \
-    refrigerator_mk4_417_2_r_##cargo##_sprites,                    \
-    refrigerator_mk4_417_2_r_##cargo##_sprites,                    \
-    refrigerator_mk4_417_3_r_##cargo##_sprites,                    \
-    refrigerator_mk4_417_3_r_##cargo##_sprites,                    \
-    refrigerator_mk4_417_3_r_##cargo##_sprites,                    \
-    refrigerator_mk4_417_0_r_sprites];                             \
-  loaded: [refrigerator_mk4_417_0_r_sprites]; }                    \
-                                                                
-// ливреи
-refrigerator_mk4_417_sprite_layout_template(14,  297, fruit1)
-refrigerator_mk4_417_sprite_layout_template(14,  482, fruit2)
-refrigerator_mk4_417_sprite_layout_template(14,  666, fruit3)
-refrigerator_mk4_417_sprite_layout_template(14,  850, fish)
-refrigerator_mk4_417_sprite_layout_template(14, 1035, food1)
-refrigerator_mk4_417_sprite_layout_template(14, 1219, food2)
+box_layout_template(refrigerator_mk4_417, 12, 14,  297, fruit1)
+box_layout_template(refrigerator_mk4_417, 12, 14,  482, fruit2)
+box_layout_template(refrigerator_mk4_417, 12, 14,  666, fruit3)
+box_layout_template(refrigerator_mk4_417, 12, 14,  850, fish)
+box_layout_template(refrigerator_mk4_417, 12, 14, 1035, food1)
+box_layout_template(refrigerator_mk4_417, 12, 14, 1219, food2)
 
 #undef IMAGEFILE                   	
 
-random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_fruit_sprites_l,
+random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_fruit_sprites,
   bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
 {
-  2: refrigerator_mk4_417_fruit1_sprites_l;
-  1: refrigerator_mk4_417_fruit2_sprites_l;
-  2: refrigerator_mk4_417_fruit3_sprites_l;
+  independent: refrigerator_mk4_417_fruit1_sprites;
+  2: refrigerator_mk4_417_fruit1_sprites;
+  1: refrigerator_mk4_417_fruit2_sprites;
+  2: refrigerator_mk4_417_fruit3_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_fruit_sprites_r,
+random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_food_sprites,
   bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
 {
-  dependent: refrigerator_mk4_417_fruit_sprites_l;
-  2: refrigerator_mk4_417_fruit1_sprites_r;
-  1: refrigerator_mk4_417_fruit2_sprites_r;
-  2: refrigerator_mk4_417_fruit3_sprites_r;
+  dependent: refrigerator_mk4_417_fruit_sprites;
+  1: refrigerator_mk4_417_food1_sprites;
+  1: refrigerator_mk4_417_food2_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_food_sprites_l,
-  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
-{
-  1: refrigerator_mk4_417_food1_sprites_l;
-  1: refrigerator_mk4_417_food2_sprites_l;
-}
-
-random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_food_sprites_r,
-  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
-{
-  dependent: refrigerator_mk4_417_food_sprites_l;
-  1: refrigerator_mk4_417_food1_sprites_r;
-  1: refrigerator_mk4_417_food2_sprites_r;
-}
-
-switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_sprites_l,
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_sprites_2,
   cargo_type_in_veh)
 {
-  FRVG: refrigerator_mk4_417_fruit_sprites_l;
-  FRUT: refrigerator_mk4_417_fruit_sprites_l;
-  FISH: refrigerator_mk4_417_fish_sprites_l;
-  FOOD: refrigerator_mk4_417_food_sprites_l;
+  FRVG: refrigerator_mk4_417_fruit_sprites;
+  FRUT: refrigerator_mk4_417_fruit_sprites;
+  FISH: refrigerator_mk4_417_fish_sprites;
+  FOOD: refrigerator_mk4_417_food_sprites;
         align_12_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_sprites_r,
-  cargo_type_in_veh)
-{
-  FRVG: refrigerator_mk4_417_fruit_sprites_r;
-  FRUT: refrigerator_mk4_417_fruit_sprites_r;
-  FISH: refrigerator_mk4_417_fish_sprites_r;
-  FOOD: refrigerator_mk4_417_food_sprites_r;
-        align_12_sprites;
-}
-
-random_switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_sprites_2, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  independent: refrigerator_mk4_417_fruit_sprites_l;
-  independent: refrigerator_mk4_417_food_sprites_l;
-  1: refrigerator_mk4_417_sprites_l;
-  1: refrigerator_mk4_417_sprites_r;
-}
-
-long_vehicle_RND(refrigerator_mk4_417, refrigerator_mk4_417_sprites_2)
+long_vehicle(refrigerator_mk4_417)
 
 item (FEAT_TRAINS, refrigerator_mk4_417) 
 {
