@@ -5,38 +5,12 @@
 // gondola
 
 #define IMAGEFILE  "src/freight/gondola-22-4024.png"
-
-// покупка
 purchase_sprites(gondola_22_4024, 0, 0)
-
-// пусто
-spriteset (gondola_22_4024_v1_empty_sprites, IMAGEFILE)
-{ s9_template(0, 38, 0) }
-
-// шаблон груза 3 вида загруженности
-// 25-49%, 50-74%, полный
-#define gondola_22_4024_sprite_layout_template(x, y, cargo)       \
-spriteset (gondola_22_4024_v1_##cargo##_1_sprites, IMAGEFILE)     \
-{ s9_template(x, y, 0) }                                          \
-spriteset (gondola_22_4024_v1_##cargo##_2_sprites, IMAGEFILE)     \
-{ s9_template(x, y+75, 0) }                                       \
-spriteset (gondola_22_4024_v1_##cargo##_full_sprites, IMAGEFILE)  \
-{ s9_template(x, y+150, 0) }                                      \
-spritegroup gondola_22_4024_v1_##cargo##_sprites                  \
-{ loading: [gondola_22_4024_v1_empty_sprites,                     \
-    gondola_22_4024_v1_##cargo##_1_sprites,                       \
-    gondola_22_4024_v1_##cargo##_2_sprites,                       \
-    gondola_22_4024_v1_##cargo##_full_sprites];                   \
-  loaded: [gondola_22_4024_v1_empty_sprites,                      \
-    gondola_22_4024_v1_##cargo##_1_sprites,                       \
-    gondola_22_4024_v1_##cargo##_2_sprites,                       \
-    gondola_22_4024_v1_##cargo##_full_sprites]; }                 \
-
-gondola_22_4024_sprite_layout_template(0, 113, coal)   // уголь
-gondola_22_4024_sprite_layout_template(0, 338, iore)   // жел. руда
-gondola_22_4024_sprite_layout_template(0, 563, core)   // медн. руда
-gondola_22_4024_sprite_layout_template(0, 788, aore)   // бокситы
-
+flatbed_empty_layout_template(gondola_22_4024_v1, 9, 0, 38)
+flatbed_layout3_template(gondola_22_4024_v1, 9, 0, 113, coal)   // уголь              
+flatbed_layout3_template(gondola_22_4024_v1, 9, 0, 338, iore)   // жел. руда          
+flatbed_layout3_template(gondola_22_4024_v1, 9, 0, 563, core)   // медн. руда         
+flatbed_layout3_template(gondola_22_4024_v1, 9, 0, 788, aore)   // бокситы            
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, gondola_22_4024_sprites_2,
@@ -49,10 +23,11 @@ switch (FEAT_TRAINS, SELF, gondola_22_4024_sprites_2,
         align_9_sprites;
 }
 
-short_vehicle(gondola_22_4024)
+long_vehicle(gondola_22_4024)
 
-random_switch (FEAT_TRAINS, SELF, gondola_22_4024_RND, 0 )
+random_switch (FEAT_TRAINS, SELF, gondola_22_4024_random, 0 )
 {
+  independent: gondola_22_4024_v1_coal_sprites;
   1: return ttdall_cc + 0x62;
   1: return ttdall_cc + 0x71;
   1: return ttdall_cc + 0x73;
@@ -62,7 +37,7 @@ random_switch (FEAT_TRAINS, SELF, gondola_22_4024_RND, 0 )
 switch (FEAT_TRAINS, SELF, gondola_22_4024_colour_mapping,
   cargo_subtype)
 {
-  0: gondola_22_4024_RND;  
+  0: gondola_22_4024_random;  
   1: return ttdall_cc + 0x62;
   2: return ttdall_cc + 0x71;
   3: return ttdall_cc + 0x73;
