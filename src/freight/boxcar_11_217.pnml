@@ -1,82 +1,27 @@
  // boxcar_11_217
 
 /// Вагон
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
 
-// Графика от 11-259
 #define IMAGEFILE  "src/freight/boxcar-11-217.png"
-
-// покупка
 purchase_sprites(boxcar_11_217, 0, 0)
-
-// шаблон: движение/100%, 33%, 66%, 99%
-#define boxcar_11_217_sprite_layout_template(x, y, v)    \
-spriteset (boxcar_11_217##v##_sprites, IMAGEFILE)        \
-{ s9_template(x, y, 0) }                                 \
-spriteset (boxcar_11_217_1##v##_sprites, IMAGEFILE)      \
-{ s9_template(x, y+113-38, 0) }                          \
-spriteset (boxcar_11_217_2##v##_sprites, IMAGEFILE)      \
-{ s9_template(x, y+188-38, 0) }                          \
-spriteset (boxcar_11_217_3##v##_sprites, IMAGEFILE)      \
-{ s9_template(x, y+263-38, 0) }                          \
-spritegroup boxcar_11_217##v##_sprites_l                 \
-{ loading: [boxcar_11_217_1##v##_sprites,                \
-    boxcar_11_217_1##v##_sprites,                        \
-    boxcar_11_217_1##v##_sprites,                        \
-    boxcar_11_217_2##v##_sprites,                        \
-    boxcar_11_217_2##v##_sprites,                        \
-    boxcar_11_217_2##v##_sprites,                        \
-    boxcar_11_217_3##v##_sprites,                        \
-    boxcar_11_217_3##v##_sprites,                        \
-    boxcar_11_217_3##v##_sprites,                        \
-    boxcar_11_217##v##_sprites];                         \
-  loaded: [boxcar_11_217##v##_sprites]; }                \
-                                                         \
-spriteset (boxcar_11_217##v##_r_sprites, IMAGEFILE)      \
-{ s9_r_template(x, y, 0) }                               \
-spriteset (boxcar_11_217_1##v##_r_sprites, IMAGEFILE)    \
-{ s9_r_template(x, y+113-38, 0) }                        \
-spriteset (boxcar_11_217_2##v##_r_sprites, IMAGEFILE)    \
-{ s9_r_template(x, y+188-38, 0) }                        \
-spriteset (boxcar_11_217_3##v##_r_sprites, IMAGEFILE)    \
-{ s9_r_template(x, y+263-38, 0) }                        \
-spritegroup boxcar_11_217##v##_sprites_r                 \
-{ loading: [boxcar_11_217_1##v##_r_sprites,              \
-    boxcar_11_217_1##v##_r_sprites,                      \
-    boxcar_11_217_1##v##_r_sprites,                      \
-    boxcar_11_217_2##v##_r_sprites,                      \
-    boxcar_11_217_2##v##_r_sprites,                      \
-    boxcar_11_217_2##v##_r_sprites,                      \
-    boxcar_11_217_3##v##_r_sprites,                      \
-    boxcar_11_217_3##v##_r_sprites,                      \
-    boxcar_11_217_3##v##_r_sprites,                      \
-    boxcar_11_217##v##_r_sprites];                       \
-  loaded: [boxcar_11_217##v##_r_sprites]; }              \
-
-// ливреи
-boxcar_11_217_sprite_layout_template(0, 38, _v1)
-
+box_empty_layout_template(boxcar_11_217_v1, 9, 0, 38) 
+box_layout_template(boxcar_11_217_v1, 9, 0, 188, goods1)
 #undef IMAGEFILE
-
-random_switch (FEAT_TRAINS, SELF, boxcar_11_217_sprites3, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: boxcar_11_217_v1_sprites_l;
-  1: boxcar_11_217_v1_sprites_r;
-}
 
 switch (FEAT_TRAINS, SELF, boxcar_11_217_sprites_2,
   cargo_subtype)
 {
-  0..4: boxcar_11_217_sprites3;
+  0..4: boxcar_11_217_v1_goods1_sprites;
         align_9_sprites;
 }
 
-long_vehicle_RND(boxcar_11_217, boxcar_11_217_sprites3)
+long_vehicle(boxcar_11_217)
 
 // cb colour_mapping
 random_switch (FEAT_TRAINS, SELF, boxcar_11_217_random, 0 )
 {
-  independent: boxcar_11_217_sprites3;
+  independent: boxcar_11_217_v1_goods1_sprites;
   5: return ttdall_cc + 0x4A;
   2: return ttdall_cc + 0x62;
   4: return ttdall_cc + 0x7B;

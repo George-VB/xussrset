@@ -2,55 +2,20 @@
 
 /// Вагон
 // Крытый 1925 года. 4-осный крытый вагон (дерев., клепаной констр-ции)	Тверской завод	1925-1936
-
-// boxcar
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
 
 #define IMAGEFILE  "src/freight/boxcar-of-1925.png"
-
-// покупка
 purchase_sprites(boxcar_of_1925, 0, 0)
+box_empty_layout_template(boxcar_of_1925_v1, 8, 2, 22) 
+box_layout_template(boxcar_of_1925_v1, 8, 2, 172, goods1)
+#undef IMAGEFILE
 
-// шаблон: движение/100%, 25%, 75%
-#define boxcar_of_1925_sprite_layout_template(x, y, v)            \
-spriteset (boxcar_of_1925##v##_sprites, IMAGEFILE)                \
-{ s8_template(x, y, 0) }                                          \
-spriteset (boxcar_of_1925_1##v##_sprites, IMAGEFILE)              \
-{ s8_template(x, y+44, 0) }                                       \
-spriteset (boxcar_of_1925_2##v##_sprites, IMAGEFILE)              \
-{ s8_template(x, y+88, 0) }                                       \
-spritegroup boxcar_of_1925##v##_sprites_l                         \
-{ loading: [boxcar_of_1925_1##v##_sprites,                        \
-    boxcar_of_1925_2##v##_sprites,                                \
-    boxcar_of_1925_2##v##_sprites,                                \
-    boxcar_of_1925##v##_sprites];                                 \
-  loaded: [boxcar_of_1925##v##_sprites]; }                        \
-                                                                  \
-spriteset (boxcar_of_1925##v##_r_sprites, IMAGEFILE)              \
-{ s8_r_template(x, y, 0) }                                        \
-spriteset (boxcar_of_1925_1##v##_r_sprites, IMAGEFILE)            \
-{ s8_r_template(x, y+44, 0) }                                     \
-spriteset (boxcar_of_1925_2##v##_r_sprites, IMAGEFILE)            \
-{ s8_r_template(x, y+88, 0) }                                     \
-spritegroup boxcar_of_1925##v##_sprites_r                         \
-{ loading: [boxcar_of_1925_1##v##_r_sprites,                      \
-    boxcar_of_1925_2##v##_r_sprites,                              \
-    boxcar_of_1925_2##v##_r_sprites,                              \
-    boxcar_of_1925##v##_r_sprites];                               \
-  loaded: [boxcar_of_1925##v##_r_sprites]; }                      \
-
-// ливреи
-boxcar_of_1925_sprite_layout_template(2, 22, _v1)
-
-random_switch (FEAT_TRAINS, SELF, boxcar_of_1925_sprites_2, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
+switch (FEAT_TRAINS, SELF, boxcar_of_1925_sprites_2, 0)
 {
-  1: boxcar_of_1925_v1_sprites_l;
-  1: boxcar_of_1925_v1_sprites_r;
+  boxcar_of_1925_v1_goods1_sprites;
 }
 
-short_vehicle_RND(boxcar_of_1925, boxcar_of_1925_sprites_2)
-
-#undef IMAGEFILE
+short_vehicle(boxcar_of_1925)
 
 switch (FEAT_TRAINS, SELF, boxcar_of_1925_cargo_capacity, cargo_type_in_veh)
 {
