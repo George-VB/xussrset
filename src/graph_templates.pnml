@@ -427,6 +427,36 @@ random_switch (FEAT_TRAINS, SELF, name##_##cargo##_sprites,                     
 { 1: name##_##cargo##_sprites_left;                                                  \
   1: name##_##cargo##_sprites_right; }                                               \
 
+// шаблон груза, 2 ливреи, 3 вида загруженности
+// 25-49%, 50-74%, полный
+#define flatbed_horisontal_short_layout2_template(name, size, x, y, cargo)           \
+spriteset (name##_##cargo##_1_sprites_left, IMAGEFILE)                               \
+{ s##size##_template(x, y, 0) }                                                      \
+spriteset (name##_##cargo##_full_sprites_left, IMAGEFILE)                            \
+{ s##size##_template(x+240, y, 0) }                                                  \
+spritegroup name##_##cargo##_sprites_left                                            \
+{ loading: [name##_empty_sprites_left,                                               \
+    name##_##cargo##_1_sprites_left,                                                 \
+    name##_##cargo##_full_sprites_left];                                             \
+  loaded: [name##_empty_sprites_left,                                                \
+    name##_##cargo##_1_sprites_left,                                                 \
+    name##_##cargo##_full_sprites_left]; }                                           \
+spriteset (name##_##cargo##_1_sprites_right, IMAGEFILE)                              \
+{ s##size##_template(x, y, 0) }                                                      \
+spriteset (name##_##cargo##_full_sprites_right, IMAGEFILE)                           \
+{ s##size##_template(x+240, y, 0) }                                                  \
+spritegroup name##_##cargo##_sprites_right                                           \
+{ loading: [name##_empty_sprites_right,                                              \
+    name##_##cargo##_1_sprites_right,                                                \
+    name##_##cargo##_full_sprites_right];                                            \
+  loaded: [name##_empty_sprites_right,                                               \
+    name##_##cargo##_1_sprites_right,                                                \
+    name##_##cargo##_full_sprites_right]; }                                          \
+random_switch (FEAT_TRAINS, SELF, name##_##cargo##_sprites,                          \
+  bitmask(TRIGGER_VEHICLE_SERVICE))                                                  \
+{ 1: name##_##cargo##_sprites_left;                                                  \
+  1: name##_##cargo##_sprites_right; }                                               \
+
 // шаблон груза, 3 вида загруженности
 #define flatbed_layout3_template(name, size, x, y, cargo)                            \
 spriteset (name##_##cargo##_1_sprites_left, IMAGEFILE)                               \
@@ -649,6 +679,43 @@ random_switch (FEAT_TRAINS, SELF, name##_##cargo##_sprites,                     
   bitmask(TRIGGER_VEHICLE_SERVICE))                                                  \
 { 1: name##_##cargo##_sprites_left;                                                  \
   1: name##_##cargo##_sprites_right; }                                               \
+
+// шаблон вагона рефсекции. Рефсекция обращается только целиком, bitmask(TRIGGER_VEHICLE_SERVICE) не является частью шаблона
+#define refsection_layout_template(name, size, x, y, cargo)                          \
+spriteset (name##_##cargo##_sprites_left0, IMAGEFILE)                                \
+{ s##size##_template(x, y, 0) }                                                      \
+spriteset (name##_1_##cargo##_sprites, IMAGEFILE)                                    \
+{ s##size##_template(x, y+67, 0) }                                                   \
+spriteset (name##_2_##cargo##_sprites, IMAGEFILE)                                    \
+{ s##size##_template(x, y+134, 0) }                                                  \
+spriteset (name##_3_##cargo##_sprites, IMAGEFILE)                                    \
+{ s##size##_template(x, y+201, 0) }                                                  \
+spritegroup name##_##cargo##_sprites_left1                                           \
+{ loading: [name##_1_##cargo##_sprites];                                             \
+  loaded: [name##_##cargo##_sprites_left0]; }                                        \
+spritegroup name##_##cargo##_sprites_left2                                           \
+{ loading: [name##_2_##cargo##_sprites];                                             \
+  loaded: [name##_##cargo##_sprites_left0]; }                                        \
+spritegroup name##_##cargo##_sprites_left3                                           \
+{ loading: [name##_3_##cargo##_sprites];                                             \
+  loaded: [name##_##cargo##_sprites_left0]; }                                        \
+spriteset (name##_##cargo##_sprites_right0, IMAGEFILE)                               \
+{ s##size##_r_template(x, y, 0) }                                                    \
+spriteset (name##_1_##cargo##_sprites_right, IMAGEFILE)                              \
+{ s##size##_r_template(x, y+67, 0) }                                                 \
+spriteset (name##_2_##cargo##_sprites_right, IMAGEFILE)                              \
+{ s##size##_r_template(x, y+134, 0) }                                                \
+spriteset (name##_3_##cargo##_sprites_right, IMAGEFILE)                              \
+{ s##size##_r_template(x, y+201, 0) }                                                \
+spritegroup name##_##cargo##_sprites_right1                                          \
+{ loading: [name##_1_##cargo##_sprites_right];                                       \
+  loaded: [name##_##cargo##_sprites_right0]; }                                       \
+spritegroup name##_##cargo##_sprites_right2                                          \
+{ loading: [name##_2_##cargo##_sprites_right];                                       \
+  loaded: [name##_##cargo##_sprites_right0]; }                                       \
+spritegroup name##_##cargo##_sprites_right3                                          \
+{ loading: [name##_3_##cargo##_sprites_right];                                       \
+  loaded: [name##_##cargo##_sprites_right0]; }                                       \
 
 // шаблон цистерны
 #define tanker_layout_template(name, size, x, y)                                     \
