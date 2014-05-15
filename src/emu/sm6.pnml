@@ -1,0 +1,166 @@
+ // sm6
+
+// Спрайты
+
+#define IMAGEFILE  "src/emu/Sm6_Allegro.png"
+
+purchase_sprites(sm6, 0, 0)
+
+emu_3r_0_0_sprites(16, sm6_01, 32, 40)
+emu_0_3_0_sprites(14, sm6_03,  32, 40)
+emu_0_0_2_sprites(14, sm6_02,  32, 40)
+emu_0_3_0_sprites(14, sm6_04,  32, 442)
+emu_0_3_0_sprites(14, sm6_05,  32, 844)
+emu_0_3_0_sprites(14, sm6_06,  32, 1246)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, sm6_sprites_2, 0)
+{
+  sm6_01_h_sprites_left;
+}
+
+long_vehicle(sm6)
+
+switch (FEAT_TRAINS, SELF, sm6_b_sprites_left,
+  position_in_articulated_veh)
+{
+   2: sm6_02_c_sprites_left;
+   4: sm6_03_m_sprites_left;
+   6: sm6_04_m_sprites_left;
+   8: sm6_05_m_sprites_left;
+  10: sm6_06_m_sprites_left;
+  12: sm6_01_h_sprites_right;
+      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sm6_b_sprites_right,
+  position_in_articulated_veh)
+{
+   2: sm6_06_m_sprites_right;
+   4: sm6_05_m_sprites_right;
+   6: sm6_04_m_sprites_right;
+   8: sm6_03_m_sprites_right;
+  10: sm6_02_c_sprites_right;
+  12: sm6_01_h_sprites_right;
+      align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, sm6_b_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: sm6_b_sprites_left;
+  1: sm6_b_sprites_right;
+}
+
+long_vehicle_nocount(sm6_b)
+
+switch (FEAT_TRAINS, SELF, sm6_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy8;
+  2: return unitb;
+  3: return dummy6;
+  4: return unitb;
+  5: return dummy6;
+  6: return unitb;
+  7: return dummy6;
+  8: return unitb;
+  9: return dummy6;
+ 10: return unitb;
+ 11: return dummy6;
+ 12: return unitb;
+ 13: return dummy8;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+// даём тягу, если локомотив sm6
+switch (FEAT_TRAINS, PARENT, sm6_power,
+  vehicle_type_id == sm6)
+{
+  1: return get_power_in_cb(7478); 
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, sm6_b_visual_effect_and_powered0,
+  position_in_articulated_veh)
+{
+   2: return electric_visual_effect_and_powered(7);
+  10: return electric_visual_effect_and_powered(-3);
+      return disable_visual_effect_and_powered();
+}
+
+// показываем визуальные эффекты, если локомотив sm6
+switch (FEAT_TRAINS, PARENT, sm6_b_visual_effect_and_powered,
+  vehicle_type_id == sm6)
+{
+  1: sm6_b_visual_effect_and_powered0;
+     return disable_visual_effect_and_powered();
+}
+
+// Допускается эксплуатация с пассажирами только если голова - sm6
+switch (FEAT_TRAINS, PARENT, sm6_cargo_capacity,
+  (vehicle_type_id == sm6) )
+{
+  1: return 352;
+     return 0;
+}
+
+item (FEAT_TRAINS, sm6) 
+{
+  property
+  {
+    name: string(STR_SM6_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(2010), 1, 1);
+    vehicle_life: 30; 
+    model_life: get_model_life(2010,2050);
+    retire_early: get_retire_early(2010,2050); 
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 220 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_dual_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 7478 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    loading_speed: (260/8);
+    cargo_capacity: 255; 
+    weight: 423 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(140.0, 423);
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+  }
+  graphics {
+    default: sm6_sprites;
+    purchase: sm6_purchase_sprites;
+    articulated_part: sm6_articulated_part;
+    can_attach_wagon: string(STR_CAN_ATTACH_NO_MORE);
+    additional_text: return string(STR_SM6_PURCHASE_HINT);
+    power: sm6_power;
+    cargo_capacity: sm6_cargo_capacity;
+    cost_factor: return 1344;
+    colour_mapping: return ttdall_cc + 0xC6;
+  }
+  livery_override(unitb)
+  {
+    length: return 8;
+    visual_effect_and_powered: sm6_b_visual_effect_and_powered;
+            sm6_b_sprites;
+  }  
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, sm6)
+  {
+    property
+    { name: string(STR_SM6_NAME_LONG); }
+  }
+}
+
