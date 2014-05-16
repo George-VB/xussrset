@@ -8,9 +8,11 @@ purchase_sprites(evs2, 120, 0)
 
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, evs2_sprites_2, 0)
+random_switch (FEAT_TRAINS, SELF, evs2_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  evs1_gbt_h_sprites_left;
+  1: evs1_gbt_h_sprites_left;
+  1: evs1_gbt_h_sprites_left;
 }
 
 long_vehicle(evs2)
@@ -39,8 +41,10 @@ switch (FEAT_TRAINS, SELF, evs2_dt_m_sprites_left_railcheck, current_railtype)
         evs1_dt_m_notpowered_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, evs2_b_sprites_left,
-  position_in_articulated_veh)
+switch (FEAT_TRAINS, SELF, evs2_b_sprites_2,
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
 {
    2: evs2_dt_m_sprites_left_railcheck;
    4: evs1_ttr_m_notpowered_sprites_left;
@@ -51,29 +55,16 @@ switch (FEAT_TRAINS, SELF, evs2_b_sprites_left,
   14: evs2_ttr_m_sprites_right_railcheck;
   16: evs2_dt_m_sprites_right_railcheck;
   18: evs1_gbt_h_sprites_right;
+ 102: evs2_dt_m_sprites_left_railcheck;
+ 104: evs1_ttr_m_notpowered_sprites_left;
+ 106: evs1_tt_c_sprites_left;
+ 108: evs1_tab_c_sprites_left;
+ 110: evs1_ta_c_sprites_right;
+ 112: evs1_tt_c_sprites_right;
+ 114: evs2_ttr_m_sprites_right_railcheck;
+ 116: evs2_dt_m_sprites_right_railcheck;
+ 118: evs1_gbt_h_sprites_right;
       align_14_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, evs2_b_sprites_right,
-  position_in_articulated_veh)
-{
-   2: evs2_dt_m_sprites_left_railcheck;
-   4: evs1_ttr_m_notpowered_sprites_left;
-   6: evs1_tt_c_sprites_left;
-   8: evs1_tab_c_sprites_left;
-  10: evs1_ta_c_sprites_right;
-  12: evs1_tt_c_sprites_right;
-  14: evs2_ttr_m_sprites_right_railcheck;
-  16: evs2_dt_m_sprites_right_railcheck;
-  18: evs1_gbt_h_sprites_right;
-      align_14_sprites;
-}
-
-random_switch (FEAT_TRAINS, SELF, evs2_b_sprites_2, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: evs2_b_sprites_left;
-  1: evs2_b_sprites_right;
 }
 
 long_vehicle_nocount(evs2_b)
