@@ -1,0 +1,191 @@
+ // es1
+
+// Спрайты
+
+#define IMAGEFILE  "src/emu/es1.png"
+
+purchase_sprites(es1, 0, 0)
+
+emu_4r_0_0_sprites(15, es1, 32, 40)
+emu_0_4_0_sprites(14,  es1, 32, 40)
+emu_0_0_2_sprites(14,  es1, 32, 40)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, es1_h_sprites_left_check, 
+  position_in_consist == 0)
+{
+  1: es1_h_sprites_left;
+     es1_h_notpowered_normal_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, es1_sprites_2, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: es1_h_sprites_left_check;
+  1: es1_h_sprites_left_check;
+}
+
+long_vehicle(es1)
+
+switch (FEAT_TRAINS, SELF, es1_h_sprites_right_check, 
+  position_in_consist_from_end == 1)
+{
+  1: es1_h_sprites_right;
+     es1_h_notpowered_normal_sprites_right;
+}           
+
+switch (FEAT_TRAINS, SELF, es1_b_sprites_2,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != es1) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   2: es1_m_notpowered_normal_sprites_right;
+   4: es1_c_sprites_left;
+   6: es1_m_sprites_left;
+   8: es1_h_sprites_right_check;
+
+ 102: es1_m_notpowered_normal_sprites_right;
+ 104: es1_c_sprites_right;
+ 106: es1_m_sprites_left;
+ 108: es1_h_sprites_right_check;
+
+ 202: es1_m_notpowered_sprites_right;
+ 204: es1_c_notpowered_sprites_left;
+ 206: es1_m_notpowered_sprites_left;
+ 208: es1_h_notpowered_sprites_right;
+                               
+ 302: es1_m_notpowered_sprites_right;
+ 304: es1_c_notpowered_sprites_right;
+ 306: es1_m_notpowered_sprites_left;
+ 308: es1_h_notpowered_sprites_right;
+      align_14_sprites;
+}
+
+long_vehicle_nocount(es1_b)
+
+switch (FEAT_TRAINS, SELF, es1_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy7;
+  2: return unitb;
+  3: return dummy6;
+  4: return unitb;
+  5: return dummy6;
+  6: return unitb;
+  7: return dummy6;
+  8: return unitb;
+  9: return dummy8;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+// даём тягу, если локомотив es1
+switch (FEAT_TRAINS, PARENT, es1_power,
+  vehicle_type_id == es1)
+{
+  1: return get_power_in_cb(3467); 
+     return 0;
+}
+
+// показываем визуальные эффекты, если локомотив es1
+switch (FEAT_TRAINS, PARENT, es1_b_visual_effect_and_powered,
+  (vehicle_type_id == es1) && (position_in_articulated_veh == 7))
+{
+  1: return electric_visual_effect_and_powered(7);
+     return disable_visual_effect_and_powered();
+}
+
+// Допускается эксплуатация с пассажирами только если голова - es1
+switch (FEAT_TRAINS, PARENT, es1_cargo_capacity,
+  (vehicle_type_id == es1) )
+{
+  1: return 443;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, es1_can_attach_wagon2,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, es1_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(es1), 0) )
+{
+  es1_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, es1_can_attach_wagon,
+  vehicle_type_id == es1)
+{
+  1: es1_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, es1_additional_text,
+  current_year >= 2014 )
+{
+  1: return string(STR_ES1_PURCHASE_HINT);
+     return string(STR_ES1_PURCHASE_HINT_PRE);
+}
+
+item (FEAT_TRAINS, es1) 
+{
+  property
+  {
+    name: string(STR_ES1_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(2011), 1, 1);
+    vehicle_life: 40; // срок службы
+    model_life: get_model_life(2011,2050);
+    retire_early: get_retire_early(2011,2050); // VEHICLE_NEVER_EXPIRES;
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_dual_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3467 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    speed: 160 km/h;
+    loading_speed: (260/8);
+    cargo_capacity: 255; // 443
+    weight: 260 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(380.0, 260);
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+  }
+  graphics {
+    default: es1_sprites;
+    purchase: es1_purchase_sprites;
+    articulated_part: es1_articulated_part;
+    can_attach_wagon: es1_can_attach_wagon;
+    additional_text: es1_additional_text;
+    power: es1_power;
+    cargo_capacity: es1_cargo_capacity;
+    cost_factor: return 1344;
+    colour_mapping: return ttdall_cc + 0xC6;
+  }
+  livery_override(unitb)
+  {
+    length: return 8;
+    visual_effect_and_powered: es1_b_visual_effect_and_powered;
+            es1_b_sprites;
+  }  
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, es1)
+  {
+    property
+    { name: string(STR_ES1_NAME_LONG); }
+  }
+}
+
