@@ -9,6 +9,7 @@ purchase_sprites(evs1, 0, 0)
 emu_3r_0_0_sprites(15, evs1_gbt, 32, 40)
 emu_0_4_0_sprites(14, evs1_dt,  32, 40)
 emu_0_0_2_sprites(14, evs1_t,   32, 40)
+emu_2_0_0_sprites(15, evs1_gbt_middle, 32, 576)
 emu_0_4_0_sprites(14, evs1_ttr, 32, 576)
 emu_0_0_2_sprites(14, evs1_tt,  32, 576)
 emu_0_0_2_sprites(14, evs1_ta,  32, 1112)
@@ -16,14 +17,40 @@ emu_0_0_1_sprites(14, evs1_tab, 32, 1648)
 
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, evs1_gbt_h_sprites_left_check,
+[  set_offset_to(-2),
+   prev_vehicle_type_id() == evs1])
+{
+  1: evs1_gbt_h_sprites_left;
+     evs1_gbt_middle_h_sprites_left;
+}
+
 random_switch (FEAT_TRAINS, SELF, evs1_sprites_2, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  1: evs1_gbt_h_sprites_left;
-  1: evs1_gbt_h_sprites_left;
+  1: evs1_gbt_h_sprites_left_check;
+  1: evs1_gbt_h_sprites_left_check;
 }
 
+// использовать графику evs1_gbt_middle при стыковке ПС после 2014 выпуска
+ 
 long_vehicle(evs1)
+
+switch (FEAT_TRAINS, SELF, evs1_gbt_h_sprites_right_check,
+[  set_offset_to(2),
+   prev_vehicle_type_id() == evs1])
+{
+  1: evs1_gbt_h_sprites_right;
+     evs1_gbt_middle_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, evs1_gbt_h_notpowered_sprites_right_check,
+[  set_offset_to(2),
+   prev_vehicle_type_id() == evs1])
+{
+  1: evs1_gbt_h_notpowered_sprites_right;
+     evs1_gbt_middle_h_notpowered_sprites_right;
+}
 
 switch (FEAT_TRAINS, SELF, evs1_b_sprites_2,
 [  set_offset_to(-position_in_articulated_veh),
@@ -39,7 +66,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_2,
   12: evs1_tt_c_sprites_right;
   14: evs1_t_c_sprites_right;
   16: evs1_dt_m_sprites_right;
-  18: evs1_gbt_h_sprites_right;
+  18: evs1_gbt_h_sprites_right_check;
  102: evs1_dt_m_sprites_left;
  104: evs1_t_c_sprites_left;
  106: evs1_tt_c_sprites_left;
@@ -48,7 +75,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_2,
  112: evs1_tt_c_sprites_right;
  114: evs1_t_c_sprites_right;
  116: evs1_dt_m_sprites_right;
- 118: evs1_gbt_h_sprites_right;
+ 118: evs1_gbt_h_sprites_right_check;
 
  202: evs1_dt_m_notpowered_sprites_left;
  204: evs1_t_c_notpowered_sprites_left;
@@ -58,7 +85,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_2,
  212: evs1_tt_c_notpowered_sprites_right;
  214: evs1_t_c_notpowered_sprites_right;
  216: evs1_dt_m_notpowered_sprites_right;
- 218: evs1_gbt_h_notpowered_sprites_right;
+ 218: evs1_gbt_h_notpowered_sprites_right_check;
  302: evs1_dt_m_notpowered_sprites_left;
  304: evs1_t_c_notpowered_sprites_left;
  306: evs1_tt_c_notpowered_sprites_left;
@@ -67,7 +94,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_2,
  312: evs1_tt_c_notpowered_sprites_right;
  314: evs1_t_c_notpowered_sprites_right;
  316: evs1_dt_m_notpowered_sprites_right;
- 318: evs1_gbt_h_notpowered_sprites_right;
+ 318: evs1_gbt_h_notpowered_sprites_right_check;
       align_14_sprites;
 }
 
@@ -130,6 +157,38 @@ switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
      return 0;
 }
 
+switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon2,
+  (LOAD_TEMP(1) >= 2014) +
+  ((build_year >= 2014) *10) )
+{
+   0: return string(STR_CAN_ATTACH_NO_MORE);
+   1: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
+  10: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
+  11: evs1_can_attach_wagon3;
+      return string(STR_CAN_ATTACH_WRONG_YEAR,"2000","2000");
+}
+
+switch (FEAT_TRAINS, PARENT, evs1_can_attach_wagon1,
+[  STORE_TEMP(build_year, 1),
+   STORE_TEMP(count_veh_id(evs1), 0) ])
+{
+  evs1_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon,
+  vehicle_type_id == evs1)
+{
+  1: evs1_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
 item (FEAT_TRAINS, evs1) 
 {
   property
@@ -164,7 +223,7 @@ item (FEAT_TRAINS, evs1)
     default: evs1_sprites;
     purchase: evs1_purchase_sprites;
     articulated_part: evs1_articulated_part;
-    can_attach_wagon: string(STR_CAN_ATTACH_NO_MORE);
+    can_attach_wagon: evs1_can_attach_wagon;
     additional_text: return string(STR_EVS1_PURCHASE_HINT);
     power: evs1_power;
     cargo_capacity: evs1_cargo_capacity;
