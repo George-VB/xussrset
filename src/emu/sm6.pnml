@@ -9,17 +9,25 @@ purchase_sprites(sm6, 0, 0)
 emu_3r_0_0_sprites(16, sm6_01, 32, 40)
 emu_0_2_0_sprites(14, sm6_03,  32, 40)
 emu_0_0_2_sprites(14, sm6_02,  32, 40)
+emu_2_0_0_sprites(16, sm6_01_middle, 32, 576)
 emu_0_4_0_sprites(14, sm6_04,  32, 576)
 emu_0_4_0_sprites(14, sm6_05,  32, 1112)
 emu_0_4_0_sprites(14, sm6_06,  32, 1648)
 
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, sm6_01_h_sprites_left_check, 
+  position_in_consist == 0)
+{
+  1: sm6_01_h_sprites_left;
+     sm6_01_middle_h_sprites_left;
+}
+
 random_switch (FEAT_TRAINS, SELF, sm6_sprites_2, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  1: sm6_01_h_sprites_left;
-  1: sm6_01_h_sprites_left;
+  1: sm6_01_h_sprites_left_check;
+  1: sm6_01_h_sprites_left_check;
 }
 
 long_vehicle(sm6)
@@ -56,6 +64,20 @@ switch (FEAT_TRAINS, SELF, sm6_04_m_sprites_left_railcheck, current_railtype)
         sm6_04_m_notpowered_normal_sprites_left;
 }
 
+switch (FEAT_TRAINS, SELF, sm6_01_h_sprites_right_check, 
+  position_in_consist_from_end == 2)  // особый случай. Последняя голова SM6 имеет шаблон 17
+{
+  1: sm6_01_h_sprites_right;
+     sm6_01_middle_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, sm6_01_h_notpowered_sprites_right_check, 
+  position_in_consist_from_end == 2) // особый случай. Последняя голова SM6 имеет шаблон 17
+{
+  1: sm6_01_h_notpowered_sprites_right;
+     sm6_01_middle_h_sprites_right;
+}
+
 switch (FEAT_TRAINS, SELF, sm6_b_sprites_2,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != sm6) * 200) +
@@ -67,28 +89,28 @@ switch (FEAT_TRAINS, SELF, sm6_b_sprites_2,
    6: sm6_04_m_notpowered_normal_sprites_right;
    8: sm6_03_m_sprites_right_railcheck;
   10: sm6_02_c_sprites_right;
-  12: sm6_01_h_sprites_right;
+  12: sm6_01_h_sprites_right_check;
 
  102: sm6_02_c_sprites_left;
  104: sm6_03_m_notpowered_sprites_left;
  106: sm6_04_m_sprites_left_railcheck;
  108: sm6_05_m_notpowered_normal_sprites_left;
  110: sm6_06_m_sprites_left_railcheck;
- 112: sm6_01_h_sprites_right;
+ 112: sm6_01_h_sprites_right_check;
 
  202: sm6_06_m_notpowered_sprites_right;
  204: sm6_05_m_notpowered_sprites_right;
  206: sm6_04_m_notpowered_sprites_right;
  208: sm6_03_m_notpowered_sprites_right;
  210: sm6_02_c_notpowered_sprites_right;
- 212: sm6_01_h_notpowered_sprites_right;
+ 212: sm6_01_h_notpowered_sprites_right_check;
 
  302: sm6_02_c_notpowered_sprites_left;
  304: sm6_03_m_notpowered_sprites_left;
  306: sm6_04_m_notpowered_sprites_left;
  308: sm6_05_m_notpowered_sprites_left;
  310: sm6_06_m_notpowered_sprites_left;
- 312: sm6_01_h_notpowered_sprites_right;
+ 312: sm6_01_h_notpowered_sprites_right_check;
       align_14_sprites;
 }
 
@@ -109,9 +131,8 @@ switch (FEAT_TRAINS, SELF, sm6_articulated_part,
  10: return unitb;
  11: return dummy6;
  12: return unitb;
- 13: return dummy7;
+ 13: return dummy8;
  14: return dummy1;
- 15: return dummy1;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
