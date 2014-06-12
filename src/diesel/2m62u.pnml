@@ -248,8 +248,7 @@ engine_direction_template3m(_2m62u, _3m62u, _3m62u_m)
 
 switch (FEAT_TRAINS, SELF, _2m62u_sprites_DRB1,
   (position_in_consist != 0) +
-  (cargo_subtype * 2)
-)
+  (cargo_subtype * 2) )
 {
   0: _2m62u_spritegroup;
   1: _2m62u_r_spriteset;
@@ -272,8 +271,8 @@ switch (FEAT_TRAINS, SELF, _2m62u_sprites_DRB1,
 }
   
 switch (FEAT_TRAINS, PARENT, _2m62u_sprites_start_sp,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2) == 0) && ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1)
-)
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
+  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
 {
   1: _2m62u_sprites_DRB1;
      _2m62u_sprites_start;
@@ -281,22 +280,18 @@ switch (FEAT_TRAINS, PARENT, _2m62u_sprites_start_sp,
  
 long_vehicle_sp(_2m62u)
 
-// Что присоединяем?
-
 // прицепить 2М62у можно только к составу, не имеющему вагонов ДР1А или имеющему только прицепные вагоны
 switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon3,
   ((count_veh_id(dr1a_c) + count_veh_id(dr1a_m) + count_veh_id(dr1a_n)) == 0) ||
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0)
-)
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0) )
 {
   1: return any_can_attach_wagon;
-  return string(STR_CAN_ATTACH_WRONG_DRB1);
+     return string(STR_CAN_ATTACH_WRONG_DRB1);
 }
 
 // прицепить ДР1А прицепной можно только к составу, состоящему из 2М62у и не более чем 9 ДР1А прицепных
 switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon2,
-  (count_veh_id(dr1a_c) <= 9) && ( (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0)
-)
+  (count_veh_id(dr1a_c) <= 9) && ( (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0) )
 {
   1: return CB_RESULT_ATTACH_ALLOW;
   return string(STR_CAN_ATTACH_WRONG_DRB1);
@@ -304,8 +299,7 @@ switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon2,
 
 // прицепить ДР1А головной немоторный можно только к составу, состоящему из 2М62у и ДР1А прицепных
 switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon1,
-  (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0
-)
+  (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0 )
 {
   1: return CB_RESULT_ATTACH_ALLOW;
   return string(STR_CAN_ATTACH_WRONG_DRB1);
@@ -313,8 +307,7 @@ switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon1,
 
 // нельзя прицеплять ничего к ДР1Б кроме частей ДР1А
 switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon0,
-  (count_veh_id(dr1a_c)+count_veh_id(dr1a_n) >= 1)
-)
+  (count_veh_id(dr1a_c)+count_veh_id(dr1a_n) >= 1) )
 {
   1: return string(STR_CAN_ATTACH_WRONG_DRB1);
      any_can_attach_wagon;
@@ -327,6 +320,7 @@ switch (FEAT_TRAINS, SELF, _2m62u_can_attach_wagon,
   dr1a_n: _2m62u_can_attach_wagon1;
   dr1a_c: _2m62u_can_attach_wagon2;
   _2m62u: _2m62u_can_attach_wagon3;
+  dm62:   _2m62u_can_attach_wagon3;
           _2m62u_can_attach_wagon0;
 }
 
@@ -366,11 +360,11 @@ engine_penalise_speed3(_2m62u, _3m62u, _3m62u_m, 8)
 
 // отключить пенальти для ДРБ1
 switch (FEAT_TRAINS, PARENT, _2m62u_bitmask_vehicle_info_drb1,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2) == 0) && ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1)
-)
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
+  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
 {
   1: return 0;
-  _2m62u_bitmask_vehicle_info;
+     _2m62u_bitmask_vehicle_info;
 }
 
 item (FEAT_TRAINS, _2m62u) 
