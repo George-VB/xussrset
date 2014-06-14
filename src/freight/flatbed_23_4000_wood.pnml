@@ -5,48 +5,49 @@
 // Вагон симметричный, конструкция bitmask(TRIGGER_VEHICLE_SERVICE) не требуется
 
 #define IMAGEFILE  "src/freight/flatbed-23-4000-wood-1979.png"
-purchase_sprites(flatbed_23_4000_wood, 0, 0)
-
-flatbed_empty_layout_template(flatbed_23_4000_wood_v1, 14, 0, 52)
-flatbed_empty_layout_template(flatbed_23_4000_wood_v2, 14, 0, 119)
-flatbed_empty_layout_template(flatbed_23_4000_wood_v3, 14, 0, 186)
-
-flatbed_layout1_template(flatbed_23_4000_wood_v1, 14, 440, 52, wood)
-flatbed_layout1_template(flatbed_23_4000_wood_v2, 14, 440, 119, wood)
-flatbed_layout1_template(flatbed_23_4000_wood_v3, 14, 440, 186, wood)
+purchase_sprites(flatbed_23_4000, 0, 0)
+flatbed_empty_layout_template(flatbed_23_4000_v1, 14, 0, 52)
+flatbed_layout1_template(flatbed_23_4000_v1, 14, 440, 52, wood)
 #undef IMAGEFILE
 
-random_switch (FEAT_TRAINS, SELF, flatbed_23_4000_wood_random, 0 )
-{
-  independent: flatbed_23_4000_wood_v1_wood_sprites;
-  1: flatbed_23_4000_wood_v1_wood_sprites;
-  1: flatbed_23_4000_wood_v2_wood_sprites;
-  1: flatbed_23_4000_wood_v3_wood_sprites;
-}                      
-
-switch (FEAT_TRAINS, SELF, flatbed_23_4000_wood_sprites_start,
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_sprites_start,
   cargo_subtype)
 {
-  0: flatbed_23_4000_wood_random;
-  1: flatbed_23_4000_wood_v1_wood_sprites;
-  2: flatbed_23_4000_wood_v2_wood_sprites;
-  3: flatbed_23_4000_wood_v3_wood_sprites;
-     align_14_sprites;
+  0..3: flatbed_23_4000_v1_wood_sprites;
+        align_14_sprites;
 }
 
-long_vehicle(flatbed_23_4000_wood)
+long_vehicle(flatbed_23_4000)
 
-switch (FEAT_TRAINS, SELF, flatbed_23_4000_wood_cargo_subtype_text,
+random_switch (FEAT_TRAINS, SELF, flatbed_23_4000_random, 0 )
+{
+  independent: flatbed_23_4000_v1_wood_sprites;
+  5: return ttdall_cc + 0x5C;
+  4: return ttdall_cc + 0x63;
+  4: return ttdall_cc + 0x53;
+}                      
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_colour_mapping,
+  cargo_subtype)
+{
+  0: flatbed_23_4000_random;
+  1: return ttdall_cc + 0x5C;
+  2: return ttdall_cc + 0x63;
+  3: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_cargo_subtype_text,
   cargo_subtype)
 {
   0: string(STR_REFIT_FACTORY);
-  1: string(STR_REFIT_TTD_59);
-  2: string(STR_REFIT_TTD_62);
+  1: string(STR_REFIT_TTD_5C);
+  2: string(STR_REFIT_TTD_63);
   3: string(STR_REFIT_TTD_53);
      return CB_RESULT_NO_TEXT;
 }  
 
-item (FEAT_TRAINS, flatbed_23_4000_wood) 
+item (FEAT_TRAINS, flatbed_23_4000) 
 {
   property
   {
@@ -77,17 +78,17 @@ item (FEAT_TRAINS, flatbed_23_4000_wood)
   }
   graphics
   {
-    default: flatbed_23_4000_wood_sprites;
-    purchase: flatbed_23_4000_wood_purchase_sprites;
+    default: flatbed_23_4000_sprites;
+    purchase: flatbed_23_4000_purchase_sprites;
     articulated_part: articulated_part_dummy6;
     additional_text: return string(STR_FLATBED_23_4000_WOOD_PURCHASE_HINT);
-    cargo_subtype_text: flatbed_23_4000_wood_cargo_subtype_text;
+    cargo_subtype_text: flatbed_23_4000_cargo_subtype_text;
   }
 }
 
 if (enable_long_names)
 {
-  item (FEAT_TRAINS, flatbed_23_4000_wood)
+  item (FEAT_TRAINS, flatbed_23_4000)
   {
     property
     { name: string(STR_FLATBED_23_4000_WOOD_NAME_LONG); }
