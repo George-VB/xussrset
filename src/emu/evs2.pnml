@@ -8,14 +8,36 @@ purchase_sprites(evs2, 120, 0)
 
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, evs2_gbt_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: evs1_gbt_h_sprites_left;
+     evs1_gbt_middle_h_sprites_left;
+}
+
 random_switch (FEAT_TRAINS, SELF, evs2_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  1: evs1_gbt_h_sprites_left;
-  1: evs1_gbt_h_sprites_left;
+  1: evs2_gbt_h_sprites_left_check;
+  1: evs2_gbt_h_sprites_left_check;
 }
 
 long_vehicle(evs2)
+
+switch (FEAT_TRAINS, SELF, evs2_gbt_h_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: evs1_gbt_h_sprites_right;
+     evs1_gbt_middle_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, evs2_gbt_h_notpowered_sprites_right_check,
+[  set_offset_to(2),
+   prev_vehicle_type_id() == evs2])
+{
+  1: evs1_gbt_h_notpowered_sprites_right;
+     evs1_gbt_middle_h_notpowered_sprites_right;
+}
 
 switch (FEAT_TRAINS, SELF, evs2_dt_m_sprites_right_railcheck, current_railtype)
 {
@@ -55,7 +77,7 @@ switch (FEAT_TRAINS, SELF, evs2_b_sprites_start,
   12: evs1_tt_c_sprites_right;
   14: evs2_ttr_m_sprites_right_railcheck;
   16: evs2_dt_m_sprites_right_railcheck;
-  18: evs1_gbt_h_sprites_right;
+  18: evs2_gbt_h_sprites_right_check;
  102: evs2_dt_m_sprites_left_railcheck;
  104: evs1_ttr_m_notpowered_normal_sprites_left;
  106: evs1_tt_c_sprites_left;
@@ -64,7 +86,7 @@ switch (FEAT_TRAINS, SELF, evs2_b_sprites_start,
  112: evs1_tt_c_sprites_right;
  114: evs2_ttr_m_sprites_right_railcheck;
  116: evs2_dt_m_sprites_right_railcheck;
- 118: evs1_gbt_h_sprites_right;
+ 118: evs2_gbt_h_sprites_right_check;
 
  202: evs1_dt_m_notpowered_sprites_left;
  204: evs1_ttr_m_notpowered_sprites_left;
@@ -74,7 +96,7 @@ switch (FEAT_TRAINS, SELF, evs2_b_sprites_start,
  212: evs1_tt_c_notpowered_sprites_right;
  214: evs1_ttr_m_notpowered_sprites_right;
  216: evs1_dt_m_notpowered_sprites_right;
- 218: evs1_gbt_h_notpowered_sprites_right;
+ 218: evs2_gbt_h_notpowered_sprites_right_check;
  302: evs1_dt_m_notpowered_sprites_left;
  304: evs1_ttr_m_notpowered_sprites_left;
  306: evs1_tt_c_notpowered_sprites_left;
@@ -83,7 +105,7 @@ switch (FEAT_TRAINS, SELF, evs2_b_sprites_start,
  312: evs1_tt_c_notpowered_sprites_right;
  314: evs1_ttr_m_notpowered_sprites_right;
  316: evs1_dt_m_notpowered_sprites_right;
- 318: evs1_gbt_h_notpowered_sprites_right;
+ 318: evs2_gbt_h_notpowered_sprites_right_check;
 
       align_14_sprites;
 }
@@ -159,7 +181,7 @@ switch (FEAT_TRAINS, SELF, evs2_b_visual_effect_and_powered0,
       return disable_visual_effect_and_powered();
 }
 
-// показываем визуальные эффекты, если локомотив evs1
+// показываем визуальные эффекты, если локомотив evs2
 switch (FEAT_TRAINS, PARENT, evs2_b_visual_effect_and_powered, vehicle_type_id == evs2)
 {
   1: evs2_b_visual_effect_and_powered0;
@@ -173,6 +195,38 @@ switch (FEAT_TRAINS, PARENT, evs2_cargo_capacity,
   1: return 604;
      return 0;
 }
+
+switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon3,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon2,
+  (LOAD_TEMP(1) >= 2014) +
+  ((build_year >= 2014) *10) )
+{
+   0: return string(STR_CAN_ATTACH_NO_MORE);
+   1: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
+  10: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
+  11: evs2_can_attach_wagon3;
+      return string(STR_CAN_ATTACH_WRONG_YEAR,"2000","2000");
+}
+
+switch (FEAT_TRAINS, PARENT, evs2_can_attach_wagon1,
+[  STORE_TEMP(build_year, 1),
+   STORE_TEMP(count_veh_id(evs2), 0) ])
+{
+  evs2_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon,
+  vehicle_type_id == evs2)
+{
+  1: evs2_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}        
 
 item (FEAT_TRAINS, evs2) 
 {
@@ -208,11 +262,11 @@ item (FEAT_TRAINS, evs2)
     default: evs2_sprites;
     purchase: evs2_purchase_sprites;
     articulated_part: evs2_articulated_part;
-    can_attach_wagon: string(STR_CAN_ATTACH_NO_MORE);
+    can_attach_wagon: evs2_can_attach_wagon;
     additional_text: return string(STR_EVS2_PURCHASE_HINT);
     power: evs2_power;
     cargo_capacity: evs2_cargo_capacity;
-    cost_factor: return 1344;
+    cost_factor: return 1722;
     colour_mapping: return ttdall_cc + 0xC6;
   }
   livery_override(unitb)
