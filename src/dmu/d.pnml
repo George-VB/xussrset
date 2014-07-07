@@ -44,35 +44,35 @@ spriteset (d_c_spriteset, IMAGEFILE)
 #define IMAGEFILE "src/dmu/d-1962-1964.png"
 
 // покупка
-purchase_sprites(d_m_cc, 0, 0)
+purchase_sprites(d_m_v2, 0, 0)
 
-purchase_sprites(d_c_cc, 0, 20)
+purchase_sprites(d_c_v2, 0, 20)
 
 // моторный
-spriteset (d_m_cc_loading_spriteset, IMAGEFILE)
+spriteset (d_m_v2_loading_spriteset, IMAGEFILE)
 {
   s15_template(4, 57, 0)
 } 
 
-spriteset (d_m_cc_traveling_spriteset, IMAGEFILE)
+spriteset (d_m_v2_traveling_spriteset, IMAGEFILE)
 {
   s15_template(458, 57, 0)
 } 
 
-spritegroup d_m_cc_spritegroup
+spritegroup d_m_v2_spritegroup
 {
-  loading: d_m_cc_loading_spriteset;
-  loaded: d_m_cc_traveling_spriteset;
+  loading: d_m_v2_loading_spriteset;
+  loaded: d_m_v2_traveling_spriteset;
 }
 
 // развёрнутый моторный
-spriteset (d_rm_cc_spriteset, IMAGEFILE)
+spriteset (d_rm_v2_spriteset, IMAGEFILE)
 {
   s15_template(4, 144, 0)
 } 
 
 // прицепной
-spriteset (d_c_cc_spriteset, IMAGEFILE)
+spriteset (d_c_v2_spriteset, IMAGEFILE)
 {
   s15_template(4, 231, 0)
 } 
@@ -83,7 +83,7 @@ spriteset (d_c_cc_spriteset, IMAGEFILE)
 switch (FEAT_TRAINS, SELF, d_c_sprites_start,
   build_year >= 1962)
 {
-  1: d_c_cc_spriteset;
+  1: d_c_v2_spriteset;
      d_c_spriteset;
 }
 
@@ -92,21 +92,21 @@ long_vehicle(d_c)
 // Определяем необходимость разворота моторного вагона по чётности его позиции
 // от начала состава
 // Если год постройки >= 1962, используем метельник
-switch (FEAT_TRAINS, SELF, d_m_sprites2,
-  ((LOAD_TEMP(0) - count_veh_id(d_m)) % 2) +
-  ((build_year >= 1962) * 2) )
+switch (FEAT_TRAINS, SELF, d_m_sprites_l,
+  build_year >= 1962)
 {
   0: d_m_spritegroup;
-  1: d_rm_spriteset;
-  2: d_m_cc_spritegroup;
-     d_rm_cc_spriteset;
+     d_m_v2_spritegroup;
 }
 
-switch (FEAT_TRAINS, PARENT, d_m_sprites_start,
-  STORE_TEMP(count_veh_id(d_m), 0))
+switch (FEAT_TRAINS, SELF, d_m_sprites_r,
+  build_year >= 1962)
 {
-  d_m_sprites2;
+  0: d_rm_spriteset;
+     d_rm_v2_spriteset;
 }
+
+engine_direction_template2m(d_m, d_c)
 
 long_vehicle(d_m)
 
@@ -191,14 +191,14 @@ switch (FEAT_TRAINS, PARENT, d_c_cargo_capacity,
 switch (FEAT_TRAINS, SELF, d_m_purchase,
   build_year >= 1962)
 {
-  1: d_m_cc_purchase_sprites;
+  1: d_m_v2_purchase_sprites;
      d_m_purchase_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, d_c_purchase,
   build_year >= 1962)
 {
-  1: d_c_cc_purchase_sprites;
+  1: d_c_v2_purchase_sprites;
      d_c_purchase_sprites;
 }
 

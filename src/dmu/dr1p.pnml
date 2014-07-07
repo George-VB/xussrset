@@ -20,14 +20,14 @@ spriteset (dr1p_m_traveling_spriteset, IMAGEFILE)
   s15_template(497, 27, 0)
 } 
 
-spritegroup dr1p_m_spritegroup
+spritegroup dr1p_m_sprites_l
 {
   loading: dr1p_m_loading_spriteset;
   loaded: dr1p_m_traveling_spriteset;
 }
 
 // развёрнутая голова
-spriteset (dr1p_rm_spriteset, IMAGEFILE)
+spriteset (dr1p_m_sprites_r, IMAGEFILE)
 {
   s15_template(38, 96, 0)
 } 
@@ -42,14 +42,7 @@ spriteset (dr1p_c_sprites_start, IMAGEFILE)
 
 long_vehicle(dr1p_c)
 
-// Определяем необходимость разворота моторного вагона по чётности его позиции
-// от начала состава
-switch (FEAT_TRAINS, SELF, dr1p_m_sprites_start,
-  (LOAD_TEMP(0) - count_veh_id(dr1p_m)) % 2 )
-{
-  0: dr1p_m_spritegroup;
-     dr1p_rm_spriteset;
-}
+engine_direction_template2m(dr1p_m, dr1p_c)
 
 long_vehicle(dr1p_m)
 
@@ -134,8 +127,7 @@ switch (FEAT_TRAINS, PARENT, dr1p_m_visual_effect_and_powered0,
 
 // Визуализируем эффекты тяги только если локомотив - dr1p_m
 switch (FEAT_TRAINS, PARENT, dr1p_m_visual_effect_and_powered,
-  (vehicle_type_id == dr1p_m) 
-  )
+  (vehicle_type_id == dr1p_m) )
 {
   1: dr1p_m_visual_effect_and_powered0; 
      return disable_visual_effect_and_powered();
@@ -143,8 +135,7 @@ switch (FEAT_TRAINS, PARENT, dr1p_m_visual_effect_and_powered,
 
 // Даём тягу, только если локомотив - dr1p_m
 switch (FEAT_TRAINS, PARENT, dr1p_m_power,
-  (vehicle_type_id == dr1p_m)  
-  )
+  (vehicle_type_id == dr1p_m) )
 {
   1: return get_power_in_cb(800); 
      return 0;
@@ -152,16 +143,14 @@ switch (FEAT_TRAINS, PARENT, dr1p_m_power,
 
 // Допускается эксплуатация с пассажирами только если голова - dr1p_m
 switch (FEAT_TRAINS, PARENT, dr1p_m_cargo_capacity,
-  (vehicle_type_id == dr1p_m)  
-)
+  (vehicle_type_id == dr1p_m) )
 {
   1: return 68;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1p_c_cargo_capacity,
-  (vehicle_type_id == dr1p_m)  
-)
+  (vehicle_type_id == dr1p_m) )
 {
   1: return 124;
      return 0;
