@@ -1,0 +1,165 @@
+ // sr3
+
+
+#define IMAGEFILE  "src/emu/sr3.png"
+purchase_sprites(sr3, 0, 0)
+
+emu_4r_0_0_sprites(12, sr3, 32, 40)
+emu_0_3_0_sprites(12, sr3, 32, 40)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: sr3_h_sprites_left;
+     sr3_h_notpowered_normal_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, sr3_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: sr3_h_sprites_left_check;
+  1: sr3_h_sprites_left_check;
+}
+
+long_vehicle(sr3)
+
+switch (FEAT_TRAINS, PARENT, sr3_b_sprites_start,
+[  set_offset_to(-2),
+   ((LOAD_TEMP(4) != sr3) * 100) +
+   (prev_vehicle_randombits() % 2) ])
+{
+    0: sr3_m_sprites_left;
+    1: sr3_m_sprites_right;
+  100: sr3_m_notpowered_sprites_left;
+  101: sr3_m_notpowered_sprites_right;
+       align_12_sprites;
+}
+
+long_vehicle_nocount(sr3_b)
+
+switch (FEAT_TRAINS, SELF, sr3_c_sprites_start,
+  position_in_consist_from_end == 1)
+{
+  1: sr3_h_sprites_right;
+     sr3_h_notpowered_normal_sprites_right;
+}
+
+long_vehicle_nocount(sr3_c)
+
+// считаем уже имеющиеся вагоны
+
+switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon1,
+  count_veh_id(sr3) < 3)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, sr3_can_attach_wagon,
+  vehicle_type_id == sr3)
+{
+  1: sr3_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, sr3_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return unitb;
+  3: return dummy4;
+  4: return unitc;
+  5: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+// Визуализируем эффекты тяги у sr3, только если локомотив - sr3
+switch (FEAT_TRAINS, PARENT, sr3_visual_effect_and_powered,
+  vehicle_type_id == sr3)
+{
+  1: return electric_visual_effect_and_powered(0);
+     return disable_visual_effect_and_powered();
+}
+
+// Даём тягу, только если локомотив - sr3
+switch (FEAT_TRAINS, PARENT, sr3_power,
+  vehicle_type_id == sr3)
+{
+  1: return get_power_in_cb(702);
+     return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - sr3
+switch (FEAT_TRAINS, PARENT, sr3_cargo_capacity,
+  vehicle_type_id == sr3)
+{
+  1: return 321;
+     return 0;
+}
+
+item (FEAT_TRAINS, sr3) 
+{
+  property
+  {
+    name: string(STR_SR3_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1952), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1952,1955);
+    retire_early: get_retire_early(1952,1955);
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: get_emu_cost_factor();
+    running_cost_factor: get_emu_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 85 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 702 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    loading_speed: (60);
+    cargo_capacity: 255;
+    weight: 139 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(34.0, 139);
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+  }
+  graphics {
+    default: sr3_sprites;
+    purchase: sr3_purchase_sprites;
+    articulated_part: sr3_articulated_part;
+    can_attach_wagon: sr3_can_attach_wagon;
+    additional_text: return string(STR_SR3_PURCHASE_HINT, string(STR_SECTIONS_MU_S1_3of3));
+    cargo_capacity: sr3_cargo_capacity;
+    power: sr3_power;
+  }
+  livery_override(unitb)
+  {
+    length: return 8;
+    visual_effect_and_powered: sr3_visual_effect_and_powered;
+    sr3_b_sprites;
+
+  }
+  livery_override(unitc)
+  {
+    length: return 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    sr3_c_sprites;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, sr3)
+  {
+    property
+    { name: string(STR_SR3_NAME_LONG); }
+  }
+}
+
