@@ -5,22 +5,23 @@ train_width_32_px = 1;
 // Вертикаль поезда в депо
 traininfo_y_offset = 3;
 
-// Ровый поезд
+// Период, в который поезд считается новым (гарантийным) и не допускает депошного творчества
 new_train_age = 5;
 
 // Истечение срока
 retire_early_default = -8;
+delta_age = 1;
 // RE
-#define get_retire_early(x, y) x-y-2 < retire_early_default ? retire_early_default+1 : x-y-1
+#define get_retire_early(x, y) x-y-delta_age < retire_early_default ? retire_early_default+delta_age : x-y-delta_age
 // модель
-#define get_model_life(x, y) y >= 2050 ? VEHICLE_NEVER_EXPIRES : (x-y-2 < retire_early_default ? y-x+2 : -retire_early_default)
+#define get_model_life(x, y) y >= 2050 ? VEHICLE_NEVER_EXPIRES : (x-y-delta_age < retire_early_default ? y-x+delta_age : -retire_early_default)
+// вычитаем 2 года из года ввода ТС, для прицепных и немоторных вагонов
+#define get_car_year(year) year - delta_age
+// вычитаем 2 года из года ввода ТС, для головных вагонов и локомотивов
+#define get_loc_year(year) year - delta_age
+
 // максимальная скорость
 #define get_max_speed(life, slow, normal) (age_in_days >= (life * 365 + life / 4)) ? slow : normal
-
-// вычитаем 2 года из года ввода ТС, для прицепных и немоторных вагонов
-#define get_car_year(year) year - 2
-// вычитаем 2 года из года ввода ТС, для головных вагонов и локомотивов
-#define get_loc_year(year) year - 2
 
 // рисуем [не] на карте?
 #define is_drawn_in_viewport() ((extra_callback_info1 & 0xFF) == 0)
