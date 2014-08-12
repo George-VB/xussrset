@@ -288,12 +288,20 @@ switch (FEAT_TRAINS, SELF, tem2_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-// меняем tec выпущенным после 1965 года из-за смены массы
 switch (FEAT_TRAINS, SELF, tem2_tractive_effort_coefficient,
-  build_year >= 1974)
+  (build_year >= 1967) +
+  (build_year >= 1974))
 {
-  0: return get_tec_int(206.0, 120);
+  0: return get_tec_int(211.0, 120);
+  1: return get_tec_int(206.0, 120);
      return get_tec_int(200.0, 120);
+}
+
+switch (FEAT_TRAINS, SELF, tem2_power,
+  build_year >= 1967)
+{
+  0: return get_power_in_cb(840);
+     return get_power_in_cb(890);
 }
 
 engine_speed(tem2, 100)
@@ -349,6 +357,7 @@ item (FEAT_TRAINS, tem2)
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     speed: tem2_speed;
+    power: tem2_power;
     purchase_speed: tem2_purchase_speed;
     additional_text: return string(STR_TEM2_PURCHASE_HINT);
     tractive_effort_coefficient: tem2_tractive_effort_coefficient;
