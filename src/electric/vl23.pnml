@@ -420,6 +420,7 @@ switch (FEAT_TRAINS, SELF, vl23_sprites3,
   3: vl23_r_notpowered_spriteset;
   4: vl23_r_spritegroup;
   5: vl23_r_speedoverTH_spriteset;
+
   6: vl23_v2_notpowered_spriteset;
   7: vl23_v2_spritegroup;
   8: vl23_v2_speedoverTH_spriteset;
@@ -442,6 +443,7 @@ switch (FEAT_TRAINS, SELF, vl23_sprites4,
    3: vl23_r_v3_notpowered_spriteset;
    4: vl23_r_v3_spritegroup;
    5: vl23_r_v3_speedoverTH_spriteset;
+
    6: vl23_v4_notpowered_spriteset;
    7: vl23_v4_spritegroup;
    8: vl23_v4_speedoverTH_spriteset;
@@ -456,7 +458,7 @@ switch (FEAT_TRAINS, SELF, vl23_sprites5,
   // поправка на нет тока
   (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
     (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((cargo_subtype % 3) * 6) )
+  (cargo_subtype  * 6) )
 {
    0: vl23_v5_notpowered_spriteset;
    1: vl23_v5_spritegroup;
@@ -464,18 +466,42 @@ switch (FEAT_TRAINS, SELF, vl23_sprites5,
    3: vl23_r_v5_notpowered_spriteset;
    4: vl23_r_v5_spritegroup;
    5: vl23_r_v5_speedoverTH_spriteset;
+
    6: vl23_v6_notpowered_spriteset;
    7: vl23_v6_spritegroup;
    8: vl23_v6_speedoverTH_spriteset;
    9: vl23_r_v6_notpowered_spriteset;
   10: vl23_r_v6_spritegroup;
   11: vl23_r_v6_speedoverTH_spriteset;
+
   12: vl23_v7_notpowered_spriteset;
   13: vl23_v7_spritegroup;
   14: vl23_v7_speedoverTH_spriteset;
   15: vl23_r_v7_notpowered_spriteset;
   16: vl23_r_v7_spritegroup;
   17: vl23_r_v7_speedoverTH_spriteset;
+
+  18: vl23_v6_notpowered_spriteset;
+  19: vl23_v6_spritegroup;
+  20: vl23_v6_speedoverTH_spriteset;
+  21: vl23_r_v6_notpowered_spriteset;
+  22: vl23_r_v6_spritegroup;
+  23: vl23_r_v6_speedoverTH_spriteset;
+
+  24: vl23_v7_notpowered_spriteset;
+  25: vl23_v7_spritegroup;
+  26: vl23_v7_speedoverTH_spriteset;
+  27: vl23_r_v7_notpowered_spriteset;
+  28: vl23_r_v7_spritegroup;
+  29: vl23_r_v7_speedoverTH_spriteset;
+
+  30: vl23_v6_notpowered_spriteset;
+  31: vl23_v6_spritegroup;
+  32: vl23_v6_speedoverTH_spriteset;
+  33: vl23_r_v6_notpowered_spriteset;
+  34: vl23_r_v6_spritegroup;
+  35: vl23_r_v6_speedoverTH_spriteset;
+   
       align_10_sprites; 
 }
 
@@ -499,6 +525,14 @@ switch (FEAT_TRAINS, SELF, vl23_purchase_sprites,
   1: vl23_v3_purchase_sprites;
      vl23_v5_purchase_sprites;
 }
+
+switch (FEAT_TRAINS, SELF, vl23_refit_cost,
+  (((extra_callback_info1 & 0xFF00) == 0x300) || ((extra_callback_info1 & 0xFF00) == 0x400) || ((extra_callback_info1 & 0xFF00) == 0x500))+
+  (((cargo_subtype == 3) || (cargo_subtype == 4) || (cargo_subtype == 5)) * 2))
+{
+  1: return 1;
+     return 0; 
+}            
 
 switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text5,
   cargo_subtype)
@@ -525,6 +559,20 @@ switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text3,
      return CB_RESULT_NO_TEXT;
 }
 
+switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text3m,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_SOUTHERN_RAILWAY);
+  1: string(STR_REFIT_TTD_53);
+  2: string(STR_REFIT_TTD_B5);
+
+  3: string(STR_REFIT_FACTORY_2VL23, string(STR_REFIT_TTD_53));
+  4: string(STR_REFIT_FACTORY_2VL23, string(STR_REFIT_TTD_B5));
+  5: string(STR_REFIT_FACTORY_3VL23, string(STR_REFIT_TTD_53));
+
+     return CB_RESULT_NO_TEXT;
+}
+
 switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text2,
   (build_year >= 1958)) 
 {
@@ -534,16 +582,58 @@ switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text2,
 }
 
 switch (FEAT_TRAINS, PARENT, vl23_cargo_subtype_text,
-  (date_of_last_service >= date(1972,1,1))) 
+  (date_of_last_service >= date(1972,1,1)) *
+  (1 + ((current_year >= 1987) || (build_year >= 1987))) ) 
 {
   0: vl23_cargo_subtype_text2;
   1: vl23_cargo_subtype_text3;
+  2: vl23_cargo_subtype_text3m;
      return CB_RESULT_NO_TEXT;
 }
 
-engine_speed_with_reduce(vl23, 100, 90, 30)
+engine_speed_with_reduce(vl23, 100, 90, 40)
 
 engine_penalise_speed(vl23, 2)
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_m4,            
+  (LOAD_TEMP(0) - count_veh_id(vl23)) == 2) 
+{ 
+  1: return 0;                                                   
+     return FLAG_PENALISE_SPEED; 
+}                   
+
+switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_m3,            
+[ STORE_TEMP(count_veh_id(vl23), 0),                                        
+  (vehicle_type_id == vl23) && (cargo_subtype == 5) ])                                      
+{ 
+  1: vl23_bitmask_vehicle_info_m4;                                                   
+     return FLAG_PENALISE_SPEED; 
+}                   
+
+switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_m2,            
+  vehicle_type_id == vl23)                                      
+{ 
+  1: return 0;                                                   
+     return FLAG_PENALISE_SPEED; 
+}   
+                  
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_m1,            
+  position_in_consist * vehicle_is_powered)                                      
+{ 
+  0: return 0;    
+  2: vl23_bitmask_vehicle_info_m2;
+  4: vl23_bitmask_vehicle_info_m3;
+     return FLAG_PENALISE_SPEED; 
+}                               
+
+
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_m,
+  cargo_subtype == 5)
+{
+  1: vl23_bitmask_vehicle_info_m1;
+     vl23_bitmask_vehicle_info;
+}
 
 item (FEAT_TRAINS, vl23) 
 {
@@ -552,7 +642,7 @@ item (FEAT_TRAINS, vl23)
     name: string(STR_VL23_NAME);
     climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1956), 1, 1);
-    vehicle_life: 30;
+    vehicle_life: 40;
     model_life: get_model_life(1956,1961);
     retire_early: get_retire_early(1956,1961);
     reliability_decay: 20;
@@ -586,8 +676,9 @@ item (FEAT_TRAINS, vl23)
     cargo_capacity: return 0;
     speed: vl23_speed;
     purchase_speed: vl23_purchase_speed;
-    bitmask_vehicle_info: vl23_bitmask_vehicle_info;
+    bitmask_vehicle_info: vl23_bitmask_vehicle_info_m;
     cost_factor: return 74;
+    refit_cost: vl23_refit_cost;
   }
 }
 
@@ -597,6 +688,179 @@ if (enable_long_names)
   {
     property
     { name: string(STR_VL23_NAME_LONG); }
+  }
+}
+
+
+ // 2vl23
+
+switch (FEAT_TRAINS, SELF, _2vl23_sprites_start,
+  ((position_in_consist > 0) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
+  (cargo_subtype * 6) )
+{
+  0: vl23_v6_notpowered_spriteset;
+  1: vl23_v6_spritegroup;
+  2: vl23_v6_speedoverTH_spriteset;
+  3: vl23_r_v6_notpowered_spriteset;
+  4: vl23_r_v6_spritegroup;
+  5: vl23_r_v6_speedoverTH_spriteset;
+
+  6: vl23_v7_notpowered_spriteset;
+  7: vl23_v7_spritegroup;
+  8: vl23_v7_speedoverTH_spriteset;
+  9: vl23_r_v7_notpowered_spriteset;
+ 10: vl23_r_v7_spritegroup;
+ 11: vl23_r_v7_speedoverTH_spriteset;
+      align_10_sprites; 
+}
+
+long_vehicle(_2vl23)
+
+engine_speed_with_reduce(_2vl23, 100, 90, 8)
+
+engine_penalise_speed(_2vl23, 2)
+
+switch (FEAT_TRAINS, SELF, _2vl23_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_53);
+  1: string(STR_REFIT_TTD_B5);
+     return CB_RESULT_NO_TEXT;
+}  
+
+item (FEAT_TRAINS, _2vl23)
+{
+  property
+  {
+    name: string(STR_2VL23_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1987), 1, 1);
+    vehicle_life: 8;
+    model_life: get_model_life(1987,1990);
+    retire_early: get_retire_early(1987,1990);
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: 131;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 3700 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: (274/2) ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(222.0, 274/2);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: _2vl23_sprites;
+    purchase: vl23_v5_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_2VL23_PURCHASE_HINT);
+    cargo_subtype_text: _2vl23_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: _2vl23_speed;
+    purchase_speed: _2vl23_purchase_speed;
+    bitmask_vehicle_info: _2vl23_bitmask_vehicle_info;
+    cost_factor: return 131;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _2vl23)
+  {
+    property
+    { name: string(STR_2VL23_NAME_LONG); }
+  }
+}
+
+ // 3vl23
+
+switch (FEAT_TRAINS, SELF, _3vl23_sprites_start,
+  ((position_in_consist > 0) * 3) +
+  // поправка на нет тока
+  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
+    (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
+{
+  0: vl23_v6_notpowered_spriteset;
+  1: vl23_v6_spritegroup;
+  2: vl23_v6_speedoverTH_spriteset;
+  3: vl23_r_v6_notpowered_spriteset;
+  4: vl23_r_v6_spritegroup;
+  5: vl23_r_v6_speedoverTH_spriteset;
+  6: vl23_r_v6_notpowered_spriteset;
+  7: vl23_r_v6_spritegroup;
+  8: vl23_r_v6_speedoverTH_spriteset;
+     align_10_sprites; 
+}
+
+long_vehicle(_3vl23)
+
+engine_speed_with_reduce(_3vl23, 100, 90, 8)
+
+engine_penalise_speed(_3vl23, 2)
+
+item (FEAT_TRAINS, _3vl23)
+{
+  property
+  {
+    name: string(STR_3VL23_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1987), 1, 1);
+    vehicle_life: 8;
+    model_life: get_model_life(1987,1987);
+    retire_early: get_retire_early(1987,1987);
+    reliability_decay: 20;
+    cost_factor: 131;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 3700 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    weight: (411/3) ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(222.0, 411/3);
+    length: 8;
+    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: _3vl23_sprites;
+    purchase: vl23_v5_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_3VL23_PURCHASE_HINT);
+    speed: _3vl23_speed;
+    purchase_speed: _3vl23_purchase_speed;
+    bitmask_vehicle_info: _3vl23_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _3vl23)
+  {
+    property
+    { name: string(STR_3VL23_NAME_LONG); }
   }
 }
 
