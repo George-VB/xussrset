@@ -4,16 +4,32 @@
 #define IMAGEFILE  "src/emu/sr3.png"
 purchase_sprites(sr3, 0, 0)
 
-emu_4r_0_0_sprites(12, sr3, 32, 40)
-emu_0_3_0_sprites(12, sr3, 32, 40)
+emu_4r_0_0_sprites(12, sr3_v1, 32, 40)
+emu_0_3r_0_sprites(12, sr3_v1, 32, 40)
+emu_4r_0_0_sprites(12, sr3_v1u, 32, 576)
+
+emu_4r_0_0_sprites(12, sr3_v2, 32, 1112)
+emu_0_3r_0_sprites(12, sr3_v2, 32, 1112)
+emu_4r_0_0_sprites(12, sr3_v2u, 32, 1648)
 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_check,
-  position_in_consist == 0)
+  (position_in_consist == 0) +
+  ((LOAD_TEMP(3) >= date(1972,1,1)) * 2) +
+  (cargo_subtype * 4))
 {
-  1: sr3_h_sprites_left;
-     sr3_h_notpowered_normal_sprites_left;
+  0: sr3_v1_h_notpowered_normal_sprites_left;
+  1: sr3_v1_h_sprites_left;
+  2: sr3_v1u_h_notpowered_normal_sprites_left;
+  3: sr3_v1u_h_sprites_left;
+
+  4: sr3_v2_h_notpowered_normal_sprites_left;
+  5: sr3_v2_h_sprites_left;
+  6: sr3_v2u_h_notpowered_normal_sprites_left;
+  7: sr3_v2u_h_sprites_left;
+
+     align_12_sprites;
 }
 
 random_switch (FEAT_TRAINS, SELF, sr3_sprites_start, 
@@ -28,22 +44,39 @@ long_vehicle(sr3)
 switch (FEAT_TRAINS, PARENT, sr3_b_sprites_start,
 [  set_offset_to(-2),
    ((LOAD_TEMP(4) != sr3) * 100) +
-   (prev_vehicle_randombits() % 2) ])
+   (prev_vehicle_randombits() % 2) +
+   (cargo_subtype * 2) ])
 {
-    0: sr3_m_sprites_left;
-    1: sr3_m_sprites_right;
-  100: sr3_m_notpowered_sprites_left;
-  101: sr3_m_notpowered_sprites_right;
+    0: sr3_v1_m_sprites_left;
+    1: sr3_v1_m_sprites_right;
+    2: sr3_v2_m_sprites_left;
+    3: sr3_v2_m_sprites_right;
+
+  100: sr3_v1_m_notpowered_sprites_left;
+  101: sr3_v1_m_notpowered_sprites_right;
+  102: sr3_v2_m_notpowered_sprites_left;
+  103: sr3_v2_m_notpowered_sprites_right;
        align_12_sprites;
 }
 
 long_vehicle_nocount(sr3_b)
 
 switch (FEAT_TRAINS, SELF, sr3_c_sprites_start,
-  position_in_consist_from_end == 1)
+  (position_in_consist_from_end == 1) +
+  ((LOAD_TEMP(3) >= date(1972,1,1)) * 2) +
+  (cargo_subtype * 4))
 {
-  1: sr3_h_sprites_right;
-     sr3_h_notpowered_normal_sprites_right;
+  0: sr3_v1_h_notpowered_normal_sprites_right;
+  1: sr3_v1_h_sprites_right;
+  2: sr3_v1u_h_notpowered_normal_sprites_right;
+  3: sr3_v1u_h_sprites_right;
+
+  4: sr3_v2_h_notpowered_normal_sprites_right;
+  5: sr3_v2_h_sprites_right;
+  6: sr3_v2u_h_notpowered_normal_sprites_right;
+  7: sr3_v2u_h_sprites_right;
+
+     align_12_sprites;
 }
 
 long_vehicle_nocount(sr3_c)
@@ -99,6 +132,14 @@ switch (FEAT_TRAINS, PARENT, sr3_cargo_capacity,
      return 0;
 }
 
+switch (FEAT_TRAINS, SELF, sr3_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_53);
+  1: string(STR_REFIT_TTD_63);
+     return CB_RESULT_NO_TEXT;
+}
+
 item (FEAT_TRAINS, sr3) 
 {
   property
@@ -137,6 +178,7 @@ item (FEAT_TRAINS, sr3)
     can_attach_wagon: sr3_can_attach_wagon;
     additional_text: return string(STR_SR3_PURCHASE_HINT, string(STR_SECTIONS_MU_S1_3of3));
     cargo_capacity: sr3_cargo_capacity;
+    cargo_subtype_text: sr3_cargo_subtype_text;
     power: sr3_power;
   }
   livery_override(unitb)
