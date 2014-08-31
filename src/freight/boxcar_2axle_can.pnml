@@ -1,0 +1,150 @@
+ // boxcar_2axle_can
+
+/// Вагон
+// Крытый 11-К251 (1948-1960)
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/boxcar-2axle-can.png"
+purchase_sprites(boxcar_2axle_can, 0, 0)
+
+box_empty_layout_template(boxcar_2axle_can_v1, 5, 112,  28) 
+box_layout_template(boxcar_2axle_can_v1,       5, 112, 139, goods1)
+box_layout_template(boxcar_2axle_can_v1,       5, 112, 250, goods2)
+
+box_empty_layout_template(boxcar_2axle_can_v2, 5, 364,  28) 
+box_layout_template(boxcar_2axle_can_v2,       5, 364, 139, goods1)
+box_layout_template(boxcar_2axle_can_v2,       5, 364, 250, goods2)
+
+box_empty_layout_template(boxcar_2axle_can_v3, 5, 616,  28) 
+box_layout_template(boxcar_2axle_can_v3,       5, 616, 139, goods1)
+box_layout_template(boxcar_2axle_can_v3,       5, 616, 250, goods2)
+
+box_empty_layout_template(boxcar_2axle_can_v4, 5, 868,  28) 
+box_layout_template(boxcar_2axle_can_v4,       5, 868, 139, goods1)
+box_layout_template(boxcar_2axle_can_v4,       5, 868, 250, goods2)
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, boxcar_2axle_can_goods1_RND_sprites, 0 )
+{
+  independent: boxcar_2axle_can_v1_goods1_sprites;
+  1: boxcar_2axle_can_v1_goods1_sprites;
+  1: boxcar_2axle_can_v2_goods1_sprites;
+  1: boxcar_2axle_can_v3_goods1_sprites;
+  1: boxcar_2axle_can_v4_goods1_sprites;
+}  
+
+random_switch (FEAT_TRAINS, SELF, boxcar_2axle_can_goods2_RND_sprites, 0 )
+{
+  dependent: boxcar_2axle_can_goods1_RND_sprites;
+  1: boxcar_2axle_can_v1_goods2_sprites;
+  1: boxcar_2axle_can_v2_goods2_sprites;
+  1: boxcar_2axle_can_v3_goods2_sprites;
+  1: boxcar_2axle_can_v4_goods2_sprites;
+}  
+
+switch (FEAT_TRAINS, SELF, boxcar_2axle_can_goods1_sprites,
+  cargo_subtype)
+{
+  0: boxcar_2axle_can_goods1_RND_sprites;
+  1: boxcar_2axle_can_v1_goods1_sprites;
+  2: boxcar_2axle_can_v2_goods1_sprites;
+  3: boxcar_2axle_can_v3_goods1_sprites;
+  4: boxcar_2axle_can_v4_goods1_sprites;
+     align_8_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_2axle_can_goods2_sprites,
+  cargo_subtype)
+{
+  0: boxcar_2axle_can_goods2_RND_sprites;
+  1: boxcar_2axle_can_v1_goods2_sprites;
+  2: boxcar_2axle_can_v2_goods2_sprites;
+  3: boxcar_2axle_can_v3_goods2_sprites;
+  4: boxcar_2axle_can_v4_goods2_sprites;
+     align_8_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, boxcar_2axle_can_sprites_start,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  independent: boxcar_2axle_can_v1_goods1_sprites;
+  independent: boxcar_2axle_can_goods1_RND_sprites;
+  1: boxcar_2axle_can_goods1_sprites;
+  1: boxcar_2axle_can_goods2_sprites;
+}
+
+long_vehicle(boxcar_2axle_can)
+
+switch (FEAT_TRAINS, SELF, boxcar_2axle_can_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 40;
+  WOOL: return 53;
+  GLAS: return 53;
+  ENSP: return 22;
+  FMSP: return 20;
+  MNSP: return 44;
+  SGCN: return 12;
+        return 20;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_2axle_can_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_48);
+  2: string(STR_REFIT_TTD_6A);
+  3: string(STR_REFIT_TTD_6C);
+  4: string(STR_REFIT_TTD_61);
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, boxcar_2axle_can) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_2AXLE_CAN_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1926), 1, 1);
+    model_life: get_model_life(1926,1931);
+    retire_early: get_retire_early(1926,1931);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, WOOL, GLAS, ENSP, FMSP, MNSP, SGCN, PAPR, GRAI, WHEA, MAIZ, CERE, OLSD, FICR, CMNT, BDMT, CERA, SGBT, RCYC, WDPR];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 16;
+    cargo_capacity: 40;
+    weight: 11 ton;
+    length: 5;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_2axle_can_sprites;
+    purchase: boxcar_2axle_can_purchase_sprites;
+    additional_text: return string(STR_BOXCAR_2AXLE_CAN_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: boxcar_2axle_can_cargo_capacity;
+    cargo_subtype_text: boxcar_2axle_can_cargo_subtype_text;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, boxcar_2axle_can)
+  {
+    property
+    { name: string(STR_BOXCAR_2AXLE_CAN_NAME_LONG); }
+  }
+}
+
