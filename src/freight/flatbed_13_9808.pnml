@@ -1,0 +1,168 @@
+ // flatbed_13_9808
+
+/// Платформа
+// Платформа 13-9808
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/flatbed-13-9808.png"
+purchase_sprites(flatbed_13_9808, 0, 0)
+flatbed_empty_layout_template(flatbed_13_9808, 9, 45, 30)
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 105, good1)   // товары
+flatbed_layout2_template2(flatbed_13_9808, 9, 45, 105, good2)  // товары
+flatbed_layout1_template(flatbed_13_9808, 9, 45, 330, good3)   // товары
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 405, good4)   // товары
+flatbed_layout2_template2(flatbed_13_9808, 9, 45, 405, good5)  // товары
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 630, wdpr1)   // лесоматериалы
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 780, wdpr2)   // лесоматериалы
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 930, wdpr3)   // лесоматериалы
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 1080, wdpr4)  // лесоматериалы
+flatbed_layout2_template(flatbed_13_9808, 9, 45, 1230, stel1)  // сталь
+flatbed_layout2_template2(flatbed_13_9808, 9, 45, 1230, stel2) // сталь
+flatbed_layout3_template(flatbed_13_9808, 9, 45, 1455, stel3)  // сталь
+flatbed_layout3_template(flatbed_13_9808, 9, 45, 1680, stel4)  // сталь
+flatbed_layout1_template(flatbed_13_9808, 9, 45, 1905, wood)   // лес
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_9808_good_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  independent: flatbed_13_9808_good1_sprites;
+  4: flatbed_13_9808_good1_sprites;
+  3: flatbed_13_9808_good2_sprites;
+  4: flatbed_13_9808_good3_sprites;
+  3: flatbed_13_9808_good4_sprites;
+  2: flatbed_13_9808_good5_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_9808_wdpr_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_13_9808_good_sprites;
+  4: flatbed_13_9808_wdpr1_sprites;
+  4: flatbed_13_9808_wdpr2_sprites;
+  7: flatbed_13_9808_wdpr3_sprites;
+  1: flatbed_13_9808_wdpr4_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_9808_stel_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_13_9808_good_sprites;
+  3: flatbed_13_9808_stel1_sprites;
+  3: flatbed_13_9808_stel2_sprites;
+  5: flatbed_13_9808_stel3_sprites;
+  5: flatbed_13_9808_stel4_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_sprites_start,
+  cargo_type_in_veh)
+{
+  GOOD: flatbed_13_9808_good_sprites;
+  WDPR: flatbed_13_9808_wdpr_sprites;
+  WOOD: flatbed_13_9808_wood_sprites;
+  STEL: flatbed_13_9808_stel_sprites;
+        align_9_sprites;
+}
+
+long_vehicle(flatbed_13_9808)
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_9808_random, 0 )
+{
+  independent: flatbed_13_9808_good_sprites;
+  1: return ttdall_cc + 0x49;
+  1: return ttdall_cc + 0x4A;
+  1: return ttdall_cc + 0x4B;
+  1: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x5A;
+  1: return ttdall_cc + 0x71;
+  1: return ttdall_cc + 0x72;
+  1: return ttdall_cc + 0x73;
+}                      
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_colour_mapping,
+  cargo_subtype)
+{
+  0: flatbed_13_9808_random;
+  1: return ttdall_cc + 0x49;
+  2: return ttdall_cc + 0x4A;
+  3: return ttdall_cc + 0x4B;
+  4: return ttdall_cc + 0x53;
+  5: return ttdall_cc + 0x5A;
+  6: return ttdall_cc + 0x71;
+  7: return ttdall_cc + 0x72;
+  8: return ttdall_cc + 0x73;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_49);
+  2: string(STR_REFIT_TTD_4A);
+  3: string(STR_REFIT_TTD_4B);
+  4: string(STR_REFIT_TTD_53);
+  5: string(STR_REFIT_TTD_59);
+  6: string(STR_REFIT_TTD_71);
+  7: string(STR_REFIT_TTD_72);
+  8: string(STR_REFIT_TTD_73);
+     return CB_RESULT_NO_TEXT;
+}  
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_capacity, cargo_type_in_veh)
+{
+  GOOD: return 108;
+        return 72;
+}
+
+item (FEAT_TRAINS, flatbed_13_9808) 
+{
+  property
+  {
+    name: string(STR_FLATBED_13_9808_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(2008), 1, 1);
+    model_life: get_model_life(2008,2050);
+    retire_early: get_retire_early(2008,2050);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, STEL, WDPR, WOOD];
+    default_cargo_type: STEL;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 72;
+    weight: 22 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: flatbed_13_9808_sprites;
+    purchase: flatbed_13_9808_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_FLATBED_13_9808_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: flatbed_13_9808_cargo_subtype_text;
+    colour_mapping: flatbed_13_9808_colour_mapping;
+    cargo_capacity: flatbed_13_9808_cargo_capacity;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, flatbed_13_9808)
+  {
+    property
+    { name: string(STR_FLATBED_13_9808_NAME_LONG); }
+  }
+}
+
