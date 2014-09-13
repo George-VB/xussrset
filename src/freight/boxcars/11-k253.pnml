@@ -1,0 +1,100 @@
+ // boxcar_11_k253
+
+/// Вагон
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/boxcars/11-k253.png"
+purchase_sprites(boxcar_11_k253, 0, 0)
+box_empty_layout_template(boxcar_11_k253_v1, 11, 0, 38) 
+box_layout_template(boxcar_11_k253_v1, 11, 0, 188, lvst1)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k253_sprites_start,
+  cargo_subtype)
+{
+  0..3: boxcar_11_k253_v1_lvst1_sprites;
+        align_11_sprites;
+}
+
+long_vehicle(boxcar_11_k253)
+
+// cb colour_mapping
+random_switch (FEAT_TRAINS, SELF, boxcar_11_k253_random, 0 )
+{
+  independent: boxcar_11_k253_v1_lvst1_sprites;
+  7: return ttdall_cc + 0x1A;
+  3: return ttdall_cc + 0x19;
+  2: return ttdall_cc + 0x5A;
+}                      
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k253_colour_mapping,
+  cargo_subtype)
+{
+  0: boxcar_11_k253_random;
+  1: return ttdall_cc + 0x1A;
+  2: return ttdall_cc + 0x19;
+  3: return ttdall_cc + 0x5A;
+     return CB_FAILED;
+}
+
+// cb cargo_subtype_text
+switch (FEAT_TRAINS, SELF, boxcar_11_k253_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_1A);
+  2: string(STR_REFIT_TTD_19);
+  3: string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, boxcar_11_k253) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_K253_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1956), 1, 1);
+    model_life: get_model_life(1956,1975);
+    retire_early: get_retire_early(1956,1975);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cargo_allow_refit: [LVST];
+    default_cargo_type: LVST;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 6;
+    cargo_capacity: 23;
+    weight: 24 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_k253_sprites;
+    purchase: boxcar_11_k253_purchase_sprites;
+    articulated_part: articulated_part_dummy3;
+    additional_text: return string(STR_BOXCAR_11_K253_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: boxcar_11_k253_cargo_subtype_text;
+    colour_mapping: boxcar_11_k253_colour_mapping;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, boxcar_11_k253)
+  {
+    property
+    { name: string(STR_BOXCAR_11_K253_NAME_LONG); }
+  }
+}
+

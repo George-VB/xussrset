@@ -1,0 +1,175 @@
+ // tanker_of_1931_25m3
+
+/// Цистерна
+// Двухосная цистерна образца 1931 г. (1931-1937).
+// 25 кубов
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/tankers/type1931-25m3.png"
+purchase_sprites(tanker_of_1931_25m3, 0, 0)
+
+tanker_layout_template(tanker_of_1931_25m3_v1, 5, 0,  30)
+tanker_layout_template(tanker_of_1931_25m3_v2, 5, 0,  69)
+tanker_layout_template(tanker_of_1931_25m3_v3, 5, 0, 108)
+tanker_layout_template(tanker_of_1931_25m3_v4, 5, 0, 147)
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_PETR_random, 0 )
+{
+  independent: tanker_of_1931_25m3_v1_sprites;
+  2: tanker_of_1931_25m3_v1_sprites;
+  3: tanker_of_1931_25m3_v2_sprites;
+}  
+
+random_switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_RFPR_random, 0 )
+{
+  dependent: tanker_of_1931_25m3_PETR_random;
+  3: tanker_of_1931_25m3_v2_sprites;
+  2: tanker_of_1931_25m3_v3_sprites;
+}  
+
+random_switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_WATR_random, 0 )
+{
+  dependent: tanker_of_1931_25m3_PETR_random;
+  2: tanker_of_1931_25m3_v1_sprites;
+  3: tanker_of_1931_25m3_v4_sprites;
+}  
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_OIL_sprites,
+  cargo_subtype)
+{
+  0: tanker_of_1931_25m3_v3_sprites;
+  align_5_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_PETR_sprites,
+  cargo_subtype)
+{
+  0: tanker_of_1931_25m3_PETR_random;
+  1: tanker_of_1931_25m3_v1_sprites;
+  2: tanker_of_1931_25m3_v2_sprites;
+     align_5_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_RFPR_sprites,
+  cargo_subtype)
+{
+  0: tanker_of_1931_25m3_RFPR_random;
+  1: tanker_of_1931_25m3_v2_sprites;
+  2: tanker_of_1931_25m3_v3_sprites;
+     align_5_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_WATR_sprites,
+  cargo_subtype)
+{
+  0: tanker_of_1931_25m3_WATR_random;
+  1: tanker_of_1931_25m3_v1_sprites;
+  2: tanker_of_1931_25m3_v4_sprites;
+     align_5_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_DYES_RUBR_sprites,
+  cargo_subtype)
+{
+  0: tanker_of_1931_25m3_v4_sprites;
+     align_5_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_sprites_start, 
+  cargo_type_in_veh) 
+{
+  OIL_: tanker_of_1931_25m3_OIL_sprites;
+  PETR: tanker_of_1931_25m3_PETR_sprites;
+  RFPR: tanker_of_1931_25m3_RFPR_sprites;
+  WATR: tanker_of_1931_25m3_WATR_sprites;
+        tanker_of_1931_25m3_DYES_RUBR_sprites;
+}
+
+short_vehicle(tanker_of_1931_25m3)
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_PETR_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_26);
+  2: string(STR_REFIT_TTD_39);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_RFPR_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_39);
+  2: string(STR_REFIT_TTD_3F);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_WATR_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_26);
+  2: string(STR_REFIT_TTD_08);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_of_1931_25m3_cargo_subtype_text, 
+  cargo_type_in_veh) 
+{
+  OIL_: string(STR_REFIT_TTD_3F);
+  PETR: tanker_of_1931_25m3_PETR_cargo_subtype_text;
+  RFPR: tanker_of_1931_25m3_RFPR_cargo_subtype_text;
+  WATR: tanker_of_1931_25m3_WATR_cargo_subtype_text;
+        string(STR_REFIT_TTD_08);
+}
+
+item (FEAT_TRAINS, tanker_of_1931_25m3)
+{
+  property
+  {
+    name: string(STR_TANKER_ISSUE_OF_1931_25M3_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1931), 1, 1);
+    model_life: get_model_life(1931,1937);
+    retire_early: get_retire_early(1931,1937);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [OIL_, PETR, RFPR, RUBR, DYES, WATR];
+    default_cargo_type: OIL_;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    speed: 120 km/h;
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 9;
+    cargo_capacity: 25;
+    weight: 11 ton;
+    length: 5;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: tanker_of_1931_25m3_sprites;
+    purchase: tanker_of_1931_25m3_purchase_sprites;
+    additional_text: return string(STR_TANKER_ISSUE_OF_1931_25M3_PURCHASE_HINT);
+    cargo_subtype_text: tanker_of_1931_25m3_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, tanker_of_1931_25m3)
+  {
+    property
+    { name: string(STR_TANKER_ISSUE_OF_1931_25M3_NAME_LONG); }
+  }
+}
+

@@ -1,0 +1,123 @@
+ // tanker_15_c863
+
+/// Вагон
+// 15-Ц863 4-осная цистерна для бензина и нефти (1960-1971)
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+// tanker petrol
+
+#define IMAGEFILE  "src/freight/tankers/15-c863.png"
+purchase_sprites(tanker_15_c863, 0, 0)
+
+tanker_layout_template(tanker_15_c863_v1, 7, 0,  39)
+tanker_layout_template(tanker_15_c863_v2, 7, 0,  88)
+tanker_layout_template(tanker_15_c863_v3, 7, 0, 137)
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_c863_PETR_random, 0 )
+{
+  independent: tanker_15_c863_v1_sprites;
+  2: tanker_15_c863_v1_sprites;
+  3: tanker_15_c863_v2_sprites;
+}  
+
+switch (FEAT_TRAINS, SELF, tanker_15_c863_PETR_sprites,
+  cargo_subtype)
+{
+  0: tanker_15_c863_PETR_random;
+  1: tanker_15_c863_v1_sprites;
+  2: tanker_15_c863_v2_sprites;
+     align_7_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_c863_OIL_sprites,
+  cargo_subtype)
+{
+  0: tanker_15_c863_v3_sprites;
+     align_7_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_c863_other_sprites,
+  cargo_subtype)
+{
+  0: tanker_15_c863_v1_sprites;
+     align_7_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_c863_sprites_start, 
+  cargo_type_in_veh)
+{
+  OIL_: tanker_15_c863_OIL_sprites;
+  PETR: tanker_15_c863_PETR_sprites;
+        tanker_15_c863_other_sprites;
+}
+
+short_vehicle(tanker_15_c863)
+
+switch (FEAT_TRAINS, SELF, tanker_15_c863_PETR_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_26);
+  2: string(STR_REFIT_TTD_39);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_c863_cargo_subtype_text, 
+
+    (cargo_type_in_veh == OIL_) + 
+    (cargo_type_in_veh == PETR)*2 )
+{
+
+  1: string(STR_REFIT_TTD_3F);
+  2: tanker_15_c863_PETR_cargo_subtype_text;
+  string(STR_REFIT_TTD_08);
+}
+
+item (FEAT_TRAINS, tanker_15_c863) 
+{
+  property
+  {
+    name: string(STR_TANKER_15_C863_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1960), 1, 1);
+    model_life: get_model_life(1960,1971);
+    retire_early: get_retire_early(1960,1971);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [PETR, OIL_];
+    default_cargo_type: PETR;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    speed: 120 km/h;
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 15;
+    cargo_capacity: 60;
+    weight: 23 ton;
+    length: 7;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: tanker_15_c863_sprites;
+    purchase: tanker_15_c863_purchase_sprites;
+    additional_text: return string(STR_TANKER_15_C863_PURCHASE_HINT);
+    cargo_subtype_text: tanker_15_c863_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, tanker_15_c863)
+  {
+    property
+    { name: string(STR_TANKER_15_C863_NAME_LONG); }
+  }
+}
+

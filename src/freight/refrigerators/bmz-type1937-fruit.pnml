@@ -1,0 +1,124 @@
+ // refrigerator_bmz_for_fruit
+
+/// Вагон-ледник
+// refrigerator van
+// Вагон-ледник для фруктов (БМЗ) 1937-1954
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/refrigerators/bmz-type1937-fruit.png"
+
+// покупка
+purchase_sprites(refrigerator_bmz_for_fruit_v1, 0, 0)
+purchase_sprites(refrigerator_bmz_for_fruit_v2, 0, 21)
+
+box_empty_layout_template(refrigerator_bmz_for_fruit_v1, 9, 186,  306) 
+box_empty_layout_template(refrigerator_bmz_for_fruit_v2, 9, 860,  306) 
+
+box_layout_template(refrigerator_bmz_for_fruit_v1, 9, 186,  498, fruit1)
+box_layout_template(refrigerator_bmz_for_fruit_v1, 9, 186,  688, fruit2)
+box_layout_template(refrigerator_bmz_for_fruit_v1, 9, 186,  880, fruit3)
+
+box_layout_template(refrigerator_bmz_for_fruit_v2, 9, 860,  498, fruit1)
+box_layout_template(refrigerator_bmz_for_fruit_v2, 9, 860,  688, fruit2)
+box_layout_template(refrigerator_bmz_for_fruit_v2, 9, 860,  880, fruit3)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, refrigerator_bmz_for_fruit_purchase_sprites,
+  build_year >= 1948)
+{
+  0: refrigerator_bmz_for_fruit_v1_purchase_sprites;
+     refrigerator_bmz_for_fruit_v2_purchase_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, refrigerator_bmz_for_fruit_v1_fruit_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  independent: refrigerator_bmz_for_fruit_v1_fruit1_sprites;
+  2: refrigerator_bmz_for_fruit_v1_fruit1_sprites;
+  1: refrigerator_bmz_for_fruit_v1_fruit2_sprites;
+  2: refrigerator_bmz_for_fruit_v1_fruit3_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, refrigerator_bmz_for_fruit_v2_fruit_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: refrigerator_bmz_for_fruit_v1_fruit_sprites;
+  2: refrigerator_bmz_for_fruit_v2_fruit1_sprites;
+  1: refrigerator_bmz_for_fruit_v2_fruit2_sprites;
+  2: refrigerator_bmz_for_fruit_v2_fruit3_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_bmz_for_fruit_v1_sprites,
+  cargo_type_in_veh)
+{
+  FRVG: refrigerator_bmz_for_fruit_v1_fruit_sprites;
+  FRUT: refrigerator_bmz_for_fruit_v1_fruit_sprites;
+        align_9_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_bmz_for_fruit_v2_sprites,
+  cargo_type_in_veh)
+{
+  FRVG: refrigerator_bmz_for_fruit_v2_fruit_sprites;
+  FRUT: refrigerator_bmz_for_fruit_v2_fruit_sprites;
+        align_9_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_bmz_for_fruit_sprites_start,
+  build_year >= 1948)
+{
+  0: refrigerator_bmz_for_fruit_v1_sprites;
+     refrigerator_bmz_for_fruit_v2_sprites;
+}
+
+long_vehicle(refrigerator_bmz_for_fruit)
+
+item (FEAT_TRAINS, refrigerator_bmz_for_fruit) 
+{
+  property
+  {
+    name: string(STR_REFRIGERATOR_BMZ_FOR_FRUIT_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1937), 1, 1);
+    model_life: get_model_life(1937,1954);
+    retire_early: get_retire_early(1937,1954);
+    vehicle_life: 25;
+    reliability_decay: 20;
+    cargo_allow_refit: [FRUT, FRVG];
+    default_cargo_type: FRUT;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 15;
+    cargo_capacity: 24;
+    weight: 38 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: refrigerator_bmz_for_fruit_sprites;
+    purchase: refrigerator_bmz_for_fruit_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_REFRIGERATOR_BMZ_FOR_FRUIT_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, refrigerator_bmz_for_fruit)
+  {
+    property
+    { name: string(STR_REFRIGERATOR_BMZ_FOR_FRUIT_NAME_LONG); }
+  }
+}
+

@@ -1,0 +1,409 @@
+ // tanker_15_1547
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/tankers/15-1547.png"
+purchase_sprites(tanker_15_1547_v1, 0, 0)
+tanker_layout_template(tanker_15_1547_v1, 7, 0, 39)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/freight/tankers/15-1547-yellow-line.png"
+tanker_layout_template(tanker_15_1547_v1y, 7, 0, 39)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/freight/tankers/15-1547-greed-circle.png"
+tanker_layout_template(tanker_15_1547_v1g, 7, 0, 39)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/freight/tankers/15-1547-yellow-line-green-circle.png"
+tanker_layout_template(tanker_15_1547_v1yg, 7, 0, 39)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/freight/tankers/15-1547-s1993.png"
+purchase_sprites(tanker_15_1547_v2, 0, 0)
+tanker_layout_template(tanker_15_1547_v2, 7, 0, 39)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/freight/tankers/15-1547-s1993-yellow-line.png"
+tanker_layout_template(tanker_15_1547_v2y, 7, 0, 39)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_purchase_sprites,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_v1_purchase_sprites;
+     tanker_15_1547_v2_purchase_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_sprites_random, 0)
+{
+  independent: tanker_15_1547_v1_sprites;
+  56: tanker_15_1547_v1_sprites;          // 25*3, 39*3, 41,
+   8: tanker_15_1547_v1y_sprites;         // 08
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1983,
+  cargo_subtype)
+{
+     0: tanker_15_1547_v1_sprites_random;
+  1..3: tanker_15_1547_v1_sprites;        // 25, 39, 41,
+     4: tanker_15_1547_v1y_sprites;       // полоса 08
+  5..9: tanker_15_1547_v1g_sprites;       // круг+ 41, 25, 39, 95, 0А
+    10: tanker_15_1547_v1yg_sprites;      // круг+ полоса 08
+        align_7_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v2_sprites_random, 0)
+{
+  dependent: tanker_15_1547_v1_sprites_random;
+  56: tanker_15_1547_v2_sprites;             // 25*5, 39*5, 41*3, 0А*3, 95*3, 92*3, В4*2, 53*2, 08*2
+   8: tanker_15_1547_v2y_sprites;            // полоса 08*2, 25*2
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1993,
+  cargo_subtype)
+{
+       0: tanker_15_1547_v2_sprites_random;
+    1..9: tanker_15_1547_v2_sprites;           // 25, 39, 41, 0А, 95, 92, В4, 53 ,08
+  10..11: tanker_15_1547_v2y_sprites;          // полоса 08, 25
+          align_7_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_sprites,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_RFPR_v1983;
+     tanker_15_1547_RFPR_v1993;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1983,
+  cargo_subtype)
+{
+  0..3: tanker_15_1547_v1_sprites;        // 25, 39, 41,
+  4..8: tanker_15_1547_v1g_sprites;       // круг+ 41, 25, 39, 95, 0А
+        align_7_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_sprites,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_PETR_v1983;
+     tanker_15_1547_v2_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_sprites_start,
+  cargo_type_in_veh)
+{
+  PETR: tanker_15_1547_PETR_sprites;
+        tanker_15_1547_RFPR_sprites;
+}
+
+short_vehicle(tanker_15_1547)
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_RFPR_colour_mapping_random, 0)
+{
+  dependent: tanker_15_1547_v1_sprites_random;
+  3: return ttdall_cc + 0x25;
+  3: return ttdall_cc + 0x39;
+  1: return ttdall_cc + 0x41;
+  1: return ttdall_cc + 0x08;
+}
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_PETR_colour_mapping_random, 0)
+{
+  dependent: tanker_15_1547_v1_sprites_random;
+  3: return ttdall_cc + 0x25;
+  3: return ttdall_cc + 0x39;
+  1: return ttdall_cc + 0x41;
+  1: return ttdall_cc + 0x25;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1983_colour_mapping,
+  cargo_subtype)
+{
+   0: tanker_15_1547_v1_RFPR_colour_mapping_random;
+   1: return ttdall_cc + 0x25;
+   2: return ttdall_cc + 0x39;
+   3: return ttdall_cc + 0x41;
+
+   4: return ttdall_cc + 0x08;
+// с кругом
+   5: return ttdall_cc + 0x41;
+   6: return ttdall_cc + 0x25;
+   7: return ttdall_cc + 0x39;
+   8: return ttdall_cc + 0x95;
+   9: return ttdall_cc + 0x0A;
+
+  10: return ttdall_cc + 0x08;
+
+      return CB_FAILED;
+}
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v2_colour_mapping_random, 0)
+{
+  dependent: tanker_15_1547_v2_sprites_random;
+  10: return ttdall_cc + 0x25;
+  12: return ttdall_cc + 0x39;
+   7: return ttdall_cc + 0x41;
+   3: return ttdall_cc + 0x0A;
+   6: return ttdall_cc + 0x95;
+   8: return ttdall_cc + 0x92;
+   2: return ttdall_cc + 0xB4;
+   5: return ttdall_cc + 0x53;
+   3: return ttdall_cc + 0x08;
+
+   3: return ttdall_cc + 0x25;
+   5: return ttdall_cc + 0x08;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1993_colour_mapping,
+  cargo_subtype)
+{
+   0: tanker_15_1547_v2_colour_mapping_random;
+   1: return ttdall_cc + 0x25;
+   2: return ttdall_cc + 0x39;
+   3: return ttdall_cc + 0x41;
+   4: return ttdall_cc + 0x0A;
+   5: return ttdall_cc + 0x95;
+   6: return ttdall_cc + 0x92;
+   7: return ttdall_cc + 0xB4;
+   8: return ttdall_cc + 0x53;
+   9: return ttdall_cc + 0x08;
+
+  10: return ttdall_cc + 0x25;
+  11: return ttdall_cc + 0x08;
+      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_colour_mapping,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_RFPR_v1983_colour_mapping;
+     tanker_15_1547_RFPR_v1993_colour_mapping;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1983_colour_mapping,
+  cargo_subtype)
+{
+   0: tanker_15_1547_v1_PETR_colour_mapping_random;
+   1: return ttdall_cc + 0x25;
+   2: return ttdall_cc + 0x39;
+   3: return ttdall_cc + 0x41;
+// с кругом
+   4: return ttdall_cc + 0x41;
+   5: return ttdall_cc + 0x25;
+   6: return ttdall_cc + 0x39;
+   7: return ttdall_cc + 0x95;
+   8: return ttdall_cc + 0x0A;
+   9: return ttdall_cc + 0x08;
+      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1993_colour_mapping,
+  cargo_subtype)
+{
+   0: tanker_15_1547_v2_colour_mapping_random;
+   1: return ttdall_cc + 0x25;
+   2: return ttdall_cc + 0x39;
+   3: return ttdall_cc + 0x41;
+   4: return ttdall_cc + 0x0A;
+   5: return ttdall_cc + 0x95;
+   6: return ttdall_cc + 0x92;
+   7: return ttdall_cc + 0xB4;
+   8: return ttdall_cc + 0x53;
+   9: return ttdall_cc + 0x08;
+      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_colour_mapping,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_PETR_v1983_colour_mapping;
+     tanker_15_1547_PETR_v1993_colour_mapping;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_colour_mapping,
+  cargo_type_in_veh)
+{
+  PETR: tanker_15_1547_PETR_colour_mapping;
+        tanker_15_1547_RFPR_colour_mapping;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1983_b1992_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_25);
+  2: string(STR_REFIT_TTD_39);
+  3: string(STR_REFIT_TTD_41);
+
+  4: string(STR_REFIT_TTD_08);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1983_a1992_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_25));
+  2: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_39));
+  3: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_41));
+
+  4: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_08));
+// с кругом
+  5: string(STR_REFIT_TTD_41);
+  6: string(STR_REFIT_TTD_25);
+  7: string(STR_REFIT_TTD_39);
+  8: string(STR_REFIT_TTD_92);
+  9: string(STR_REFIT_TTD_0A);
+
+ 10: string(STR_REFIT_TTD_08);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1983_cargo_subtype_text,
+  (current_year >= 1992) || (build_year >= 1992))
+{
+  0: tanker_15_1547_RFPR_v1983_b1992_cargo_subtype_text;
+     tanker_15_1547_RFPR_v1983_a1992_cargo_subtype_text;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_v1993_cargo_subtype_text,
+  cargo_subtype)
+{
+   0: string(STR_REFIT_FACTORY);
+   1: string(STR_REFIT_TTD_25);
+   2: string(STR_REFIT_TTD_39);
+   3: string(STR_REFIT_TTD_41);
+   4: string(STR_REFIT_TTD_0A);
+   5: string(STR_REFIT_TTD_95);
+   6: string(STR_REFIT_TTD_92);
+   7: string(STR_REFIT_TTD_B4);
+   8: string(STR_REFIT_TTD_53);
+   9: string(STR_REFIT_TTD_08);
+
+  10: string(STR_REFIT_SPECIAL,string(STR_REFIT_TTD_25));
+  11: string(STR_REFIT_SPECIAL,string(STR_REFIT_TTD_08));
+      return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_RFPR_cargo_subtype_text,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_RFPR_v1983_cargo_subtype_text;
+     tanker_15_1547_RFPR_v1993_cargo_subtype_text;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1983_b1992_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_25);
+  2: string(STR_REFIT_TTD_39);
+  3: string(STR_REFIT_TTD_41);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1983_a1992_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_25));
+  2: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_39));
+  3: string(STR_REFIT_SPECIAL, string(STR_REFIT_TTD_41));
+// с кругом
+  4: string(STR_REFIT_TTD_41);
+  5: string(STR_REFIT_TTD_25);
+  6: string(STR_REFIT_TTD_39);
+  7: string(STR_REFIT_TTD_92);
+  8: string(STR_REFIT_TTD_0A);
+  9: string(STR_REFIT_TTD_08);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1983_cargo_subtype_text,
+  (current_year >= 1992) || (build_year >= 1992))
+{
+  0: tanker_15_1547_PETR_v1983_b1992_cargo_subtype_text;
+     tanker_15_1547_PETR_v1983_a1992_cargo_subtype_text;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_v1993_cargo_subtype_text,
+  cargo_subtype)
+{
+   0: string(STR_REFIT_FACTORY);
+   1: string(STR_REFIT_TTD_25);
+   2: string(STR_REFIT_TTD_39);
+   3: string(STR_REFIT_TTD_41);
+   4: string(STR_REFIT_TTD_0A);
+   5: string(STR_REFIT_TTD_95);
+   6: string(STR_REFIT_TTD_92);
+   7: string(STR_REFIT_TTD_B4);
+   8: string(STR_REFIT_TTD_53);
+   9: string(STR_REFIT_TTD_08);
+      return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_PETR_cargo_subtype_text,
+  build_year >= 1993)
+{
+  0: tanker_15_1547_PETR_v1983_cargo_subtype_text;
+     tanker_15_1547_PETR_v1993_cargo_subtype_text;
+}
+
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_cargo_subtype_text,
+  cargo_type_in_veh)
+{
+  PETR: tanker_15_1547_PETR_cargo_subtype_text;
+        tanker_15_1547_RFPR_cargo_subtype_text;
+}
+
+item (FEAT_TRAINS, tanker_15_1547)
+{
+  property
+  {
+    name: string(STR_TANKER_15_1547_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1983), 1, 1);
+    model_life: get_model_life(1983,1997);
+    retire_early: get_retire_early(1983,1997);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [PETR, RFPR];
+    default_cargo_type: PETR;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    speed: 120 km/h;
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 15;
+    cargo_capacity: 68;
+    weight: 24 ton;
+    length: 7;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: tanker_15_1547_sprites;
+    purchase: tanker_15_1547_purchase_sprites;
+    additional_text: return string(STR_TANKER_15_1547_PURCHASE_HINT);
+    cargo_subtype_text: tanker_15_1547_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: tanker_15_1547_colour_mapping;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, tanker_15_1547)
+  {
+    property
+    { name: string(STR_TANKER_15_1547_NAME_LONG); }
+  }
+}
+

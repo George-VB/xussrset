@@ -1,0 +1,135 @@
+ // flatbed_13_xx/// Платформа
+// Платформа 13-XX (грузоп. 50 т, БМЗ)
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/flatbeds/13-xx.png"
+purchase_sprites(flatbed_13_xx, 0, 0)
+flatbed_empty_layout_template(flatbed_13_xx, 8, 7, 36)
+flatbed_layout2_template(flatbed_13_xx, 8, 7, 111, good1)   // товары
+flatbed_layout2_template2(flatbed_13_xx, 8, 7, 111, good2)   // товары
+flatbed_layout3_template(flatbed_13_xx, 8, 7, 336, stel1)  // сталь
+flatbed_layout2_template(flatbed_13_xx, 8, 7, 563, wdpr)  // лесоматериалы
+flatbed_layout3_template(flatbed_13_xx, 8, 7, 713, stel2) // сталь
+flatbed_layout3_template(flatbed_13_xx, 8, 7, 938, stel3) // сталь
+flatbed_layout3_templateM(flatbed_13_xx, 8, 7, 1163, wood) // лес
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_xx_stel_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD))
+{
+  independent: flatbed_13_xx_stel1_sprites;
+  1: flatbed_13_xx_stel1_sprites;
+  1: flatbed_13_xx_stel2_sprites;
+  1: flatbed_13_xx_stel3_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_xx_good_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD))
+{
+  dependent: flatbed_13_xx_stel_sprites;
+  1: flatbed_13_xx_good1_sprites;
+  1: flatbed_13_xx_good2_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_sprites_start,
+  cargo_type_in_veh)
+{
+  GOOD: flatbed_13_xx_good_sprites;
+  WDPR: flatbed_13_xx_wdpr_sprites;
+  WOOD: flatbed_13_xx_wood_sprites;
+  STEL: flatbed_13_xx_stel_sprites;
+        align_8_sprites;
+}
+
+short_vehicle(flatbed_13_xx)
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_xx_random, 0 )
+{
+  independent: flatbed_13_xx_stel_sprites;
+  1: return ttdall_cc + 0x19;
+  1: return ttdall_cc + 0x1A;
+  1: return ttdall_cc + 0x6B;
+  1: return ttdall_cc + 0x6C;
+  1: return ttdall_cc + 0x7B;
+}                      
+
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_colour_mapping,
+  cargo_subtype)
+{
+  0: flatbed_13_xx_random;
+  1: return ttdall_cc + 0x19;          
+  2: return ttdall_cc + 0x1A;          
+  3: return ttdall_cc + 0x6B;
+  4: return ttdall_cc + 0x6C;
+  5: return ttdall_cc + 0x7B;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_19);
+  2: string(STR_REFIT_TTD_1A);
+  3: string(STR_REFIT_TTD_6B);
+  4: string(STR_REFIT_TTD_6C);
+  5: string(STR_REFIT_TTD_7B);
+     return CB_RESULT_NO_TEXT;
+}  
+
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_cargo_capacity, cargo_type_in_veh)
+{
+  GOOD: return 75;
+        return 50;
+}     
+
+item (FEAT_TRAINS, flatbed_13_xx) 
+{
+  property
+  {
+    name: string(STR_FLATBED_13_XX_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1930), 1, 1);
+    model_life: get_model_life(1930,1938);
+    retire_early: get_retire_early(1930,1938);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, STEL, WDPR, WOOD];
+    default_cargo_type: STEL;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 50;
+    weight: 18 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: flatbed_13_xx_sprites;
+    purchase: flatbed_13_xx_purchase_sprites;
+    additional_text: return string(STR_FLATBED_13_XX_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: flatbed_13_xx_cargo_subtype_text;
+    colour_mapping: flatbed_13_xx_colour_mapping;
+    cargo_capacity: flatbed_13_xx_cargo_capacity;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, flatbed_13_xx)
+  {
+    property
+    { name: string(STR_FLATBED_13_XX_NAME_LONG); }
+  }
+}
+

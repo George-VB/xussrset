@@ -1,0 +1,96 @@
+ // luggage_37sb
+
+/// Вагон
+//  37 сб (1967-1977), багажный вагон производства ЛВЗ им. Егорова
+
+#define IMAGEFILE  "src/freight/luggages/37sb.png"
+
+purchase_sprites(luggage_37sb, 0, 0)
+
+pass_wagon_sprites(14, luggage_37sb_v1, 32, 40)
+pass_wagon_sprites(14, luggage_37sb_v2, 32, 308)
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_left,
+  cargo_subtype )
+{
+  0: luggage_37sb_v1_sprites_left;
+  1: luggage_37sb_v2_sprites_left;
+     align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_right,
+  cargo_subtype )
+{
+  0: luggage_37sb_v1_sprites_right;
+  1: luggage_37sb_v2_sprites_right;
+     align_14_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, luggage_37sb_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: luggage_37sb_sprites_left;
+  1: luggage_37sb_sprites_right;
+}
+
+long_vehicle(luggage_37sb)
+
+switch (FEAT_TRAINS, SELF, luggage_37sb_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_TTD_53);
+  1: string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}  
+
+item (FEAT_TRAINS, luggage_37sb) 
+{
+  property
+  {
+    name: string(STR_LUGGAGE_37SB_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1967), 1, 1);
+    model_life: get_model_life(1967,1977);
+    retire_early: get_retire_early(1967,1977);
+    vehicle_life: 28;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, GOLD, VALU];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 10;
+    cargo_capacity: 52;
+    weight: 42.5 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: luggage_37sb_sprites;
+    purchase: luggage_37sb_purchase_sprites;
+    articulated_part: articulated_part_dummy6;
+    additional_text: return string(STR_LUGGAGE_37SB_PURCHASE_HINT);
+    cargo_subtype_text: luggage_37sb_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, luggage_37sb)
+  {
+    property
+    { name: string(STR_LUGGAGE_37SB_NAME_LONG); }
+  }
+}
+

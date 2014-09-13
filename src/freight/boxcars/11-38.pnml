@@ -1,0 +1,83 @@
+ // boxcar_11_38
+
+/// Вагон
+// Крытый 11-38 (1936-1941, 1946-54)
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/boxcars/11-38.png"
+purchase_sprites(boxcar_11_38, 0, 0)
+box_empty_layout_template(boxcar_11_38_v1, 9, 0, 38) 
+box_layout_template(boxcar_11_38_v1, 9, 0, 188, goods1)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_38_sprites_start, 0)
+{
+  boxcar_11_38_v1_goods1_sprites;
+}
+
+long_vehicle(boxcar_11_38)
+
+switch (FEAT_TRAINS, SELF, boxcar_11_38_cargo_capacity, cargo_type_in_veh)
+{
+  GOOD: return 89;
+  WOOL: return 107;
+  GLAS: return 139;
+  ENSP: return 43;
+  FMSP: return 40;
+  MNSP: return 86;
+  SGCN: return 24;
+  FICR: return 45;
+  RCYC: return 45;
+  WDPR: return 45;
+        return 52;
+}
+
+item (FEAT_TRAINS, boxcar_11_38) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_38_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1936), 1, 1);
+    model_life: get_model_life(1936,1954);
+    retire_early: get_retire_early(1936,1954);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, WOOL, GLAS, ENSP, FMSP, MNSP, SGCN, FICR, RCYC, WDPR, PAPR, GRAI, WHEA, MAIZ, CERE, OLSD, CMNT, BDMT, CERA, SGBT];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 13;
+    cargo_capacity: 52;
+    weight: 23 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_38_sprites;
+    purchase: boxcar_11_38_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_BOXCAR_11_38_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: boxcar_11_38_cargo_capacity;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, boxcar_11_38)
+  {
+    property
+    { name: string(STR_BOXCAR_11_38_NAME_LONG); }
+  }
+}
+

@@ -1,0 +1,119 @@
+ // boxcar_11_217
+
+/// Вагон
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/boxcars/11-217.png"
+purchase_sprites(boxcar_11_217, 0, 0)
+box_empty_layout_template(boxcar_11_217_v1, 9, 0, 38) 
+box_layout_template(boxcar_11_217_v1, 9, 0, 188, goods1)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_217_sprites_start,
+  cargo_subtype)
+{
+  0..4: boxcar_11_217_v1_goods1_sprites;
+        align_9_sprites;
+}
+
+long_vehicle(boxcar_11_217)
+
+// cb colour_mapping
+random_switch (FEAT_TRAINS, SELF, boxcar_11_217_random, 0 )
+{
+  independent: boxcar_11_217_v1_goods1_sprites;
+  5: return ttdall_cc + 0x4A;
+  2: return ttdall_cc + 0x62;
+  4: return ttdall_cc + 0x7B;
+  1: return ttdall_cc + 0x9C;
+}                      
+
+switch (FEAT_TRAINS, SELF, boxcar_11_217_colour_mapping,
+  cargo_subtype)
+{
+  0: boxcar_11_217_random;
+  1: return ttdall_cc + 0x4A;
+  2: return ttdall_cc + 0x62;
+  3: return ttdall_cc + 0x7B;
+  4: return ttdall_cc + 0x9C;
+     return CB_FAILED;
+}
+
+// cb cargo_subtype_text
+switch (FEAT_TRAINS, SELF, boxcar_11_217_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY);
+  1: string(STR_REFIT_TTD_4A);
+  2: string(STR_REFIT_TTD_62);
+  3: string(STR_REFIT_TTD_7B);
+  4: string(STR_REFIT_TTD_9C);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_217_cargo_capacity, cargo_type_in_veh)
+{
+  GOOD: return 120;
+  WOOL: return 144;
+  GLAS: return 181;
+  ENSP: return 58;
+  FMSP: return 53;
+  MNSP: return 115;
+  SGCN: return 32;
+  FICR: return 60;
+  RCYC: return 60;
+  WDPR: return 60;
+        return 68;
+}
+
+item (FEAT_TRAINS, boxcar_11_217) 
+{
+  property
+  {
+    name: string(STR_BOXCAR_11_217_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1976), 1, 1);
+    model_life: get_model_life(1976,1991);
+    retire_early: get_retire_early(1976,1991);
+    vehicle_life: 32;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, WOOL, GLAS, ENSP, FMSP, MNSP, SGCN, FICR, RCYC, WDPR, PAPR, CMNT, BDMT, CERA, SGBT];
+    default_cargo_type: GOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 17;
+    cargo_capacity: 68;
+    weight: 25 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: boxcar_11_217_sprites;
+    purchase: boxcar_11_217_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    additional_text: return string(STR_BOXCAR_11_217_PURCHASE_HINT);
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_subtype_text: boxcar_11_217_cargo_subtype_text;
+    colour_mapping: boxcar_11_217_colour_mapping;
+    cargo_capacity: boxcar_11_217_cargo_capacity;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, boxcar_11_217)
+  {
+    property
+    { name: string(STR_BOXCAR_11_217_NAME_LONG); }
+  }
+}
+
