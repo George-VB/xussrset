@@ -6,23 +6,33 @@
 
 #define IMAGEFILE  "src/freight/gondolas/ntv-s.png"
 purchase_sprites(ntv_s, 0, 0)
-flatbed_empty_layout_template(ntv_s_v1, 4, 2, 45)
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 45,  coal) // уголь                
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 85,  iore) // жел. руда            
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 125, core) // медн. руда           
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 165, aore) // бокситы              
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 205, clay) // глина                
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 245, fert) // удобрения            
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 285, grvl) // гравий               
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 325, lime) // известняк            
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 365, pota) // поташ                
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 405, sand) // песок                
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 445, sulp) // сера                 
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 485, bdmt) // кирпичи              
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 525, wdpr) // лесоматериалы        
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 565, stel) // сталь                 
-flatbed_horisontal_short_layout2_template(ntv_s_v1, 4, 241, 605, wood) // древесина  
+flatbed_empty_layout_template(ntv_s_v1, 5, 112, 45)
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 45,  coal) // уголь                
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 85,  iore) // жел. руда            
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 125, core) // медн. руда           
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 165, aore) // бокситы              
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 205, clay) // глина                
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 245, fert) // удобрения            
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 285, grvl) // гравий               
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 325, lime) // известняк            
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 365, pota) // поташ                
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 405, sand) // песок                
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 445, sulp) // сера                 
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 485, bdmt) // кирпичи              
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 525, wdpr) // лесоматериалы        
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 565, stel1) // сталь                 
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 605, stel2) // сталь                 
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 645, wood) // древесина  
+flatbed_horisontal_short_layout3_template(ntv_s_v1, 5, 364, 685, rcyc) // неведомая вещь из FIRS
 #undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, ntv_s_v1_stel_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  independent: ntv_s_v1_coal_sprites;
+  1: ntv_s_v1_stel1_sprites;
+  1: ntv_s_v1_stel2_sprites;
+}
 
 switch (FEAT_TRAINS, SELF, ntv_s_sprites_start,
   cargo_type_in_veh)
@@ -43,7 +53,8 @@ switch (FEAT_TRAINS, SELF, ntv_s_sprites_start,
   STEL: ntv_s_v1_stel_sprites;
   WOOD: ntv_s_v1_wood_sprites;
   BRCK: ntv_s_v1_bdmt_sprites;
-        align_4_sprites;
+  RCYC: ntv_s_v1_rcyc_sprites;
+        align_5_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, ntv_s_cargo_capacity,
@@ -71,7 +82,7 @@ item (FEAT_TRAINS, ntv_s)
     retire_early: get_retire_early(1914,1917);
     vehicle_life: 22;
     reliability_decay: 20;
-    cargo_allow_refit: [COAL, FERT, WOOD, WDPR, AORE, CORE, IORE, BRCK, BDMT, CLAY, GRVL, LIME, POTA, SAND, STEL, SULP];
+    cargo_allow_refit: [COAL, FERT, WOOD, WDPR, AORE, CORE, IORE, BRCK, BDMT, CLAY, GRVL, LIME, POTA, SAND, STEL, SULP, RCYC];
 // RCYC, SCMT, GOOD,
     default_cargo_type: WOOD;
     refit_cost: 0;
@@ -86,7 +97,7 @@ item (FEAT_TRAINS, ntv_s)
     loading_speed: 5;
     cargo_capacity: 17;
     weight: 7 ton;
-    length: 4;
+    length: 5;
     visual_effect_and_powered: disable_visual_effect_and_powered();
     bitmask_vehicle_info: 0;
   }
