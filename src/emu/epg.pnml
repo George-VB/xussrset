@@ -5,85 +5,70 @@
 // Спрайты
 
 #define IMAGEFILE  "src/emu/epg.png"
-
-// покупка
 purchase_sprites(epg, 0, 0)
 
-// обычный: погрузка/перемещение
-spriteset (epg_loading_spriteset, IMAGEFILE)
-{
-  s11_template(200, 252, 0)
-} 
-
-spriteset (epg_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(200, 319, 0)
-} 
-
-spritegroup epg_sprites_start
-{
-  loading: epg_loading_spriteset;
-  loaded: epg_traveling_spriteset;
-}
-
-// обычный развёрнутый: погрузка/перемещение
-spriteset (epg_d_sprites_start, IMAGEFILE)
-{
-  s11_template(640, 252, 0)
-} 
-
-// промежуточный 1
-spriteset (epg_b_spriteset, IMAGEFILE)
-{
-  s10_template(200, 401, 0)
-} 
-
-// промежуточный 2: погрузка/перемещение
-spriteset (epg_c_loading_spriteset, IMAGEFILE)
-{
-  s10_template(640, 401, 0)
-} 
-
-spriteset (epg_c_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(640, 468, 0)
-} 
-
-spritegroup epg_c_spritegroup
-{
-  loading: epg_c_loading_spriteset;
-  loaded: epg_c_traveling_spriteset;
-}
-
+emu_4r_0_0_sprites(11, epg,  32,  40)
+emu_0_4_0_sprites(10, epg_1, 32,  40)
+emu_0_4_0_sprites(10, epg_2, 32, 576)
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, epg_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: epg_h_sprites_left;
+     epg_h_notpowered_normal_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, epg_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: epg_h_sprites_left_check;
+  1: epg_h_sprites_left_check;
+}
 
 long_vehicle(epg)
 
 switch (FEAT_TRAINS, SELF, epg_b_sprites_start,
-  !(vehicle_is_not_powered || vehicle_is_in_depot))
+[  set_offset_to(-2),
+   ((LOAD_TEMP(4) != epg) * 2) +
+   (prev_vehicle_randombits() % 2)])
 {
-  0..1: epg_b_spriteset;
-        align_10_sprites;
+  0: epg_1_m_notpowered_normal_sprites_left;
+  1: epg_2_m_notpowered_normal_sprites_right;
+  2: epg_1_m_notpowered_sprites_left;
+  3: epg_2_m_notpowered_sprites_right;
+     align_11_sprites;
 }
 
 long_vehicle_nocount(epg_b)
 
-switch (FEAT_TRAINS, SELF, epg_c_sprites2,
-  !(vehicle_is_not_powered || vehicle_is_in_depot
-    || LOAD_TEMP(0) != epg))
+switch (FEAT_TRAINS, SELF, epg_c_sprites_start,
+[  set_offset_to(-4),
+   ((LOAD_TEMP(4) != epg) * 2) +
+   (prev_vehicle_randombits() % 2)])
 {
-  0: epg_c_loading_spriteset;
-  1: epg_c_spritegroup;
-     align_10_sprites;
-}
-
-switch (FEAT_TRAINS, PARENT, epg_c_sprites_start,
-  STORE_TEMP(vehicle_type_id, 0))
-{
-  epg_c_sprites2;
+  0: epg_2_m_sprites_left;
+  1: epg_1_m_sprites_right;
+  2: epg_2_m_notpowered_sprites_left;
+  3: epg_1_m_notpowered_sprites_right;
+     align_11_sprites;
 }
 
 long_vehicle_nocount(epg_c)
+
+switch (FEAT_TRAINS, SELF, epg_h_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: epg_h_sprites_right;
+     epg_h_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, epg_d_sprites_start,
+   LOAD_TEMP(4) == epg)
+{
+   1: epg_h_sprites_right_check;
+      epg_h_notpowered_sprites_right;
+}
 
 long_vehicle_nocount(epg_d)
 
