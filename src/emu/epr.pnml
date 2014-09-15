@@ -3,87 +3,71 @@
 // Электропоезд переменного тока ЭПг - Stadler FLIRT для городских линий Минска
 // ЭПг (Stadler FLIRT)
 // Спрайты
-
 #define IMAGEFILE  "src/emu/epr.png"
-
-// покупка
 purchase_sprites(epr, 0, 0)
 
-// обычный: погрузка/перемещение
-spriteset (epr_loading_spriteset, IMAGEFILE)
-{
-  s11_template(200, 252, 0)
-} 
-
-spriteset (epr_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(200, 319, 0)
-} 
-
-spritegroup epr_sprites_start
-{
-  loading: epr_loading_spriteset;
-  loaded: epr_traveling_spriteset;
-}
-
-// обычный развёрнутый: погрузка/перемещение
-spriteset (epr_d_sprites_start, IMAGEFILE)
-{
-  s11_template(640, 252, 0)
-} 
-
-// промежуточный 1
-spriteset (epr_b_spriteset, IMAGEFILE)
-{
-  s10_template(200, 401, 0)
-} 
-
-// промежуточный 2: погрузка/перемещение
-spriteset (epr_c_loading_spriteset, IMAGEFILE)
-{
-  s10_template(640, 401, 0)
-} 
-
-spriteset (epr_c_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(640, 468, 0)
-} 
-
-spritegroup epr_c_spritegroup
-{
-  loading: epr_c_loading_spriteset;
-  loaded: epr_c_traveling_spriteset;
-}
-
+emu_4r_0_0_sprites(11, epr,  32,  40)
+emu_0_4_0_sprites(10, epr_1, 32,  40)
+emu_0_4_0_sprites(10, epr_2, 32, 576)
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, epr_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: epr_h_sprites_left;
+     epr_h_notpowered_normal_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, epr_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: epr_h_sprites_left_check;
+  1: epr_h_sprites_left_check;
+}
 
 long_vehicle(epr)
 
 switch (FEAT_TRAINS, SELF, epr_b_sprites_start,
-  !(vehicle_is_not_powered || vehicle_is_in_depot))
+[  set_offset_to(-2),
+   ((LOAD_TEMP(4) != epr) * 2) +
+   (prev_vehicle_randombits() % 2)])
 {
-  0..1: epr_b_spriteset;
-        align_10_sprites;
+  0: epr_1_m_notpowered_normal_sprites_left;
+  1: epr_2_m_notpowered_normal_sprites_right;
+  2: epr_1_m_notpowered_sprites_left;
+  3: epr_2_m_notpowered_sprites_right;
+     align_11_sprites;
 }
 
 long_vehicle_nocount(epr_b)
 
-switch (FEAT_TRAINS, SELF, epr_c_sprites2,
-  !(vehicle_is_not_powered || vehicle_is_in_depot
-    || LOAD_TEMP(0) != epr))
+switch (FEAT_TRAINS, SELF, epr_c_sprites_start,
+[  set_offset_to(-4),
+   ((LOAD_TEMP(4) != epr) * 2) +
+   (prev_vehicle_randombits() % 2)])
 {
-  0: epr_c_loading_spriteset;
-  1: epr_c_spritegroup;
-     align_10_sprites;
-}
-
-switch (FEAT_TRAINS, PARENT, epr_c_sprites_start,
-  STORE_TEMP(vehicle_type_id, 0))
-{
-  epr_c_sprites2;
+  0: epr_2_m_sprites_left;
+  1: epr_1_m_sprites_right;
+  2: epr_2_m_notpowered_sprites_left;
+  3: epr_1_m_notpowered_sprites_right;
+     align_11_sprites;
 }
 
 long_vehicle_nocount(epr_c)
+
+switch (FEAT_TRAINS, SELF, epr_h_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: epr_h_sprites_right;
+     epr_h_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, epr_d_sprites_start,
+   LOAD_TEMP(4) == epr)
+{
+   1: epr_h_sprites_right_check;
+      epr_h_notpowered_sprites_right;
+}
 
 long_vehicle_nocount(epr_d)
 
@@ -135,7 +119,7 @@ switch (FEAT_TRAINS, PARENT, epr_power,
 switch (FEAT_TRAINS, PARENT, epr_c_visual_effect_and_powered,
   vehicle_type_id == epr)
 {
-  1: return electric_visual_effect_and_powered(0);
+  1: return electric_visual_effect_and_powered(4);
      return disable_visual_effect_and_powered();
 }
 
