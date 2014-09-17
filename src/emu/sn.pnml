@@ -2,222 +2,91 @@
 
 // CН (1954-1956), электросекция постоянного тока.
 // Спрайты
-
 #define IMAGEFILE  "src/emu/sn.png"
-
-// покупка
 purchase_sprites(sn, 0, 0)
 
-// обычный: погрузка/перемещение
-spriteset (sn_loading_spriteset, IMAGEFILE)
-{
-  s12_template(103, 83, 0)
-} 
-
-spriteset (sn_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(103, 150, 0)
-} 
-
-spritegroup sn_spritegroup
-{
-  loading: sn_loading_spriteset;
-  loaded: sn_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (sn_r_loading_spriteset, IMAGEFILE)
-{
-  s12_template(543, 83, 0)
-} 
-
-spriteset (sn_r_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(543, 150, 0)
-} 
-
-spritegroup sn_r_spritegroup
-{
-  loading: sn_r_loading_spriteset;
-  loaded: sn_r_traveling_spriteset;
-}
-
-// моторный
-spriteset (sn_b_notpowered_spriteset, IMAGEFILE)
-{
-  s12_template(103, 500, 0)
-} 
-
-spriteset (sn_b_spriteset, IMAGEFILE)
-{
-  s12_template(103, 567, 0)
-} 
-
-// 2: обычный: погрузка/перемещение
-spriteset (sn_v2_loading_spriteset, IMAGEFILE)
-{
-  s12_template(103, 217, 0)
-} 
-
-spriteset (sn_v2_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(103, 284, 0)
-} 
-
-spritegroup sn_v2_spritegroup
-{
-  loading: sn_v2_loading_spriteset;
-  loaded: sn_v2_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (sn_r_v2_loading_spriteset, IMAGEFILE)
-{
-  s12_template(543, 217, 0)
-} 
-
-spriteset (sn_r_v2_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(543, 284, 0)
-} 
-
-spritegroup sn_r_v2_spritegroup
-{
-  loading: sn_r_v2_loading_spriteset;
-  loaded: sn_r_v2_traveling_spriteset;
-}
-
-// моторный
-spriteset (sn_b_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s12_template(103, 634, 0)
-} 
-
-spriteset (sn_b_v2_spriteset, IMAGEFILE)
-{
-  s12_template(103, 701, 0)
-} 
-
-// 3: обычный: погрузка/перемещение
-spriteset (sn_v3_loading_spriteset, IMAGEFILE)
-{
-  s12_template(103, 351, 0)
-} 
-
-spriteset (sn_v3_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(103, 418, 0)
-} 
-
-spritegroup sn_v3_spritegroup
-{
-  loading: sn_v3_loading_spriteset;
-  loaded: sn_v3_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (sn_r_v3_loading_spriteset, IMAGEFILE)
-{
-  s12_template(543, 351, 0)
-} 
-
-spriteset (sn_r_v3_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(543, 418, 0)
-} 
-
-spritegroup sn_r_v3_spritegroup
-{
-  loading: sn_r_v3_loading_spriteset;
-  loaded: sn_r_v3_traveling_spriteset;
-}
-
-// моторный
-spriteset (sn_b_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s12_template(103, 768, 0)
-} 
-
-spriteset (sn_b_v3_spriteset, IMAGEFILE)
-{
-  s12_template(103, 835, 0)
-} 
-
+emu_4r_0_0_sprites(12, sn_v1, 32, 40)
+emu_0_3r_0_sprites(12, sn_v1, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, sn_sprites_start,
-  cargo_subtype)
+#define IMAGEFILE  "src/emu/sn-br.png"
+emu_4r_0_0_sprites(12, sn_v2, 32, 40)
+emu_0_3r_0_sprites(12, sn_v2, 32, 40)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/emu/sn-gr.png"
+emu_4r_0_0_sprites(12, sn_v3, 32, 40)
+emu_0_3r_0_sprites(12, sn_v3, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, sn_h_sprites_left_check,
+  (position_in_consist == 0) +
+  (cargo_subtype * 2))
 {
-  0: sn_spritegroup;
-  1: sn_v2_spritegroup;
-  2: sn_v3_spritegroup;
+  0: sn_v1_h_notpowered_normal_sprites_left;
+  1: sn_v1_h_sprites_left;
+  2: sn_v2_h_notpowered_normal_sprites_left;
+  3: sn_v2_h_sprites_left;
+  4: sn_v3_h_notpowered_normal_sprites_left;
+  5: sn_v3_h_sprites_left;
      align_12_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, sn_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: sn_h_sprites_left_check;
+  1: sn_h_sprites_left_check;
 }
 
 long_vehicle(sn)
 
-switch (FEAT_TRAINS, SELF, sn_b_sprites00,
-[
-  set_offset_to(-2),
-  prev_vehicle_cargo_subtype() ])
+switch (FEAT_TRAINS, SELF, sn_b_sprites_start,
+[  set_offset_to(-2),
+   ((LOAD_TEMP(4) != sn) * 100) +
+   (prev_vehicle_randombits() % 2) +
+   (prev_vehicle_cargo_subtype() * 2) ])
 {
-  0: sn_b_notpowered_spriteset;
-  1: sn_b_v2_notpowered_spriteset;
-  2: sn_b_v3_notpowered_spriteset;
-     align_12_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, sn_b_sprites1,
-[
-  set_offset_to(-2),
-  (prev_vehicle_cargo_subtype() * 2) + 
-  (!(vehicle_is_not_powered || vehicle_is_in_depot)) ])
-{
-  0: sn_b_notpowered_spriteset;
-  1: sn_b_spriteset;
-  2: sn_b_v2_notpowered_spriteset;
-  3: sn_b_v2_spriteset;
-  4: sn_b_v3_notpowered_spriteset;
-  5: sn_b_v3_spriteset;
-     align_12_sprites;
-}
-
-switch (FEAT_TRAINS, PARENT, sn_b_sprites_start,
-  (vehicle_type_id == sn) )
-{
-  1: sn_b_sprites1;
-     sn_b_sprites00;
+    0: sn_v1_m_sprites_left;
+    1: sn_v1_m_sprites_right;
+    2: sn_v2_m_sprites_left;
+    3: sn_v2_m_sprites_right;
+    4: sn_v3_m_sprites_left;
+    5: sn_v3_m_sprites_right;
+  100: sn_v1_m_notpowered_sprites_left;
+  101: sn_v1_m_notpowered_sprites_right;
+  102: sn_v2_m_notpowered_sprites_left;
+  103: sn_v2_m_notpowered_sprites_right;
+  104: sn_v3_m_notpowered_sprites_left;
+  105: sn_v3_m_notpowered_sprites_right;
+       align_12_sprites;
 }
 
 long_vehicle_nocount(sn_b)
 
 switch (FEAT_TRAINS, SELF, sn_c_sprites_start,
-[
-  set_offset_to(-4),
-  prev_vehicle_cargo_subtype() ])
+[ set_offset_to(-4),
+  (position_in_consist_from_end == 1) +
+  (prev_vehicle_cargo_subtype() * 2) ])
 {
-  0: sn_r_spritegroup;
-  1: sn_r_v2_spritegroup;
-  2: sn_r_v3_spritegroup;
+  0: sn_v1_h_notpowered_normal_sprites_right;
+  1: sn_v1_h_sprites_right;
+  2: sn_v2_h_notpowered_normal_sprites_right;
+  3: sn_v2_h_sprites_right;
+  4: sn_v3_h_notpowered_normal_sprites_right;
+  5: sn_v3_h_sprites_right;
      align_12_sprites;
 }
 
 long_vehicle_nocount(sn_c)
 
-// Можно ли ещё присоединить?
-switch (FEAT_TRAINS, SELF, sn_can_attach_wagon2,
-  LOAD_TEMP(0) < 3)
-{
-  1: return CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, sn_can_attach_wagon1,
-  STORE_TEMP(count_veh_id(sn), 0))
+  count_veh_id(sn) < 3)
 {
-  sn_can_attach_wagon2;
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
 }
 
 switch (FEAT_TRAINS, SELF, sn_can_attach_wagon,
@@ -225,15 +94,6 @@ switch (FEAT_TRAINS, SELF, sn_can_attach_wagon,
 {
   1: sn_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, sn_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: string(STR_REFIT_FACTORY_6208, string(STR_REFIT_TTD_7C));
-  1: string(STR_REFIT_FACTORY_6208, string(STR_REFIT_TTD_6C));
-  2: string(STR_REFIT_FACTORY_6208, string(STR_REFIT_TTD_59));
-     return CB_RESULT_NO_TEXT;
 }
 
 switch (FEAT_TRAINS, SELF, sn_articulated_part,
@@ -251,7 +111,7 @@ switch (FEAT_TRAINS, SELF, sn_articulated_part,
 switch (FEAT_TRAINS, PARENT, sn_visual_effect_and_powered,
   vehicle_type_id == sn)
 {
-  1: return electric_visual_effect_and_powered(0);
+  1: return electric_visual_effect_and_powered(4);
      return disable_visual_effect_and_powered();
 }
 
@@ -265,12 +125,21 @@ switch (FEAT_TRAINS, PARENT, sn_power,
 
 // Допускается эксплуатация с пассажирами только если голова - sn
 switch (FEAT_TRAINS, PARENT, sn_cargo_capacity,
-  (vehicle_type_id == sn)
-)
+  vehicle_type_id == sn)
 {
   1: return 296;
      return 0;
 }
+
+switch (FEAT_TRAINS, SELF, sn_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: string(STR_REFIT_FACTORY_6208, string(STR_REFIT_TTD_7C));
+  1: string(STR_REFIT_FACTORY_6208, string(STR_REFIT_TTD_6C));
+  2: string(STR_REFIT_FACTORY_6208, string(STR_REFIT_TTD_59));
+     return CB_RESULT_NO_TEXT;
+}
+
 
 item (FEAT_TRAINS, sn) 
 {
