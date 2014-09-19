@@ -3,80 +3,74 @@
 // Спрайты
 
 #define IMAGEFILE  "src/dmu/dr1b.png"
+purchase_sprites(dr1b_h, 0, 0)
+purchase_sprites(dr1b_c, 120, 0)
+purchase_sprites(dr1b_n, 240, 0)
 
-// покупка
-purchase_sprites(dr1b_m, 0, 0)
-
-purchase_sprites(dr1b_c, 100, 0)
-
-purchase_sprites(dr1b_n, 200, 0)
-
-// головной: погрузка/перемещение
-spriteset (dr1b_m_loading_spriteset, IMAGEFILE)
-{
-  s15_template(82, 35, 0)
-} 
-
-spriteset (dr1b_m_traveling_spriteset, IMAGEFILE)
-{
-  s15_template(541, 35, 0)
-} 
-
-spritegroup dr1b_m_sprites_l
-{
-  loading: dr1b_m_loading_spriteset;
-  loaded: dr1b_m_traveling_spriteset;
-}
-
-// головной развёрнутый
-spriteset (dr1b_m_sprites_r, IMAGEFILE)
-{
-  s15_template(82, 104, 0)
-} 
-
-// прицепной
-spriteset (dr1b_c_sprites_start, IMAGEFILE)
-{
-  s15_template(82, 311, 0)
-} 
-
-// головной немоторный: погрузка/перемещение
-spriteset (dr1b_n_loading_spriteset, IMAGEFILE)
-{
-  s15_template(82, 173, 0)
-} 
-
-spriteset (dr1b_n_traveling_spriteset, IMAGEFILE)
-{
-  s15_template(541, 173, 0)
-} 
-
-spritegroup dr1b_n_sprites_l
-{
-  loading: dr1b_n_loading_spriteset;
-  loaded: dr1b_n_traveling_spriteset;
-}
-
-// головной немоторный развёрнутый
-spriteset (dr1b_n_sprites_r, IMAGEFILE)
-{
-  s15_template(82, 242, 0)
-} 
-
+MU_4r_0_0_sprites(15, dr1b_v1, 32, 40)
+MU_0_0_2_sprites(15,  dr1b_v1, 32, 40)
+MU_4r_0_0_sprites(15, dr1b_v1_n, 32, 442)
 #undef IMAGEFILE
 
-long_vehicle(dr1b_c)
+switch (FEAT_TRAINS, SELF, dr1b_h_sprites_l,
+  ((LOAD_TEMP(4) == dr1b_h) || (LOAD_TEMP(4) == dr1b_n)) *
+  (1 + (position_in_consist == 0)))
+{
+  0: dr1b_v1_h_notpowered_sprites_left;
+  1: dr1b_v1_h_notpowered_normal_sprites_left;
+  2: dr1b_v1_h_sprites_left;
+     align_15_sprites;
+}
 
-engine_direction_template3m(dr1b_m, dr1b_n, dr1b_c)
+switch (FEAT_TRAINS, SELF, dr1b_h_sprites_r,
+  ((LOAD_TEMP(4) == dr1b_h) || (LOAD_TEMP(4) == dr1b_n)) *
+  (1 + (position_in_consist_from_end == 1)))
+{
+  0: dr1b_v1_h_notpowered_sprites_right;
+  1: dr1b_v1_h_notpowered_normal_sprites_right;
+  2: dr1b_v1_h_sprites_right;
+     align_15_sprites;
+}
 
-long_vehicle(dr1b_m)
+engine_direction_template3m(dr1b_h, dr1b_n, dr1b_c)
 
-engine_direction_template3m(dr1b_n, dr1b_m, dr1b_c)
+long_vehicle(dr1b_h)
+
+switch (FEAT_TRAINS, SELF, dr1b_n_sprites_l,
+  ((LOAD_TEMP(4) == dr1b_h) || (LOAD_TEMP(4) == dr1b_n)) *
+  (1 + (position_in_consist == 0)))
+{
+  0: dr1b_v1_n_h_notpowered_sprites_left;
+  1: dr1b_v1_n_h_notpowered_normal_sprites_left;
+  2: dr1b_v1_n_h_sprites_left;
+     align_15_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, dr1b_n_sprites_r,
+  ((LOAD_TEMP(4) == dr1b_h) || (LOAD_TEMP(4) == dr1b_n)) *
+  (1 + (position_in_consist_from_end == 1)))
+{
+  0: dr1b_v1_n_h_notpowered_sprites_right;
+  1: dr1b_v1_n_h_notpowered_normal_sprites_right;
+  2: dr1b_v1_n_h_sprites_right;
+     align_15_sprites;
+}
+
+engine_direction_template3m(dr1b_n, dr1b_h, dr1b_c)
 
 long_vehicle(dr1b_n)
 
+random_switch (FEAT_TRAINS, SELF, dr1b_c_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: dr1b_v1_c_sprites_left;
+  1: dr1b_v1_c_sprites_right;
+}
+
+long_vehicle(dr1b_c)
+
 switch (FEAT_TRAINS, PARENT, dr1b_can_attach_wagon_length,
-  (count_veh_id(dr1b_m) + count_veh_id(dr1b_n)) > 3)
+  (count_veh_id(dr1b_h) + count_veh_id(dr1b_n)) > 3)
 {
   0: CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -110,7 +104,7 @@ switch (FEAT_TRAINS, PARENT, dr1b_c_can_attach_wagon1,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_c_can_attach_wagon_h,
-  (count_veh_id(dr1b_m) + count_veh_id(dr1b_n)) % 2)
+  (count_veh_id(dr1b_h) + count_veh_id(dr1b_n)) % 2)
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
      dr1b_c_can_attach_wagon1;
@@ -123,12 +117,12 @@ switch (FEAT_TRAINS, PARENT, dr1b_c_can_attach_wagon,
 {
   dr1b_c: dr1b_c_can_attach_wagon1;
   dr1b_n: dr1b_c_can_attach_wagon_h;
-  dr1b_m: dr1b_c_can_attach_wagon_h;
+  dr1b_h: dr1b_c_can_attach_wagon_h;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_n_can_attach_wagon,
-  count_veh_id(dr1b_m) >= count_veh_id(dr1b_n))
+  count_veh_id(dr1b_h) >= count_veh_id(dr1b_n))
 {
   1: dr1b_can_attach_wagon_length;
      return string(STR_CAN_ATTACH_MHEAD_ONLY);
@@ -137,75 +131,75 @@ switch (FEAT_TRAINS, PARENT, dr1b_n_can_attach_wagon,
 switch (FEAT_TRAINS, SELF, dr1b_can_attach_wagon,
   vehicle_type_id)
 {
-  dr1b_m: dr1b_can_attach_wagon_length;
+  dr1b_h: dr1b_can_attach_wagon_length;
   dr1b_n: dr1b_n_can_attach_wagon;
   dr1b_c: dr1b_c_can_attach_wagon;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, dr1b_m_start_stop,
-  (count_veh_id(dr1b_m) + count_veh_id(dr1b_n)) % 2)
+switch (FEAT_TRAINS, PARENT, dr1b_h_start_stop,
+  (count_veh_id(dr1b_h) + count_veh_id(dr1b_n)) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, dr1b_m_visual_effect_and_powered1,
-  (LOAD_TEMP(0) - count_veh_id(dr1b_m) - count_veh_id(dr1b_n)) % 2)
+switch (FEAT_TRAINS, SELF, dr1b_h_visual_effect_and_powered1,
+  (LOAD_TEMP(0) - count_veh_id(dr1b_h) - count_veh_id(dr1b_n)) % 2)
 {
   0: return diesel_visual_effect_and_powered(-2);
      return diesel_visual_effect_and_powered(7);
 }
 
-switch (FEAT_TRAINS, PARENT, dr1b_m_visual_effect_and_powered0,
-  STORE_TEMP(count_veh_id(dr1b_m) + count_veh_id(dr1b_n), 0))
+switch (FEAT_TRAINS, PARENT, dr1b_h_visual_effect_and_powered0,
+  STORE_TEMP(count_veh_id(dr1b_h) + count_veh_id(dr1b_n), 0))
 {
-  dr1b_m_visual_effect_and_powered1;
+  dr1b_h_visual_effect_and_powered1;
 }
 
-// Визуализируем эффекты тяги только если локомотив - dr1b_m или dr1b_n
-switch (FEAT_TRAINS, PARENT, dr1b_m_visual_effect_and_powered,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
+// Визуализируем эффекты тяги только если локомотив - dr1b_h или dr1b_n
+switch (FEAT_TRAINS, PARENT, dr1b_h_visual_effect_and_powered,
+  (vehicle_type_id == dr1b_h) || (vehicle_type_id == dr1b_n) )
 {
-  1: dr1b_m_visual_effect_and_powered0; 
+  1: dr1b_h_visual_effect_and_powered0; 
      return disable_visual_effect_and_powered();
 } 
 
-// Даём тягу, только если локомотив - dr1b_m или dr1b_n
-switch (FEAT_TRAINS, PARENT, dr1b_m_power,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
+// Даём тягу, только если локомотив - dr1b_h или dr1b_n
+switch (FEAT_TRAINS, PARENT, dr1b_h_power,
+  (vehicle_type_id == dr1b_h) || (vehicle_type_id == dr1b_n) )
 {
   1: return get_power_in_cb(810); 
      return 0;
 } 
 
-// Допускается эксплуатация с пассажирами только если голова - dr1b_m или dr1b_n
-switch (FEAT_TRAINS, PARENT, dr1b_m_cargo_capacity,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
+// Допускается эксплуатация с пассажирами только если голова - dr1b_h или dr1b_n
+switch (FEAT_TRAINS, PARENT, dr1b_h_cargo_capacity,
+  (vehicle_type_id == dr1b_h) || (vehicle_type_id == dr1b_n) )
 {
   1: return 68;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_n_cargo_capacity,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
+  (vehicle_type_id == dr1b_h) || (vehicle_type_id == dr1b_n) )
 {
   1: return 96;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1b_c_cargo_capacity,
-  (vehicle_type_id == dr1b_m) || (vehicle_type_id == dr1b_n) )
+  (vehicle_type_id == dr1b_h) || (vehicle_type_id == dr1b_n) )
 {
   1: return 124;
      return 0;
 }
 
-item (FEAT_TRAINS, dr1b_m) 
+item (FEAT_TRAINS, dr1b_h) 
 {
   property
   {
-    name: string(STR_DR1B_M_NAME);
+    name: string(STR_DR1B_H_NAME);
     climates_available: get_climates_available();
     introduction_date: date(get_loc_year(2005), 1, 1);
     model_life: get_model_life(2005,2009); 
@@ -232,17 +226,17 @@ item (FEAT_TRAINS, dr1b_m)
     length: 8;
   }
   graphics {
-    default: dr1b_m_sprites;
-    purchase: dr1b_m_purchase_sprites;
+    default: dr1b_h_sprites;
+    purchase: dr1b_h_purchase_sprites;
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: dr1b_can_attach_wagon;
-    start_stop: dr1b_m_start_stop;
-    visual_effect_and_powered: dr1b_m_visual_effect_and_powered;
+    start_stop: dr1b_h_start_stop;
+    visual_effect_and_powered: dr1b_h_visual_effect_and_powered;
     speed: speed_after25_120to110;
     purchase_speed: return 120;
-    additional_text: return string(STR_DR1B_M_PURCHASE_HINT, string(STR_SECTIONS_DMU_N2_6));
-    power: dr1b_m_power;
-    cargo_capacity: dr1b_m_cargo_capacity;
+    additional_text: return string(STR_DR1B_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_N2_6));
+    power: dr1b_h_power;
+    cargo_capacity: dr1b_h_cargo_capacity;
     cargo_subtype_text: return string(STR_REFIT_FACTORY_63555, string(STR_REFIT_BELARUSSIAN_RAILWAY));
   }
 }
@@ -281,7 +275,7 @@ item (FEAT_TRAINS, dr1b_n)
     purchase: dr1b_n_purchase_sprites;
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: dr1b_can_attach_wagon;
-    start_stop: dr1b_m_start_stop;
+    start_stop: dr1b_h_start_stop;
     speed: speed_after25_120to110;
     purchase_speed: return 120;
     power: return 0;
@@ -329,7 +323,7 @@ item (FEAT_TRAINS, dr1b_c)
     power: return 0;
     can_attach_wagon: dr1b_can_attach_wagon;
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
-    additional_text: return string(STR_DR1B_M_PURCHASE_HINT, string(STR_SECTIONS_DMU_N2_6));
+    additional_text: return string(STR_DR1B_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_N2_6));
     cargo_capacity: dr1b_c_cargo_capacity;
     cargo_subtype_text: return string(STR_REFIT_FACTORY_63555, string(STR_REFIT_BELARUSSIAN_RAILWAY));
   }
@@ -337,10 +331,10 @@ item (FEAT_TRAINS, dr1b_c)
 
 if (enable_long_names)
 {
-  item (FEAT_TRAINS, dr1b_m)
+  item (FEAT_TRAINS, dr1b_h)
   {
     property
-    { name: string(STR_DR1B_M_NAME_LONG); }
+    { name: string(STR_DR1B_H_NAME_LONG); }
   }
   item (FEAT_TRAINS, dr1b_n)
   {
