@@ -11,50 +11,77 @@ MU_0_0_2_sprites(15,  d_v1, 32, 40)
 #undef IMAGEFILE
 /// С метельником (cowcatcher)
 #define IMAGEFILE  "src/dmu/d.png"
-purchase_sprites(d_v2_h, 0, 0)
-purchase_sprites(d_v2_c, 120, 0)
+purchase_sprites(d_v1u_h, 0, 0)
+purchase_sprites(d_v1u_c, 120, 0)
 
-MU_3r_0_0_sprites(15, d_v2, 32, 40)
-MU_0_0_2_sprites(15,  d_v2, 32, 40)
+MU_3r_0_0_sprites(15, d_v1u, 32, 40)
+MU_0_0_2_sprites(15,  d_v1u, 32, 40)
 #undef IMAGEFILE
 
-// Если год постройки >= 1962, используем метельник
-switch (FEAT_TRAINS, SELF, d_c_sprites_start,
+switch (FEAT_TRAINS, SELF, d_h_purchase,
   build_year >= 1962)
 {
-  1: d_v2_c_sprites_left;
+  1: d_v1u_h_purchase_sprites;
+     d_v1_h_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, d_c_purchase,
+  build_year >= 1962)
+{
+  1: d_v1u_c_purchase_sprites;
+     d_v1_c_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, d_h_sprites_l,
+  build_year >= 1962)
+{
+  0: d_v1_h_sprites_left;
+     d_v1u_h_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, d_h_sprites_r,
+  build_year >= 1962)
+{
+  0: d_v1_h_sprites_right;
+     d_v1u_h_sprites_right;
+}
+
+engine_direction_template2m(d_h, d_c)
+
+long_vehicle(d_h)
+
+switch (FEAT_TRAINS, SELF, d_c_sprites_left,
+  build_year >= 1962)
+{
+  1: d_v1u_c_sprites_left;
      d_v1_c_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, d_c_sprites_right,
+  build_year >= 1962)
+{
+  1: d_v1u_c_sprites_right;
+     d_v1_c_sprites_right;
+}
+
+random_switch (FEAT_TRAINS, SELF, d_c_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: d_c_sprites_left;
+  1: d_c_sprites_right;
 }
 
 long_vehicle(d_c)
 
-switch (FEAT_TRAINS, SELF, d_m_sprites_l,
-  build_year >= 1962)
-{
-  0: d_v1_c_sprites_left;
-     d_v2_c_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, d_m_sprites_r,
-  build_year >= 1962)
-{
-  0: d_v1_h_sprites_right;
-     d_v2_h_sprites_right;
-}
-
-engine_direction_template2m(d_m, d_c)
-
-long_vehicle(d_m)
-
 switch (FEAT_TRAINS, PARENT, d_can_attach_wagon_length,
-  count_veh_id(d_m) > 3)
+  count_veh_id(d_h) > 3)
 {
   0: CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
 switch (FEAT_TRAINS, PARENT, d_c_can_attach_wagon_h,
-  count_veh_id(d_m) % 2)
+  count_veh_id(d_h) % 2)
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
      return CB_RESULT_ATTACH_ALLOW;
@@ -66,51 +93,51 @@ switch (FEAT_TRAINS, PARENT, d_c_can_attach_wagon,
   prev_vehicle_type_id() ])
 {
   d_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3D);
-  d_m: d_c_can_attach_wagon_h;
+  d_h: d_c_can_attach_wagon_h;
        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, SELF, d_can_attach_wagon,
   vehicle_type_id)
 {
-  d_m: d_can_attach_wagon_length;
+  d_h: d_can_attach_wagon_length;
   d_c: d_c_can_attach_wagon;
        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 // Кол-во моторных чётное?
-switch (FEAT_TRAINS, PARENT, d_m_start_stop,
-  count_veh_id(d_m) % 2)
+switch (FEAT_TRAINS, PARENT, d_h_start_stop,
+  count_veh_id(d_h) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, d_m_visual_effect_and_powered1,
-  (LOAD_TEMP(0) - count_veh_id(d_m)) % 2)
+switch (FEAT_TRAINS, SELF, d_h_visual_effect_and_powered1,
+  (LOAD_TEMP(0) - count_veh_id(d_h)) % 2)
 {
   0: return diesel_visual_effect_and_powered(-2);
      return diesel_visual_effect_and_powered(7);
 }
 
-switch (FEAT_TRAINS, PARENT, d_m_visual_effect_and_powered0,
-  STORE_TEMP(count_veh_id(d_m), 0))
+switch (FEAT_TRAINS, PARENT, d_h_visual_effect_and_powered0,
+  STORE_TEMP(count_veh_id(d_h), 0))
 {
-  d_m_visual_effect_and_powered1;
+  d_h_visual_effect_and_powered1;
 }
 
-// Визуализируем эффекты тяги только если локомотив - d_m 
-switch (FEAT_TRAINS, PARENT, d_m_visual_effect_and_powered,
-  (vehicle_type_id == d_m) 
+// Визуализируем эффекты тяги только если локомотив - d_h 
+switch (FEAT_TRAINS, PARENT, d_h_visual_effect_and_powered,
+  (vehicle_type_id == d_h) 
   )
 {
-  1: d_m_visual_effect_and_powered0; 
+  1: d_h_visual_effect_and_powered0; 
      return disable_visual_effect_and_powered();
 } 
 
-// Допускается эксплуатация с пассажирами только если голова - d_m 
-switch (FEAT_TRAINS, PARENT, d_m_cargo_capacity,
-  (vehicle_type_id == d_m)
+// Допускается эксплуатация с пассажирами только если голова - d_h 
+switch (FEAT_TRAINS, PARENT, d_h_cargo_capacity,
+  (vehicle_type_id == d_h)
 )
 {
   1: return 77;
@@ -118,40 +145,26 @@ switch (FEAT_TRAINS, PARENT, d_m_cargo_capacity,
 }
 
 switch (FEAT_TRAINS, PARENT, d_c_cargo_capacity,
-  vehicle_type_id == d_m)
+  vehicle_type_id == d_h)
 {
   1: return 128;
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, d_m_purchase,
-  build_year >= 1962)
-{
-  1: d_v2_h_purchase_sprites;
-     d_v1_h_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, d_c_purchase,
-  build_year >= 1962)
-{
-  1: d_v2_c_purchase_sprites;
-     d_v1_c_purchase_sprites;
-}
-
-// Даём тягу, только если локомотив - d_m 
-switch (FEAT_TRAINS, PARENT, d_m_power,
-  vehicle_type_id == d_m)
+// Даём тягу, только если локомотив - d_h 
+switch (FEAT_TRAINS, PARENT, d_h_power,
+  vehicle_type_id == d_h)
 {
   1: return get_power_in_cb(500); 
      return 0;
 } 
 
 
-item (FEAT_TRAINS, d_m) 
+item (FEAT_TRAINS, d_h) 
 {
   property
   {
-    name: string(STR_D_M_NAME);
+    name: string(STR_D_H_NAME);
     climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1960), 1, 1);
     vehicle_life: 25;
@@ -179,17 +192,17 @@ item (FEAT_TRAINS, d_m)
     length: 8;
   }
   graphics {
-    default: d_m_sprites;
-    purchase: d_m_purchase;
+    default: d_h_sprites;
+    purchase: d_h_purchase;
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: d_can_attach_wagon;
-    start_stop: d_m_start_stop;
-    visual_effect_and_powered: d_m_visual_effect_and_powered;
+    start_stop: d_h_start_stop;
+    visual_effect_and_powered: d_h_visual_effect_and_powered;
     speed: speed_after25_120to100;
     purchase_speed: return 120;
-    additional_text: return string(STR_D_M_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_3));
-    power: d_m_power;
-    cargo_capacity: d_m_cargo_capacity;
+    additional_text: return string(STR_D_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_3));
+    power: d_h_power;
+    cargo_capacity: d_h_cargo_capacity;
   }
 }
 
@@ -232,17 +245,17 @@ item (FEAT_TRAINS, d_c)
     power: return 0;
     can_attach_wagon: d_can_attach_wagon;
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
-    additional_text: return string(STR_D_M_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_3));
+    additional_text: return string(STR_D_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_3));
     cargo_capacity: d_c_cargo_capacity;
   }
 }
 
 if (enable_long_names)
 {
-  item (FEAT_TRAINS, d_m)
+  item (FEAT_TRAINS, d_h)
   {
     property
-    { name: string(STR_D_M_NAME_LONG); }
+    { name: string(STR_D_H_NAME_LONG); }
   }
 
   item (FEAT_TRAINS, d_c)

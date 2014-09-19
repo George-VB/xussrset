@@ -2,108 +2,76 @@
 
 // Спрайты
 
-#define IMAGEFILE  "src/dmu/dr1.png"
+#define IMAGEFILE  "src/dmu/d.png"
+purchase_sprites(dr1_v1_h, 0, 0)
+purchase_sprites(dr1_v1_c, 120, 0)
 
-// Вариант 0 (1963-66, Балтика)
-// покупка
-purchase_sprites(dr1_m, 0, 0)
-
-purchase_sprites(dr1_c, 100, 0)
-
-// головной: погрузка/перемещение
-spriteset (dr1_m_loading_spriteset, IMAGEFILE)
-{
-  s15_template(38, 35, 0)
-} 
-
-spriteset (dr1_m_traveling_spriteset, IMAGEFILE)
-{
-  s15_template(497, 35, 0)
-} 
-
-spritegroup dr1_m_spritegroup
-{
-  loading: dr1_m_loading_spriteset;
-  loaded: dr1_m_traveling_spriteset;
-}
-
-// развёрнутая голова
-spriteset (dr1_rm_spriteset, IMAGEFILE)
-{
-  s15_template(38, 104, 0)
-} 
-
-// прицепной
-spriteset (dr1_c_spriteset, IMAGEFILE)
-{
-  s15_template(38, 173, 0)
-} 
-
-// Вариант 1 (1966-69), Дырка
-// покупка
-purchase_sprites(dr1_m_2, 200, 0)
-
-purchase_sprites(dr1_c_2, 300, 0)
-
-// головной: погрузка/перемещение
-spriteset (dr1_m_2_loading_spriteset, IMAGEFILE)
-{
-  s15_template(38, 262, 0)
-} 
-
-spriteset (dr1_m_2_traveling_spriteset, IMAGEFILE)
-{
-  s15_template(497, 262, 0)
-} 
-
-spritegroup dr1_m_2_spritegroup
-{
-  loading: dr1_m_2_loading_spriteset;
-  loaded: dr1_m_2_traveling_spriteset;
-}
-
-// развёрнутая голова
-spriteset (dr1_rm_2_spriteset, IMAGEFILE)
-{
-  s15_template(38, 331, 0)
-} 
-
-// прицепной
-spriteset (dr1_c_2_spriteset, IMAGEFILE)
-{
-  s15_template(38, 400, 0)
-} 
-
+MU_3r_0_0_sprites(15, dr1_v1, 32, 40)
+MU_0_0_2_sprites(15,  dr1_v1, 32, 40)
 #undef IMAGEFILE
 
-// Если год постройки >= 1966, используем "дырку"
-switch (FEAT_TRAINS, SELF, dr1_c_sprites_start,
+#define IMAGEFILE  "src/dmu/d.png"
+purchase_sprites(dr1_v1u_h, 0, 0)
+purchase_sprites(dr1_v1u_c, 120, 0)
+
+MU_3r_0_0_sprites(15, dr1_v1u, 32, 40)
+MU_0_0_2_sprites(15,  dr1_v1u, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, dr1_h_purchase,
   build_year >= 1966)
 {
-  1: dr1_c_2_spriteset;
-     dr1_c_spriteset;
+  1: dr1_v1u_h_purchase_sprites;
+     dr1_v1_h_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_c_purchase,
+  build_year >= 1966)
+{
+  1: dr1_v1u_c_purchase_sprites;
+     dr1_v1_c_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_sprites_l,
+  build_year >= 1966)
+{
+  0: dr1_v1_h_sprites_left;
+     dr1_v1u_h_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_h_sprites_r,
+  build_year >= 1966)
+{
+  0: dr1_v1_h_sprites_right;
+     dr1_v1u_h_sprites_right;
+}
+
+engine_direction_template2m(dr1_h, dr1_c)
+
+long_vehicle(dr1_h)
+
+switch (FEAT_TRAINS, SELF, dr1_c_sprites_left,
+  build_year >= 1966)
+{
+  1: dr1_v1u_c_sprites_left;
+     dr1_v1_c_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, dr1_c_sprites_right,
+  build_year >= 1966)
+{
+  1: dr1_v1u_c_sprites_right;
+     dr1_v1_c_sprites_right;
+}
+
+random_switch (FEAT_TRAINS, SELF, dr1_c_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: dr1_c_sprites_left;
+  1: dr1_c_sprites_right;
 }
 
 long_vehicle(dr1_c)
-
-// Если год постройки >= 1966, используем "дырку"
-switch (FEAT_TRAINS, SELF, dr1_m_sprites_l,
-  build_year >= 1966)
-{
-  0: dr1_m_spritegroup;
-     dr1_m_2_spritegroup;
-}
-
-switch (FEAT_TRAINS, SELF, dr1_m_sprites_r,
-  build_year >= 1966)
-{
-  0: dr1_rm_spriteset;
-     dr1_rm_2_spriteset;
-}
-
-engine_direction_template2m(dr1_m, dr1_c)
-
-long_vehicle(dr1_m)
 
 switch (FEAT_TRAINS, PARENT, dr1_c_can_attach_wagon6,
 [
@@ -149,7 +117,7 @@ switch (FEAT_TRAINS, PARENT, dr1_c_can_attach_wagon1,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1_c_can_attach_wagon_h,
-  count_veh_id(dr1_m) % 2)
+  count_veh_id(dr1_h) % 2)
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
      dr1_c_can_attach_wagon1;
@@ -161,12 +129,12 @@ switch (FEAT_TRAINS, PARENT, dr1_c_can_attach_wagon,
   prev_vehicle_type_id() ])
 {
   dr1_c: dr1_c_can_attach_wagon1;
-  dr1_m: dr1_c_can_attach_wagon_h;
+  dr1_h: dr1_c_can_attach_wagon_h;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, dr1_can_attach_wagon_length3,
-  count_veh_id(dr1_m) > 1)
+  count_veh_id(dr1_h) > 1)
 {
   0: CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -175,19 +143,17 @@ switch (FEAT_TRAINS, PARENT, dr1_can_attach_wagon_length3,
 switch (FEAT_TRAINS, SELF, dr1_can_attach_wagon3,
   vehicle_type_id)
 {
-  dr1_m: dr1_can_attach_wagon_length3;
+  dr1_h: dr1_can_attach_wagon_length3;
   dr1_c: dr1_c_can_attach_wagon;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, SELF, dr1_can_attach_wagon2,
-[
-  STORE_TEMP(
+[ STORE_TEMP(
              (LOAD_TEMP(0)>=1966) +
              (LOAD_TEMP(0)>=1968) +
              ((build_year>=1966) *10) +
-             ((build_year>=1968) *10), 1) 
-])
+             ((build_year>=1968) *10), 1) ])
 {
    0: dr1_can_attach_wagon3;
    1: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-1965","1966-1967");
@@ -210,69 +176,69 @@ switch (FEAT_TRAINS, PARENT, dr1_can_attach_wagon1,
 switch (FEAT_TRAINS, SELF, dr1_can_attach_wagon,
   vehicle_type_id)
 {
-  dr1_m: dr1_can_attach_wagon1;
+  dr1_h: dr1_can_attach_wagon1;
   dr1_c: dr1_can_attach_wagon1;
          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, dr1_m_start_stop,
-  count_veh_id(dr1_m) % 2)
+switch (FEAT_TRAINS, PARENT, dr1_h_start_stop,
+  count_veh_id(dr1_h) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, dr1_m_visual_effect_and_powered1,
-  (LOAD_TEMP(0) - count_veh_id(dr1_m)) % 2)
+switch (FEAT_TRAINS, SELF, dr1_h_visual_effect_and_powered1,
+  (LOAD_TEMP(0) - count_veh_id(dr1_h)) % 2)
 {
   0: return diesel_visual_effect_and_powered(-2);
      return diesel_visual_effect_and_powered(7);
 }
 
-switch (FEAT_TRAINS, PARENT, dr1_m_visual_effect_and_powered0,
-  STORE_TEMP(count_veh_id(dr1_m), 0))
+switch (FEAT_TRAINS, PARENT, dr1_h_visual_effect_and_powered0,
+  STORE_TEMP(count_veh_id(dr1_h), 0))
 {
-  dr1_m_visual_effect_and_powered1;
+  dr1_h_visual_effect_and_powered1;
 }
 
-// Визуализируем эффекты тяги только если локомотив - dr1_m
-switch (FEAT_TRAINS, PARENT, dr1_m_visual_effect_and_powered,
-  vehicle_type_id == dr1_m )
+// Визуализируем эффекты тяги только если локомотив - dr1_h
+switch (FEAT_TRAINS, PARENT, dr1_h_visual_effect_and_powered,
+  vehicle_type_id == dr1_h )
 {
-  1: dr1_m_visual_effect_and_powered0; 
+  1: dr1_h_visual_effect_and_powered0; 
      return disable_visual_effect_and_powered();
 } 
 
-// Даём тягу, только если локомотив - dr1_m 
-switch (FEAT_TRAINS, PARENT, dr1_m_power,
-  vehicle_type_id == dr1_m )
+// Даём тягу, только если локомотив - dr1_h 
+switch (FEAT_TRAINS, PARENT, dr1_h_power,
+  vehicle_type_id == dr1_h )
 {
   1: return get_power_in_cb(750); 
      return 0;
 } 
 
-// Допускается эксплуатация с пассажирами только если голова - dr1_m 
-switch (FEAT_TRAINS, PARENT, dr1_m_cargo_capacity,
-  vehicle_type_id == dr1_m )
+// Допускается эксплуатация с пассажирами только если голова - dr1_h 
+switch (FEAT_TRAINS, PARENT, dr1_h_cargo_capacity,
+  vehicle_type_id == dr1_h )
 {
   1: return 80;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1_c_cargo_capacity,
-  vehicle_type_id == dr1_m )
+  vehicle_type_id == dr1_h )
 {
   1: return 128;
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, dr1_m_additional_text,
+switch (FEAT_TRAINS, SELF, dr1_h_additional_text,
   (current_year >= 1966) +
   (current_year >= 1968) )
 {
-  0: return string(STR_DR1_M_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_4));
-  1: return string(STR_DR1_M_1966_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_4));
-     return string(STR_DR1_M_1968_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_6));
+  0: return string(STR_DR1_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_4));
+  1: return string(STR_DR1_H_1966_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_4));
+     return string(STR_DR1_H_1968_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_6));
 }
 
 switch (FEAT_TRAINS, SELF, dr1_cargo_subtype_text,
@@ -282,25 +248,11 @@ switch (FEAT_TRAINS, SELF, dr1_cargo_subtype_text,
      string(STR_REFIT_FACTORY_DYRKA, "");
 }
 
-switch (FEAT_TRAINS, SELF, dr1_m_purchase,
-  build_year >= 1966)
-{
-  1: dr1_m_2_purchase_sprites;
-     dr1_m_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, dr1_c_purchase,
-  build_year >= 1966)
-{
-  1: dr1_c_2_purchase_sprites;
-  dr1_c_purchase_sprites;
-}
-
-item (FEAT_TRAINS, dr1_m) 
+item (FEAT_TRAINS, dr1_h) 
 {
   property
   {
-    name: string(STR_DR1_M_NAME);
+    name: string(STR_DR1_H_NAME);
     climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1963), 1, 1);
     model_life: get_model_life(1963,1969);
@@ -327,18 +279,18 @@ item (FEAT_TRAINS, dr1_m)
     length: 8;
   }
   graphics {
-    default: dr1_m_sprites;
-    purchase: dr1_m_purchase;
+    default: dr1_h_sprites;
+    purchase: dr1_h_purchase;
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: dr1_can_attach_wagon;
-    start_stop: dr1_m_start_stop;
-    visual_effect_and_powered: dr1_m_visual_effect_and_powered;
+    start_stop: dr1_h_start_stop;
+    visual_effect_and_powered: dr1_h_visual_effect_and_powered;
     speed: speed_after25_120to110;
     purchase_speed: return 120;
     cargo_subtype_text: dr1_cargo_subtype_text;
-    additional_text: dr1_m_additional_text;
-    power: dr1_m_power;
-    cargo_capacity: dr1_m_cargo_capacity;
+    additional_text: dr1_h_additional_text;
+    power: dr1_h_power;
+    cargo_capacity: dr1_h_cargo_capacity;
   }
 }
 
@@ -381,17 +333,17 @@ item (FEAT_TRAINS, dr1_c)
     can_attach_wagon: dr1_can_attach_wagon;
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
     cargo_subtype_text: dr1_cargo_subtype_text;
-    additional_text: dr1_m_additional_text;
+    additional_text: dr1_h_additional_text;
     cargo_capacity: dr1_c_cargo_capacity;
   }
 }
 
 if (enable_long_names)
 {
-  item (FEAT_TRAINS, dr1_m)
+  item (FEAT_TRAINS, dr1_h)
   {
     property
-    { name: string(STR_DR1_M_NAME_LONG); }
+    { name: string(STR_DR1_H_NAME_LONG); }
   }
   item (FEAT_TRAINS, dr1_c)
   {
