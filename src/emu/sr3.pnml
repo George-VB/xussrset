@@ -110,12 +110,18 @@ switch (FEAT_TRAINS, SELF, sr3_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+switch (FEAT_TRAINS, SELF, sr3_create_effect1, 
+  electric_create_effect(4)) 
+{ 
+  return 1; 
+}    
+
 // Визуализируем эффекты тяги у sr3, только если локомотив - sr3
-switch (FEAT_TRAINS, PARENT, sr3_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, sr3_create_effect,
   vehicle_type_id == sr3)
 {
-  1: return electric_visual_effect_and_powered(4);
-     return disable_visual_effect_and_powered();
+  1: sr3_create_effect1;
+     return disable_create_effect();
 }
 
 // Даём тягу, только если локомотив - sr3
@@ -171,7 +177,7 @@ item (FEAT_TRAINS, sr3)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(34.0, 139);
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: sr3_sprites;
@@ -185,15 +191,16 @@ item (FEAT_TRAINS, sr3)
   }
   livery_override(unitb)
   {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
     length: return 8;
-    visual_effect_and_powered: sr3_visual_effect_and_powered;
+    create_effect: sr3_create_effect;
     sr3_b_sprites;
 
   }
   livery_override(unitc)
   {
     length: return 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
     sr3_c_sprites;
   }
 }

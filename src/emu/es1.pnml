@@ -88,19 +88,25 @@ switch (FEAT_TRAINS, PARENT, es1_power,
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, es1_b_visual_effect_and_powered2,
+switch (FEAT_TRAINS, SELF, es1_b_create_effect3, 
+  electric_create_effect(7)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, es1_b_create_effect2,
   position_in_articulated_veh == 6)
 {
-  1: return electric_visual_effect_and_powered(7);
-     return disable_visual_effect_and_powered();
+  1: es1_b_create_effect3;
+     return disable_create_effect();
 }                                               
 
 // показываем визуальные эффекты, если локомотив es1
-switch (FEAT_TRAINS, PARENT, es1_b_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, es1_b_create_effect,
   vehicle_type_id == es1)
 {
-  1: es1_b_visual_effect_and_powered2;
-     return disable_visual_effect_and_powered();
+  1: es1_b_create_effect2;
+     return disable_create_effect();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - es1
@@ -166,7 +172,7 @@ item (FEAT_TRAINS, es1)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(255.0, 267);
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: es1_sprites;
@@ -181,8 +187,9 @@ item (FEAT_TRAINS, es1)
   }
   livery_override(unitb)
   {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
     length: return 8;
-    visual_effect_and_powered: es1_b_visual_effect_and_powered;
+    create_effect: es1_b_create_effect;
             es1_b_sprites;
   }  
 }

@@ -58,152 +58,89 @@ engine_direction_template3m2(er1_h, er1_m, er1_c)
 
 long_vehicle(er1_h)
 
-switch (FEAT_TRAINS, SELF, er1_m_sprites_start,
-  ((count_veh_id(er1_m) * 2) <= LOAD_TEMP(0)) +
-  (cargo_subtype * 2) +
+switch (FEAT_TRAINS, SELF, er1_m_direction_left,
+  cargo_subtype +
   ((LOAD_TEMP(4) != er1_h) * 100) )
 {
     0: er1_v1_m_sprites_left;
-    1: er1_v1_m_sprites_right;
-    2: er1_v2_m_sprites_left;
-    3: er1_v2_m_sprites_right;
+    1: er1_v2_m_sprites_left;
   100: er1_v1_m_notpowered_sprites_left;
-  101: er1_v1_m_notpowered_sprites_right;
-  102: er1_v2_m_notpowered_sprites_left;
-  103: er1_v2_m_notpowered_sprites_right;
+  101: er1_v2_m_notpowered_sprites_left;
        align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er1_m_direction_right,
+  cargo_subtype +
+  ((LOAD_TEMP(4) != er1_h) * 100) )
+{
+    0: er1_v1_m_sprites_right;
+    1: er1_v2_m_sprites_right;
+  100: er1_v1_m_notpowered_sprites_right;
+  101: er1_v2_m_notpowered_sprites_right;
+       align_12_sprites;
+}
+
+EMU_46789101112_m_template(er1)
+
+EMU_direction_calculation_template(er1, _m)
+
+switch (FEAT_TRAINS, SELF, er1_m_sprites_start, 0)
+{
+  er1_m_direction_template;
 }
 
 long_vehicle(er1_m)
 
-switch (FEAT_TRAINS, SELF, er1_c_sprites_start,
-  ((count_veh_id(er1_c) * 2) <= LOAD_TEMP(0)) +
-  (cargo_subtype * 2)  +
+switch (FEAT_TRAINS, SELF, er1_c_direction_left,
+  cargo_subtype  +
   ((LOAD_TEMP(4) != er1_h) * 100) )
 {
     0: er1_v1_c_sprites_left;
-    1: er1_v1_c_sprites_right;
-    2: er1_v2_c_sprites_left;
-    3: er1_v2_c_sprites_right;
+    1: er1_v2_c_sprites_left;
   100: er1_v1_c_notpowered_sprites_left;
-  101: er1_v1_c_notpowered_sprites_right;
-  102: er1_v2_c_notpowered_sprites_left;
-  103: er1_v2_c_notpowered_sprites_right;
+  101: er1_v2_c_notpowered_sprites_left;
        align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er1_c_direction_right,
+  cargo_subtype  +
+  ((LOAD_TEMP(4) != er1_h) * 100) )
+{
+    0: er1_v1_c_sprites_right;
+    1: er1_v2_c_sprites_right;
+  100: er1_v1_c_notpowered_sprites_right;
+  101: er1_v2_c_notpowered_sprites_right;
+       align_12_sprites;
+}
+
+EMU_46789101112_c_template(er1)
+
+EMU_direction_calculation_template(er1, _c)
+
+switch (FEAT_TRAINS, SELF, er1_c_sprites_start, 0)
+{
+  er1_c_direction_template;
 }
 
 long_vehicle(er1_c)
 
-switch (FEAT_TRAINS, PARENT, er1_h_can_attach_wagon3, 
-[  set_offset_to(num_vehs_in_consist-4),
-   prev_vehicle_type_id()])
+EMU_46810_can_attach_wagon_template(er1)
+
+EMU_attach_calculation_template(er1)
+
+switch (FEAT_TRAINS, SELF, er1_can_attach_wagon1, vehicle_type_id)
 {
-  er1_c: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_CAR_ONLY);
+  er1_h: er1_can_attach_wagon_template;
+  er1_m: er1_can_attach_wagon_template;
+  er1_c: er1_can_attach_wagon_template;
+         return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, er1_h_can_attach_wagon2, 
-[  set_offset_to(num_vehs_in_consist-2),
-   prev_vehicle_type_id()])
+switch (FEAT_TRAINS, PARENT, er1_can_attach_wagon, count_veh_id(er1_h))
 {
-  er1_h: return string(STR_CAN_ATTACH_CAR_ONLY);
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, er1_h_can_attach_wagon, 
-  (count_veh_id(er1_h) > 1) ? 0 : 
-  (((count_veh_id(er1_h) + count_veh_id(er1_m) + count_veh_id(er1_c)) < 3) ||
-  ((count_veh_id(er1_h) + count_veh_id(er1_m) + count_veh_id(er1_c)) % 2 == 0 ) ) ? 1 : (2 + count_veh_id(er1_m)) )
-{
-     0: return string(STR_CAN_ATTACH_NO_MORE_THAN_2_HEAD);
-     1: return string(STR_CAN_ATTACH_CAR_ONLY);
-     2: er1_h_can_attach_wagon2;
-  6..8: er1_h_can_attach_wagon3;
-        return CB_RESULT_ATTACH_ALLOW; 
-}
-
-switch (FEAT_TRAINS, PARENT, er1_m_can_attach_wagon, 
-  ((count_veh_id(er1_m) - count_veh_id(er1_c) - count_veh_id(er1_h)) < 1 ) * (1 + count_veh_id(er1_m)))
-{
-  0: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-     return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, er1_c_can_attach_wagon4, 
-[  set_offset_to(num_vehs_in_consist-8),
-   prev_vehicle_type_id()])
-{
-  er1_m: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er1_c_can_attach_wagon3, 
-[  set_offset_to(num_vehs_in_consist-4),
-   prev_vehicle_type_id()])
-{
-  er1_m: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er1_c_can_attach_wagon2, 
-[  set_offset_to(num_vehs_in_consist-4),
-   prev_vehicle_type_id()])
-{
-  er1_m: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er1_c_can_attach_wagon1, 
-[  set_offset_to(num_vehs_in_consist-4),
-   prev_vehicle_type_id()])
-{
-  er1_c: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_HEAD_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er1_c_can_attach_wagon0, 
-  ((count_veh_id(er1_m) - count_veh_id(er1_c) - count_veh_id(er1_h)) >= 0 ) * (count_veh_id(er1_m)))
-{
-  0: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-  1: return CB_RESULT_ATTACH_ALLOW;
-  2: er1_c_can_attach_wagon1;
-  3: er1_c_can_attach_wagon2;
-  4: er1_c_can_attach_wagon3;
-  5: er1_c_can_attach_wagon4;
-     return string(STR_CAN_ATTACH_HEAD_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er1_c_can_attach_wagon, 
-[  set_offset_to(num_vehs_in_consist-2),
-   prev_vehicle_type_id()])
-{
-  er1_m: er1_c_can_attach_wagon0;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
-
-switch (FEAT_TRAINS, SELF, er1_can_attach_wagon2,
-  vehicle_type_id)
-{
-  er1_h: er1_h_can_attach_wagon;
-  er1_m: er1_m_can_attach_wagon;
-  er1_c: er1_c_can_attach_wagon;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er1_can_attach_wagon1,
-  (count_veh_id(er1_h) > 1) ? 0 : 
-  (((count_veh_id(er1_h) + count_veh_id(er1_m) + count_veh_id(er1_c)) >= 9) && (LOAD_TEMP(0) != er1_h)) ? 1 : 2)
-{
-  0: return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
-  1: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     er1_can_attach_wagon2;
-}
-
-switch (FEAT_TRAINS, SELF, er1_can_attach_wagon,
-  STORE_TEMP(vehicle_type_id, 0))
-{
-  er1_can_attach_wagon1;
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: er1_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
 switch (FEAT_TRAINS, PARENT, er1_h_start_stop,
@@ -221,24 +158,16 @@ switch (FEAT_TRAINS, SELF, er1_m_start_stop,
 }
 
 // Визуализируем эффекты тяги у er1_m, только если локомотив - er1_h
-switch (FEAT_TRAINS, SELF, er1_m_visual_effect_and_powered2,
-  (count_veh_id(er1_m) * 2) <= LOAD_TEMP(0) )
-{
-  0: return electric_visual_effect_and_powered(-3);
-     return electric_visual_effect_and_powered(5);
-}
 
-switch (FEAT_TRAINS, PARENT, er1_m_visual_effect_and_powered1,
-[ STORE_TEMP(count_veh_id(er1_m), 0) ])                                                          
-{
-  er1_m_visual_effect_and_powered2;
-}
+EMU_46789101112_m_create_effect_template(er1, -1, 5)
 
-switch (FEAT_TRAINS, PARENT, er1_m_visual_effect_and_powered,
+EMU_direction_calculation_template(er1, _m_create_effect)
+
+switch (FEAT_TRAINS, PARENT, er1_m_create_effect,
   vehicle_type_id == er1_h)
 {
-  1: er1_m_visual_effect_and_powered1;
-     return disable_visual_effect_and_powered();
+  1: er1_m_create_effect_direction_template;
+     return disable_create_effect();
 }
 
 // Даём тягу, только если локомотив - er1_h
@@ -251,8 +180,7 @@ switch (FEAT_TRAINS, PARENT, er1_m_power,
 
 // Допускается эксплуатация с пассажирами только если голова - er1_h
 switch (FEAT_TRAINS, PARENT, er1_h_cargo_capacity,
-  (vehicle_type_id == er1_h)
-)
+  (vehicle_type_id == er1_h))
 {
   1: return 88;
      return 0;
@@ -310,7 +238,7 @@ item (FEAT_TRAINS, er1_h)
     weight: 38.5 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: er1_h_sprites;
@@ -355,6 +283,7 @@ item (FEAT_TRAINS, er1_m)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(35.0, 52.5);
     length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: er1_m_sprites;
@@ -366,9 +295,9 @@ item (FEAT_TRAINS, er1_m)
     purchase_speed: return 130;
     additional_text: return string(STR_ER1_M_PURCHASE_HINT, string(STR_SECTIONS_EMU_4_6_8_10));
     cargo_subtype_text: er1_cargo_subtype_text;
-    visual_effect_and_powered: er1_m_visual_effect_and_powered;
     power: er1_m_power;
     cargo_capacity: er1_m_cargo_capacity;
+    create_effect: er1_m_create_effect;
   }
 }
 
@@ -399,7 +328,7 @@ item (FEAT_TRAINS, er1_c)
     weight: 36.9 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: er1_c_sprites;

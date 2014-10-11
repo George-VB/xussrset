@@ -107,12 +107,18 @@ switch (FEAT_TRAINS, SELF, sn_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+switch (FEAT_TRAINS, SELF, sn_create_effect1, 
+  electric_create_effect(4)) 
+{ 
+  return 1; 
+}    
+
 // Визуализируем эффекты тяги у sn, только если локомотив - sn
-switch (FEAT_TRAINS, PARENT, sn_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, sn_create_effect,
   vehicle_type_id == sn)
 {
-  1: return electric_visual_effect_and_powered(4);
-     return disable_visual_effect_and_powered();
+  1: sn_create_effect1;
+     return disable_create_effect();
 }
 
 // Даём тягу, только если локомотив - sn
@@ -170,7 +176,7 @@ item (FEAT_TRAINS, sn)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(40.0, 148);
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: sn_sprites;
@@ -184,15 +190,14 @@ item (FEAT_TRAINS, sn)
   }
   livery_override(unitb)
   {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
     length: return 8;
-    visual_effect_and_powered: sn_visual_effect_and_powered;
-    sn_b_sprites;
-
+    create_effect: sn_create_effect;
+    sn_b_sprites;    
   }
   livery_override(unitc)
   {
     length: return 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
     sn_c_sprites;
   }
 }

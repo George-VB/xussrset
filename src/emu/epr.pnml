@@ -115,12 +115,18 @@ switch (FEAT_TRAINS, PARENT, epr_power,
      return 0;
 }
 
+switch (FEAT_TRAINS, SELF, epr_c_create_effect1, 
+  electric_create_effect(4)) 
+{ 
+  return 1; 
+}    
+
 // показываем визуальные эффекты, если локомотив epr
-switch (FEAT_TRAINS, PARENT, epr_c_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, epr_c_create_effect,
   vehicle_type_id == epr)
 {
-  1: return electric_visual_effect_and_powered(4);
-     return disable_visual_effect_and_powered();
+  1: epr_c_create_effect1;
+     return disable_create_effect();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - epr
@@ -159,7 +165,7 @@ item (FEAT_TRAINS, epr)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(150.0, 132);
     length: 8;
-    visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_DISABLE, 1, DISABLE_WAGON_POWER);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: epr_sprites;
@@ -179,8 +185,9 @@ item (FEAT_TRAINS, epr)
   }
   livery_override(unitc)
   {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
     length: return 8;
-    visual_effect_and_powered: epr_c_visual_effect_and_powered;
+    create_effect: epr_c_create_effect;
     epr_c_sprites;
 
   }

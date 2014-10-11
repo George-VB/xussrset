@@ -90,38 +90,6 @@ switch (FEAT_TRAINS, SELF, ed4m_c_sprites_start, 0)
 
 long_vehicle(ed4m_c)
 
-switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon_head, vehicle_type_id)
-{
-  ed4m_h: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_HEAD_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon_car, vehicle_type_id)
-{
-  ed4m_c: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon_motor, vehicle_type_id)
-{
-  ed4m_m: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon_not_head, vehicle_type_id)
-{
-  ed4m_m: return CB_RESULT_ATTACH_ALLOW;
-  ed4m_c: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_CAR_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon_not_motor, vehicle_type_id)
-{
-  ed4m_h: return CB_RESULT_ATTACH_ALLOW;
-  ed4m_c: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-}
-
 EMU_46789101112_can_attach_wagon_template(ed4m)
 
 EMU_attach_calculation_template(ed4m)
@@ -159,15 +127,15 @@ switch (FEAT_TRAINS, SELF, ed4m_m_start_stop,
 
 // Визуализируем эффекты тяги у ed4m_m, только если локомотив - ed4m_h
 
-EMU_46789101112_m_visual_effect_template(ed4m)
+EMU_46789101112_m_create_effect_template(ed4m, -1, 6)
 
-EMU_direction_calculation_template(ed4m, _m_visual_effect_and_powered)
+EMU_direction_calculation_template(ed4m, _m_create_effect)
 
-switch (FEAT_TRAINS, PARENT, ed4m_m_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, ed4m_m_create_effect,
   vehicle_type_id == ed4m_h)
 {
-  1: ed4m_m_visual_effect_and_powered_direction_template;
-     return disable_visual_effect_and_powered();
+  1: ed4m_m_create_effect_direction_template;
+     return disable_create_effect();
 }
 
 // Даём тягу, только если локомотив - ed4m_h
@@ -233,7 +201,7 @@ item (FEAT_TRAINS, ed4m_h)
     weight: 44.2 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: ed4m_h_sprites;
@@ -278,6 +246,7 @@ item (FEAT_TRAINS, ed4m_m)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(52.0, 57.75);
     length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: ed4m_m_sprites;
@@ -288,10 +257,10 @@ item (FEAT_TRAINS, ed4m_m)
     speed: speed_after30_130to110;
     purchase_speed: return 130;
     additional_text: return string(STR_ED4M_M_PURCHASE_HINT, string(STR_SECTIONS_EMU_4_6_7_8_9_10_11_12));
-    visual_effect_and_powered: ed4m_m_visual_effect_and_powered;
     power: ed4m_m_power;
     cargo_capacity: ed4m_m_cargo_capacity;
     cargo_subtype_text: ed4m_cargo_subtype_text;
+    create_effect: ed4m_m_create_effect;
   }
 }
 
@@ -322,7 +291,7 @@ item (FEAT_TRAINS, ed4m_c)
     weight: 41 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: ed4m_c_sprites;

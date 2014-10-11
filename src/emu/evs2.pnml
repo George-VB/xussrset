@@ -147,47 +147,59 @@ switch (FEAT_TRAINS, PARENT, evs2_power,
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, evs2_b_visual_effect_and_powered16,
+switch (FEAT_TRAINS, SELF, evs2_b_create_effect7, 
+  electric_create_effect(7)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, evs2_b_create_effect3, 
+  electric_create_effect(-3)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, evs2_b_create_effect16,
   current_railtype)
 {
-  ERD1: return electric_visual_effect_and_powered(-3);
-  ERD2: return electric_visual_effect_and_powered(-3);
-  ERD3: return electric_visual_effect_and_powered(-3);
-        return disable_visual_effect_and_powered();
+  ERD1: evs2_b_create_effect3;
+  ERD2: evs2_b_create_effect3;
+  ERD3: evs2_b_create_effect3;
+        return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, evs2_b_visual_effect_and_powered14,
+switch (FEAT_TRAINS, SELF, evs2_b_create_effect14,
   current_railtype)
 {
-  ERD1: return disable_visual_effect_and_powered();
-  ERD2: return disable_visual_effect_and_powered();
-  ERD3: return disable_visual_effect_and_powered();
-        return electric_visual_effect_and_powered(-3);
+  ERD1: return disable_create_effect();
+  ERD2: return disable_create_effect();
+  ERD3: return disable_create_effect();
+        evs2_b_create_effect3;
 }
 
-switch (FEAT_TRAINS, SELF, evs2_b_visual_effect_and_powered2,
+switch (FEAT_TRAINS, SELF, evs2_b_create_effect2,
   current_railtype)
 {
-  ERD1: return electric_visual_effect_and_powered(7);
-  ERD2: return electric_visual_effect_and_powered(7);
-  ERD3: return electric_visual_effect_and_powered(7);
-        return disable_visual_effect_and_powered();
+  ERD1: evs2_b_create_effect7;
+  ERD2: evs2_b_create_effect7;
+  ERD3: evs2_b_create_effect7;
+        return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, evs2_b_visual_effect_and_powered0,
+switch (FEAT_TRAINS, SELF, evs2_b_create_effect0,
   position_in_articulated_veh)
 {
-   2: evs2_b_visual_effect_and_powered2;
-  14: evs2_b_visual_effect_and_powered14;
-  16: evs2_b_visual_effect_and_powered16;
-      return disable_visual_effect_and_powered();
+   2: evs2_b_create_effect2;
+  14: evs2_b_create_effect14;
+  16: evs2_b_create_effect16;
+      return disable_create_effect();
 }
 
 // показываем визуальные эффекты, если локомотив evs2
-switch (FEAT_TRAINS, PARENT, evs2_b_visual_effect_and_powered, vehicle_type_id == evs2)
+switch (FEAT_TRAINS, PARENT, evs2_b_create_effect, vehicle_type_id == evs2)
 {
-  1: evs2_b_visual_effect_and_powered0;
-     return disable_visual_effect_and_powered();
+  1: evs2_b_create_effect0;
+     return disable_create_effect();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - evs2
@@ -266,7 +278,7 @@ item (FEAT_TRAINS, evs2)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(380.0, 667);
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: evs2_sprites;
@@ -282,8 +294,9 @@ item (FEAT_TRAINS, evs2)
   }
   livery_override(unitb)
   {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
     length: return 8;
-    visual_effect_and_powered: evs2_b_visual_effect_and_powered;
+    create_effect: evs2_b_create_effect;
             evs2_b_sprites;
   }  
 }
