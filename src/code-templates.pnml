@@ -778,11 +778,22 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                           \
 { return; }                                                                                           \
 
+// Определение скорости со снижением для старых и с предсерийной моделью без снижения
+
+#define engine_speed_with_reduce_and_pre_model_no_reduce(name, speed, speed_r, life, new_speed, pre_year)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= pre_year)                                  \
+{ 1: return new_speed;                                                                                     \
+     return speed; }                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                   \
+[ STORE_TEMP( (build_year < pre_year) ? speed : (age_in_days >= (life*365)) ? speed_r : new_speed, 0),     \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                \
+{ return; }                                                                                                \
+                                                                                         
 // определение расхода топлива
 // расход определяется граничным на разгоне, торможении, подъёме, спуске. 
 // в оставшемся случае расходуется часть, пропорциональная доли массы от общей доли в массе 
 // (общая масса на долю мощности в общей мощности)
-//      return (rc_max * (((LOAD_TEMP(6) + 500) * power / LOAD_TEMP(5)) / weight)); }                            \
+//      return (rc_max * (((LOAD_TEMP(6) + 500) * power / LOAD_TEMP(5)) / weight)); }                            
 
 
 // передеать так, что если в гору скорость свыше 90%, то значит мощи хватает и считать обычным образом.
