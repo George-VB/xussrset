@@ -1,110 +1,14 @@
  // tg102
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/tg102.png"
-
-// покупка
 purchase_sprites(tg102_v1, 0, 0)
+purchase_sprites(tg102_v2, 102, 0)
+purchase_sprites(tg102_v3, 204, 0)
 
-// обычный: погрузка/перемещение
-spriteset (tg102_loading_spriteset, IMAGEFILE)
-{
-  s9_template(2, 48, 0)
-} 
-
-spriteset (tg102_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(2, 115, 0)
-} 
-
-spritegroup tg102_spritegroup
-{
-  loading: tg102_loading_spriteset;
-  loaded: tg102_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (tg102_r_spriteset, IMAGEFILE)
-{
-  s9_template(433, 48, 0)
-} 
-
-// покупка
-purchase_sprites(tg102_v2, 100, 0)
-
-// обычный: погрузка/перемещение
-spriteset (tg102_v2_loading_spriteset, IMAGEFILE)
-{
-  s9_template(2, 210, 0)
-} 
-
-spriteset (tg102_v2_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(2, 277, 0)
-} 
-
-spritegroup tg102_v2_spritegroup
-{
-  loading: tg102_v2_loading_spriteset;
-  loaded: tg102_v2_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (tg102_r_v2_spriteset, IMAGEFILE)
-{
-  s9_template(433, 210, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (tg102_v3_loading_spriteset, IMAGEFILE)
-{
-  s9_template(2, 366, 0)
-} 
-
-spriteset (tg102_v3_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(2, 433, 0)
-} 
-
-spritegroup tg102_v3_spritegroup
-{
-  loading: tg102_v3_loading_spriteset;
-  loaded: tg102_v3_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (tg102_r_v3_spriteset, IMAGEFILE)
-{
-  s9_template(433, 366, 0)
-} 
-
-// покупка
-purchase_sprites(tg102_v4, 200, 0)
-
-// обычный: погрузка/перемещение
-spriteset (tg102_v4_loading_spriteset, IMAGEFILE)
-{
-  s9_template(2, 523, 0)
-} 
-
-spriteset (tg102_v4_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(2, 590, 0)
-} 
-
-spritegroup tg102_v4_spritegroup
-{
-  loading: tg102_v4_loading_spriteset;
-  loaded: tg102_v4_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (tg102_r_v4_spriteset, IMAGEFILE)
-{
-  s9_template(433, 523, 0)
-} 
-
+diesel2_sprites(9, tg102_v1, 32,   40)
+diesel2_sprites(9, tg102_v2, 32,  241)
+diesel2_sprites(9, tg102_v3, 32,  442)
+diesel2_sprites(9, tg102_v4, 32,  643)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, tg102_purchase_sprites,
@@ -113,7 +17,7 @@ switch (FEAT_TRAINS, SELF, tg102_purchase_sprites,
 {
   0: tg102_v1_purchase_sprites;
   1: tg102_v2_purchase_sprites;
-     tg102_v4_purchase_sprites;
+     tg102_v3_purchase_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, tg102_sprites_l,
@@ -121,44 +25,62 @@ switch (FEAT_TRAINS, SELF, tg102_sprites_l,
   (build_year >= 1963) +
   (cargo_subtype * 3))
 {
-  0: tg102_spritegroup;
-  1: tg102_v2_spritegroup;
-  2: tg102_v4_spritegroup;
-  3: tg102_spritegroup;
-  4: tg102_v3_spritegroup;
-  5: tg102_v4_spritegroup;
-
-  align_9_sprites; 
+  0: tg102_v1_sprites_left;
+  1: tg102_v2_sprites_left;
+  2: tg102_v4_sprites_left;
+  3: tg102_v1_sprites_left;
+  4: tg102_v3_sprites_left;
+  5: tg102_v4_sprites_left;
+     align_9_sprites; 
 }
 switch (FEAT_TRAINS, SELF, tg102_sprites_r,
   (build_year >= 1960) +
   (build_year >= 1963) +
   (cargo_subtype * 3))
 {
-  0: tg102_r_spriteset;
-  1: tg102_r_v2_spriteset;
-  2: tg102_r_v4_spriteset;
-  3: tg102_r_spriteset;
-  4: tg102_r_v3_spriteset;
-  5: tg102_r_v4_spriteset;
-  align_9_sprites; 
+  0: tg102_v1_sprites_right;
+  1: tg102_v2_sprites_right;
+  2: tg102_v4_sprites_right;
+  3: tg102_v1_sprites_right;
+  4: tg102_v3_sprites_right;
+  5: tg102_v4_sprites_right;
+     align_9_sprites; 
 }
 
 engine_direction_template(tg102, ) 
 
 long_vehicle(tg102)
 
+switch (FEAT_TRAINS, SELF, tg102_create_effect_sprites_l, 
+  [diesel_create_effect(0, 11), diesel_create_effect2(1, 11)]) 
+{ 
+  return 2; 
+}    
+
+switch (FEAT_TRAINS, SELF, tg102_create_effect_sprites_r, 
+  [diesel_create_effect(1, 11), diesel_create_effect2(2, 11)]) 
+{ 
+  return 2; 
+}    
+
+engine_direction_template(tg102, _create_effect) 
+
+
+switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_96);
+  1: return string(STR_REFIT_TTD_53);
+     return CB_RESULT_NO_TEXT;
+}
+
 switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text,
   (build_year >= 1960) +
-  (build_year >= 1963) +
-  (cargo_subtype * 3))
+  (build_year >= 1963))
 {
   0: return string(STR_REFIT_PREPRODUCTION);
-  1: return string(STR_REFIT_TTD_96);
+  1: tg102_cargo_subtype_text2;
   2: return string(STR_REFIT_TTD_53);
-  3: return string(STR_REFIT_PREPRODUCTION);
-  4: return string(STR_REFIT_TTD_53);
-  5: return string(STR_REFIT_TTD_53);
      return CB_RESULT_NO_TEXT;
 }
 
@@ -193,7 +115,7 @@ item (FEAT_TRAINS, tg102)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(159.5, 168/2);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: tg102_sprites;
@@ -207,6 +129,7 @@ item (FEAT_TRAINS, tg102)
     speed: tg102_speed;
     purchase_speed: tg102_purchase_speed;
     bitmask_vehicle_info: tg102_bitmask_vehicle_info;
+    create_effect: tg102_create_effect_sprites_start;
   }
 }
 
