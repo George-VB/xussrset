@@ -3,30 +3,52 @@
 // Спрайты
 
 #define IMAGEFILE  "src/diesel/tem7.png"
-
-// покупка
 purchase_sprites(tem7, 0, 0)
 
-// обычный: погрузка/перемещение
-spriteset (tem7_loading_sprites, IMAGEFILE)
-{
-  s12_template(0, 90, 0)
-} 
-
-spriteset (tem7_traveling_sprites, IMAGEFILE)
-{
-  s12_template(0, 154, 0)
-} 
-
-spritegroup tem7_sprites_start
-{
-  loading: tem7_loading_sprites;
-  loaded: tem7_traveling_sprites;
-}
-
+diesel1r_sprites(12, tem7_v1, 32, 40)
 #undef IMAGEFILE
 
-long_vehicle(tem7)
+switch (FEAT_TRAINS, SELF, tem7_sprites_l, 0)
+{
+  tem7_v1_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, tem7_sprites_r, 0)
+{
+  tem7_v1_sprites_right;
+}
+
+engine_direction_template(tem7, ) 
+engine_RND_direction_template(tem7, 1, 1) 
+
+long_vehicle_sp(tem7)
+
+switch (FEAT_TRAINS, SELF, tem7_create_effect_sprites_l, 
+  diesel_create_effect(5, 11)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, tem7_create_effect_sprites_r, 
+  diesel_create_effect(-1, 11)) 
+{ 
+  return 1; 
+}    
+
+engine_direction_template(tem7, _create_effect) 
+
+switch (FEAT_TRAINS, SELF, tem7_create_effect_1RND, random_bits % 2)
+{
+  0: tem7_create_effect_sprites_l;
+     tem7_create_effect_sprites_r;
+}
+
+switch (FEAT_TRAINS, PARENT, tem7_create_effect,  
+  count_veh_id(tem7))                                 
+{ 
+  1: tem7_create_effect_1RND;                              
+     tem7_create_effect_sprites_start; 
+}
 
 engine_speed(tem7, 100)
 
@@ -55,10 +77,10 @@ item (FEAT_TRAINS, tem7)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(290.0, 180);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: tem7_sprites;
@@ -71,6 +93,7 @@ item (FEAT_TRAINS, tem7)
     purchase_speed: tem7_purchase_speed;
     bitmask_vehicle_info: tem7_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: tem7_create_effect;
   }
 }
 

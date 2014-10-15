@@ -1,103 +1,38 @@
  // tera1
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/tera1.png"
-
-// покупка
 purchase_sprites(tera1, 0, 0)
 
-// обычный: погрузка/перемещение
-spriteset (tera1_loading_spriteset, IMAGEFILE)
-{
-  s12_template(0, 90, 0)
-} 
-
-spriteset (tera1_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(0, 154, 0)
-} 
-
-spritegroup tera1_spritegroup
-{
-  loading: tera1_loading_spriteset;
-  loaded: tera1_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tera1_r_loading_spriteset, IMAGEFILE)
-{
-  s12_template(449, 90, 0)
-} 
-
-spriteset (tera1_r_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(449, 154, 0)
-} 
-
-spritegroup tera1_r_spritegroup
-{
-  loading: tera1_r_loading_spriteset;
-  loaded: tera1_r_traveling_spriteset;
-}
-
-// покупка
-
-// обычный: погрузка/перемещение
-spriteset (tera1_v2_loading_spriteset, IMAGEFILE)
-{
-  s12_template(0, 239, 0)
-} 
-
-spriteset (tera1_v2_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(0, 303, 0)
-} 
-
-spritegroup tera1_v2_spritegroup
-{
-  loading: tera1_v2_loading_spriteset;
-  loaded: tera1_v2_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tera1_v2_r_loading_spriteset, IMAGEFILE)
-{
-  s12_template(449, 239, 0)
-} 
-
-spriteset (tera1_v2_r_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(449, 303, 0)
-} 
-
-spritegroup tera1_v2_r_spritegroup
-{
-  loading: tera1_v2_r_loading_spriteset;
-  loaded: tera1_v2_r_traveling_spriteset;
-}
-
+diesel1r_sprites(12, tera1_v1, 32, 40)
+diesel1r_sprites(12, tera1_v2, 32, 241)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, tera1_sprites_l,
   cargo_subtype)
 {
-  0: tera1_spritegroup;
-  1: tera1_v2_spritegroup;
+  0: tera1_v1_sprites_left;
+  1: tera1_v2_sprites_left;
      align_12_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, tera1_sprites_r,
   cargo_subtype)
 {
-  0: tera1_r_spritegroup;
-  1: tera1_v2_r_spritegroup;
+  0: tera1_v1_sprites_right;
+  1: tera1_v2_sprites_right;
      align_12_sprites; 
 }
 
 engine_direction_template(tera1, ) 
+engine_RND_direction_template(tera1, 5, 3) 
 
-long_vehicle(tera1)
+long_vehicle_sp(tera1)
+
+switch (FEAT_TRAINS, SELF, tera1_create_effect, 
+  [diesel_create_effect(1, 11), diesel_create_effect2(2, 11)]) 
+{ 
+  return 2; 
+}    
 
 switch (FEAT_TRAINS, SELF, tera1_cargo_subtype_text,
   cargo_subtype)
@@ -134,10 +69,10 @@ item (FEAT_TRAINS, tera1)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(454.0, 180);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
     cargo_allow_refit: [MAIL];
     default_cargo_type: MAIL;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: tera1_sprites;
@@ -151,6 +86,7 @@ item (FEAT_TRAINS, tera1)
     bitmask_vehicle_info: tera1_bitmask_vehicle_info;
     cargo_subtype_text: tera1_cargo_subtype_text;
     cargo_capacity: return 0;
+    create_effect: tera1_create_effect;
   }
 }
 
