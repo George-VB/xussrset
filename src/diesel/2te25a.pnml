@@ -5,59 +5,11 @@
 // производства Брянского завода (БМЗ).
 
 #define IMAGEFILE  "src/diesel/2te25a.png"
-
-// покупка
 purchase_sprites(_2te25a_v1, 0, 0)
+purchase_sprites(_2te25a_v2, 120, 0)
 
-// секция А: погрузка/перемещение
-spriteset (_2te25a_loading_spriteset, IMAGEFILE)
-{
-  s12_template(124, 42, 0)
-} 
-
-spriteset (_2te25a_traveling_spriteset, IMAGEFILE)
-{
-  s12_template(124, 113, 0)
-} 
-
-spritegroup _2te25a_spritegroup
-{
-  loading: _2te25a_loading_spriteset;
-  loaded: _2te25a_traveling_spriteset;
-}
-
-// секция Б
-spriteset (_2te25a_b_spriteset, IMAGEFILE)
-{
-  s12_template(567, 42, 0)
-} 
-
-// покупка
-purchase_sprites(_2te25a_v2, 0, 20)
-
-// секция А, вид 2: погрузка/перемещение
-spriteset (_2te25a_loading_v2_spriteset, IMAGEFILE)
-{
-  s12_template(124, 222, 0)
-} 
-
-spriteset (_2te25a_traveling_v2_spriteset, IMAGEFILE)
-{
-  s12_template(124, 290, 0)
-} 
-
-spritegroup _2te25a_v2_spritegroup
-{
-  loading: _2te25a_loading_v2_spriteset;
-  loaded: _2te25a_traveling_v2_spriteset;
-}
-
-// секция Б, вид 2
-spriteset (_2te25a_b_v2_spriteset, IMAGEFILE)
-{
-  s12_template(567, 222, 0)
-} 
-
+diesel2_sprites(12, _2te25a_v1, 32,   40)
+diesel2_sprites(12, _2te25a_v2, 32,  241)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _2te25a_purchase_sprites,
@@ -70,22 +22,36 @@ switch (FEAT_TRAINS, SELF, _2te25a_purchase_sprites,
 switch (FEAT_TRAINS, SELF, _2te25a_sprites_l,
   (build_year >= 2010) )
 {
-  0: _2te25a_spritegroup;
-  1: _2te25a_v2_spritegroup;
+  0: _2te25a_v1_sprites_left;
+  1: _2te25a_v2_sprites_left;
      align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, _2te25a_sprites_r,
   (build_year >= 2010) )
 {
-  0: _2te25a_b_spriteset;
-  1: _2te25a_b_v2_spriteset;
+  0: _2te25a_v1_sprites_right;
+  1: _2te25a_v2_sprites_right;
      align_12_sprites;
 }
 
 engine_direction_template(_2te25a, ) 
 
 long_vehicle(_2te25a)
+
+switch (FEAT_TRAINS, SELF, _2te25a_create_effect_sprites_l, 
+  diesel_create_effect(4, 12)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, _2te25a_create_effect_sprites_r, 
+  diesel_create_effect(0, 12)) 
+{ 
+  return 1; 
+}    
+
+engine_direction_template(_2te25a, _create_effect) 
 
 engine_speed(_2te25a, 120)
 
@@ -115,10 +81,10 @@ item (FEAT_TRAINS, _2te25a)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(250.0, 144);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: _2te25a_sprites;
@@ -131,6 +97,7 @@ item (FEAT_TRAINS, _2te25a)
     purchase_speed: _2te25a_purchase_speed;
     bitmask_vehicle_info: _2te25a_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _2te25a_create_effect_sprites_start;
   }
 }
 
