@@ -793,23 +793,23 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 // расход определяется граничным на разгоне, торможении, подъёме, спуске. 
 // в оставшемся случае расходуется часть, пропорциональная доли массы от общей доли в массе 
 // (общая масса на долю мощности в общей мощности)
-//      return (rc_max * (((LOAD_TEMP(6) + 500) * power / LOAD_TEMP(5)) / weight)); }                            
+//      return (rc_max * (((LOAD_TEMP(6) /* total weight */ ) * power / LOAD_TEMP(5)) /* total power */ / weight)); }                            
 
 
 // передеать так, что если в гору скорость свыше 90%, то значит мощи хватает и считать обычным образом.
 
 
 
-#define diesel_running_cost(name, weight, rc_max, rc_min, power)                                      \
+#define diesel_running_cost(name, weight_limit, rc_max, rc_min, power)                                \
 switch (FEAT_TRAINS, SELF, name##_running_cost_depot,                                                 \
   vehicle_is_in_depot + (2 * vehicle_is_crashed))                                                     \
 { 1: return 1;                                                                                        \
-  2: return 255;                                                                                      \
+  2: return 5 * rc_max;                                                                               \
      return rc_min; }                                                                                 \
 switch (FEAT_TRAINS, SELF, name##_running_cost_weight,                                                \
-(LOAD_TEMP(6) * power / LOAD_TEMP(5)) < weight )                                                      \
+(LOAD_TEMP(6) * power / LOAD_TEMP(5)) < weight_limit )                                                \
 { 0: return rc_max;                                                                                   \
-     return (rc_max * power * LOAD_TEMP(6) / LOAD_TEMP(5) / weight); }                                \
+     return (rc_max * power * LOAD_TEMP(6) / LOAD_TEMP(5) / weight_limit); }                          \
 switch (FEAT_TRAINS, SELF, name##_running_cost_speed,                                                 \
   LOAD_TEMP(1) < (LOAD_TEMP(2) * 9 / 10))                                                             \
 {    1: return rc_max;                                                                                \
