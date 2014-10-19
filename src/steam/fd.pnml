@@ -1,0 +1,288 @@
+ // fd_steamer
+
+// Спрайты
+// 1931
+// 1932-1933
+// 1934-1940
+// Товарные паровозы семейства ФД "Федя" (Феликс Дзержинский)
+// - ФД20 (1931-1940) и ФД21 (1940-1942).
+
+#define IMAGEFILE  "src/steam/fd.png"
+purchase_sprites(fd_steamer_v1, 0, 0)
+purchase_sprites(fd_steamer_v2, 110, 0)
+purchase_sprites(fd_steamer_v3, 220, 0)
+purchase_sprites(fd_steamer_v4, 330, 0)
+purchase_sprites(fd_steamer_v5, 440, 0)
+
+steam_sprites(10, fd_steamer_v1, 32,   40)
+steam_sprites(10, fd_steamer_v2, 32,  844)
+steam_sprites(10, fd_steamer_v3, 32, 1648)
+steam_sprites(10, fd_steamer_v4, 32, 2452)
+
+tender_sprites(6, fd_steamer_4o,  447,  40) // 1931
+tender_sprites(8, fd_steamer_t17, 447, 107) // 1932-1935
+tender_sprites(7, fd_steamer_t6p, 447, 174) // с 1936
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, fd_steamer_purchase_sprites,
+  (build_year >= 1932) +
+  (build_year >= 1934) +
+  (build_year >= 1936) +
+  (build_year >= 1940))
+{
+  0: fd_steamer_v1_purchase_sprites;
+  1: fd_steamer_v2_purchase_sprites;
+  2: fd_steamer_v3_purchase_sprites;
+  3: fd_steamer_v4_purchase_sprites;
+     fd_steamer_v5_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_sprites_start,
+  (build_year >= 1932) +
+  (build_year >= 1934) +
+  (build_year >= 1940))
+{
+  0: fd_steamer_v1_sprites_left;
+  1: fd_steamer_v2_sprites_left;
+  2: fd_steamer_v3_sprites_left;
+     fd_steamer_v4_sprites_left;
+}
+
+long_vehicle(fd_steamer)
+
+switch (FEAT_TRAINS, SELF, fd_steamer_create_effect, 
+  steam_create_effect(-2, 14)) 
+{ 
+  return 1; 
+}    
+
+engine_speed_change_after2(fd_steamer, 65, 85, 1936, 90, 1956)
+
+engine_penalise_speed0(fd_steamer)
+
+switch (FEAT_TRAINS, SELF, fd_steamer_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy2;
+  2: return unitb;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_tender_sprites,
+  (build_year >= 1932) +
+  (build_year >= 1936))
+{
+  0: fd_steamer_4o_sprites_left;
+  1: fd_steamer_t17_sprites_left;
+     fd_steamer_t6p_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_tender_length,
+  (build_year >= 1932) +
+  (build_year >= 1936))
+{
+  0: return 5;
+  1: return 7;
+     return 6;
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_weight,
+  (build_year >= 1932) +
+  (build_year >= 1936) +
+  (build_year >= 1940))
+{
+  0: return (137+85);
+  1: return (137+123);
+  2: return (137+127);
+     return (135+127);
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_tractive_effort_coefficient,
+  (build_year >= 1932) +
+  (build_year >= 1936) +
+  (build_year >= 1940))
+{
+  0: return get_tec_int(208.0, 137+85);
+  1: return get_tec_int(208.0, 137+123);
+  2: return get_tec_int(208.0, 137+127);
+     return get_tec_int(215.0, 135+127);
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_power,
+  (build_year >= 1936) +
+  (build_year >= 1940))
+{
+  0: return 2600;
+  1: return 3000;
+     return 3100;
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_cost_factor,
+  current_year >= 1936)
+{
+  0: return 21;
+     return 39;
+}
+
+switch (FEAT_TRAINS, SELF, fd_steamer_cargo_subtype_text,
+  build_year >= 1940)
+{
+  0: return string(STR_REFIT_FACTORY_FD20);
+  1: return string(STR_REFIT_FACTORY_FD21);
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, fd_steamer) 
+{
+  property
+  {
+    name: string(STR_FD_STEAMER_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1931), 1, 1);
+    model_life: get_model_life(1931,1942);
+    retire_early: get_retire_early(1931,1942);
+    vehicle_life: 25;
+    reliability_decay: 20;
+    cost_factor: 21;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 2600 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (137+185) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(208.0, 137+85);
+    length: 8;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-2);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+
+  graphics {
+    default: fd_steamer_sprites;
+    purchase: fd_steamer_purchase_sprites;
+    articulated_part: fd_steamer_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_FD_STEAMER_PURCHASE_HINT);
+    speed: fd_steamer_speed;
+    purchase_speed: fd_steamer_purchase_speed;
+    bitmask_vehicle_info: fd_steamer_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    weight: fd_steamer_weight;
+    tractive_effort_coefficient: fd_steamer_tractive_effort_coefficient;
+    power: fd_steamer_power;
+    cost_factor: fd_steamer_cost_factor;
+    cargo_subtype_text: fd_steamer_cargo_subtype_text;
+    create_effect: fd_steamer_create_effect;
+  }
+
+  livery_override(unitb)
+  {
+    length: fd_steamer_tender_length;
+    fd_steamer_tender_sprites;
+  }
+
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, fd_steamer)
+  {
+    property
+    { name: string(STR_FD_STEAMER_NAME_LONG); }
+  }
+}
+
+
+ // fd21
+
+// Спрайты
+// 1940-1942
+// Товарные паровозы семейства ФД "Федя" (Феликс Дзержинский)
+// - ФД20 (1931-1940) и ФД21 (1940-1942).
+
+switch (FEAT_TRAINS, SELF, fd21_sprites_start, 0)
+{
+     fd_steamer_v4_sprites_left;
+}
+
+long_vehicle(fd21)
+
+engine_speed_change_after(fd21, 85, 90, 1956)
+
+engine_penalise_speed0(fd21)
+
+switch (FEAT_TRAINS, SELF, fd21_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy2;
+  2: return unitb;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+item (FEAT_TRAINS, fd21) 
+{
+  property
+  {
+    name: string(STR_FD_STEAMER_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1940), 1, 1);
+    model_life: get_model_life(1940,1942);
+    retire_early: get_retire_early(1940,1942);
+    vehicle_life: 25;
+    reliability_decay: 20;
+    cost_factor: 39;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3100 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (135+127) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(225.0, 135+127);
+    length: 8;
+    visual_effect_and_powered: steam_visual_effect_and_powered(-2);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+
+  graphics {
+    default: fd21_sprites;
+    purchase: fd_steamer_v5_purchase_sprites;
+    articulated_part: fd21_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_FD_STEAMER_PURCHASE_HINT);
+    speed: fd21_speed;
+    purchase_speed: fd21_purchase_speed;
+    bitmask_vehicle_info: fd21_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+  }
+
+  livery_override(unitb)
+  {
+    length: return 6;
+    fd_steamer_t6p_sprites_left;
+  }
+
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, fd21)
+  {
+    property
+    { name: string(STR_FD_STEAMER_NAME_LONG); }
+  }
+}
+
