@@ -1,0 +1,118 @@
+ // is20
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/y.png"
+purchase_sprites(y_steamer_v1, 0, 0)
+purchase_sprites(y_steamer_v2, 110, 0)
+
+steam_sprites(6y, y_steamer_v1, 32,  40)
+steam_sprites(6y, y_steamer_v2, 32, 844)
+
+tender_sprites(4, y_steamer_t_v1, 447,  40)
+tender_sprites(4, y_steamer_t_v2, 447, 107)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, y_steamer_purchase_sprites,
+  build_year >= 1914)
+{
+  1: y_steamer_v2_purchase_sprites;
+     y_steamer_v1_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, y_steamer_sprites_start,
+  build_year >= 1914)
+{
+  0: y_steamer_v1_sprites_left;
+     y_steamer_v2_sprites_left;
+}
+
+long_vehicle(y_steamer)
+
+switch (FEAT_TRAINS, SELF, y_steamer_create_effect, 
+  steam_create_effect(-2, 14)) 
+{ 
+  return 1; 
+}    
+
+engine_speed(y_steamer, 60)
+
+engine_penalise_speed0(y_steamer)
+
+switch (FEAT_TRAINS, SELF, y_steamer_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy1;
+  2: return unitb;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, y_steamer_tender_sprites,
+  build_year >= 1914)
+{
+  0: y_steamer_t_v1_sprites_left;
+     y_steamer_t_v2_sprites_left;
+}
+
+item (FEAT_TRAINS, y_steamer) 
+{
+  property
+  {
+    name: string(STR_Y_STEAMER_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1910), 1, 1);
+    model_life: get_model_life(1910,1920);
+    retire_early: get_retire_early(1910,1920);
+    vehicle_life: 40;
+    reliability_decay: 20;
+    cost_factor: 2;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 850 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    engine_class: ENGINE_CLASS_STEAM;
+    length: 5;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    weight: (60+47) ton;
+    tractive_effort_coefficient: get_tec(118.0, 60+47);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+
+  graphics
+  {
+    default: y_steamer_sprites;
+    purchase: y_steamer_purchase_sprites;
+    articulated_part: y_steamer_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_Y_STEAMER_PURCHASE_HINT);
+    speed: y_steamer_speed;
+    purchase_speed: y_steamer_purchase_speed;
+    bitmask_vehicle_info: y_steamer_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: y_steamer_create_effect;
+  }
+
+  livery_override(unitb)
+  {
+    length: 3;
+    y_steamer_tender_sprites;
+  }
+
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, y_steamer)
+  {
+    property
+    { name: string(STR_Y_STEAMER_NAME_LONG); }
+  }
+}
+
