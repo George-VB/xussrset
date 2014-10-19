@@ -1,0 +1,186 @@
+ // is_steamer
+
+// Спрайты
+
+#define IMAGEFILE  "src/steam/is.png"
+purchase_sprites(is_steamer_v1, 0, 0)
+purchase_sprites(is_steamer_v2, 110, 0)
+
+steam_sprites(10, is_steamer_v1, 32,   40)
+steam_sprites(10, is_steamer_v2, 32,  844)
+steam_sprites(10, is_steamer_v3, 32, 1648)
+
+tender_sprites(6, is_steamer_t4o_v1, 447,  40)
+tender_sprites(6, is_steamer_t4o_v2, 447, 107)
+tender_sprites(6, is_steamer_t4o_v3, 447, 174)
+
+tender_sprites(7, is_steamer_t6p_v1, 447, 308)
+tender_sprites(7, is_steamer_t6p_v2, 447, 375)
+tender_sprites(7, is_steamer_t6p_v3, 447, 442)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, is_steamer_purchase_sprites,
+  build_year >= 1936)
+{
+  1: is_steamer_v2_purchase_sprites;
+     is_steamer_v1_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_sprites_start,
+  cargo_subtype)
+{
+  0: is_steamer_v1_sprites_left;
+  1: is_steamer_v2_sprites_left;
+  2: is_steamer_v3_sprites_left;
+     align_10_sprites;
+}
+
+long_vehicle(is_steamer)
+
+switch (FEAT_TRAINS, SELF, is_steamer_create_effect, 
+  steam_create_effect(-2, 14)) 
+{ 
+  return 1; 
+}    
+
+engine_speed_change_after(is_steamer, 110, 115, 1936)
+
+engine_penalise_speed0(is_steamer)
+
+switch (FEAT_TRAINS, SELF, is_steamer_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy2;
+  2: return unitb;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_tender_sprites,
+[
+  set_offset_to(-2),
+  prev_vehicle_cargo_subtype() + 
+  ((build_year >= 1936) * 3) ])
+{
+  0: is_steamer_t4o_v1_sprites_left;
+  1: is_steamer_t4o_v2_sprites_left;
+  2: is_steamer_t4o_v3_sprites_left;
+  3: is_steamer_t6p_v1_sprites_left;
+  4: is_steamer_t6p_v2_sprites_left;
+     is_steamer_t6p_v3_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_tender_length,
+  build_year >= 1936)
+{
+  1: return 6;
+     return 5;
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_power,
+  build_year >= 1941)
+{
+  0: return 3200;
+     return 3300;
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_weight,
+  build_year >= 1936)
+{
+  1: return (133+127);
+     return (133+85);
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_tractive_effort_coefficient,
+  (build_year >= 1936) +
+  (build_year >= 1941))
+{
+  0: return get_tec_int(151.0, 133+85);
+  1: return get_tec_int(151.0, 133+127);
+     return get_tec_int(155.0, 137+127);
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_cost_factor,
+  current_year >= 1936)
+{
+  0: return 46;
+     return 56;
+}
+
+switch (FEAT_TRAINS, SELF, is_steamer_cargo_subtype_text,
+  ((build_year >= 1941) * 100) +
+  cargo_subtype)
+{
+    0: return string(STR_REFIT_FACTORY_IS20, string(STR_REFIT_TTD_53));
+    1: return string(STR_REFIT_FACTORY_IS20, string(STR_REFIT_TTD_59));
+    2: return string(STR_REFIT_FACTORY_IS20, string(STR_REFIT_RED_ARROW));
+  100: return string(STR_REFIT_FACTORY_IS21, string(STR_REFIT_TTD_53));
+  101: return string(STR_REFIT_FACTORY_IS21, string(STR_REFIT_TTD_59));
+  102: return string(STR_REFIT_FACTORY_IS21, string(STR_REFIT_RED_ARROW));
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, is_steamer) 
+{
+  property
+  {
+    name: string(STR_IS_STEAMER_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1932), 1, 1);
+    model_life: get_model_life(1932,1941);
+    retire_early: get_retire_early(1932,1941);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cost_factor: 46;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3200 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    engine_class: ENGINE_CLASS_STEAM;
+    length: 8;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+
+  graphics
+  {
+    default: is_steamer_sprites;
+    purchase: is_steamer_purchase_sprites;
+    articulated_part: is_steamer_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_IS_STEAMER_PURCHASE_HINT);
+    speed: is_steamer_speed;
+    purchase_speed: is_steamer_purchase_speed;
+    bitmask_vehicle_info: is_steamer_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    weight: is_steamer_weight;
+    power: is_steamer_power;
+    cost_factor: is_steamer_cost_factor;
+    cargo_subtype_text: is_steamer_cargo_subtype_text;
+    tractive_effort_coefficient: is_steamer_tractive_effort_coefficient;
+    create_effect: is_steamer_create_effect;
+  }
+
+  livery_override(unitb)
+  {
+    length: is_steamer_tender_length;
+    is_steamer_tender_sprites;
+  }
+
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, is_steamer)
+  {
+    property
+    { name: string(STR_IS_STEAMER_NAME_LONG); }
+  }
+}
+
