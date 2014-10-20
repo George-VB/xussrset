@@ -1,72 +1,23 @@
  // 9p
 
-// Спрайты
-
 #define IMAGEFILE  "src/steam/9p.png"
+purchase_sprites(_9p, 0, 0)
 
-// покупка
-purchase_sprites(_9p, 215, 0)
-
-// паровоз, анимация из 4-х фреймов
-spriteset (_9p_1_spriteset, IMAGEFILE)
-{
-  s6_template(0, 0, 0)
-} 
-
-spriteset (_9p_2_spriteset, IMAGEFILE)
-{
-  s6_template(0, 42, 0)
-} 
-
-spriteset (_9p_3_spriteset, IMAGEFILE)
-{
-  s6_template(0, 84, 0)
-} 
-
-spriteset (_9p_4_spriteset, IMAGEFILE)
-{
-  s6_template(0, 126, 0)
-} 
-
-// для флага FLIP
-spriteset (_9p_flipped_1_spriteset, IMAGEFILE)
-{
-  s6_template(0, 0, -2)
-} 
-
-spriteset (_9p_flipped_2_spriteset, IMAGEFILE)
-{
-  s6_template(0, 42, -2)
-} 
-
-spriteset (_9p_flipped_3_spriteset, IMAGEFILE)
-{
-  s6_template(0, 84, -2)
-} 
-
-spriteset (_9p_flipped_4_spriteset, IMAGEFILE)
-{
-  s6_template(0, 126, -2)
-} 
-
+steam_sprites(6, _9p_v1, 32,  40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _9p_sprites_start,
-  LOAD_TEMP(3) +
-  (is_flipped() * 4))
+switch (FEAT_TRAINS, SELF, _9p_sprites_start, 0)
 {
-  0: _9p_1_spriteset;
-  1: _9p_2_spriteset;
-  2: _9p_3_spriteset;
-  3: _9p_4_spriteset;
-  4: _9p_flipped_4_spriteset;
-  5: _9p_flipped_3_spriteset;
-  6: _9p_flipped_2_spriteset;
-  7: _9p_flipped_1_spriteset;
-     align_6_sprites;
+  _9p_v1_sprites_left;
 }
 
 short_vehicle(_9p)
+
+switch (FEAT_TRAINS, SELF, _9p_create_effect, 
+  steam_create_effect(-4, 11)) 
+{ 
+  return 1; 
+}    
 
 switch (FEAT_TRAINS, SELF, _9p_cargo_subtype_text,
   (build_year >= 1937) +
@@ -118,10 +69,10 @@ item (FEAT_TRAINS, _9p)
     engine_class: ENGINE_CLASS_STEAM;
     tractive_effort_coefficient: get_tec(83.0, 55);
     length: 5;
-    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
 
   graphics {
@@ -136,6 +87,7 @@ item (FEAT_TRAINS, _9p)
     bitmask_vehicle_info: _9p_bitmask_vehicle_info;
     cargo_subtype_text: _9p_cargo_subtype_text;
     cargo_capacity: return 0;
+    create_effect: _9p_create_effect;
   }
 
 }
@@ -148,5 +100,3 @@ if (enable_long_names)
     { name: string(STR_9P_NAME_LONG); }
   }
 }
-
-
