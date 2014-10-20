@@ -2,35 +2,23 @@
 // Спрайты
 
 #define IMAGEFILE  "src/steam/l150.png"
-
-// v1
-
 purchase_sprites(l150, 0, 0)
                              
-spriteset (l150_v1_1_sprites, IMAGEFILE)
-{ s8_template(0, 40, 0) } 
-
-spriteset (l150_v1_2_sprites, IMAGEFILE)
-{ s8_template(0, 75, 0) } 
-
-spriteset (l150_v1_3_sprites, IMAGEFILE)
-{ s8_template(0, 110, 0) } 
-
-spriteset (l150_v1_4_sprites, IMAGEFILE)
-{ s8_template(0, 145, 0) } 
-
+steam_sprites(8, l150_v1, 32,  40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, PARENT, l150_sprites_start,
-  LOAD_TEMP(3))
+switch (FEAT_TRAINS, PARENT, l150_sprites_start, 0)
 {
-  0: l150_v1_1_sprites;
-  1: l150_v1_2_sprites;
-  2: l150_v1_3_sprites;
-     l150_v1_4_sprites;
+     l150_v1_sprites_left;
 }
 
 short_vehicle(l150)
+
+switch (FEAT_TRAINS, SELF, l150_create_effect, 
+  steam_create_effect(-3, 13)) 
+{ 
+  return 1; 
+}    
 
 switch (FEAT_TRAINS, SELF, l150_weight,
   (build_year >= 1952))
@@ -82,10 +70,10 @@ item (FEAT_TRAINS, l150)
     engine_class: ENGINE_CLASS_STEAM;
     tractive_effort_coefficient: get_tec(199.0, 102+82);
     length: 7;
-    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
 
   graphics {
@@ -101,6 +89,7 @@ item (FEAT_TRAINS, l150)
     cargo_capacity: return 0;
     tractive_effort_coefficient: l150_tractive_effort_coefficient;
     weight: l150_weight;
+    create_effect: l150_create_effect;
   }
 
   livery_override(unitb)
