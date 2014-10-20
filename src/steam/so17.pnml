@@ -1,84 +1,14 @@
-
-// Спрайты
+ // so17
 
 #define IMAGEFILE  "src/steam/so17.png"
-
-// v1
-
-purchase_sprites(so17_v1, 315, 0)
+purchase_sprites(so17_v1, 0, 0)
+purchase_sprites(so17_v2, 110, 0)
+purchase_sprites(so17_v3, 220, 0)
                              
-spriteset (so17_v1_1_sprites, IMAGEFILE)
-{ s7_template(4, 4, 0) } 
-
-spriteset (so17_v1_2_sprites, IMAGEFILE)
-{ s7_template(4, 45, 0) } 
-
-spriteset (so17_v1_3_sprites, IMAGEFILE)
-{ s7_template(4, 86, 0) } 
-
-spriteset (so17_v1_4_sprites, IMAGEFILE)
-{ s7_template(4, 127, 0) } 
-
-// v2
-
-purchase_sprites(so17_v2, 315, 20)
-                             
-spriteset (so17_v2_1_sprites, IMAGEFILE)
-{ s7_template(4, 183, 0) } 
-
-spriteset (so17_v2_2_sprites, IMAGEFILE)
-{ s7_template(4, 224, 0) } 
-
-spriteset (so17_v2_3_sprites, IMAGEFILE)
-{ s7_template(4, 265, 0) } 
-
-spriteset (so17_v2_4_sprites, IMAGEFILE)
-{ s7_template(4, 306, 0) } 
-
-// v3
-
-purchase_sprites(so17_v3, 315, 40)
-                             
-spriteset (so17_v3_1_sprites, IMAGEFILE)
-{ s7_template(4, 361, 0) } 
-
-spriteset (so17_v3_2_sprites, IMAGEFILE)
-{ s7_template(4, 402, 0) } 
-
-spriteset (so17_v3_3_sprites, IMAGEFILE)
-{ s7_template(4, 443, 0) } 
-
-spriteset (so17_v3_4_sprites, IMAGEFILE)
-{ s7_template(4, 484, 0) } 
-
+steam_sprites(7, so17_v1, 32,   40)
+steam_sprites(7, so17_v2, 32,  844)
+steam_sprites(7, so17_v3, 32, 1648)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, PARENT, so17_v1_sprites,
-  LOAD_TEMP(3))
-{
-  0: so17_v1_1_sprites;
-  1: so17_v1_2_sprites;
-  2: so17_v1_3_sprites;
-     so17_v1_4_sprites;
-}
-
-switch (FEAT_TRAINS, PARENT, so17_v2_sprites,
-  LOAD_TEMP(3))
-{
-  0: so17_v2_1_sprites;
-  1: so17_v2_2_sprites;
-  2: so17_v2_3_sprites;
-     so17_v2_4_sprites;
-}
-
-switch (FEAT_TRAINS, PARENT, so17_v3_sprites,
-  LOAD_TEMP(3))
-{
-  0: so17_v3_1_sprites;
-  1: so17_v3_2_sprites;
-  2: so17_v3_3_sprites;
-     so17_v3_4_sprites;
-}
 
 switch (FEAT_TRAINS, PARENT, so17_purchase_sprites,
   (build_year >= 1946) +
@@ -93,12 +23,18 @@ switch (FEAT_TRAINS, PARENT, so17_sprites_start,
   (build_year >= 1946) +
   (build_year >= 1948))
 {
-  0: so17_v1_sprites;
-  1: so17_v2_sprites;
-     so17_v3_sprites;
+  0: so17_v1_sprites_left;
+  1: so17_v2_sprites_left;
+     so17_v3_sprites_left;
 } 
 
 short_vehicle(so17)
+
+switch (FEAT_TRAINS, SELF, so17_create_effect, 
+  steam_create_effect(-3, 12)) 
+{ 
+  return 1; 
+}    
 
 switch (FEAT_TRAINS, SELF, so17_weight,
   (build_year >= 1942) +
@@ -154,10 +90,10 @@ item (FEAT_TRAINS, so17)
     engine_class: ENGINE_CLASS_STEAM;
     tractive_effort_coefficient: get_tec(193.0, 97+68);
     length: 6;
-    visual_effect_and_powered: steam_visual_effect_and_powered(-4);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
 
   graphics {
@@ -173,6 +109,7 @@ item (FEAT_TRAINS, so17)
     cargo_capacity: return 0;
     tractive_effort_coefficient: so17_tractive_effort_coefficient;
     weight: so17_weight;
+    create_effect: so17_create_effect;
   }
 
   livery_override(unitb)
