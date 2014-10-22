@@ -1,40 +1,38 @@
  // 2te10s
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/2te10s.png"
+purchase_sprites(_2te10s, 0, 0)
 
-// покупка
-purchase_sprites(_2te10s, 455, 72)
+diesel2_sprites(10, _2te10s_v1, 32,  40) 
+#undef IMAGEFILE
 
-// обычный: погрузка/перемещение
-spriteset (_2te10s_loading_spriteset, IMAGEFILE)
+switch (FEAT_TRAINS, SELF, _2te10s_sprites_l, 0)
 {
-  s10_template(4, 16, 0)
-} 
-
-spriteset (_2te10s_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(4, 82, 0)
-} 
-
-spritegroup _2te10s_sprites_l
-{
-  loading: _2te10s_loading_spriteset;
-  loaded: _2te10s_traveling_spriteset;
+  _2te10s_v1_sprites_left;
 }
 
-// развёрнутый
-spriteset (_2te10s_sprites_r, IMAGEFILE)
+switch (FEAT_TRAINS, SELF, _2te10s_sprites_r, 0)
 {
-  s10_template(423, 16, 0)
-} 
-
-#undef IMAGEFILE
+  _2te10s_v1_sprites_right;
+}
 
 engine_direction_template3m(_2te10s, _4te10s, _4te10s_m, ) 
 
 long_vehicle(_2te10s)
+
+switch (FEAT_TRAINS, SELF, _2te10s_create_effect_sprites_l, 
+  diesel_create_effect(2, 11)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, _2te10s_create_effect_sprites_r, 
+  diesel_create_effect(-1, 11)) 
+{ 
+  return 1; 
+}    
+
+engine_direction_template(_2te10s, _create_effect) 
 
 engine_speed(_2te10s, 100)
 
@@ -63,10 +61,10 @@ item (FEAT_TRAINS, _2te10s)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(245.0, 138);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: _2te10s_sprites;
@@ -79,6 +77,7 @@ item (FEAT_TRAINS, _2te10s)
     purchase_speed: _2te10s_purchase_speed;
     bitmask_vehicle_info: _2te10s_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _2te10s_create_effect_sprites_start;
   }
 }
 
@@ -94,39 +93,15 @@ if (enable_long_names)
 
  // 4te10s
 
-// Спрайты
-
-#define IMAGEFILE  "src/diesel/4te10s.png"
-
-// покупка
-purchase_sprites(_4te10s, 493, 95)
-
-// обычный: погрузка/перемещение
-spriteset (_4te10s_loading_spriteset, IMAGEFILE)
+switch (FEAT_TRAINS, SELF, _4te10s_sprites_l, 0)
 {
-  s10_template(4, 16, 0)
-} 
-
-spriteset (_4te10s_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(4, 82, 0)
-} 
-
-spritegroup _4te10s_sprites_l
-{
-  loading: _4te10s_loading_spriteset;
-  loaded: _4te10s_traveling_spriteset;
+  _2te10s_v1_sprites_left;
 }
 
-// секция Б
-spriteset (_4te10s_sprites_r, IMAGEFILE)
+switch (FEAT_TRAINS, SELF, _4te10s_sprites_r, 0)
 {
-  s10_template(423, 16, 0)
-} 
-
-#undef IMAGEFILE
-
-// расчёт ориентации секций локомотива.
+  _2te10s_v1_sprites_right;
+}
 
 engine_direction_template3m(_4te10s, _2te10s, _4te10s_m, ) 
 
@@ -218,7 +193,7 @@ item (FEAT_TRAINS, _4te10s)
   }
   graphics {
     default: _4te10s_sprites;
-    purchase: _4te10s_purchase_sprites;
+    purchase: _2te10s_purchase_sprites;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: _4te10s_start_stop;
