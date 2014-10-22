@@ -420,3 +420,214 @@ if (enable_long_names)
   }
 }
 
+ // 3m62u
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/3m62u.png"
+
+// покупка
+purchase_sprites(_3m62u, 0, 0)
+
+// обычный: погрузка/перемещение
+spriteset (_3m62u_loading_spriteset, IMAGEFILE)
+{
+  s10_template(133, 80, 0)
+} 
+
+spriteset (_3m62u_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(133, 153, 0)
+} 
+
+spritegroup _3m62u_spritegroup
+{
+  loading: _3m62u_loading_spriteset;
+  loaded: _3m62u_traveling_spriteset;
+}
+
+// секция Б
+spriteset (_3m62u_b_spriteset, IMAGEFILE)
+{
+  s10_template(594, 80, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_3m62u_v2_loading_spriteset, IMAGEFILE)
+{
+  s10_template(133, 237, 0)
+} 
+
+spriteset (_3m62u_v2_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(133, 310, 0)
+} 
+
+spritegroup _3m62u_v2_spritegroup
+{
+  loading: _3m62u_v2_loading_spriteset;
+  loaded: _3m62u_v2_traveling_spriteset;
+}
+
+// секция Б
+spriteset (_3m62u_b_v2_spriteset, IMAGEFILE)
+{
+  s10_template(594, 237, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_3m62u_v3_loading_spriteset, IMAGEFILE)
+{
+  s10_template(133, 394, 0)
+} 
+
+spriteset (_3m62u_v3_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(133, 467, 0)
+} 
+
+spritegroup _3m62u_v3_spritegroup
+{
+  loading: _3m62u_v3_loading_spriteset;
+  loaded: _3m62u_v3_traveling_spriteset;
+}
+
+// секция Б
+spriteset (_3m62u_b_v3_spriteset, IMAGEFILE)
+{
+  s10_template(594, 394, 0)
+} 
+
+// обычный: погрузка/перемещение
+spriteset (_3m62u_v4_loading_spriteset, IMAGEFILE)
+{
+  s10_template(133, 551, 0)
+} 
+
+spriteset (_3m62u_v4_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(133, 624, 0)
+} 
+
+spritegroup _3m62u_v4_spritegroup
+{
+  loading: _3m62u_v4_loading_spriteset;
+  loaded: _3m62u_v4_traveling_spriteset;
+}
+
+// секция Б
+spriteset (_3m62u_b_v4_spriteset, IMAGEFILE)
+{
+  s10_template(594, 551, 0)
+} 
+
+#undef IMAGEFILE
+
+// расчёт ориентации секций локомотива.
+
+switch (FEAT_TRAINS, SELF, _3m62u_sprites_l,
+  cargo_subtype)
+{
+  0: _3m62u_spritegroup;
+  1: _3m62u_v2_spritegroup;
+  2: _3m62u_v3_spritegroup;
+     _3m62u_v4_spritegroup;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_sprites_r,
+  cargo_subtype)
+{
+  0: _3m62u_b_spriteset;
+  1: _3m62u_b_v2_spriteset;
+  2: _3m62u_b_v3_spriteset;
+     _3m62u_b_v4_spriteset;
+}  
+
+engine_direction_template3m(_3m62u, _2m62u, _3m62u_m, ) 
+
+long_vehicle(_3m62u)
+
+switch (FEAT_TRAINS, SELF, _3m62u_cargo_subtype_text3,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_59);
+  1: return string(STR_REFIT_TTD_53);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_59);
+  1: return string(STR_REFIT_TTD_53);
+  2: return string(STR_REFIT_MOSCOW_RAILWAY, "");
+  3: return string(STR_REFIT_KALININGRAD_RAILWAY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_cargo_subtype_text,
+  ((current_year >= 1990) || (build_year >= 1990)) )
+{
+  1: _3m62u_cargo_subtype_text2;
+     _3m62u_cargo_subtype_text3;
+}
+
+new_3x_train_start_stop(_3m62u)
+
+engine_speed(_3m62u, 100)
+
+engine_penalise_speed3(_3m62u, _2m62u, _3m62u_m, 8) 
+
+item (FEAT_TRAINS, _3m62u) 
+{
+  property
+  {
+    name: string(STR_3M62U_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1986), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1986,1992);
+    retire_early: get_retire_early(1986,1992);
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: 22;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 1546 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 1;
+    weight: (378/3) ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(196.0, 378/3);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: _3m62u_sprites;
+    purchase: _3m62u_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: _3m62u_start_stop;
+    additional_text: return string(STR_3M62U_PURCHASE_HINT);
+    cargo_subtype_text: _3m62u_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: _3m62u_speed;
+    purchase_speed: _3m62u_purchase_speed;
+    bitmask_vehicle_info: _3m62u_bitmask_vehicle_info;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _3m62u)
+  {
+    property
+    { name: string(STR_3M62U_NAME_LONG); }
+  }
+}
+

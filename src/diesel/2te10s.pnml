@@ -91,3 +91,151 @@ if (enable_long_names)
   }
 }
 
+
+ // 4te10s
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/4te10s.png"
+
+// покупка
+purchase_sprites(_4te10s, 493, 95)
+
+// обычный: погрузка/перемещение
+spriteset (_4te10s_loading_spriteset, IMAGEFILE)
+{
+  s10_template(4, 16, 0)
+} 
+
+spriteset (_4te10s_traveling_spriteset, IMAGEFILE)
+{
+  s10_template(4, 82, 0)
+} 
+
+spritegroup _4te10s_sprites_l
+{
+  loading: _4te10s_loading_spriteset;
+  loaded: _4te10s_traveling_spriteset;
+}
+
+// секция Б
+spriteset (_4te10s_sprites_r, IMAGEFILE)
+{
+  s10_template(423, 16, 0)
+} 
+
+#undef IMAGEFILE
+
+// расчёт ориентации секций локомотива.
+
+engine_direction_template3m(_4te10s, _2te10s, _4te10s_m, ) 
+
+long_vehicle(_4te10s)
+
+// Если хотя бы 4 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, _4te10s_start_stop5,
+[
+  set_offset_to(2),
+  STORE_TEMP((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m), 0),
+  set_offset_to(4),
+  STORE_TEMP(((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m)) && LOAD_TEMP(0), 0),
+  set_offset_to(6),
+  ((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m)) && LOAD_TEMP(0)
+])
+{
+  1: any_start_stop;
+  return string(STR_START_STOP_NEED_AT_LEAST_4_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше 4, то не выпускать
+switch (FEAT_TRAINS, PARENT, _4te10s_start_stop4,
+  (count_veh_id(_4te10s) >= 2) && (count_veh_id(_4te10s_m) >= 2))
+{
+  1: _4te10s_start_stop5;
+  return string(STR_START_STOP_NEED_2AND2_OR_MORE_ENGINE);
+}
+
+// Если хотя бы 3 не следуют др. за др., то не выпускать
+switch (FEAT_TRAINS, PARENT, _4te10s_start_stop3,
+[
+  set_offset_to(2),
+  STORE_TEMP((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m), 0),
+  set_offset_to(4),
+  ((prev_vehicle_type_id() == _4te10s) || (prev_vehicle_type_id() == _4te10s_m)) && LOAD_TEMP(0)
+])
+{
+  1: any_start_stop;
+  return string(STR_START_STOP_NEED_AT_LEAST_3_CONSECUTIVE_ENGINE);
+}
+
+// Если локомотивов меньше 3, то не выпускать
+switch (FEAT_TRAINS, PARENT, _4te10s_start_stop2,
+  (count_veh_id(_4te10s) >= 2) && (count_veh_id(_4te10s_m) >= 1))
+{
+  1: _4te10s_start_stop3;
+  return string(STR_START_STOP_NEED_2AND1_OR_MORE_ENGINE);
+}
+
+// Если год >= 1993, можно в 3 секции
+switch (FEAT_TRAINS, PARENT, _4te10s_start_stop,
+  current_year >= 1993)
+{
+  1: _4te10s_start_stop2;
+     _4te10s_start_stop4;
+}
+
+engine_speed(_4te10s, 100)
+
+engine_penalise_speed5(_4te10s, _4te10s_m, _2te10m, _2te10u, _2te116, 8) 
+
+item (FEAT_TRAINS, _4te10s) 
+{
+  property
+  {
+    name: string(STR_4TE10S_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1983), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1983,1987);
+    retire_early: get_retire_early(1983,1987);
+    reliability_decay: 20;
+    cost_factor: 33;
+    running_cost_factor: get_diesel_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 2273 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 138 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(245.0, 138);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: _4te10s_sprites;
+    purchase: _4te10s_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: _4te10s_start_stop;
+    additional_text: return string(STR_4TE10S_PURCHASE_HINT);
+    speed: _4te10s_speed;
+    purchase_speed: _4te10s_purchase_speed;
+    bitmask_vehicle_info: _4te10s_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _4te10s)
+  {
+    property
+    { name: string(STR_4TE10S_NAME_LONG); }
+  }
+}
+
