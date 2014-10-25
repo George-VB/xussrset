@@ -4,27 +4,17 @@
 
 engine_speed(is21, 115)
 
-engine_penalise_speed0(is21)
-
-switch (FEAT_TRAINS, SELF, is21_articulated_part,
-  extra_callback_info1)
-{
-  1: return dummy2;
-  2: return unitb;
-  3: return dummy1;
-     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
-}
-
-switch (FEAT_TRAINS, SELF, is21_tender_sprites,
+switch (FEAT_TRAINS, SELF, is_is21_tender_sprites,
 [
   set_offset_to(-2),
-  prev_vehicle_cargo_subtype() ])
+  prev_vehicle_cargo_subtype()])
 {
-  0: is_steamer_t6p_v1_sprites_left;
-  1: is_steamer_t6p_v2_sprites_left;
-  2: is_steamer_t6p_v3_sprites_left;
-     align_7_sprites;
+  0: is_all_t6p_v1_sprites_left;
+  1: is_all_t6p_v2_sprites_left;
+     is_all_t6p_v3_sprites_left;
 }
+
+engine_penalise_speed0(is21)
 
 switch (FEAT_TRAINS, SELF, is21_cargo_subtype_text,
   cargo_subtype)
@@ -39,7 +29,7 @@ item (FEAT_TRAINS, is21)
 {
   property
   {
-    name: string(STR_IS_STEAMER_NAME);
+    name: string(STR_IS_ALL_NAME);
     climates_available: NO_CLIMATE;
     introduction_date: date(get_loc_year(1941), 1, 1);
     model_life: get_model_life(1941,1942);
@@ -66,24 +56,24 @@ item (FEAT_TRAINS, is21)
 
   graphics
   {
-    default: is_steamer_sprites;
-    purchase: is_steamer_purchase_sprites;
-    articulated_part: is21_articulated_part;
+    default: is_all_sprites;
+    purchase: is_all_purchase_sprites;
+    articulated_part: articulated_part_tender2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_IS_STEAMER_PURCHASE_HINT);
+    additional_text: return string(STR_IS_ALL_PURCHASE_HINT);
     speed: is21_speed;
     purchase_speed: is21_purchase_speed;
     bitmask_vehicle_info: is21_bitmask_vehicle_info;
     cargo_capacity: return 0;
     cargo_subtype_text: is21_cargo_subtype_text;
-    create_effect: is_steamer_create_effect;
+    create_effect: is_all_create_effect;
   }
 
   livery_override(unitb)
   {
     length: 6;
-    is21_tender_sprites;
+    is_is21_tender_sprites;
   }
 
 }
@@ -93,7 +83,15 @@ if (enable_long_names)
   item (FEAT_TRAINS, is21)
   {
     property
-    { name: string(STR_IS_STEAMER_NAME_LONG); }
+    { name: string(STR_IS_ALL_NAME_LONG); }
   }
 }
 
+if (models_details_level == 1)
+{
+  item (FEAT_TRAINS, is_is21)
+  {
+    property
+    { climates_available: get_climates_available(); }
+  }
+}
