@@ -1,0 +1,100 @@
+ // er
+
+switch (FEAT_TRAINS, PARENT, e_er_sprites_start, 0)
+{
+  e_all_v4_sprites_left;
+}
+
+short_vehicle(e_er)
+
+switch (FEAT_TRAINS, SELF, e_er_weight,
+  (build_year >= 1946) +
+  (build_year >= 1948))
+{
+  0: return (84+68);
+  1: return (85+68);
+     return (85+82);
+}
+
+switch (FEAT_TRAINS, SELF, e_er_tractive_effort_coefficient,
+  build_year >= 1948)
+{
+  0: return get_tec_int(186.0, 84+68);
+  1: return get_tec_int(186.0, 85+68);
+     return get_tec_int(186.0, 85+82);
+}
+
+engine_speed_change_after(e_er, 55, 65, 1936)
+
+engine_penalise_speed0(e_er)
+
+item (FEAT_TRAINS, e_er) 
+{
+  property
+  {
+    name: string(STR_ER_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1933), 1, 1);
+    model_life: get_model_life(1933,1957);
+    retire_early: get_retire_early(1933,1957);
+    vehicle_life: 40;
+    reliability_decay: 20;
+    cost_factor: 15;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1370 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (84+82) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(186.0, 84+68);
+    length: 6;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+
+  graphics {
+    default: e_er_sprites;
+    purchase: e_all_v4_purchase_sprites;
+    articulated_part: e_all_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_ER_PURCHASE_HINT);
+    tractive_effort_coefficient: e_er_tractive_effort_coefficient;
+    speed: e_er_speed;
+    purchase_speed: e_er_purchase_speed;
+    bitmask_vehicle_info: e_er_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    weight: e_er_weight;
+    create_effect: e_all_create_effect;
+  }
+
+  livery_override(unitb)
+  {
+    length: e_all_tender_length;
+            e_all_tender_sprites;
+  }
+
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, e_er)
+  {
+    property
+    { name: string(STR_ER_NAME_LONG); }
+  }
+}
+
+if (models_details_level == 1)
+{
+  item (FEAT_TRAINS, e_er)
+  {
+    property
+    { climates_available: get_climates_available(); }
+  }
+}
