@@ -1,44 +1,23 @@
  // tgm23b
 
 #define IMAGEFILE  "src/diesel/mx.png"
-
 purchase_sprites(_mx, 0, 0)
 
-// шаблон для анимации из 4-х фреймов
-
-spriteset (_mx_1_sprites, IMAGEFILE) 
-{ 
-  s5_template(0, 21, 0) 
-} 
- 
-spriteset (_mx_2_sprites, IMAGEFILE) 
-{ 
-  s5_template(0, 60, 0) 
-} 
- 
-spriteset (_mx_3_sprites, IMAGEFILE) 
-{ 
-  s5_template(0, 99, 0) 
-} 
- 
-spriteset (_mx_4_sprites, IMAGEFILE) 
-{ 
-  s5_template(0, 138, 0) 
-}
-
+steam_sprites(6, _mx_v1, 32,  40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _mx_sprites_start,
-  LOAD_TEMP(3))
+switch (FEAT_TRAINS, SELF, _mx_sprites_start, 0)
 {
-   0: _mx_1_sprites;
-   1: _mx_2_sprites;
-   2: _mx_3_sprites;
-   3: _mx_4_sprites;
-      align_5_sprites;
+  _mx_v1_sprites_left;
 }
 
 short_vehicle(_mx)
+
+switch (FEAT_TRAINS, SELF, _mx_create_effect, 
+  diesel_create_effect(-4, 11)) 
+{ 
+  return 1; 
+}    
 
 engine_speed(_mx, 45)
 
@@ -70,7 +49,7 @@ item (FEAT_TRAINS, _mx)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(88.0, 38);
     length: 4;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: _mx_sprites;
@@ -83,6 +62,7 @@ item (FEAT_TRAINS, _mx)
     additional_text: return string(STR_MX_PURCHASE_HINT);
     cargo_capacity: return 0;
     bitmask_vehicle_info: _mx_bitmask_vehicle_info;
+    create_effect: _mx_create_effect;
   }
 }
 
