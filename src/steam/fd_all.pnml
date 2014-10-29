@@ -1,6 +1,5 @@
  // fd_all
 
-// Спрайты
 // 1931
 // 1932-1933
 // 1934-1940
@@ -37,28 +36,24 @@ switch (FEAT_TRAINS, SELF, fd_all_purchase_sprites,
      fd_all_v5_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, fd_all_sprites_start,
+switch (FEAT_TRAINS, SELF, fd_fd20_sprites_start,
   (build_year >= 1932) +
   (build_year >= 1934) +
-  (build_year >= 1940))
+  (build_year >= 1940) * (models_details_level == 0))
 {
   0: fd_all_v1_sprites_left;
   1: fd_all_v2_sprites_left;
   2: fd_all_v3_sprites_left;
      fd_all_v4_sprites_left;
 }
-
-long_vehicle(fd_all)
+  
+long_vehicle(fd_fd20)
 
 switch (FEAT_TRAINS, SELF, fd_all_create_effect, 
   steam_create_effect(-2, 13)) 
 { 
   return 1; 
 }    
-
-engine_speed_change_after2(fd_all, 65, 85, 1936, 90, 1956)
-
-engine_penalise_speed0(fd_all)
 
 switch (FEAT_TRAINS, SELF, fd_all_tender_sprites,
   (build_year >= 1932) +
@@ -124,15 +119,62 @@ switch (FEAT_TRAINS, SELF, fd_all_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-item (FEAT_TRAINS, fd_all) 
+ // fd_fd20
+
+switch (FEAT_TRAINS, SELF, fd_fd20_purchase_sprites,
+  (build_year >= 1932) +
+  (build_year >= 1934) +
+  (build_year >= 1936))
 {
-  property
-  {
-    name: string(STR_FD_ALL_NAME);
-    climates_available: NO_CLIMATE;
+  0: fd_all_v1_purchase_sprites;
+  1: fd_all_v2_purchase_sprites;
+  2: fd_all_v3_purchase_sprites;
+     fd_all_v4_purchase_sprites;
+}
+
+engine_speed_change_after2(fd_fd20, 65, 85, 1936, 90, 1956)
+
+engine_penalise_speed0(fd_fd20)
+
+switch (FEAT_TRAINS, SELF, fd_fd20_weight,
+  (build_year >= 1932) +
+  (build_year >= 1936))
+{
+  0: return (137+85);
+  1: return (137+123);
+     return (137+127);
+}
+
+switch (FEAT_TRAINS, SELF, fd_fd20_tractive_effort_coefficient,
+  (build_year >= 1932) +
+  (build_year >= 1936))
+{
+  0: return get_tec_int(208.0, 137+85);
+  1: return get_tec_int(208.0, 137+123);
+     return get_tec_int(208.0, 137+127);
+}
+
+switch (FEAT_TRAINS, SELF, fd_fd20_power,
+  (build_year >= 1936))
+{
+  0: return 2600;
+     return 3000;
+}
+
+switch (FEAT_TRAINS, SELF, fd_fd20_cost_factor,
+  current_year >= 1936)
+{
+  0: return 21;
+     return 31;
+}
+
+item (FEAT_TRAINS, fd_fd20) {
+  property {
+    name: string(STR_FD20_NAME);
+    climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1931), 1, 1);
-    model_life: get_model_life(1931,1942);
-    retire_early: get_retire_early(1931,1942);
+    model_life: get_model_life(1931,1940);
+    retire_early: get_retire_early(1931,1940);
     vehicle_life: 25;
     reliability_decay: 20;
     cost_factor: 21;
@@ -154,44 +196,136 @@ item (FEAT_TRAINS, fd_all)
   }
 
   graphics {
-    default: fd_all_sprites;
-    purchase: fd_all_purchase_sprites;
+    default: fd_fd20_sprites;
+    purchase: fd_fd20_purchase_sprites;
     articulated_part: articulated_part_tender2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_FD_ALL_PURCHASE_HINT);
-    speed: fd_all_speed;
-    purchase_speed: fd_all_purchase_speed;
-    bitmask_vehicle_info: fd_all_bitmask_vehicle_info;
+    additional_text: return string(STR_FD20_PURCHASE_HINT);
+    speed: fd_fd20_speed;
+    purchase_speed: fd_fd20_purchase_speed;
+    bitmask_vehicle_info: fd_fd20_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    weight: fd_all_weight;
-    tractive_effort_coefficient: fd_all_tractive_effort_coefficient;
-    power: fd_all_power;
-    cost_factor: fd_all_cost_factor;
-    cargo_subtype_text: fd_all_cargo_subtype_text;
+    weight: fd_fd20_weight;
+    tractive_effort_coefficient: fd_fd20_tractive_effort_coefficient;
+    power: fd_fd20_power;
+    cost_factor: fd_fd20_cost_factor;
+    create_effect: fd_all_create_effect;
+  }
+  livery_override(unitb) {
+    length: fd_all_tender_length;
+            fd_all_tender_sprites;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, fd_fd20) {
+    property { 
+      name: string(STR_FD20_NAME_LONG); }
+  }
+}
+
+if (models_details_level == 0) {
+  item (FEAT_TRAINS, fd_fd20) {
+    property {
+      name: string(STR_FD_ALL_NAME);
+      model_life: get_model_life(1931,1942);
+      retire_early: get_retire_early(1931,1942);
+    }
+    graphics {
+      purchase: fd_all_purchase_sprites;
+      additional_text: return string(STR_FD_ALL_PURCHASE_HINT);
+      weight: fd_all_weight;
+      tractive_effort_coefficient: fd_all_tractive_effort_coefficient;
+      power: fd_all_power;
+      cost_factor: fd_all_cost_factor;
+      cargo_subtype_text: fd_all_cargo_subtype_text;
+    }
+  }
+  if (enable_long_names) {
+    item (FEAT_TRAINS, fd_fd20) {
+      property { 
+        name: string(STR_FD_ALL_NAME_LONG); }
+    }
+  }
+}
+
+ // fd21
+
+switch (FEAT_TRAINS, SELF, fd_fd21_sprites_start, 0)
+{
+     fd_all_v4_sprites_left;
+}
+
+long_vehicle(fd_fd21)
+
+engine_speed_change_after(fd_fd21, 85, 90, 1956)
+
+engine_penalise_speed0(fd_fd21)
+
+item (FEAT_TRAINS, fd_fd21) 
+{
+  property
+  {
+    name: string(STR_FD21_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1940), 1, 1);
+    model_life: get_model_life(1940,1942);
+    retire_early: get_retire_early(1940,1942);
+    vehicle_life: 25;
+    reliability_decay: 20;
+    cost_factor: 39;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3100 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (135+127) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(225.0, 135+127);
+    length: 8;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+
+  graphics {
+    default: fd_fd21_sprites;
+    purchase: fd_all_v5_purchase_sprites;
+    articulated_part: articulated_part_tender2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_FD21_PURCHASE_HINT);
+    speed: fd_fd21_speed;
+    purchase_speed: fd_fd21_purchase_speed;
+    bitmask_vehicle_info: fd_fd21_bitmask_vehicle_info;
+    cargo_capacity: return 0;
     create_effect: fd_all_create_effect;
   }
 
   livery_override(unitb)
   {
-    length: fd_all_tender_length;
-    fd_all_tender_sprites;
+    length: return 6;
+    fd_all_t6p_sprites_left;
   }
 
 }
 
 if (enable_long_names)
 {
-  item (FEAT_TRAINS, fd_all)
+  item (FEAT_TRAINS, fd_fd21)
   {
     property
-    { name: string(STR_FD_ALL_NAME_LONG); }
+    { name: string(STR_FD21_NAME_LONG); }
   }
 }
 
-if (models_details_level == 0)
+if (models_details_level == 1)
 {
-  item (FEAT_TRAINS, fd_all)
+  item (FEAT_TRAINS, fd_fd21)
   {
     property
     { climates_available: get_climates_available(); }

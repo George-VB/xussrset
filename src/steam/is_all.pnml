@@ -1,4 +1,6 @@
- // is_steamer
+ // is_all
+
+// Пассажирские паровозы семейства ИС (Иосиф Сталин)
 
 // Спрайты
 
@@ -26,7 +28,7 @@ switch (FEAT_TRAINS, SELF, is_all_purchase_sprites,
      is_all_v1_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, is_all_sprites_start,
+switch (FEAT_TRAINS, SELF, is_is20_sprites_start,
   cargo_subtype)
 {
   0: is_all_v1_sprites_left;
@@ -35,17 +37,13 @@ switch (FEAT_TRAINS, SELF, is_all_sprites_start,
      align_10_sprites;
 }
 
-long_vehicle(is_all)
+long_vehicle(is_is20)
 
 switch (FEAT_TRAINS, SELF, is_all_create_effect, 
   steam_create_effect(-2, 14)) 
 { 
   return 1; 
 }    
-
-engine_speed_change_after(is_all, 110, 115, 1936)
-
-engine_penalise_speed0(is_all)
 
 switch (FEAT_TRAINS, SELF, is_all_tender_sprites,
 [
@@ -111,12 +109,39 @@ switch (FEAT_TRAINS, SELF, is_all_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-item (FEAT_TRAINS, is_all) 
+ // is_is20
+
+switch (FEAT_TRAINS, SELF, is_is20_purchase_sprites,
+  build_year >= 1936)
 {
-  property
-  {
-    name: string(STR_IS_ALL_NAME);
-    climates_available: NO_CLIMATE;
+  1: is_all_v2_purchase_sprites;
+     is_all_v1_purchase_sprites;
+}
+
+engine_speed_change_after(is_is20, 110, 115, 1936)
+
+engine_penalise_speed0(is_is20)
+
+switch (FEAT_TRAINS, SELF, is_is20_cost_factor,
+  current_year >= 1936)
+{
+  0: return 46;
+     return 56;
+}
+
+switch (FEAT_TRAINS, SELF, is_is20_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_59);
+  2: return string(STR_REFIT_RED_ARROW);
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, is_is20) {
+  property {
+    name: string(STR_IS20_NAME);
+    climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1932), 1, 1);
     model_life: get_model_life(1932,1941);
     retire_early: get_retire_early(1932,1941);
@@ -137,47 +162,151 @@ item (FEAT_TRAINS, is_all)
     cargo_capacity: 1;
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
+  graphics {
+    default: is_is20_sprites;
+    purchase: is_is20_purchase_sprites;
+    articulated_part: articulated_part_tender2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_IS20_PURCHASE_HINT);
+    speed: is_is20_speed;
+    purchase_speed: is_is20_purchase_speed;
+    bitmask_vehicle_info: is_is20_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    weight: is_all_weight;
+    cost_factor: is_is20_cost_factor;
+    cargo_subtype_text: is_is20_cargo_subtype_text;
+    tractive_effort_coefficient: is_all_tractive_effort_coefficient;
+    create_effect: is_all_create_effect;
+  }
+  livery_override(unitb) {
+    length: is_all_tender_length;
+            is_all_tender_sprites;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, is_is20) {
+    property { 
+      name: string(STR_IS20_NAME_LONG); }
+  }
+}
+
+if (models_details_level == 0)
+{
+  item (FEAT_TRAINS, is_is20)
+  {
+    property { 
+      name: string(STR_IS_ALL_NAME);
+      model_life: get_model_life(1932,1941);
+      retire_early: get_retire_early(1932,1941);
+    }
+    graphics {
+      purchase: is_all_purchase_sprites;
+      additional_text: return string(STR_IS_ALL_PURCHASE_HINT);
+      cost_factor: is_all_cost_factor;
+      cargo_subtype_text: is_all_cargo_subtype_text;
+      power: is_all_power;
+    }
+  }
+  if (enable_long_names) {
+    item (FEAT_TRAINS, is_is20) {
+      property { 
+        name: string(STR_IS_ALL_NAME_LONG); }
+    }
+  }
+}
+
+ // is21
+
+engine_speed(is21, 115)
+
+switch (FEAT_TRAINS, SELF, is_is21_tender_sprites,
+[
+  set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+  0: is_all_t6p_v1_sprites_left;
+  1: is_all_t6p_v2_sprites_left;
+     is_all_t6p_v3_sprites_left;
+}
+
+engine_penalise_speed0(is21)
+
+switch (FEAT_TRAINS, SELF, is21_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_59);
+  2: return string(STR_REFIT_RED_ARROW);
+     return CB_RESULT_NO_TEXT;
+}
+
+item (FEAT_TRAINS, is21) 
+{
+  property
+  {
+    name: string(STR_IS_ALL_NAME);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1941), 1, 1);
+    model_life: get_model_life(1941,1942);
+    retire_early: get_retire_early(1941,1942);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cost_factor: 56;
+    running_cost_factor: get_steam_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3300 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (133+127) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(155.0, 133+127);
+    length: 8;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
 
   graphics
   {
-    default: is_all_sprites;
+    default: is_is20_sprites;
     purchase: is_all_purchase_sprites;
     articulated_part: articulated_part_tender2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_IS_ALL_PURCHASE_HINT);
-    speed: is_all_speed;
-    purchase_speed: is_all_purchase_speed;
-    bitmask_vehicle_info: is_all_bitmask_vehicle_info;
+    speed: is21_speed;
+    purchase_speed: is21_purchase_speed;
+    bitmask_vehicle_info: is21_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    weight: is_all_weight;
-    power: is_all_power;
-    cost_factor: is_all_cost_factor;
-    cargo_subtype_text: is_all_cargo_subtype_text;
-    tractive_effort_coefficient: is_all_tractive_effort_coefficient;
+    cargo_subtype_text: is21_cargo_subtype_text;
     create_effect: is_all_create_effect;
   }
 
   livery_override(unitb)
   {
-    length: is_all_tender_length;
-    is_all_tender_sprites;
+    length: 6;
+    is_is21_tender_sprites;
   }
 
 }
 
 if (enable_long_names)
 {
-  item (FEAT_TRAINS, is_all)
+  item (FEAT_TRAINS, is21)
   {
     property
     { name: string(STR_IS_ALL_NAME_LONG); }
   }
 }
 
-if (models_details_level == 0)
+if (models_details_level == 1)
 {
-  item (FEAT_TRAINS, is_all)
+  item (FEAT_TRAINS, is_is21)
   {
     property
     { climates_available: get_climates_available(); }
