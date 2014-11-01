@@ -1,0 +1,189 @@
+ // flatbed_np30p
+
+/// Вагон
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/flatbeds/np30p.png"
+purchase_sprites(flatbed_np30p_v1, 0, 0)
+purchase_sprites(flatbed_np30p_v2, 100, 0)
+
+flatbed_empty_layout_template(flatbed_np30p_v1, 6, 112, 73)
+flatbed_layout2_template(flatbed_np30p_v1, 6, 112, 116, good1)  
+flatbed_layout2_template(flatbed_np30p_v1, 6, 112, 226, good2)  
+flatbed_layout2_template(flatbed_np30p_v1, 6, 112, 336, wdpr)  
+flatbed_layout2_template(flatbed_np30p_v1, 6, 112, 446, wood)  
+flatbed_layout2_template(flatbed_np30p_v1, 6, 112, 556, vehi)  
+flatbed_layout3_template(flatbed_np30p_v1, 6, 112, 666, stel1)  
+flatbed_layout3_template(flatbed_np30p_v1, 6, 112, 843, stel2)  
+
+flatbed_empty_layout_template(flatbed_np30p_v2, 6, 364, 73)
+flatbed_layout2_template(flatbed_np30p_v2, 6, 364, 116, good1)  
+flatbed_layout2_template(flatbed_np30p_v2, 6, 364, 226, good2)  
+flatbed_layout2_template(flatbed_np30p_v2, 6, 364, 336, wdpr)  
+flatbed_layout2_template(flatbed_np30p_v2, 6, 364, 446, wood)  
+flatbed_layout2_template(flatbed_np30p_v2, 6, 364, 556, vehi)  
+flatbed_layout3_template(flatbed_np30p_v2, 6, 364, 666, stel1)  
+flatbed_layout3_template(flatbed_np30p_v2, 6, 364, 843, stel2)  
+#undef IMAGEFILE                              
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_purchase_sprites,
+  current_year >= 1902)
+{
+  0: flatbed_np30p_v1_purchase_sprites;
+     flatbed_np30p_v2_purchase_sprites;
+}                             
+
+random_switch (FEAT_TRAINS, SELF, flatbed_np30p_v1_good_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  independent: flatbed_np30p_v1_good1_sprites;
+  1: flatbed_np30p_v1_good1_sprites;
+  1: flatbed_np30p_v1_good2_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_np30p_v1_stel_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_np30p_v1_good_sprites;
+  1: flatbed_np30p_v1_stel1_sprites;
+  1: flatbed_np30p_v1_stel2_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_v1_sprites,
+  cargo_type_in_veh)
+{
+  COAL: flatbed_np30p_v1_good_sprites;
+  IORE: flatbed_np30p_v1_wdpr_sprites;
+  CORE: flatbed_np30p_v1_wood_sprites;
+  AORE: flatbed_np30p_v1_vehi_sprites;
+  CLAY: flatbed_np30p_v1_stel_sprites;
+        align_6_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_np30p_v2_good_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_np30p_v1_good_sprites;
+  1: flatbed_np30p_v2_good1_sprites;
+  1: flatbed_np30p_v2_good2_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_np30p_v2_stel_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_np30p_v1_good_sprites;
+  1: flatbed_np30p_v2_stel1_sprites;
+  1: flatbed_np30p_v2_stel2_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_v2_sprites,
+  cargo_type_in_veh)
+{
+  COAL: flatbed_np30p_v2_good_sprites;
+  IORE: flatbed_np30p_v2_wdpr_sprites;
+  CORE: flatbed_np30p_v2_wood_sprites;
+  AORE: flatbed_np30p_v2_vehi_sprites;
+  CLAY: flatbed_np30p_v2_stel_sprites;
+        align_6_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_sprites_start,
+  (build_year >= 1902) || (LOAD_TEMP(2) >= date(1902, 1, 1)) )
+{
+  0: flatbed_np30p_v1_sprites;
+     flatbed_np30p_v2_sprites;
+}                             
+
+short_vehicle(flatbed_np30p)
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity_1892, 
+  cargo_type_in_veh)
+{
+  GOOD: return 25;
+  VEHI: return  2;
+        return 12;
+}     
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity_1909, 
+  cargo_type_in_veh)
+{
+  GOOD: return 29;
+  VEHI: return  2;
+        return 15;
+}     
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity_1911, 
+  cargo_type_in_veh)
+{
+  GOOD: return 33;
+  VEHI: return  2;
+        return 16;
+}     
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity, 
+  ((build_year >= 1909) || (LOAD_TEMP(2) >= date(1909, 1, 1))) +
+  ((build_year >= 1911) || (LOAD_TEMP(2) >= date(1911, 1, 1))) )
+{
+  0: flatbed_np30p_cargo_capacity_1892;
+  1: flatbed_np30p_cargo_capacity_1909;
+     flatbed_np30p_cargo_capacity_1911;
+}     
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_additional_text, 
+  (current_year >= 1909) +
+  (current_year >= 1911) )
+{
+  0: return string(STR_FLATBED_NP30P_PURCHASE_HINT_1892);
+  1: return string(STR_FLATBED_NP30P_PURCHASE_HINT_1909);
+     return string(STR_FLATBED_NP30P_PURCHASE_HINT_1911);
+}     
+
+item (FEAT_TRAINS, flatbed_np30p) 
+{
+  property
+  {
+    name: string(STR_FLATBED_NP30P_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(1892), 1, 1);
+    model_life: get_model_life(1892,1916);
+    retire_early: get_retire_early(1892,1916);
+    vehicle_life: 30;
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD, WDPR, WOOD, VEHI, STEL];
+    default_cargo_type: WOOD;
+    refit_cost: 0;
+    cost_factor: get_car_cost_factor();
+    running_cost_factor: get_car_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    loading_speed: 15;
+    cargo_capacity: 13;
+    weight: 6.8 ton;
+    length: 5;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics
+  {
+    default: flatbed_np30p_sprites;
+    purchase: flatbed_np30p_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    additional_text: flatbed_np30p_additional_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: flatbed_np30p_cargo_capacity;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, flatbed_np30p)
+  {
+    property
+    { name: string(STR_FLATBED_NP30P_NAME_LONG); }
+  }
+}
+
