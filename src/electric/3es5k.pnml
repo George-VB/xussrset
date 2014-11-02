@@ -1,123 +1,49 @@
  // 2es5k
 
-// Спрайты
 // 2ЭС5К и 3ЭС5К "Ермак" - новочеркасские электровозы переменного тока.
 
 #define IMAGEFILE  "src/electric/3es5k.png"
+purchase_sprites(_2es5k_v1,   0, 0)
+purchase_sprites(_2es5k_v2, 110, 0)
+purchase_sprites(_3es5k, 220, 0)
+purchase_sprites(_3es5k_m, 330, 0)
 
-// покупка
-purchase_sprites(_2es5k, 0, 0)
-
-// нет тока
-spriteset (_2es5k_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(152, 26, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2es5k_loading_spriteset, IMAGEFILE)
-{
-  s10_template(152, 93, 0)
-} 
-
-spriteset (_2es5k_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(152, 160, 0)
-} 
-
-spritegroup _2es5k_spritegroup
-{
-  loading: _2es5k_loading_spriteset;
-  loaded: _2es5k_traveling_spriteset;
-}
-
-spriteset (_2es5k_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(152, 227, 0)
-} 
-
-// нет тока
-spriteset (_2es5k_b_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(610, 26, 0)
-} 
-
-// секция Б: погрузка
-spriteset (_2es5k_b_spriteset, IMAGEFILE)
-{
-  s10_template(610, 93, 0)
-} 
-
-// нет тока
-spriteset (_2es5k_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(152, 294, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2es5k_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(152, 361, 0)
-} 
-
-spriteset (_2es5k_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(152, 428, 0)
-} 
-
-spritegroup _2es5k_v2_spritegroup
-{
-  loading: _2es5k_v2_loading_spriteset;
-  loaded: _2es5k_v2_traveling_spriteset;
-}
-
-spriteset (_2es5k_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(152, 495, 0)
-} 
-
-// нет тока
-spriteset (_2es5k_b_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(610, 294, 0)
-} 
-
-// секция Б: погрузка
-spriteset (_2es5k_b_v2_spriteset, IMAGEFILE)
-{
-  s10_template(610, 361, 0)
-} 
-
+electric2_1_sprites(10, _3es5k_v1, 32,  40)
+electric2_1_sprites(10, _3es5k_v2, 32, 241)
+buster_sprites(10, _3es5k_m, 32, 442) 
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _2es5k_purchase_sprites,
+  build_year >= 2006)
+{ 
+  0: _2es5k_v1_purchase_sprites;
+     _2es5k_v2_purchase_sprites;
+}
 
 // расчёт ориентации секций локомотива.
 switch (FEAT_TRAINS, SELF, _2es5k_sprites_l,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 2006) * 3))
+  build_year >= 2006)
 {
-  0: _2es5k_notpowered_spriteset;
-  1: _2es5k_spritegroup;
-  2: _2es5k_speedoverTH_spriteset;
-  3: _2es5k_v2_notpowered_spriteset;
-  4: _2es5k_v2_spritegroup;
-     _2es5k_v2_speedoverTH_spriteset;
+  0: _3es5k_v1_sprites_left;
+     _3es5k_v2_sprites_left;
 }
 
 switch (FEAT_TRAINS, SELF, _2es5k_sprites_r,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 2006) * 3))
-{ 0: _2es5k_b_notpowered_spriteset;
-  1..2: _2es5k_b_spriteset;
-  3: _2es5k_b_v2_notpowered_spriteset;
-     _2es5k_b_v2_spriteset; }
+  build_year >= 2006)
+{ 
+  0: _3es5k_v1_sprites_right;
+     _3es5k_v2_sprites_right;
+}
 
 engine_direction_template3m(_2es5k, _3es5k, _3es5k_m, ) 
 
 long_vehicle(_2es5k)
 
-// new_2x_train_start_stop(_2es5k, _3es5k_m)
+engine_electric2_1_effect(_2es5k, -2, 4)
+
+engine_direction_template(_2es5k, _create_effect) 
+
+new_2x_train_start_stop(_2es5k, _3es5k_m)
 
 engine_speed(_2es5k, 110)
 
@@ -146,22 +72,23 @@ item (FEAT_TRAINS, _2es5k)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(211.0, 96);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: _2es5k_sprites;
     purchase: _2es5k_purchase_sprites;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
-    start_stop: any_start_stop;
+    start_stop: _2es5k_start_stop;
     additional_text: return string(STR_2ES5K_PURCHASE_HINT);
     speed: _2es5k_speed;
     purchase_speed: _2es5k_purchase_speed;
     bitmask_vehicle_info: _2es5k_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _2es5k_create_effect_sprites_start;
   }
 }
 
@@ -176,35 +103,23 @@ if (enable_long_names)
 
  // 3es5k
 
-// Спрайты
-// 2ЭС5К и 3ЭС5К "Ермак" - новочеркасские электровозы переменного тока.
-// Частично используются из 2es5k.pnml, второй вариант
-
-#define IMAGEFILE  "src/electric/3es5k.png"
-
-// покупка
-purchase_sprites(_3es5k, 0, 40)
-
-#undef IMAGEFILE
-
-// расчёт ориентации секций локомотива. 
-switch (FEAT_TRAINS, SELF, _3es5k_sprites_l,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
+switch (FEAT_TRAINS, SELF, _3es5k_sprites_l, 0)
 {
-  0: _2es5k_v2_notpowered_spriteset;
-  1: _2es5k_v2_spritegroup;
-     _2es5k_v2_speedoverTH_spriteset;
+  _3es5k_v2_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, _3es5k_sprites_r,
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)) )
-{ 0: _2es5k_b_v2_notpowered_spriteset;
-     _2es5k_b_v2_spriteset;}
+switch (FEAT_TRAINS, SELF, _3es5k_sprites_r, 0)
+{ 
+  _3es5k_v2_sprites_right;
+}
 
 engine_direction_template3m(_3es5k, _2es5k, _3es5k_m, ) 
 
 long_vehicle(_3es5k)
+
+engine_electric2_1_effect(_3es5k, 4, -2)
+
+engine_direction_template(_3es5k, _create_effect) 
 
 new_3x_train_start_stop(_3es5k)
 
@@ -235,10 +150,10 @@ item (FEAT_TRAINS, _3es5k)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(211.0, 96);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: _3es5k_sprites;
@@ -251,6 +166,7 @@ item (FEAT_TRAINS, _3es5k)
     purchase_speed: _3es5k_purchase_speed;
     bitmask_vehicle_info: _3es5k_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _3es5k_create_effect_sprites_start;
   }
 }
 
@@ -263,37 +179,15 @@ if (enable_long_names)
   }
 }
 
-
  // 3es5k
-
-// Спрайты
-// 2ЭС5К и 3ЭС5К "Ермак" - новочеркасские электровозы переменного тока.
-// Частично используются из 2es5k.pnml, второй вариант
-
-#define IMAGEFILE  "src/electric/3es5k.png"
-
-// покупка
-purchase_sprites(_3es5k_m, 0, 60)
-
-// бустерная секция (средняя)
-spriteset (_3es5k_m_c_spriteset, IMAGEFILE)
-{
-  s10_template(152, 562, 0)
-} 
-
-spriteset (_3es5k_m_cr_spriteset, IMAGEFILE)
-{
-  s10_template(610, 562, 0)
-} 
-
-#undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _3es5k_m_sprites_start,
 [  set_offset_to(-2),
-   prev_vehicle_type_id() == _3es5k
-])
-{ 1: _3es5k_m_c_spriteset;
-     _3es5k_m_cr_spriteset;}
+   prev_vehicle_randombits() % 2 ] )
+{ 
+  1: _3es5k_m_sprites_left;
+     _3es5k_m_sprites_right;
+}
 
 long_vehicle(_3es5k_m)
 
@@ -325,10 +219,10 @@ item (FEAT_TRAINS, _3es5k_m)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(211.0, 96);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: _3es5k_m_sprites;
