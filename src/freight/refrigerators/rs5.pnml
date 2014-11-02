@@ -84,6 +84,24 @@ switch (FEAT_TRAINS, SELF, rs5int_sprites_start,
 }
 
 long_vehicle(rs5int)
+
+engine_diesel2_1_effect(rs5int, -2, 4, 11)
+
+switch (FEAT_TRAINS, SELF, rs5int_create_effect2, 
+[  set_offset_to(-position_in_vehid_chain-1),
+   (prev_vehicle_randombits() % 2)])
+{
+  0: rs5int_create_effect_sprites_l;
+     rs5int_create_effect_sprites_r;
+}
+
+switch (FEAT_TRAINS, SELF, rs5int_create_effect,
+  position_in_vehid_chain)
+{
+  3: rs5int_create_effect2;
+     return 0;
+}
+
 // секция из 5-ти вагонов
 switch (FEAT_TRAINS, SELF, rs5_articulated_part,
   extra_callback_info1)
@@ -118,11 +136,13 @@ item (FEAT_TRAINS, rs5int)
     misc_flags: bitmask(TRAIN_FLAG_TILT);
     visual_effect_and_powered: disable_visual_effect_and_powered();
     track_type: get_normal_track_type();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics
   {
     default: rs5int_sprites;
     length: rs5int_length;
+    create_effect: rs5int_create_effect;
   }
 }
 
