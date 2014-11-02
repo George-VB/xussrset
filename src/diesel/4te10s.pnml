@@ -1,9 +1,11 @@
  // 2te10s
 
-#define IMAGEFILE  "src/diesel/2te10s.png"
-purchase_sprites(_2te10s, 0, 0)
+#define IMAGEFILE  "src/diesel/4te10s.png"
+purchase_sprites(_4te10s, 0, 0)
+purchase_sprites(_4te10s_m, 110, 0)
 
 diesel2_sprites(10, _2te10s_v1, 32,  40) 
+buster_sprites(10, _4te10s_m, 447,  40) 
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, _2te10s_sprites_l, 0)
@@ -68,7 +70,7 @@ item (FEAT_TRAINS, _2te10s)
   }
   graphics {
     default: _2te10s_sprites;
-    purchase: _2te10s_purchase_sprites;
+    purchase: _4te10s_purchase_sprites;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
@@ -168,7 +170,7 @@ item (FEAT_TRAINS, _4te10s)
   property
   {
     name: string(STR_4TE10S_NAME);
-    climates_available: NO_CLIMATE;
+    climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1983), 1, 1);
     vehicle_life: 30;
     model_life: get_model_life(1983,1987);
@@ -193,7 +195,7 @@ item (FEAT_TRAINS, _4te10s)
   }
   graphics {
     default: _4te10s_sprites;
-    purchase: _2te10s_purchase_sprites;
+    purchase: _4te10s_purchase_sprites;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: _4te10s_start_stop;
@@ -211,6 +213,91 @@ if (enable_long_names)
   {
     property
     { name: string(STR_4TE10S_NAME_LONG); }
+  }
+}
+
+
+ // 4te10s_m
+
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_sprites2, 
+[  set_offset_to(-2),
+   prev_vehicle_randombits() % 2 ] )
+{
+  1: _4te10s_m_sprites_left;
+     _4te10s_m_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_sprites1, 
+[  set_offset_to(-4),
+   prev_vehicle_randombits() % 2 ] )
+{
+  1: _4te10s_m_sprites_left;
+     _4te10s_m_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_sprites_start, 
+[  set_offset_to(-2),
+   prev_vehicle_type_id() == _4te10s_m])
+{
+  1: _4te10s_m_sprites1;
+     _4te10s_m_sprites2;
+}
+
+long_vehicle(_4te10s_m)
+
+engine_speed(_4te10s_m, 100)
+
+engine_penalise_speed5(_4te10s_m, _4te10s, _2te10m, _2te10u, _2te116, 8) 
+
+item (FEAT_TRAINS, _4te10s_m) 
+{
+  property
+  {
+    name: string(STR_4TE10S_M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1983), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1983,1987);
+    retire_early: get_retire_early(1983,1987);
+    reliability_decay: 20;
+    cost_factor: 33;
+    running_cost_factor: get_diesel_m_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 2273 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 138 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(245.0, 138);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: _4te10s_m_sprites;
+    purchase: _4te10s_m_purchase_sprites;
+    purchase_speed: _4te10s_m_purchase_speed;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    additional_text: return string(STR_4TE10S_M_PURCHASE_HINT);
+    speed: _4te10s_m_speed;
+    bitmask_vehicle_info: _4te10s_m_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _4te10s_m)
+  {
+    property
+    { name: string(STR_4TE10S_M_NAME_LONG); }
   }
 }
 

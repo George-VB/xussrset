@@ -229,3 +229,127 @@ if (enable_long_names)
   }
 }
 
+
+ // 3te10m_m
+
+// Спрайты
+
+#define IMAGEFILE  "src/diesel/3te10m.png"
+
+// покупка
+purchase_sprites(_3te10m_m_v1, 459, 113)
+
+spriteset (_3te10m_m_rc_spriteset, IMAGEFILE)
+{
+  s10_template(842, 16, 0)
+} 
+
+spriteset (_3te10m_m_rc_v2_spriteset, IMAGEFILE)
+{
+  s10_template(842, 153, 0)
+} 
+
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/3te10m-s1985.png"
+
+// покупка
+purchase_sprites(_3te10m_m_v3, 459, 113)
+
+spriteset (_3te10m_m_rc_v3_spriteset, IMAGEFILE)
+{
+  s10_template(842, 16, 0)
+} 
+
+spriteset (_3te10m_m_rc_v4_spriteset, IMAGEFILE)
+{
+  s10_template(842, 153, 0)
+} 
+
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _3te10m_m_sprites_start,
+  ((LOAD_TEMP(2) >= date(1985,1,1)) * 2) +
+  cargo_subtype)
+{
+  0: _3te10m_m_rc_spriteset;
+  1: _3te10m_m_rc_v2_spriteset;
+  2: _3te10m_m_rc_v3_spriteset;
+     _3te10m_m_rc_v4_spriteset;
+}
+
+long_vehicle(_3te10m_m)
+
+// покупка
+switch (FEAT_TRAINS, SELF, _3te10m_m_purchase_sprites,
+  (current_year >= 1985) )
+{
+  0: _3te10m_m_v1_purchase_sprites;
+     _3te10m_m_v3_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _3te10m_m_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_63);
+  1: return string(STR_REFIT_TTD_B5);
+     return CB_RESULT_NO_TEXT;
+}  
+
+engine_speed(_3te10m_m, 100)
+
+engine_penalise_speed7(_3te10m_m, _3te10m, _3te10u, _2te10m, _2te10u, _2te116, _2te116u, 8) 
+
+item (FEAT_TRAINS, _3te10m_m)
+{
+  property
+  {
+    name: string(STR_3TE10M_M_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1979), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1979,1990);
+    retire_early: get_retire_early(1979,1990);
+    reliability_decay: 20;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cost_factor: 44;
+    running_cost_factor: get_diesel_m_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 2273 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 1;
+    weight: 138 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(245.0, 138);
+    length: 8;
+    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+  }
+  graphics {
+    default: _3te10m_m_sprites;
+    purchase: _3te10m_m_purchase_sprites;
+    purchase_speed: _3te10m_m_purchase_speed;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    additional_text: return string(STR_3TE10M_M_PURCHASE_HINT);
+    cargo_subtype_text: _3te10m_m_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: _3te10m_m_speed; 
+    bitmask_vehicle_info: _3te10m_m_bitmask_vehicle_info;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, _3te10m_m)
+  {
+    property
+    { name: string(STR_3TE10M_M_NAME_LONG); }
+  }
+}
+
