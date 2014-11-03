@@ -2,116 +2,35 @@
 
 // Спрайты
 
-#define IMAGEFILE  "src/electric/vl8m.png"
+#define IMAGEFILE  "src/electric/vl8.png"
+purchase_sprites(n8_v1,   0, 0)
+purchase_sprites(n8_v2, 100, 0)
+purchase_sprites(n8_v3, 200, 0)
+purchase_sprites(vl8m,  300, 0)
 
-// покупка
-purchase_sprites(vl8m, 0, 0)
-
-// нет тока
-spriteset (vl8m_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 18, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl8m_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 53, 0)
-} 
-
-spriteset (vl8m_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 88, 0)
-} 
-
-spritegroup vl8m_spritegroup
-{
-  loading: vl8m_loading_spriteset;
-  loaded: vl8m_traveling_spriteset;
-}
-
-spriteset (vl8m_speedoverTH_spriteset, IMAGEFILE)
-{                  
-  s8_template(4, 123, 0)
-} 
-
-// нет тока
-spriteset (vl8m_r_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 18, 0)
-} 
-
-// развёрнутый
-spriteset (vl8m_r_spriteset, IMAGEFILE)
-{
-  s8_template(291, 53, 0)
-} 
-
-// нет тока
-spriteset (vl8m_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 163, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl8m_v2_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 198, 0)
-} 
-
-spriteset (vl8m_v2_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 233, 0)
-} 
-
-spritegroup vl8m_v2_spritegroup
-{
-  loading: vl8m_v2_loading_spriteset;
-  loaded: vl8m_v2_traveling_spriteset;
-}
-
-spriteset (vl8m_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 268, 0)
-} 
-
-// нет тока
-spriteset (vl8m_r_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 163, 0)
-} 
-
-// развёрнутый
-spriteset (vl8m_r_v2_spriteset, IMAGEFILE)
-{
-  s8_template(291, 198, 0)
-} 
-
+electric2_1_sprites(8, n8_v1,   32,   40)
+electric2_1_sprites(8, n8_v2,   32,  241)
+electric2_1_sprites(8, n8_v3,   32,  442)
+electric2_1_sprites(8, n8_v4,   32,  643)
+electric2_1_sprites(8, n8_v5,   32,  844)
+electric2_1_sprites(8, n8_v6,   32, 1045)
+electric2_1_sprites(8, vl8m_v1, 32, 1246)
+electric2_1_sprites(8, vl8m_v2, 32, 1447)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl8m_sprites_l,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  (cargo_subtype * 3))
+  cargo_subtype)
 {
-  0: vl8m_notpowered_spriteset;
-  1: vl8m_spritegroup;
-  2: vl8m_speedoverTH_spriteset;
-  3: vl8m_v2_notpowered_spriteset;
-  4: vl8m_v2_spritegroup;
-  5: vl8m_v2_speedoverTH_spriteset;
+  0: vl8m_v1_sprites_left;
+  1: vl8m_v2_sprites_left;
      align_8_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, vl8m_sprites_r,
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
-  (cargo_subtype * 2))
+  cargo_subtype)
 {
-  0: vl8m_r_notpowered_spriteset;
-  1: vl8m_r_spriteset;
-  2: vl8m_r_v2_notpowered_spriteset;
-  3: vl8m_r_v2_spriteset;
+  0: vl8m_v1_sprites_right;
+  2: vl8m_v2_sprites_right;
      align_8_sprites; 
 }
 
@@ -119,336 +38,60 @@ engine_direction_template(vl8m, )
 
 long_vehicle(vl8m)
 
+engine_electric2_1_effect(vl8m, -1, 1)
+
+engine_direction_template(vl8m, _create_effect) 
+
 engine_speed_with_reduce(vl8m, 95, 90, 15)
 
 engine_penalise_speed(vl8m, 2)
 
  // n8 + VL8
 
-// Спрайты
-
-#define IMAGEFILE  "src/electric/n8.png"
-
-// покупка
-purchase_sprites(n8_v1, 0, 0)
-
-// нет тока
-spriteset (n8_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 18, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (n8_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 53, 0)
-} 
-
-spriteset (n8_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 88, 0)
-} 
-
-spritegroup n8_spritegroup
-{
-  loading: n8_loading_spriteset;
-  loaded: n8_traveling_spriteset;
-}
-
-spriteset (n8_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 123, 0)
-} 
-
-// нет тока
-spriteset (n8_r_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 18, 0)
-} 
-
-// развёрнутый
-spriteset (n8_r_spriteset, IMAGEFILE)
-{
-  s8_template(291, 53, 0)
-} 
-
-// нет тока
-spriteset (n8_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 163, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (n8_v2_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 198, 0)
-} 
-
-spriteset (n8_v2_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 233, 0)
-} 
-
-spritegroup n8_v2_spritegroup
-{
-  loading: n8_v2_loading_spriteset;
-  loaded: n8_v2_traveling_spriteset;
-}
-
-spriteset (n8_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 268, 0)
-} 
-
-// нет тока
-spriteset (n8_r_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 163, 0)
-} 
-
-// развёрнутый
-spriteset (n8_r_v2_spriteset, IMAGEFILE)
-{
-  s8_template(291, 198, 0)
-} 
-
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/n8-s1956.png"
-
-// покупка
-purchase_sprites(n8_v3, 0, 0)
-
-// нет тока
-spriteset (n8_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 18, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (n8_v3_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 53, 0)
-} 
-
-spriteset (n8_v3_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 88, 0)
-} 
-
-spritegroup n8_v3_spritegroup
-{
-  loading: n8_v3_loading_spriteset;
-  loaded: n8_v3_traveling_spriteset;
-}
-
-spriteset (n8_v3_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 123, 0)
-} 
-
-// нет тока
-spriteset (n8_r_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 18, 0)
-} 
-
-// развёрнутый
-spriteset (n8_r_v3_spriteset, IMAGEFILE)
-{
-  s8_template(291, 53, 0)
-} 
-
-// нет тока
-spriteset (n8_v4_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 163, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (n8_v4_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 198, 0)
-} 
-
-spriteset (n8_v4_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 233, 0)
-} 
-
-spritegroup n8_v4_spritegroup
-{
-  loading: n8_v4_loading_spriteset;
-  loaded: n8_v4_traveling_spriteset;
-}
-
-spriteset (n8_v4_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 268, 0)
-} 
-
-// нет тока
-spriteset (n8_r_v4_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 163, 0)
-} 
-
-// развёрнутый
-spriteset (n8_r_v4_spriteset, IMAGEFILE)
-{
-  s8_template(291, 198, 0)
-} 
-
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/n8-s1957.png"
-
-// покупка
-purchase_sprites(n8_v5, 0, 0)
-
-// нет тока
-spriteset (n8_v5_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 18, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (n8_v5_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 53, 0)
-} 
-
-spriteset (n8_v5_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 88, 0)
-} 
-
-spritegroup n8_v5_spritegroup
-{
-  loading: n8_v5_loading_spriteset;
-  loaded: n8_v5_traveling_spriteset;
-}
-
-spriteset (n8_v5_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 123, 0)
-} 
-
-// нет тока
-spriteset (n8_r_v5_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 18, 0)
-} 
-
-// развёрнутый
-spriteset (n8_r_v5_spriteset, IMAGEFILE)
-{
-  s8_template(291, 53, 0)
-} 
-
-// нет тока
-spriteset (n8_v6_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(4, 163, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (n8_v6_loading_spriteset, IMAGEFILE)
-{
-  s8_template(4, 198, 0)
-} 
-
-spriteset (n8_v6_traveling_spriteset, IMAGEFILE)
-{
-  s8_template(4, 233, 0)
-} 
-
-spritegroup n8_v6_spritegroup
-{
-  loading: n8_v6_loading_spriteset;
-  loaded: n8_v6_traveling_spriteset;
-}
-
-spriteset (n8_v6_speedoverTH_spriteset, IMAGEFILE)
-{
-  s8_template(4, 268, 0)
-} 
-
-// нет тока
-spriteset (n8_r_v6_notpowered_spriteset, IMAGEFILE)
-{
-  s8_template(291, 163, 0)
-} 
-
-// развёрнутый
-spriteset (n8_r_v6_spriteset, IMAGEFILE)
-{
-  s8_template(291, 198, 0)
-} 
-
-#undef IMAGEFILE
-
-// покупка
 switch (FEAT_TRAINS, SELF, n8_purchase_sprites,
   (current_year >= 1956) +
   (current_year >= 1957))
 {
   0: n8_v1_purchase_sprites;
-  1: n8_v3_purchase_sprites;
-     n8_v5_purchase_sprites;
+  1: n8_v2_purchase_sprites;
+     n8_v3_purchase_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, n8_sprites_l,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 1956) * 6) +
-  ((build_year >= 1957) * 6) +
-  (cargo_subtype * 3))
+  ((build_year >= 1956) * 2) +
+  ((build_year >= 1957) * 2) +
+  cargo_subtype)
 {
-  0: n8_notpowered_spriteset;
-  1: n8_spritegroup;
-  2: n8_speedoverTH_spriteset;
-  3: n8_v2_notpowered_spriteset;
-  4: n8_v2_spritegroup;
-  5: n8_v2_speedoverTH_spriteset;
-  6: n8_v3_notpowered_spriteset;
-  7: n8_v3_spritegroup;
-  8: n8_v3_speedoverTH_spriteset;
-  9: n8_v4_notpowered_spriteset;
- 10: n8_v4_spritegroup;
- 11: n8_v4_speedoverTH_spriteset;
- 12: n8_v5_notpowered_spriteset;
- 13: n8_v5_spritegroup;
- 14: n8_v5_speedoverTH_spriteset;
- 15: n8_v6_notpowered_spriteset;
- 16: n8_v6_spritegroup;
- 17: n8_v6_speedoverTH_spriteset;
+  0: n8_v1_sprites_left;
+  1: n8_v2_sprites_left;
+  2: n8_v3_sprites_left;
+  3: n8_v4_sprites_left;
+  4: n8_v5_sprites_left;
+  5: n8_v6_sprites_left;
      align_8_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, n8_sprites_r,
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
-  ((build_year >= 1956) * 4) +
-  ((build_year >= 1957) * 4) +
-  (cargo_subtype * 2))
+  ((build_year >= 1956) * 2) +
+  ((build_year >= 1957) * 2) +
+  cargo_subtype)
 {
-  0: n8_r_notpowered_spriteset;
-  1: n8_r_spriteset;
-  2: n8_r_v2_notpowered_spriteset;
-  3: n8_r_v2_spriteset;
-  4: n8_r_v3_notpowered_spriteset;
-  5: n8_r_v3_spriteset;
-  6: n8_r_v4_notpowered_spriteset;
-  7: n8_r_v4_spriteset;
-  8: n8_r_v5_notpowered_spriteset;
-  9: n8_r_v5_spriteset;
- 10: n8_r_v6_notpowered_spriteset;
- 11: n8_r_v6_spriteset;
+  0: n8_v1_sprites_right;
+  1: n8_v2_sprites_right;
+  2: n8_v3_sprites_right;
+  3: n8_v4_sprites_right;
+  4: n8_v5_sprites_right;
+  5: n8_v6_sprites_right;
      align_8_sprites; 
 }
 
 engine_direction_template(n8, ) 
 
 long_vehicle(n8)
+
+engine_electric2_1_effect(n8, -1, 1)
+
+engine_direction_template(n8, _create_effect) 
 
 switch (FEAT_TRAINS, SELF, n8_cargo_subtype_text4,
   cargo_subtype)
@@ -513,7 +156,7 @@ item (FEAT_TRAINS, n8)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(148.5, 180/2);
     length: 7;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: n8_sprites;
@@ -527,6 +170,7 @@ item (FEAT_TRAINS, n8)
     speed: n8_speed;
     purchase_speed: n8_purchase_speed;
     bitmask_vehicle_info: n8_bitmask_vehicle_info;
+    create_effect: n8_create_effect_sprites_start;
   }
 }
 
@@ -541,46 +185,23 @@ if (enable_long_names)
 
  // vl8
 
-// Спрайты
-// определены в n8.pnml
-
 switch (FEAT_TRAINS, SELF, vl8_sprites_l1,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  (cargo_subtype * 3))
+  cargo_subtype)
 {
-  0: n8_v5_notpowered_spriteset;
-  1: n8_v5_spritegroup;
-  2: n8_v5_speedoverTH_spriteset;
-  3: n8_v6_notpowered_spriteset;
-  4: n8_v6_spritegroup;
-  5: n8_v6_speedoverTH_spriteset;
-
-  6: vl8m_v2_notpowered_spriteset;
-  7: vl8m_v2_spritegroup;
-  8: vl8m_v2_speedoverTH_spriteset;
-  9: vl8m_notpowered_spriteset;
- 10: vl8m_spritegroup;
- 11: vl8m_speedoverTH_spriteset;
-
+  0: n8_v5_sprites_left;
+  1: n8_v6_sprites_left;
+  2: vl8m_v2_sprites_left;
+  3: vl8m_v1_sprites_left;
      align_8_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, vl8_sprites_r1,
-  (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
-  (cargo_subtype * 2))
+  cargo_subtype)
 {
-  0: n8_r_v5_notpowered_spriteset;
-  1: n8_r_v5_spriteset;
-  2: n8_r_v6_notpowered_spriteset;
-  3: n8_r_v6_spriteset;
-
-  4: vl8m_r_v2_notpowered_spriteset;
-  5: vl8m_r_v2_spriteset;
-  6: vl8m_r_notpowered_spriteset;
-  7: vl8m_r_spriteset;
-
+  0: n8_v5_sprites_right;
+  1: n8_v6_sprites_right;
+  2: vl8m_v2_sprites_right;
+  3: vl8m_v1_sprites_right;
      align_8_sprites; 
 }
 
@@ -601,6 +222,10 @@ switch (FEAT_TRAINS, SELF, vl8_sprites_r,
 engine_direction_template(vl8, ) 
 
 long_vehicle(vl8)
+
+engine_electric2_1_effect(vl8, -1, 1)
+
+engine_direction_template(vl8, _create_effect) 
 
 switch (FEAT_TRAINS, SELF, vl8_refit_cost,
   (((extra_callback_info1 & 0xFF00) == 0x200) || ((extra_callback_info1 & 0xFF00) == 0x300))+
@@ -702,7 +327,7 @@ item (FEAT_TRAINS, vl8)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(148.5, 180/2);
     length: 7;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl8_sprites;
@@ -717,6 +342,7 @@ item (FEAT_TRAINS, vl8)
     purchase_speed: vl8_purchase_speed;
     bitmask_vehicle_info: vl8_bitmask_vehicle_info;
     refit_cost: vl8_refit_cost;
+    create_effect: vl8_create_effect_sprites_start;
   }
 }
 
@@ -767,7 +393,7 @@ item (FEAT_TRAINS, vl8m)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(148.5, 180/2);
     length: 7;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl8m_sprites;
@@ -781,6 +407,7 @@ item (FEAT_TRAINS, vl8m)
     speed: vl8m_speed;
     purchase_speed: vl8m_purchase_speed;
     bitmask_vehicle_info: vl8m_bitmask_vehicle_info;
+    create_effect: vl8m_create_effect_sprites_start;
   }
 }
 
