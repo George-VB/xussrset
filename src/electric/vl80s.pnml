@@ -3,67 +3,24 @@
 // ВЛ80с "Выло" (1979-1995-2003)
 
 #define IMAGEFILE  "src/electric/vl80s.png"
-
-// покупка
 purchase_sprites(vl80s, 0, 0)
 
-// нет тока
-spriteset (vl80s_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(6, 57, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl80s_loading_spriteset, IMAGEFILE)
-{
-  s9_template(6, 124, 0)
-} 
-
-spriteset (vl80s_traveling_spriteset, IMAGEFILE)
-{
-  s9_template(6, 191, 0)
-} 
-
-spritegroup vl80s_spritegroup
-{
-  loading: vl80s_loading_spriteset;
-  loaded: vl80s_traveling_spriteset;
-}
-
-spriteset (vl80s_speedoverTH_spriteset, IMAGEFILE)
-{
-  s9_template(6, 258, 0)
-} 
-
-// нет тока
-spriteset (vl80s_r_notpowered_spriteset, IMAGEFILE)
-{
-  s9_template(437, 57, 0)
-} 
-
-// развёрнутый
-spriteset (vl80s_r_spriteset, IMAGEFILE)
-{
-  s9_template(437, 124, 0)
-} 
-
+electric2_1_sprites(9, vl80s_v1, 32,  40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl80s_sprites_l,
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) )
-{ 0: vl80s_notpowered_spriteset;
-  1: vl80s_spritegroup;
-     vl80s_speedoverTH_spriteset;}
+switch (FEAT_TRAINS, SELF, vl80s_sprites_l, 0)
+{ vl80s_v1_sprites_left; }
 
-switch (FEAT_TRAINS, SELF, vl80s_sprites_r,
-  ((!(vehicle_is_not_powered || vehicle_is_in_depot))) )
-{ 0: vl80s_r_notpowered_spriteset;
-     vl80s_r_spriteset;}
+switch (FEAT_TRAINS, SELF, vl80s_sprites_r, 0)
+{ vl80s_v1_sprites_right;}
 
 engine_direction_template(vl80s, ) 
 
 long_vehicle(vl80s)
+
+engine_electric2_1_effect(vl80s, -2, 4)
+
+engine_direction_template(vl80s, _create_effect) 
 
 engine_speed_with_reduce(vl80s, 110, 100, 30)
 
@@ -97,7 +54,7 @@ item (FEAT_TRAINS, vl80s)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(201.0, 92);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl80s_sprites;
@@ -110,6 +67,7 @@ item (FEAT_TRAINS, vl80s)
     speed: vl80s_speed;
     purchase_speed: vl80s_purchase_speed;
     bitmask_vehicle_info: vl80s_bitmask_vehicle_info;
+    create_effect: vl80s_create_effect_sprites_start;
   }
 }
 
