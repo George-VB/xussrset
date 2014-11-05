@@ -3,18 +3,16 @@
 // ВЛ60к - первый массовый отечественный электровоз переменного тока.
 
 #define IMAGEFILE  "src/electric/vl60k.png"
-
 purchase_sprites(vl60k_v1, 0, 0)
 purchase_sprites(vl60k_v2, 100, 0)
 
-electric1_2_sprites(12, vl60k_v1, 5, 21)
-electric1_2_sprites(12, vl60k_v2, 5, 309)
-electric1_2_sprites(12, vl60k_v3, 5, 605)
-electric1_2_sprites(12, vl60k_v4, 5, 902)
-electric1_2_sprites(12, vl60k_v5, 5, 1192)
-electric1_2_sprites(12, vl60k_v6, 5, 1481)
-
-#undef IMAGEFILE
+electric1_2_sprites(12, vl60k_v1, 32,   40)
+electric1_2_sprites(12, vl60k_v2, 32,  375)
+electric1_2_sprites(12, vl60k_v3, 32,  710)
+electric1_2_sprites(12, vl60k_v4, 32, 1045)
+electric1_2_sprites(12, vl60k_v5, 32, 1380)
+electric1_2_sprites(12, vl60k_v6, 32, 1715)
+#undef IMAGEFILE                  
 
 switch (FEAT_TRAINS, SELF, vl60k_purchase_sprites,
   (current_year >= 1972) )
@@ -23,7 +21,7 @@ switch (FEAT_TRAINS, SELF, vl60k_purchase_sprites,
      vl60k_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl60k_sprites_start,
+switch (FEAT_TRAINS, SELF, vl60k_sprites_l,
   (LOAD_TEMP(2) >= date(1972, 1, 1)) + 
   (cargo_subtype * 2) )
 {
@@ -38,7 +36,42 @@ switch (FEAT_TRAINS, SELF, vl60k_sprites_start,
      align_12_sprites; 
 }
 
-long_vehicle(vl60k)
+switch (FEAT_TRAINS, SELF, vl60k_sprites_r,
+  (LOAD_TEMP(2) >= date(1972, 1, 1)) + 
+  (cargo_subtype * 2) )
+{
+  0: vl60k_v1_sprites_right;
+  1: vl60k_v2_sprites_right;
+  2: vl60k_v3_sprites_right;
+  3: vl60k_v4_sprites_right;
+  4: vl60k_v5_sprites_right;
+  5: vl60k_v5_sprites_right;
+  6: vl60k_v6_sprites_right;
+  7: vl60k_v6_sprites_right;
+     align_12_sprites; 
+}
+
+engine_direction_template(vl60k, ) 
+
+engine_RND_direction_template(vl60k, 5, 3) 
+
+long_vehicle_sp(vl60k)
+
+engine_electric1_2_effect(vl60k, -2, 7, -2, 7)
+
+engine_direction_template(vl60k, _create_effect)
+
+switch (FEAT_TRAINS, SELF, vl60k_create_effect_1RND, 
+  (random_bits % 8) < 5 )
+{
+  0: vl60k_create_effect_sprites_l;
+     vl60k_create_effect_sprites_r;
+}
+ 
+switch (FEAT_TRAINS, PARENT, vl60k_create_effect,  
+  count_veh_id(vl60k))                                
+{ 1: vl60k_create_effect_1RND;
+     vl60k_create_effect_sprites_start; }
 
 switch (FEAT_TRAINS, SELF, vl60k_cargo_subtype_text2,
   cargo_subtype)
@@ -92,10 +125,10 @@ item (FEAT_TRAINS, vl60k)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(258.0, 138);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
     cargo_allow_refit: [MAIL];
     default_cargo_type: MAIL;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl60k_sprites;
@@ -109,6 +142,7 @@ item (FEAT_TRAINS, vl60k)
     bitmask_vehicle_info: vl60k_bitmask_vehicle_info;
     cargo_subtype_text: vl60k_cargo_subtype_text;
     cargo_capacity: return 0;
+    create_effect: vl60k_create_effect;
   }
 }
 
