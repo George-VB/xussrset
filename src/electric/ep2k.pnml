@@ -5,15 +5,14 @@
 #define IMAGEFILE  "src/electric/ep2k.png"
 
 // покупка
-purchase_sprites(ep2k_v1, 0, 0)
-purchase_sprites(ep2k_v2, 0, 307)
-purchase_sprites(ep2k_v4, 101, 307)
+purchase_sprites(ep2k_v1,   0, 0)
+purchase_sprites(ep2k_v2, 100, 0)
+purchase_sprites(ep2k_v3, 200, 0)
 
-electric1_2_sprites(13, ep2k_v1, 0, 37)
-electric1_2_sprites(13, ep2k_v2, 0, 344)
-electric1_2_sprites(13, ep2k_v3, 0, 634)
-electric1_2_sprites(13, ep2k_v4, 0, 913)
-
+electric1_2_sprites_new(13, ep2k_v1, 32,  40)
+electric1_2_sprites_new(13, ep2k_v2, 32, 241)
+electric1_2_sprites_new(13, ep2k_v3, 32, 442)
+electric1_2_sprites_new(13, ep2k_v4, 32, 643)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, ep2k_purchase_sprites,
@@ -22,10 +21,10 @@ switch (FEAT_TRAINS, SELF, ep2k_purchase_sprites,
 {
   0: ep2k_v1_purchase_sprites;
   1: ep2k_v2_purchase_sprites;
-     ep2k_v4_purchase_sprites;
+     ep2k_v3_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, ep2k_sprites2,
+switch (FEAT_TRAINS, SELF, ep2k_sprites_l2,
   cargo_subtype)
 {
   0: ep2k_v2_sprites_left;
@@ -34,17 +33,56 @@ switch (FEAT_TRAINS, SELF, ep2k_sprites2,
      align_13_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, ep2k_sprites_start,
+switch (FEAT_TRAINS, SELF, ep2k_sprites_l,
   (build_year>= 2009) +
   (build_year>= 2012) )
 {
   0: ep2k_v1_sprites_left;
-  1: ep2k_sprites2;
+  1: ep2k_sprites_l2;
   2: ep2k_v4_sprites_left;
      align_13_sprites; 
 }
 
-long_vehicle(ep2k)
+switch (FEAT_TRAINS, SELF, ep2k_sprites_r2,
+  cargo_subtype)
+{
+  0: ep2k_v2_sprites_right;
+  1: ep2k_v3_sprites_right;
+  2: ep2k_v4_sprites_right;
+     align_13_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, ep2k_sprites_r,
+  (build_year>= 2009) +
+  (build_year>= 2012) )
+{
+  0: ep2k_v1_sprites_right;
+  1: ep2k_sprites_r2;
+  2: ep2k_v4_sprites_right;
+     align_13_sprites; 
+}
+
+engine_direction_template(ep2k, ) 
+
+engine_RND_direction_template(ep2k, 5, 3) 
+
+long_vehicle_sp(ep2k)
+
+engine_electric1_2_effect(ep2k, -2, 7, -2, 7)
+
+engine_direction_template(ep2k, _create_effect)
+
+switch (FEAT_TRAINS, SELF, ep2k_create_effect_1RND, 
+  (random_bits % 8) < 5 )
+{
+  0: ep2k_create_effect_sprites_l;
+     ep2k_create_effect_sprites_r;
+}
+ 
+switch (FEAT_TRAINS, PARENT, ep2k_create_effect,  
+  count_veh_id(ep2k))                                
+{ 1: ep2k_create_effect_1RND;
+     ep2k_create_effect_sprites_start; }
 
 switch (FEAT_TRAINS, SELF, ep2k_cargo_subtype_text4,
   cargo_subtype)
@@ -109,7 +147,7 @@ item (FEAT_TRAINS, ep2k)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(167.0, 135);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
     cargo_allow_refit: [PASS];
     default_cargo_type: PASS;
     cargo_capacity: 1;
@@ -126,6 +164,7 @@ item (FEAT_TRAINS, ep2k)
     bitmask_vehicle_info: ep2k_bitmask_vehicle_info;
     cargo_capacity: return 0;
     cargo_subtype_text: ep2k_cargo_subtype_text;
+    create_effect: ep2k_create_effect;
   }
 }
 

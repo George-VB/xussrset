@@ -1,4 +1,4 @@
- /// code definition 
+ /// code definition  
 
 // Выбор ориентации кабины секции для СМЕ (схема без альтернатив в СМЕ)
 
@@ -864,7 +864,25 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_a
 {  1: any_start_stop;                                                                                 \
       name##_start_stop2; }                                                                           \
 
-// эффекты. Искрение (правая и левая секции). Левая секция искрит тлько на малой скорости
+// эффекты. Искрение (правая и левая ориентации секции). 
+//          Искрят по-очереди (псевдослучайно) на малой скорости оба, на большой только 2-ой 
+
+#define engine_electric1_2_effect(name, left, left2, right, right2)                                       \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l3, electric_create_effect(left)) { return 1; }   \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l2, electric_create_effect(left2)) { return 1; }  \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_r3, electric_create_effect(right)) { return 1; }  \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_r2, electric_create_effect(right2)) { return 1; } \
+switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_l1, animation_counter % 2)                      \
+{ 0: name##_create_effect_sprites_l3; name##_create_effect_sprites_l2; }                                  \
+switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_l, current_speed > threshold_of_speed())        \
+{ 0: name##_create_effect_sprites_l1; name##_create_effect_sprites_l2; }                                  \
+switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_r1, animation_counter % 2)                      \
+{ 0: name##_create_effect_sprites_r3; name##_create_effect_sprites_r2; }                                  \
+switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_r, current_speed > threshold_of_speed())        \
+{ 0: name##_create_effect_sprites_r1; name##_create_effect_sprites_r2; }                                  \
+
+// эффекты. Искрение (правая и левая секции). На первой секции искрит только 2-ой пантограф, 
+//          на второй искрят по-очереди (псевдослучайно) на малой скорости оба, на большой только 2-ой
 
 #define engine_electric2_1_effect(name, left, right)                                                      \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l2, electric_create_effect(left)) { return 1; }   \
@@ -872,6 +890,8 @@ switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_l, current_speed > thr
 { 0: name##_create_effect_sprites_l2; return 0; }                                                         \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_r, electric_create_effect(right)) { return 1; }   \
                                                                                                          
+// эффекты. Искрение (правая и левая секции). Левая секция искрит тлько на малой скорости
+
 #define engine_electric2_2_effect(name, left, right, right2)                                              \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l, electric_create_effect(left)) { return 1; }    \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_r3, electric_create_effect(right)) { return 1; }  \
