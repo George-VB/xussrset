@@ -893,7 +893,7 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * new_train_a
 // эффекты. Искрение (правая и левая ориентации секции). 
 //          Искрят по-очереди (псевдослучайно) на малой скорости оба, на большой только 2-ой 
 
-#define engine_electric1_2_effect(name, left, left2, right, right2)                                       \
+#define engine_electric1r_2_effect(name, left, left2, right, right2)                                      \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l3, electric_create_effect(left)) { return 1; }   \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l2, electric_create_effect(left2)) { return 1; }  \
 switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_r3, electric_create_effect(right)) { return 1; }  \
@@ -906,6 +906,14 @@ switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_r1, animation_counter % 
 { 0: name##_create_effect_sprites_r3; name##_create_effect_sprites_r2; }                                  \
 switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_r, current_speed > threshold_of_speed())        \
 { 0: name##_create_effect_sprites_r1; name##_create_effect_sprites_r2; }                                  \
+
+#define engine_electric1_2_effect(name, left, left2)                                                      \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l3, electric_create_effect(left)) { return 1; }   \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l2, electric_create_effect(left2)) { return 1; }  \
+switch (FEAT_TRAINS, SELF, name##_create_effect_sprites_l1, animation_counter % 2)                        \
+{ 0: name##_create_effect_sprites_l3; name##_create_effect_sprites_l2; }                                  \
+switch (FEAT_TRAINS, PARENT, name##_create_effect_sprites_start, current_speed > threshold_of_speed())    \
+{ 0: name##_create_effect_sprites_l1; name##_create_effect_sprites_l2; }                                  \
 
 // эффекты. Искрение (правая и левая секции). Левая секция искрит тлько на малой скорости
 
