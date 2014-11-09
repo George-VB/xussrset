@@ -1,72 +1,20 @@
  // e5k
 
-// Спрайты
 // Э5К "Ермак" - односекционный грузопассажирский электровоз переменного тока.
 
 #define IMAGEFILE  "src/electric/e5k.png"
-
-// покупка
 purchase_sprites(e5k, 0, 0)
 
-// нет тока
-spriteset (e5k_notpowered_spriteset, IMAGEFILE)
-{
-  s11_template(0, 42, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (e5k_loading_spriteset, IMAGEFILE)
-{
-  s11_template(0, 109, 0)
-} 
-
-spriteset (e5k_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(0, 176, 0)
-} 
-
-spritegroup e5k_spritegroup
-{
-  loading: e5k_loading_spriteset;
-  loaded: e5k_traveling_spriteset;
-}
-
-spriteset (e5k_speedoverTH_spriteset, IMAGEFILE)
-{
-  s11_template(0, 243, 0)
-} 
-
-// развёрнутый: погрузка/перемещение
-spriteset (e5k_r_loading_spriteset, IMAGEFILE)
-{
-  s11_template(440, 109, 0)
-} 
-
-spriteset (e5k_r_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(440, 176, 0)
-} 
-
-spriteset (e5k_r_speedoverTH_spriteset, IMAGEFILE)
-{
-  s11_template(440, 243, 0)
-} 
-
+electric1r_2_sprites(11, e5k,  32,   40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, e5k_sprites_start,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)))
-)
-{
-  0: e5k_notpowered_spriteset;
-  1: e5k_spritegroup;
-  2: e5k_speedoverTH_spriteset;
-     align_11_sprites; 
-}
+engine_RNDany_direction_template(e5k, 5, 3) 
 
-long_vehicle(e5k)
+long_vehicle_sp(e5k)
+
+engine_electric1r_2_effect(e5k, -1, 4, -1, 4)
+
+engine_RNDany_effect_direction_template(e5k, 5, 3) 
 
 engine_speed(e5k, 110)
 
@@ -95,10 +43,10 @@ item (FEAT_TRAINS, e5k)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(212.0, 100);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
     cargo_allow_refit: [MAIL];
     default_cargo_type: MAIL;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: e5k_sprites;
@@ -111,6 +59,7 @@ item (FEAT_TRAINS, e5k)
     purchase_speed: e5k_purchase_speed;
     bitmask_vehicle_info: e5k_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: e5k_create_effect;
   }
 }
 
