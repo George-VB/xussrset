@@ -1,126 +1,14 @@
  // ep10
 
-// Спрайты
-
 #define IMAGEFILE  "src/electric/ep10.png"
+purchase_sprites(ep10_v1,   0, 0)
+purchase_sprites(ep10_v2, 100, 0)
+purchase_sprites(ep10_v3, 200, 0)
 
-// покупка
-purchase_sprites(ep10_v1, 1000, 0)
-
-// нет тока
-spriteset (ep10_notpowered_spriteset, IMAGEFILE)
-{
-  s13_template(0, 37, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (ep10_loading_spriteset, IMAGEFILE)
-{
-  s13_template(0, 104, 0)
-} 
-
-spriteset (ep10_traveling_spriteset, IMAGEFILE)
-{
-  s13_template(0, 171, 0)
-} 
-
-spritegroup ep10_spritegroup
-{
-  loading: ep10_loading_spriteset;
-  loaded: ep10_traveling_spriteset;
-}
-
-spriteset (ep10_speedoverTH_spriteset, IMAGEFILE)
-{
-  s13_template(0, 238, 0)
-} 
-
-// 2: покупка
-purchase_sprites(ep10_v2, 1000, 20)
-
-// нет тока
-spriteset (ep10_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s13_template(0, 330, 0)
-}
- 
-// обычный: погрузка/перемещение
-spriteset (ep10_v2_loading_spriteset, IMAGEFILE)
-{
-  s13_template(0, 397, 0)
-} 
-
-spriteset (ep10_v2_traveling_spriteset, IMAGEFILE)
-{
-  s13_template(0, 464, 0)
-} 
-
-spritegroup ep10_v2_spritegroup
-{
-  loading: ep10_v2_loading_spriteset;
-  loaded: ep10_v2_traveling_spriteset;
-}
-
-spriteset (ep10_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s13_template(0, 531, 0)
-} 
-
-// 3: покупка
-purchase_sprites(ep10_v3, 1000, 40)
-
-// нет тока
-spriteset (ep10_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s13_template(0, 617, 0)
-}
- 
-// обычный: погрузка/перемещение
-spriteset (ep10_v3_loading_spriteset, IMAGEFILE)
-{
-  s13_template(0, 684, 0)
-} 
-
-spriteset (ep10_v3_traveling_spriteset, IMAGEFILE)
-{
-  s13_template(0, 751, 0)
-} 
-
-spritegroup ep10_v3_spritegroup
-{
-  loading: ep10_v3_loading_spriteset;
-  loaded: ep10_v3_traveling_spriteset;
-}
-
-spriteset (ep10_v3_speedoverTH_spriteset, IMAGEFILE)
-{
-  s13_template(0, 818, 0)
-} 
-
+electric1r_2_sprites(13, ep10_v1,  32,   40)
+electric1r_2_sprites(13, ep10_v2,  32,  241)
+electric1r_2_sprites(13, ep10_v3,  32,  442)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, ep10_sprites_start,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) *
-    ((current_railtype != ERD1) && (current_railtype != ERD2) &&
-      (current_railtype != ERD3)) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  ((build_year >= 2004) * 3) +
-  ((build_year >= 2006) * 3) )
-{
-  0: ep10_notpowered_spriteset;
-  1: ep10_spritegroup;
-  2: ep10_speedoverTH_spriteset;
-  3: ep10_v2_notpowered_spriteset;
-  4: ep10_v2_spritegroup;
-  5: ep10_v2_speedoverTH_spriteset;
-  6: ep10_v3_notpowered_spriteset;
-  7: ep10_v3_spritegroup;
-  8: ep10_v3_speedoverTH_spriteset;
-     align_13_sprites; 
-}
-
-long_vehicle(ep10)
 
 switch (FEAT_TRAINS, SELF, ep10_purchase_sprites,
   (current_year >= 2004) +
@@ -130,6 +18,34 @@ switch (FEAT_TRAINS, SELF, ep10_purchase_sprites,
   1: ep10_v2_purchase_sprites;
      ep10_v3_purchase_sprites;
 }
+
+switch (FEAT_TRAINS, SELF, ep10_sprites_left,
+  (build_year >= 2004) +
+  (build_year >= 2006) )
+{
+  0: ep10_v1_sprites_left;
+  1: ep10_v2_sprites_left;
+  2: ep10_v3_sprites_left;
+     align_13_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, ep10_sprites_right,
+  (build_year >= 2004) +
+  (build_year >= 2006) )
+{
+  0: ep10_v1_sprites_right;
+  1: ep10_v2_sprites_right;
+  2: ep10_v3_sprites_right;
+     align_13_sprites; 
+}
+
+engine_RNDany_direction_template(ep10, 5, 3) 
+
+long_vehicle_sp(ep10)
+
+engine_electric1r_2_effect(ep10, -1, 6, -1, 6)
+
+engine_RNDany_effect_direction_template(ep10, 5, 3) 
 
 engine_speed_with_reduce(ep10, 160, 140, 20)
 
@@ -159,10 +75,10 @@ item (FEAT_TRAINS, ep10)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(300.0, 135);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
     cargo_allow_refit: [PASS];
     default_cargo_type: PASS;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: ep10_sprites;
@@ -175,6 +91,7 @@ item (FEAT_TRAINS, ep10)
     purchase_speed: ep10_purchase_speed;
     bitmask_vehicle_info: ep10_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: ep10_create_effect;
   }
 }
 
