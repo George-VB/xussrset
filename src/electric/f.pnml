@@ -1,138 +1,19 @@
  // f
 
-// Спрайты
-
 #define IMAGEFILE  "src/electric/f.png"
+purchase_sprites(f,    0, 0)
+purchase_sprites(fp, 100, 0)
 
-// покупка
-purchase_sprites(f, 930, 0)
-
-// нет тока
-spriteset (f_notpowered_spriteset, IMAGEFILE)
-{
-  s14_template(0, 17, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (f_loading_spriteset, IMAGEFILE)
-{
-  s14_template(0, 84, 0)
-} 
-
-spriteset (f_traveling_spriteset, IMAGEFILE)
-{
-  s14_template(0, 151, 0)
-} 
-
-spritegroup f_spritegroup
-{
-  loading: f_loading_spriteset;
-  loaded: f_traveling_spriteset;
-}
-
-spriteset (f_speedoverTH_spriteset, IMAGEFILE)
-{
-  s14_template(0, 218, 0)
-} 
-
-// нет тока
-spriteset (f_r_notpowered_spriteset, IMAGEFILE)
-{
-  s14_template(440, 17, 0)
-} 
-
-// развёрнутый: погрузка/перемещение
-spriteset (f_r_loading_spriteset, IMAGEFILE)
-{
-  s14_template(440, 84, 0)
-} 
-
-spriteset (f_r_traveling_spriteset, IMAGEFILE)
-{
-  s14_template(440, 151, 0)
-} 
-
-spritegroup f_r_spritegroup
-{
-  loading: f_r_loading_spriteset;
-  loaded: f_r_traveling_spriteset;
-}
-
-spriteset (f_r_speedoverTH_spriteset, IMAGEFILE)
-{
-  s14_template(440, 218, 0)
-} 
-
-// нет тока
-spriteset (f_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s14_template(0, 295, 0)
-} 
-
-// 2: обычный: погрузка/перемещение
-spriteset (f_v2_loading_spriteset, IMAGEFILE)
-{
-  s14_template(0, 362, 0)
-} 
-
-spriteset (f_v2_traveling_spriteset, IMAGEFILE)
-{
-  s14_template(0, 429, 0)
-} 
-
-spritegroup f_v2_spritegroup
-{
-  loading: f_v2_loading_spriteset;
-  loaded: f_v2_traveling_spriteset;
-}
-
-spriteset (f_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s14_template(0, 496, 0)
-} 
-
-// нет тока
-spriteset (f_r_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s14_template(440, 295, 0)
-} 
-
-// развёрнутый: погрузка/перемещение
-spriteset (f_r_v2_loading_spriteset, IMAGEFILE)
-{
-  s14_template(440, 362, 0)
-} 
-
-spriteset (f_r_v2_traveling_spriteset, IMAGEFILE)
-{
-  s14_template(440, 429, 0)
-} 
-
-spritegroup f_r_v2_spritegroup
-{
-  loading: f_r_v2_loading_spriteset;
-  loaded: f_r_v2_traveling_spriteset;
-}
-
-spriteset (f_r_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s14_template(440, 496, 0)
-} 
-
-
+electric1r_2_sprites(14, f_v1,  32,   40)
+electric1r_2_sprites(14, f_v2,  32,  375)
+electric1r_2_sprites(14, fp_v1, 32,  710)
+electric1r_2_sprites(14, fp_v2, 32, 1045)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, f_sprites_left,
-  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
-  cargo_subtype * 3 )
+switch (FEAT_TRAINS, SELF, f_sprites_left, cargo_subtype)
 {
-  0: f_notpowered_spriteset;
-  1: f_spritegroup;
-  2: f_speedoverTH_spriteset;
-  3: f_v2_notpowered_spriteset;
-  4: f_v2_spritegroup;
-  5: f_v2_speedoverTH_spriteset;
+  0: f_v1_sprites_left;
+  1: f_v2_sprites_left;
      align_14_sprites;
 }
 
@@ -141,18 +22,18 @@ switch (FEAT_TRAINS, SELF, f_sprites_right,
     (!(vehicle_is_not_powered || vehicle_is_in_depot)) +
   cargo_subtype * 3 )
 {
-  0: f_r_notpowered_spriteset;
-  1: f_r_spritegroup;
-  2: f_r_speedoverTH_spriteset;
-  3: f_r_v2_notpowered_spriteset;
-  4: f_r_v2_spritegroup;
-  5: f_r_v2_speedoverTH_spriteset;
+  0: f_v1_sprites_right;
+  1: f_v2_sprites_right;
      align_14_sprites;
 }
 
-engine_direction_template(f, ) 
+engine_RNDany_direction_template(f, 5, 3) 
 
-long_vehicle(f)
+long_vehicle_sp(f)
+
+engine_electric1r_2_effect(f, -1, 7, -1, 7)
+
+engine_RNDany_effect_direction_template(f, 5, 3) 
 
 switch (FEAT_TRAINS, SELF, f_cargo_subtype_text,
   cargo_subtype)
@@ -194,7 +75,7 @@ item (FEAT_TRAINS, f)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(333.0, 138);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: f_sprites;
@@ -208,6 +89,7 @@ item (FEAT_TRAINS, f)
     speed: f_speed;
     purchase_speed: f_purchase_speed;
     bitmask_vehicle_info: f_bitmask_vehicle_info;
+    create_effect: f_create_effect;
   }
 }
 
@@ -217,6 +99,97 @@ if (enable_long_names)
   {
     property
     { name: string(STR_F_NAME_LONG); }
+  }
+}
+
+ // fp
+
+switch (FEAT_TRAINS, SELF, fp_sprites_left, cargo_subtype)
+{
+  0: fp_v1_sprites_left;
+  1: fp_v2_sprites_left;
+     align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, fp_sprites_right, cargo_subtype)
+{
+  0: fp_v1_sprites_right;
+  1: fp_v2_sprites_right;
+     align_14_sprites;
+}
+
+engine_RNDany_direction_template(fp, 5, 3) 
+
+long_vehicle_sp(fp)
+
+engine_electric1r_2_effect(fp, -1, 7, -1, 7)
+
+engine_RNDany_effect_direction_template(fp, 5, 3) 
+
+switch (FEAT_TRAINS, SELF, fp_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_84);
+  1: return string(STR_REFIT_TTD_14);
+     return CB_RESULT_NO_TEXT;
+}
+
+engine_speed_with_reduce(fp, 160, 120, 20)
+
+engine_penalise_speed(fp, 2)
+
+item (FEAT_TRAINS, fp) 
+{
+  property
+  {
+    name: string(STR_FP_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1960), 1, 1);
+    vehicle_life: 20;
+    model_life: get_model_life(1960,1960);
+    retire_early: get_retire_early(1960,1960);
+    reliability_decay: 20;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: 112;
+    running_cost_factor: get_electric_running_cost_factor();
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 6090 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    cargo_capacity: 1;
+    weight: 131 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(213.0, 131);
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: fp_sprites;
+    purchase: fp_purchase_sprites;
+    articulated_part: articulated_part_dummy6;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_FP_PURCHASE_HINT);
+    cargo_subtype_text: fp_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: fp_speed;
+    purchase_speed: fp_purchase_speed;
+    bitmask_vehicle_info: fp_bitmask_vehicle_info;
+    create_effect: fp_create_effect;
+  }
+}
+
+if (enable_long_names)
+{
+  item (FEAT_TRAINS, fp)
+  {
+    property
+    { name: string(STR_FP_NAME_LONG); }
   }
 }
 
