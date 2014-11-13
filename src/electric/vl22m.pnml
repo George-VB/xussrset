@@ -3,158 +3,33 @@
 // ВЛ22м (1947-1958) - модернизированная версия ВЛ22
 
 #define IMAGEFILE  "src/electric/vl22m.png"
+purchase_sprites(vl22m_v1,   0, 0)
+purchase_sprites(vl22m_v2, 100, 0)
 
-// покупка
-purchase_sprites(vl22m_v1, 500, 0)
-
-// нет тока
-spriteset (vl22m_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(3, 25, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl22m_loading_spriteset, IMAGEFILE)
-{
-  s10_template(3, 92, 0)
-} 
-
-spriteset (vl22m_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(3, 159, 0)
-} 
-
-spritegroup vl22m_spritegroup
-{
-  loading: vl22m_loading_spriteset;
-  loaded: vl22m_traveling_spriteset;
-}
-
-spriteset (vl22m_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(3, 226, 0)
-} 
-
-// 2: покупка
-purchase_sprites(vl22m_v2, 500, 20)
-
-// нет тока
-spriteset (vl22m_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(3, 302, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl22m_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(3, 369, 0)
-} 
-
-spriteset (vl22m_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(3, 436, 0)
-} 
-
-spritegroup vl22m_v2_spritegroup
-{
-  loading: vl22m_v2_loading_spriteset;
-  loaded: vl22m_v2_traveling_spriteset;
-}
-
-spriteset (vl22m_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(3, 503, 0)
-} 
-
-// 3: нет тока
-spriteset (vl22m_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(3, 575, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl22m_v3_loading_spriteset, IMAGEFILE)
-{
-  s10_template(3, 642, 0)
-} 
-
-spriteset (vl22m_v3_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(3, 709, 0)
-} 
-
-spritegroup vl22m_v3_spritegroup
-{
-  loading: vl22m_v3_loading_spriteset;
-  loaded: vl22m_v3_traveling_spriteset;
-}
-
-spriteset (vl22m_v3_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(3, 776, 0)
-} 
-
-// нет тока
-spriteset (vl22m_v4_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(3, 847, 0)
-} 
-
-// 4: обычный: погрузка/перемещение
-spriteset (vl22m_v4_loading_spriteset, IMAGEFILE)
-{
-  s10_template(3, 914, 0)
-} 
-
-spriteset (vl22m_v4_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(3, 981, 0)
-} 
-
-spritegroup vl22m_v4_spritegroup
-{
-  loading: vl22m_v4_loading_spriteset;
-  loaded: vl22m_v4_traveling_spriteset;
-}
-
-spriteset (vl22m_v4_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(3, 1048, 0)
-} 
-
+electric1_2_sprites(12, vl22m_v1, 32,   40)
+electric1_2_sprites(12, vl22m_v2, 32,  241)
+electric1_2_sprites(12, vl22m_v3, 32,  442)
+electric1_2_sprites(12, vl22m_v4, 32,  643)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl22m_sprites_start,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-
-  ((build_year >= 1972) * 6) +
-  (cargo_subtype * 3)
-)
+  (LOAD_TEMP(2) >= date(1972, 1, 1)) + 
+  (cargo_subtype * 2) )
 {
-  0: vl22m_notpowered_spriteset;
-  1: vl22m_spritegroup;
-  2: vl22m_speedoverTH_spriteset;
-
-  3: vl22m_v3_notpowered_spriteset;
-  4: vl22m_v3_spritegroup;
-  5: vl22m_v3_speedoverTH_spriteset;
-  6: vl22m_v2_notpowered_spriteset;
-  7: vl22m_v2_spritegroup;
-  8: vl22m_v2_speedoverTH_spriteset;
-  9: vl22m_v4_notpowered_spriteset;
-  10: vl22m_v4_spritegroup;
-  11: vl22m_v4_speedoverTH_spriteset;
-      align_10_sprites; 
+  0: vl22m_v1_sprites_left;
+  1: vl22m_v2_sprites_left;
+  2: vl22m_v3_sprites_left;
+  3: vl22m_v4_sprites_left;
+     align_10_sprites; 
 }
 
 long_vehicle(vl22m)
 
+engine_electric1_2_effect(vl22m, -2, 4)
+
 // покупка
 switch (FEAT_TRAINS, SELF, vl22m_purchase_sprites,
-  (current_year >= 1972)
-)
+  current_year >= 1972)
 {
   0: vl22m_v1_purchase_sprites;
      vl22m_v2_purchase_sprites;
@@ -213,7 +88,7 @@ item (FEAT_TRAINS, vl22m)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(151.0, 132);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl22m_sprites;
@@ -229,6 +104,7 @@ item (FEAT_TRAINS, vl22m)
     tractive_effort_coefficient: vl22m_tractive_effort_coefficient;
     purchase_speed: vl22m_purchase_speed;
     bitmask_vehicle_info: vl22m_bitmask_vehicle_info;
+    create_effect: vl22m_create_effect_sprites_start;
   }
 }
 
@@ -240,4 +116,3 @@ if (enable_long_names)
     { name: string(STR_VL22M_NAME_LONG); }
   }
 }
-

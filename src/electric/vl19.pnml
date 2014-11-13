@@ -4,161 +4,53 @@
 // советской разработки.
 
 #define IMAGEFILE  "src/electric/vl19.png"
+purchase_sprites(vl19_v1,   0, 0)
+purchase_sprites(vl19_v2, 100, 0)
 
-// покупка
-purchase_sprites(vl19_v1, 500, 0)
-
-// нет тока
-spriteset (vl19_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(2, 18, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl19_loading_spriteset, IMAGEFILE)
-{
-  s10_template(2, 85, 0)
-} 
-
-spriteset (vl19_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(2, 152, 0)
-} 
-
-spritegroup vl19_spritegroup
-{
-  loading: vl19_loading_spriteset;
-  loaded: vl19_traveling_spriteset;
-}
-
-spriteset (vl19_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(2, 219, 0)
-} 
-
-// 2: покупка
-purchase_sprites(vl19_v2, 500, 20)
-
-// нет тока
-spriteset (vl19_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(2, 287, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl19_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(2, 354, 0)
-} 
-
-spriteset (vl19_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(2, 421, 0)
-} 
-
-spritegroup vl19_v2_spritegroup
-{
-  loading: vl19_v2_loading_spriteset;
-  loaded: vl19_v2_traveling_spriteset;
-}
-
-spriteset (vl19_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(2, 488, 0)
-} 
-
-// 3: нет тока
-spriteset (vl19_v3_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(2, 560, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl19_v3_loading_spriteset, IMAGEFILE)
-{
-  s10_template(2, 627, 0)
-} 
-
-spriteset (vl19_v3_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(2, 694, 0)
-} 
-
-spritegroup vl19_v3_spritegroup
-{
-  loading: vl19_v3_loading_spriteset;
-  loaded: vl19_v3_traveling_spriteset;
-}
-
-spriteset (vl19_v3_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(2, 761, 0)
-} 
-
-// нет тока
-spriteset (vl19_v4_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(2, 836, 0)
-} 
-
-// 4: обычный: погрузка/перемещение
-spriteset (vl19_v4_loading_spriteset, IMAGEFILE)
-{
-  s10_template(2, 903, 0)
-} 
-
-spriteset (vl19_v4_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(2, 970, 0)
-} 
-
-spritegroup vl19_v4_spritegroup
-{
-  loading: vl19_v4_loading_spriteset;
-  loaded: vl19_v4_traveling_spriteset;
-}
-
-spriteset (vl19_v4_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(2, 1037, 0)
-} 
-
+electric1r_2_sprites(10, vl19_v1,   32,   40)
+electric1r_2_sprites(10, vl19_v2,   32,  375)
+electric1r_2_sprites(10, vl19_v3,   32,  710)
+electric1r_2_sprites(10, vl19_v4,   32, 1045)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl19_sprites_start,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-
-  ((build_year >= 1933) * 3) +
-  (cargo_subtype * 3)
-)
-{
-  0: vl19_notpowered_spriteset;
-  1: vl19_spritegroup;
-  2: vl19_speedoverTH_spriteset;
-
-  3: vl19_v2_notpowered_spriteset;
-  4: vl19_v2_spritegroup;
-  5: vl19_v2_speedoverTH_spriteset;
-  6: vl19_v3_notpowered_spriteset;
-  7: vl19_v3_spritegroup;
-  8: vl19_v3_speedoverTH_spriteset;
-  9: vl19_v4_notpowered_spriteset;
-  10: vl19_v4_spritegroup;
-  11: vl19_v4_speedoverTH_spriteset;
-      align_10_sprites; 
-}
-
-long_vehicle(vl19)
-
-// покупка
 switch (FEAT_TRAINS, SELF, vl19_purchase_sprites,
-  (current_year >= 1933) )
+  current_year >= 1933)
 {
   0: vl19_v1_purchase_sprites;
      vl19_v2_purchase_sprites;
 }
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_left,
+  (build_year >= 1933) +
+  cargo_subtype)
+{
+  0: vl19_v1_sprites_left;
+
+  1: vl19_v2_sprites_left;
+  2: vl19_v3_sprites_left;
+  3: vl19_v4_sprites_left;
+     align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_right,
+  (build_year >= 1933) +
+  cargo_subtype)
+{
+  0: vl19_v1_sprites_right;
+
+  1: vl19_v2_sprites_right;
+  2: vl19_v3_sprites_right;
+  3: vl19_v4_sprites_right;
+     align_10_sprites; 
+}
+
+engine_RNDany_direction_template(vl19, 5, 3) 
+
+long_vehicle_sp(vl19)
+
+engine_electric1r_2_effect(vl19, -2, 4, -2, 4)
+
+engine_RNDany_effect_direction_template(vl19, 5, 3) 
 
 switch (FEAT_TRAINS, SELF, vl19_cargo_subtype_text2,
   cargo_subtype)
@@ -207,7 +99,7 @@ item (FEAT_TRAINS, vl19)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(167.0, 117);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl19_sprites;
@@ -221,6 +113,7 @@ item (FEAT_TRAINS, vl19)
     speed: vl19_speed;
     purchase_speed: vl19_purchase_speed;
     bitmask_vehicle_info: vl19_bitmask_vehicle_info;
+    create_effect: vl19_create_effect;
   }
 }
 

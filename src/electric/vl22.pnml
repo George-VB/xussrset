@@ -3,95 +3,30 @@
 // ВЛ22 (1938-1946) - массовый грузопассажирский электровоз
 
 #define IMAGEFILE  "src/electric/vl22.png"
-
-// покупка
 purchase_sprites(vl22, 0, 0)
 
-// нет тока
-spriteset (vl22_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(2, 21, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl22_loading_spriteset, IMAGEFILE)
-{
-  s10_template(2, 88, 0)
-} 
-
-spriteset (vl22_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(2, 155, 0)
-} 
-
-spritegroup vl22_spritegroup
-{
-  loading: vl22_loading_spriteset;
-  loaded: vl22_traveling_spriteset;
-}
-
-spriteset (vl22_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(2, 222, 0)
-} 
-
-// 2: нет тока
-spriteset (vl22_v2_notpowered_spriteset, IMAGEFILE)
-{
-  s10_template(2, 291, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (vl22_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(2, 358, 0)
-} 
-
-spriteset (vl22_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(2, 425, 0)
-} 
-
-spritegroup vl22_v2_spritegroup
-{
-  loading: vl22_v2_loading_spriteset;
-  loaded: vl22_v2_traveling_spriteset;
-}
-
-spriteset (vl22_v2_speedoverTH_spriteset, IMAGEFILE)
-{
-  s10_template(2, 492, 0)
-} 
-
+electric1_2_sprites(12, vl22_v1, 32,   40)
+electric1_2_sprites(12, vl22_v2, 32,  241)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl22_sprites_start,
-  // поправка на нет тока
-  (((LOAD_TEMP(1) > threshold_of_speed()) + 1) *
-    (!(vehicle_is_not_powered || vehicle_is_in_depot))) +
-  (cargo_subtype * 3)
-)
+switch (FEAT_TRAINS, SELF, vl22_sprites_start, cargo_subtype)
 {
-  0: vl22_notpowered_spriteset;
-  1: vl22_spritegroup;
-  2: vl22_speedoverTH_spriteset;
-
-  3: vl22_v2_notpowered_spriteset;
-  4: vl22_v2_spritegroup;
-  5: vl22_v2_speedoverTH_spriteset;
+  0: vl22_v1_sprites_left;
+  1: vl22_v2_sprites_left;
      align_10_sprites; 
 }
 
 long_vehicle(vl22)
+
+engine_electric1_2_effect(vl22, -2, 4)
 
 switch (FEAT_TRAINS, SELF, vl22_cargo_subtype_text,
   cargo_subtype)
 {
   0: return string(STR_REFIT_TTD_53);
   1: return string(STR_REFIT_TTD_96);
-  return CB_RESULT_NO_TEXT;
+     return CB_RESULT_NO_TEXT;
 }
-
 
 engine_speed(vl22, 70)
 
@@ -124,7 +59,7 @@ item (FEAT_TRAINS, vl22)
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(167.0, 132);
     length: 8;
-    visual_effect_and_powered: electric_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: vl22_sprites;
@@ -138,6 +73,7 @@ item (FEAT_TRAINS, vl22)
     speed: vl22_speed;
     purchase_speed: vl22_purchase_speed;
     bitmask_vehicle_info: vl22_bitmask_vehicle_info;
+    create_effect: vl22_create_effect_sprites_start;
   }
 }
 
