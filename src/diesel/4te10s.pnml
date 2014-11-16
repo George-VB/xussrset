@@ -5,7 +5,7 @@ purchase_sprites(_4te10s, 0, 0)
 purchase_sprites(_4te10s_m, 110, 0)
 
 diesel2_sprites(10, _2te10s, 32,  40) 
-buster_sprites(10, _4te10s_m, 447,  40) 
+buster_sprites(10, _4te10s_m, 32, 241) 
 #undef IMAGEFILE
 
 engine_direction_template3m(_2te10s, _4te10s, _4te10s_m, ) 
@@ -88,6 +88,10 @@ engine_direction_template3m(_4te10s, _2te10s, _4te10s_m, )
 
 long_vehicle(_4te10s)
 
+engine_diesel_1_effect(_4te10s, 2, -1, 11)
+
+engine_direction_template(_4te10s, _create_effect) 
+
 // Если хотя бы 4 не следуют др. за др., то не выпускать
 switch (FEAT_TRAINS, PARENT, _4te10s_start_stop5,
 [
@@ -167,7 +171,7 @@ item (FEAT_TRAINS, _4te10s)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(245.0, 138);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
@@ -183,6 +187,7 @@ item (FEAT_TRAINS, _4te10s)
     purchase_speed: _4te10s_purchase_speed;
     bitmask_vehicle_info: _4te10s_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _4te10s_create_effect_sprites_start;
   }
 }
 
@@ -223,6 +228,32 @@ switch (FEAT_TRAINS, SELF, _4te10s_m_sprites_start,
 
 long_vehicle(_4te10s_m)
 
+engine_diesel_1_effect(_4te10s_m, 2, -1, 11)
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_create_effect_sprites2, 
+[  set_offset_to(-2),
+   prev_vehicle_randombits() % 2 ] )
+{
+  1: _4te10s_m_create_effect_sprites_left;
+     _4te10s_m_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_create_effect_sprites1, 
+[  set_offset_to(-4),
+   prev_vehicle_randombits() % 2 ] )
+{
+  1: _4te10s_m_create_effect_sprites_left;
+     _4te10s_m_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_create_effect_sprites_start, 
+[  set_offset_to(-2),
+   prev_vehicle_type_id() == _4te10s_m])
+{
+  1: _4te10s_m_create_effect_sprites1;
+     _4te10s_m_create_effect_sprites2;
+}
+
 engine_speed(_4te10s_m, 100)
 
 engine_penalise_speed5(_4te10s_m, _4te10s, _2te10m, _2te10u, _2te116, 8) 
@@ -250,7 +281,7 @@ item (FEAT_TRAINS, _4te10s_m)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(245.0, 138);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
@@ -266,6 +297,7 @@ item (FEAT_TRAINS, _4te10s_m)
     speed: _4te10s_m_speed;
     bitmask_vehicle_info: _4te10s_m_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _4te10s_m_create_effect_sprites_start;
   }
 }
 

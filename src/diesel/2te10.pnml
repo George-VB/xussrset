@@ -1,109 +1,13 @@
  // 2te10
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/2te10.png"
+purchase_sprites(_2te10_v1,   0, 0)
+purchase_sprites(_2te10_v2, 110, 0)
 
-// покупка
-purchase_sprites(_2te10_v1, 455, 72)
-
-// обычный: погрузка/перемещение
-spriteset (_2te10_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 14, 0)
-} 
-
-spriteset (_2te10_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 80, 0)
-} 
-
-spritegroup _2te10_spritegroup
-{
-  loading: _2te10_loading_spriteset;
-  loaded: _2te10_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te10_r_spriteset, IMAGEFILE)
-{
-  s11_template(423, 14, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2te10_v2_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 151, 0)
-} 
-
-spriteset (_2te10_v2_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 217, 0)
-} 
-
-spritegroup _2te10_v2_spritegroup
-{
-  loading: _2te10_v2_loading_spriteset;
-  loaded: _2te10_v2_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te10_r_v2_spriteset, IMAGEFILE)
-{
-  s11_template(423, 151, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (_2te10_v3_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 288, 0)
-} 
-
-spriteset (_2te10_v3_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 354, 0)
-} 
-
-spritegroup _2te10_v3_spritegroup
-{
-  loading: _2te10_v3_loading_spriteset;
-  loaded: _2te10_v3_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te10_r_v3_spriteset, IMAGEFILE)
-{
-  s11_template(423, 288, 0)
-} 
-
-#undef IMAGEFILE
-#define IMAGEFILE  "src/diesel/2te10-s1972.png"
-
-// 4: покупка
-purchase_sprites(_2te10_v4, 455, 72)
-
-// обычный: погрузка/перемещение
-spriteset (_2te10_v4_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 14, 0)
-} 
-
-spriteset (_2te10_v4_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 80, 0)
-} 
-
-spritegroup _2te10_v4_spritegroup
-{
-  loading: _2te10_v4_loading_spriteset;
-  loaded: _2te10_v4_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te10_r_v4_spriteset, IMAGEFILE)
-{
-  s11_template(423, 14, 0)
-} 
+diesel2_sprites(11, _2te10_v1, 32,   40)
+diesel2_sprites(11, _2te10_v2, 32,  241)
+diesel2_sprites(11, _2te10_v3, 32,  442)
+diesel2_sprites(11, _2te10_v4, 32,  643)
 #undef IMAGEFILE
 
 // покупка
@@ -111,32 +15,38 @@ switch (FEAT_TRAINS, SELF, _2te10_purchase_sprites,
   (current_year >= 1972))
 {
   0: _2te10_v1_purchase_sprites;
-     _2te10_v4_purchase_sprites;
+     _2te10_v2_purchase_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, _2te10_sprites_left,
   ((LOAD_TEMP(2) >= date(1972,1,1)) * 3) +
   (cargo_subtype * ((LOAD_TEMP(2) < date(1972,1,1)))))
 {
-  0: _2te10_spritegroup;
-  1: _2te10_v2_spritegroup;
-  2: _2te10_v3_spritegroup;
-     _2te10_v4_spritegroup;
+  0: _2te10_v1_sprites_left;
+  1: _2te10_v2_sprites_left;
+  2: _2te10_v3_sprites_left;
+  3: _2te10_v4_sprites_left;
+     align_11_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, _2te10_sprites_right,
   ((LOAD_TEMP(2) >= date(1972,1,1)) * 3) +
   (cargo_subtype * ((LOAD_TEMP(2) < date(1972,1,1)))))
 {
-  0: _2te10_r_spriteset;
-  1: _2te10_r_v2_spriteset;
-  2: _2te10_r_v3_spriteset;
-     _2te10_r_v4_spriteset;
+  0: _2te10_v1_sprites_right;
+  1: _2te10_v2_sprites_right;
+  2: _2te10_v3_sprites_right;
+  3: _2te10_v4_sprites_right;
+     align_11_sprites;
 }
 
 engine_direction_template(_2te10, ) 
 
 long_vehicle(_2te10)
+
+engine_diesel_1_effect(_2te10, 2, 0, 11)
+
+engine_direction_template(_2te10, _create_effect) 
 
 switch (FEAT_TRAINS, SELF, _2te10_cargo_subtype_text2,
   cargo_subtype)
@@ -185,7 +95,7 @@ item (FEAT_TRAINS, _2te10)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(265.0, 129);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: _2te10_sprites;
@@ -199,6 +109,7 @@ item (FEAT_TRAINS, _2te10)
     speed: _2te10_speed;
     purchase_speed: _2te10_purchase_speed;
     bitmask_vehicle_info: _2te10_bitmask_vehicle_info;
+    create_effect: _2te10_create_effect_sprites_start;
   }
 }
 
