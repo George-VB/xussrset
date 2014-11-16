@@ -387,25 +387,27 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, dr1a_h_visual_effect_and_powered1,
+engine_diesel_1_effect(dr1a_h, -2, 7, 12)  
+
+switch (FEAT_TRAINS, SELF, dr1a_h_create_effect1,
   (LOAD_TEMP(0) - count_veh_id(dr1a_h) - count_veh_id(dr1a_n)) % 2)
 {
-  0: return diesel_visual_effect_and_powered(-2);
-     return diesel_visual_effect_and_powered(7);
+  0: dr1a_h_create_effect_sprites_left;
+     dr1a_h_create_effect_sprites_right;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1a_h_visual_effect_and_powered0,
+switch (FEAT_TRAINS, PARENT, dr1a_h_create_effect0,
   STORE_TEMP(count_veh_id(dr1a_h) + count_veh_id(dr1a_n), 0))
 {
-  dr1a_h_visual_effect_and_powered1;
+  dr1a_h_create_effect1;
 }
 
 // Визуализируем эффекты тяги только если локомотив - dr1a_h или dr1a_n
-switch (FEAT_TRAINS, PARENT, dr1a_h_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, dr1a_h_create_effect,
   (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) )
 {
-  1: dr1a_h_visual_effect_and_powered0; 
-     return disable_visual_effect_and_powered();
+  1: dr1a_h_create_effect0; 
+     return disable_create_effect();
 } 
 
 // Даём тягу, только если локомотив - dr1a_h или dr1a_n
@@ -568,6 +570,7 @@ item (FEAT_TRAINS, dr1a_h)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(128.0, 60);
     length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: dr1a_h_sprites;
@@ -575,7 +578,7 @@ item (FEAT_TRAINS, dr1a_h)
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: dr1a_can_attach_wagon;
     start_stop: dr1a_h_start_stop;
-    visual_effect_and_powered: dr1a_h_visual_effect_and_powered;
+    create_effect: dr1a_h_create_effect;
     speed: speed_after25_120to110;
     purchase_speed: return 120;
     additional_text: dr1a_h_additional_text;
@@ -612,7 +615,7 @@ item (FEAT_TRAINS, dr1a_n)
     weight: 38 ton;
     engine_class: ENGINE_CLASS_DIESEL;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics
   {
@@ -657,7 +660,7 @@ item (FEAT_TRAINS, dr1a_c)
     weight: 38 ton;
     engine_class: ENGINE_CLASS_DIESEL;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: dr1a_c_sprites;

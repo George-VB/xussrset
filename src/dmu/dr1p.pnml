@@ -109,25 +109,27 @@ switch (FEAT_TRAINS, PARENT, dr1p_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, dr1p_h_visual_effect_and_powered1,
+engine_diesel_1_effect(dr1p_h, -2, 7, 12)  
+
+switch (FEAT_TRAINS, SELF, dr1p_h_create_effect1,
   (LOAD_TEMP(0) - count_veh_id(dr1p_h)) % 2)
 {
-  0: return diesel_visual_effect_and_powered(-2);
-     return diesel_visual_effect_and_powered(7);
+  0: dr1p_h_create_effect_sprites_left;
+     dr1p_h_create_effect_sprites_right;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1p_h_visual_effect_and_powered0,
+switch (FEAT_TRAINS, PARENT, dr1p_h_create_effect0,
   STORE_TEMP(count_veh_id(dr1p_h), 0))
 {
-  dr1p_h_visual_effect_and_powered1;
+  dr1p_h_create_effect1;
 }
 
 // Визуализируем эффекты тяги только если локомотив - dr1p_h
-switch (FEAT_TRAINS, PARENT, dr1p_h_visual_effect_and_powered,
+switch (FEAT_TRAINS, PARENT, dr1p_h_create_effect,
   (vehicle_type_id == dr1p_h) )
 {
-  1: dr1p_h_visual_effect_and_powered0; 
-     return disable_visual_effect_and_powered();
+  1: dr1p_h_create_effect0; 
+     return disable_create_effect();
 } 
 
 // Даём тягу, только если локомотив - dr1p_h
@@ -182,6 +184,7 @@ item (FEAT_TRAINS, dr1p_h)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(128.0, 53.5);
     length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: dr1p_h_sprites;
@@ -189,7 +192,7 @@ item (FEAT_TRAINS, dr1p_h)
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: dr1p_can_attach_wagon;
     start_stop: dr1p_h_start_stop;
-    visual_effect_and_powered: dr1p_h_visual_effect_and_powered;
+    create_effect: dr1p_h_create_effect;
     speed: speed_after25_120to110;
     purchase_speed: return 120;
     additional_text: return string(STR_DR1P_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_6));
@@ -226,7 +229,7 @@ item (FEAT_TRAINS, dr1p_c)
     weight: 34.5 ton;
     engine_class: ENGINE_CLASS_DIESEL;
     length: 8;
-    visual_effect_and_powered: disable_visual_effect_and_powered();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: dr1p_c_sprites;
