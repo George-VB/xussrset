@@ -829,11 +829,6 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 
 
 #define diesel_running_cost(name, weight_limit, rc_max, rc_min, power)                                \
-switch (FEAT_TRAINS, SELF, name##_running_cost_depot,                                                 \
-  vehicle_is_in_depot + (2 * vehicle_is_crashed))                                                     \
-{ 1: return 1;                                                                                        \
-  2: return 5 * rc_max;                                                                               \
-     return rc_min; }                                                                                 \
 switch (FEAT_TRAINS, SELF, name##_running_cost_weight,                                                \
 (LOAD_TEMP(6) * power / LOAD_TEMP(5)) < weight_limit )                                                \
 { 0: return rc_max;                                                                                   \
@@ -849,22 +844,27 @@ switch (FEAT_TRAINS, SELF, name##_running_cost_slope,                           
      name##_running_cost_speed; }                                                                     \
 switch (FEAT_TRAINS, SELF, name##_running_cost_stop,                                                  \
   LOAD_TEMP(1) < 2)                                                                                   \
-{ 1: name##_running_cost_depot;                                                                       \
+{ 1: return rc_min;                                                                                   \
      name##_running_cost_slope; }                                                                     \
 switch (FEAT_TRAINS, SELF, name##_running_cost_service,                                               \
   (current_date > date_of_last_service) && (current_date < date_of_last_service + 2))                 \
 { 1: return 255;                                                                                      \
      name##_running_cost_stop; }                                                                      \
-switch (FEAT_TRAINS, PARENT, name##_running_cost_factor,                                              \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor2,                                             \
 [  STORE_TEMP(current_speed, 1),                                                                      \
    STORE_TEMP(current_max_speed, 2),                                                                  \
    STORE_TEMP(breakdowns_since_last_service, 3),                                                      \
    STORE_TEMP(reliability, 4),                                                                        \
    STORE_TEMP(total_power(), 5),                                                                      \
-   STORE_TEMP((22 * num_vehs_in_consist) + 26, 6),                                                    \
-   LOAD_TEMP(6) <=0 ] )                                                                               \
-{  1: return 3 * rc_max;                                                                              \
-      name##_running_cost_service; }                                                                  \
+   STORE_TEMP((22 * num_vehs_in_consist) + 26, 6)] )                                                  \
+{ name##_running_cost_service; }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor,                                              \
+  vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed))                           \
+{    1: return 1;                                                                                     \
+  2..3: return 5 * rc_max;                                                                            \
+  4..7: return 2000;                                                                                  \
+        name##_running_cost_factor2; }                                                                \
+switch (FEAT_TRAINS, SELF, name##_purchase_running_cost_factor, 0) { return rc_max; }                 \
 
 // не выпускать новые тройники без средней секции
 
