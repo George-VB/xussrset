@@ -828,19 +828,22 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 
 // ввиду отсутсвия переменной для общего веса убрана составляющая веса из формулы. Вернуть при появлении веса.
 
+#define RC_MAX 12/10
+#define RC_MIN 7/10
+
 #define general_running_cost(name, rc_base)                                                           \
 switch (FEAT_TRAINS, SELF, name##_running_cost_speed,                                                 \
   LOAD_TEMP(1) < (LOAD_TEMP(2) * 9 / 10))                                                             \
-{ 1: return rc_base;                                                                                  \
-     return rc_base / 4; }                                                                            \
+{ 1: return rc_base * RC_MAX;                                                                         \
+     return rc_base; }                                                                                \
 switch (FEAT_TRAINS, SELF, name##_running_cost_slope,                                                 \
   (other_veh_z_offset(1) > 0) + (2 * (other_veh_z_offset(1) < 0)))                                    \
-{ 1: return rc_base;                                                                                  \
-  2: return rc_base / 4;                                                                              \
+{ 1: return rc_base * RC_MAX;                                                                         \
+  2: return rc_base;                                                                                  \
      name##_running_cost_speed; }                                                                     \
 switch (FEAT_TRAINS, SELF, name##_running_cost_stop,                                                  \
   LOAD_TEMP(1) < 2)                                                                                   \
-{ 1: return rc_base / 4;                                                                              \
+{ 1: return rc_base * RC_MIN;                                                                         \
      name##_running_cost_slope; }                                                                     \
 switch (FEAT_TRAINS, SELF, name##_running_cost_service,                                               \
   (current_date > date_of_last_service) && (current_date < date_of_last_service + 2))                 \
