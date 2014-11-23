@@ -1,67 +1,13 @@
  // 2te10v
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/2te10v.png"
+purchase_sprites(_2te10v_v1,   0, 0)
+purchase_sprites(_2te10v_v2, 110, 0)
 
-// 1975: покупка
-purchase_sprites(_2te10v_v1, 455, 72)
-
-// обычный: погрузка/перемещение
-spriteset (_2te10v_loading_spriteset, IMAGEFILE)
-{
-  s10_template(4, 16, 0)
-} 
-
-spriteset (_2te10v_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(4, 82, 0)
-} 
-
-spritegroup _2te10v_spritegroup
-{
-  loading: _2te10v_loading_spriteset;
-  loaded: _2te10v_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te10v_r_spriteset, IMAGEFILE)
-{
-  s10_template(423, 16, 0)
-} 
-
-#undef IMAGEFILE
-#define IMAGEFILE  "src/diesel/2te10v-s1978.png"
-
-// 1978: покупка
-purchase_sprites(_2te10v_v2, 455, 72)
-
-// обычный: погрузка/перемещение
-spriteset (_2te10v_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(4, 16, 0)
-} 
-
-spriteset (_2te10v_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(4, 82, 0)
-} 
-
-spritegroup _2te10v_v2_spritegroup
-{
-  loading: _2te10v_v2_loading_spriteset;
-  loaded: _2te10v_v2_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te10v_r_v2_spriteset, IMAGEFILE)
-{
-  s10_template(423, 16, 0)
-} 
-
+diesel2_sprites(10, _2te10v_v1, 32,  40)
+diesel2_sprites(10, _2te10v_v2, 32, 241)
 #undef IMAGEFILE
 
-// покупка
 switch (FEAT_TRAINS, SELF, _2te10v_purchase_sprites,
   (build_year >= 1978) )
 {
@@ -72,20 +18,24 @@ switch (FEAT_TRAINS, SELF, _2te10v_purchase_sprites,
 switch (FEAT_TRAINS, SELF, _2te10v_sprites_left,
   (build_year >= 1978) )
 {
-  0: _2te10v_spritegroup;
-     _2te10v_v2_spritegroup;
+  0: _2te10v_v1_sprites_left;
+     _2te10v_v2_sprites_left;
 }
 
 switch (FEAT_TRAINS, SELF, _2te10v_sprites_right,
   (build_year >= 1978) )
 {
-  0: _2te10v_r_spriteset;
-     _2te10v_r_v2_spriteset;
+  0: _2te10v_v1_sprites_right;
+     _2te10v_v2_sprites_right;
 }
 
 engine_direction_template(_2te10v, ) 
 
 long_vehicle(_2te10v)
+
+engine_diesel_1_effect(_2te10v, 2, -1, 11)
+
+engine_direction_template(_2te10v, _create_effect) 
 
 engine_speed(_2te10v, 100)
 
@@ -114,7 +64,7 @@ item (FEAT_TRAINS, _2te10v)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(248.0, 138);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
@@ -130,6 +80,7 @@ item (FEAT_TRAINS, _2te10v)
     purchase_speed: _2te10v_purchase_speed;
     bitmask_vehicle_info: _2te10v_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _2te10v_create_effect_sprites_start;
   }
 }
 
