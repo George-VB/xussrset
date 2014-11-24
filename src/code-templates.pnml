@@ -853,16 +853,17 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor2,                       
 [  STORE_TEMP(current_speed, 1),                                                                      \
    STORE_TEMP(current_max_speed, 2),                                                                  \
    STORE_TEMP(breakdowns_since_last_service, 3),                                                      \
-   STORE_TEMP(reliability, 4),                                                                        \
-   STORE_TEMP(total_power(), 5)] )                                                                    \
+   STORE_TEMP(reliability, 4)] )                                                                      \
 { name##_running_cost_service; }                                                                      \
-switch (FEAT_TRAINS, PARENT, name##_running_cost_factor,                                              \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                                             \
   vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed))                           \
 {    1: return 1;                                                                                     \
   2..3: return 5 * rc_base;                                                                           \
   4..7: return rc_base+ 2000;                                                                         \
         name##_running_cost_factor2; }                                                                \
-switch (FEAT_TRAINS, SELF, name##_purchase_running_cost_factor, 0) { return rc_base; }                \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
+{ 0: return rc_base;                                                                                  \
+     name##_running_cost_factor1; }                                                                   \
 
 // не выпускать новые тройники без средней секции
 
