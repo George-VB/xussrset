@@ -99,9 +99,9 @@ switch (FEAT_TRAINS, SELF, fd_all_power,
   (build_year >= 1936) +
   (build_year >= 1940))
 {
-  0: return 2600;
-  1: return 3000;
-     return 3100;
+  0: return get_power_in_cb(2600);
+  1: return get_power_in_cb(3000);
+     return get_power_in_cb(3100);
 }
 
 switch (FEAT_TRAINS, SELF, fd_all_cost_factor,
@@ -161,8 +161,8 @@ switch (FEAT_TRAINS, SELF, fd_fd20_tractive_effort_coefficient,
 switch (FEAT_TRAINS, SELF, fd_fd20_power,
   (build_year >= 1936))
 {
-  0: return 2600;
-     return 3000;
+  0: return get_power_in_cb(2600);
+     return get_power_in_cb(3000);
 }
 
 switch (FEAT_TRAINS, SELF, fd_fd20_cost_factor,
@@ -174,7 +174,50 @@ switch (FEAT_TRAINS, SELF, fd_fd20_cost_factor,
      return 28;
 }
 
-general_running_cost(fd_all, 551)
+general_running_cost(fd_all_v1, 551)
+general_running_cost(fd_all_v2, 632)
+general_running_cost(fd_all_v3, 636)
+general_running_cost(fd_all_v4, 766)
+
+switch (FEAT_TRAINS, SELF, fd_all_running_cost_factor,
+  (current_year >= 1932) +
+  (current_year >= 1936) +
+  (current_year >= 1940))
+{
+  0: fd_all_v1_running_cost_factor;
+  1: fd_all_v2_running_cost_factor;
+  2: fd_all_v3_running_cost_factor;
+     fd_all_v4_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_purchase_running_cost_factor,
+  (current_year >= 1932) +
+  (current_year >= 1936) +
+  (current_year >= 1940))
+{
+  0: fd_all_v1_purchase_running_cost_factor;
+  1: fd_all_v2_purchase_running_cost_factor;
+  2: fd_all_v3_purchase_running_cost_factor;
+     fd_all_v4_purchase_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, fd_fd20_running_cost_factor,
+  (current_year >= 1932) +
+  (current_year >= 1936))
+{
+  0: fd_all_v1_running_cost_factor;
+  1: fd_all_v2_running_cost_factor;
+     fd_all_v3_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, fd_fd20_purchase_running_cost_factor,
+  (current_year >= 1932) +
+  (current_year >= 1936))
+{
+  0: fd_all_v1_purchase_running_cost_factor;
+  1: fd_all_v2_purchase_running_cost_factor;
+     fd_all_v3_purchase_running_cost_factor;
+}
 
 item (FEAT_TRAINS, fd_fd20) {
   property {
@@ -218,8 +261,8 @@ item (FEAT_TRAINS, fd_fd20) {
     power: fd_fd20_power;
     cost_factor: fd_fd20_cost_factor;
     create_effect: fd_all_create_effect;
-    running_cost_factor: fd_all_running_cost_factor;
-    purchase_running_cost_factor: fd_all_purchase_running_cost_factor;
+    running_cost_factor: fd_fd20_running_cost_factor;
+    purchase_running_cost_factor: fd_fd20_purchase_running_cost_factor;
   }
   livery_override(unitb) {
     length: fd_all_tender_length;

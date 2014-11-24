@@ -31,8 +31,8 @@ switch (FEAT_TRAINS, SELF, l_e_tractive_effort_coefficient,
 switch (FEAT_TRAINS, SELF, l_e_power,
   (build_year >= 1923))
 {
-  0: return 1500;
-     return 1600;
+  0: return get_power_in_cb(1500);
+     return get_power_in_cb(1600);
 }
 
 switch (FEAT_TRAINS, SELF, l_e_cost_factor,
@@ -55,7 +55,22 @@ switch (FEAT_TRAINS, SELF, l_e_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-general_running_cost(l_e, 332)
+general_running_cost(l_e_v1, 332)
+general_running_cost(l_e_v2, 376)
+
+switch (FEAT_TRAINS, SELF, l_e_running_cost_factor,
+  current_year >= 1923)
+{
+  0: l_e_v1_running_cost_factor;
+     l_e_v2_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, l_e_purchase_running_cost_factor,
+  current_year >= 1923)
+{
+  0: l_e_v1_purchase_running_cost_factor;
+     l_e_v2_purchase_running_cost_factor;
+}
 
 item (FEAT_TRAINS, l_e) {
   property {
@@ -129,6 +144,8 @@ switch (FEAT_TRAINS, SELF, lp_e_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+general_running_cost(lp_e, 376)
+
 item (FEAT_TRAINS, lp_e) {
   property {
     name: string(STR_LP_NAME);
@@ -168,8 +185,8 @@ item (FEAT_TRAINS, lp_e) {
     cargo_capacity: return 0;
     cost_factor: l_e_cost_factor;
     create_effect: l_e_create_effect;
-    running_cost_factor: l_e_running_cost_factor;
-    purchase_running_cost_factor: l_e_purchase_running_cost_factor;
+    running_cost_factor: lp_e_running_cost_factor;
+    purchase_running_cost_factor: lp_e_purchase_running_cost_factor;
   }
 
   livery_override(unitb) {
