@@ -1,94 +1,17 @@
  // 2te116u
 
-// Спрайты
 // До 2009 года первый набор, с 2009 года второй набор
 
 #define IMAGEFILE  "src/diesel/2te116u.png"
+purchase_sprites(_2te116u_v1,   0,  0)
+purchase_sprites(_2te116u_v2, 110,  0)
+purchase_sprites(_2te116u_v3, 220,  0)
 
-// покупка
-purchase_sprites(_2te116u_v1, 452, 91)
-
-// обычный: погрузка/перемещение
-spriteset (_2te116u_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 14, 0)
-} 
-
-spriteset (_2te116u_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 80, 0)
-} 
-
-spritegroup _2te116u_spritegroup
-{
-  loading: _2te116u_loading_spriteset;
-  loaded: _2te116u_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te116u_r_spriteset, IMAGEFILE)
-{
-  s11_template(423, 14, 0)
-} 
-
-#undef IMAGEFILE
-#define IMAGEFILE  "src/diesel/2te116u-s2009.png"
-
-// покупка
-purchase_sprites(_2te116u_v2, 500, 100)
-
-// обычный: погрузка/перемещение
-spriteset (_2te116u_v2_loading_spriteset, IMAGEFILE)
-{
-  s11_template(86, 14, 0)
-} 
-
-spriteset (_2te116u_v2_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(86, 80, 0)
-} 
-
-spritegroup _2te116u_v2_spritegroup
-{
-  loading: _2te116u_v2_loading_spriteset;
-  loaded: _2te116u_v2_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te116u_r_v2_spriteset, IMAGEFILE)
-{
-  s11_template(505, 14, 0)
-} 
-
-// покупка
-purchase_sprites(_2te116u_v3, 500, 120)
-
-// обычный: погрузка/перемещение
-spriteset (_2te116u_v3_loading_spriteset, IMAGEFILE)
-{
-  s11_template(86, 166, 0)
-} 
-
-spriteset (_2te116u_v3_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(86, 232, 0)
-} 
-
-spritegroup _2te116u_v3_spritegroup
-{
-  loading: _2te116u_v3_loading_spriteset;
-  loaded: _2te116u_v3_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te116u_r_v3_spriteset, IMAGEFILE)
-{
-  s11_template(505, 166, 0)
-} 
-
+diesel2_sprites(11, _2te116u_v1,  32,   40)
+diesel2_sprites(11, _2te116u_v2,  32,  241)
+diesel2_sprites(11, _2te116u_v3,  32,  442)
 #undef IMAGEFILE
 
-// покупка
 switch (FEAT_TRAINS, SELF, _2te116u_purchase_sprites,
   (current_year >= 2009) +
   (current_year >= 2011) )
@@ -102,9 +25,9 @@ switch (FEAT_TRAINS, SELF, _2te116u_sprites_left,
   (LOAD_TEMP(2) >= date(2009,1,1)) +
   (build_year >= 2011) )
 {
-  0: _2te116u_spritegroup;
-  1: _2te116u_v2_spritegroup;
-  2: _2te116u_v3_spritegroup;
+  0: _2te116u_v1_sprites_left;
+  1: _2te116u_v2_sprites_left;
+  2: _2te116u_v3_sprites_left;
      align_11_sprites;
 }
 
@@ -112,15 +35,19 @@ switch (FEAT_TRAINS, SELF, _2te116u_sprites_right,
   (LOAD_TEMP(2) >= date(2009,1,1)) +
   (build_year >= 2011) )
 {
-  0: _2te116u_r_spriteset;
-  1: _2te116u_r_v2_spriteset;
-  2: _2te116u_r_v3_spriteset;
+  0: _2te116u_v1_sprites_right;
+  1: _2te116u_v2_sprites_right;
+  2: _2te116u_v3_sprites_right;
      align_11_sprites;
 }
 
 engine_direction_template2(_2te116u, _2te116, ) 
 
 long_vehicle(_2te116u)
+
+engine_diesel_1_effect(_2te116u, 2, -1, 11)
+
+engine_direction_template2(_2te116u, _2te116, _create_effect) 
 
 switch (FEAT_TRAINS, SELF, _2te116u_cargo_subtype_text,
   (build_year >= 2011) +
@@ -137,8 +64,7 @@ engine_penalise_speed(_2te116u, 4)
 
 general_running_cost(_2te116u, 524)
 
-item (FEAT_TRAINS, _2te116u)
-{
+item (FEAT_TRAINS, _2te116u) {
   property {
     name: string(STR_2TE116U_NAME);
     climates_available: get_climates_available();
@@ -158,7 +84,7 @@ item (FEAT_TRAINS, _2te116u)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(324.0, 138);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
@@ -176,12 +102,12 @@ item (FEAT_TRAINS, _2te116u)
     bitmask_vehicle_info: _2te116u_bitmask_vehicle_info;
     cargo_subtype_text: _2te116u_cargo_subtype_text;
     cargo_capacity: return 0;
+    create_effect: _2te116u_create_effect_sprites_start;
   }
 }
 
 if (enable_long_names) {
-  item (FEAT_TRAINS, _2te116u)
-  {
+  item (FEAT_TRAINS, _2te116u) {
     property { name: string(STR_2TE116U_NAME_LONG); }
   }
 }

@@ -1,34 +1,9 @@
  // 2te70
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/2te70.png"
-
-// покупка
 purchase_sprites(_2te70, 0, 0)
 
-// обычный: погрузка/перемещение
-spriteset (_2te70_loading_spriteset, IMAGEFILE)
-{
-  s13_template(0, 31, 0)
-} 
-
-spriteset (_2te70_traveling_spriteset, IMAGEFILE)
-{
-  s13_template(0, 98, 0)
-} 
-
-spritegroup _2te70_sprites_left
-{
-  loading: _2te70_loading_spriteset;
-  loaded: _2te70_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (_2te70_sprites_right, IMAGEFILE)
-{
-  s13_template(455, 31, 0)
-} 
+diesel2_sprites(13, _2te70,  32,   40)
 
 #undef IMAGEFILE
 
@@ -36,14 +11,17 @@ engine_direction_template(_2te70, )
 
 long_vehicle(_2te70)
 
+engine_diesel_1_effect(_2te70, 4, 1, 12)
+
+engine_direction_template(_2te70, _create_effect) 
+
 engine_speed(_2te70, 110)
 
 engine_penalise_speed(_2te70, 4)
 
 general_running_cost(_2te70, 584)
 
-item (FEAT_TRAINS, _2te70)
-{
+item (FEAT_TRAINS, _2te70) {
   property {
     name: string(STR_2TE70_NAME);
     climates_available: get_climates_available();
@@ -64,7 +42,7 @@ item (FEAT_TRAINS, _2te70)
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(304.0, 141);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
@@ -81,12 +59,12 @@ item (FEAT_TRAINS, _2te70)
     running_cost_factor: _2te70_running_cost_factor;
     bitmask_vehicle_info: _2te70_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: _2te70_create_effect_sprites_start;
   }
 }
 
 if (enable_long_names) {
-  item (FEAT_TRAINS, _2te70)
-  {
+  item (FEAT_TRAINS, _2te70) {
     property { name: string(STR_2TE70_NAME_LONG); }
   }
 }
