@@ -1,59 +1,103 @@
- // te1
+ // da
 
-// Спрайты
+#define IMAGEFILE  "src/diesel/te1.png"
+purchase_sprites(da, 0, 0)
+purchase_sprites(te1, 100, 0)
 
-#define IMAGEFILE  "src/diesel/da-te1.png"
-
-// покупка
-purchase_sprites(te1, 283, 113)
-
-// обычный
-spriteset (te1_spriteset, IMAGEFILE)
-{
-  s10_template(0, 69, 0)
-} 
-
-// развёрнутый
-spriteset (te1_r_spriteset, IMAGEFILE)
-{
-  s10_template(440, 69, 0)
-} 
-
-// обычный 2
-spriteset (te1_2_spriteset, IMAGEFILE)
-{
-  s10_template(0, 138, 0)
-} 
-
-// развёрнутый 2
-spriteset (te1_r2_spriteset, IMAGEFILE)
-{
-  s10_template(440, 138, 0)
-} 
-
-// обычный 3
-spriteset (te1_3_spriteset, IMAGEFILE)
-{
-  s10_template(0, 207, 0)
-} 
-
-// развёрнутый 3
-spriteset (te1_r3_spriteset, IMAGEFILE)
-{
-  s10_template(440, 207, 0)
-} 
-
+diesel1r_sprites(10, da,     32,  40)
+diesel1r_sprites(10, te1_v1, 32, 241)
+diesel1r_sprites(10, te1_v2, 32, 442)
+diesel1r_sprites(10, te1_v3, 32, 643)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, te1_sprites_start,
-  cargo_subtype)
-{
-  0: te1_spriteset;
-  1: te1_2_spriteset;
-     te1_3_spriteset;
+engine_RNDany_direction_template(da, 1, 1) 
+
+long_vehicle_sp(da)
+
+engine_diesel_1_effect(da, 0, 1, 10)
+
+engine_RNDany_effect_direction_template(da, 1, 1) 
+
+engine_speed(da, 96)
+
+engine_penalise_speed(da, 2)
+
+general_running_cost(da, 206)
+
+item (FEAT_TRAINS, da) {
+  property {
+    name: string(STR_DA_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1945), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1945,1945);
+    retire_early: get_retire_early(1945,1945);
+    reliability_decay: 20;
+    cost_factor: 24;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 800 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 121 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(160.0, 121);
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: da_sprites;
+    purchase: da_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_DA_PURCHASE_HINT);
+    speed: da_speed;
+    purchase_speed: da_purchase_speed;
+    running_cost_factor: da_running_cost_factor;
+    bitmask_vehicle_info: da_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: da_create_effect;
+  }
 }
 
-long_vehicle(te1)
+if (enable_long_names) {
+  item (FEAT_TRAINS, da) {
+    property { name: string(STR_DA_NAME_LONG); }
+  }
+}
+
+ // te1
+
+switch (FEAT_TRAINS, SELF, te1_sprites_left,
+  cargo_subtype)
+{
+  0: te1_v1_sprites_left;
+  1: te1_v2_sprites_left;
+  2: te1_v3_sprites_left;
+     align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, te1_sprites_right,
+  cargo_subtype)
+{
+  0: te1_v1_sprites_right;
+  1: te1_v2_sprites_right;
+  2: te1_v3_sprites_right;
+     align_10_sprites;
+}
+
+engine_RNDany_direction_template(te1, 1, 1) 
+
+long_vehicle_sp(te1)
+
+engine_diesel_1_effect(te1, 0, 1, 10)
+
+engine_RNDany_effect_direction_template(te1, 1, 1) 
 
 switch (FEAT_TRAINS, SELF, te1_cargo_subtype_text,
   cargo_subtype)
@@ -109,6 +153,7 @@ item (FEAT_TRAINS, te1) {
     purchase_speed: te1_purchase_speed;
     running_cost_factor: te1_running_cost_factor;
     bitmask_vehicle_info: te1_bitmask_vehicle_info;
+    create_effect: te1_create_effect;
   }
 }
 
