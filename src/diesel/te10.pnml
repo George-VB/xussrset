@@ -1,136 +1,51 @@
 ﻿ // te10
 
-// Спрайты
-
 #define IMAGEFILE  "src/diesel/te10.png"
+purchase_sprites(te10_v1,   0, 0)
+purchase_sprites(te10_v2, 100, 0)
 
-// покупка
-purchase_sprites(te10_v1, 478, 96)
-
-// обычный: погрузка/перемещение
-spriteset (te10_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 14, 0)
-} 
-
-spriteset (te10_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 80, 0)
-} 
-
-spritegroup te10_spritegroup
-{
-  loading: te10_loading_spriteset;
-  loaded: te10_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (te10_r_spriteset, IMAGEFILE)
-{
-  s11_template(423, 14, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (te10_v2_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 151, 0)
-} 
-
-spriteset (te10_v2_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 217, 0)
-} 
-
-spritegroup te10_v2_spritegroup
-{
-  loading: te10_v2_loading_spriteset;
-  loaded: te10_v2_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (te10_r_v2_spriteset, IMAGEFILE)
-{
-  s11_template(423, 151, 0)
-} 
-
-#undef IMAGEFILE
-#define IMAGEFILE  "src/diesel/te10-s1972.png"
-
-// 3: покупка
-purchase_sprites(te10_v3, 478, 96)
-
-// обычный: погрузка/перемещение
-spriteset (te10_v3_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 14, 0)
-} 
-
-spriteset (te10_v3_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 80, 0)
-} 
-
-spritegroup te10_v3_spritegroup
-{
-  loading: te10_v3_loading_spriteset;
-  loaded: te10_v3_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (te10_r_v3_spriteset, IMAGEFILE)
-{
-  s11_template(423, 14, 0)
-} 
-
-// обычный: погрузка/перемещение
-spriteset (te10_v4_loading_spriteset, IMAGEFILE)
-{
-  s11_template(4, 151, 0)
-} 
-
-spriteset (te10_v4_traveling_spriteset, IMAGEFILE)
-{
-  s11_template(4, 217, 0)
-} 
-
-spritegroup te10_v4_spritegroup
-{
-  loading: te10_v4_loading_spriteset;
-  loaded: te10_v4_traveling_spriteset;
-}
-
-// развёрнутый
-spriteset (te10_r_v4_spriteset, IMAGEFILE)
-{
-  s11_template(423, 151, 0)
-} 
-
+diesel1r_sprites(11, te10_v1, 32,   40)
+diesel1r_sprites(11, te10_v2, 32,  241)
+diesel1r_sprites(11, te10_v3, 32,  442)
+diesel1r_sprites(11, te10_v4, 32,  643)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, te10_sprites_start,
-  (position_in_consist > 0) +
-  ((LOAD_TEMP(2) >= date(1972,1,1)) * 4) +
-  cargo_subtype * 2 )
-{
-  0: te10_spritegroup;
-  1: te10_r_spriteset;
-  2: te10_v2_spritegroup;
-  3: te10_r_v2_spriteset;
-  4: te10_v3_spritegroup;
-  5: te10_r_v3_spriteset;
-  6: te10_v4_spritegroup;
-     te10_r_v4_spriteset;
-}
-
-long_vehicle(te10)
-
-// покупка
 switch (FEAT_TRAINS, SELF, te10_purchase_sprites,
   current_year >= 1972)
 {
   0: te10_v1_purchase_sprites;
-     te10_v3_purchase_sprites;
+     te10_v2_purchase_sprites;
 }
+
+switch (FEAT_TRAINS, SELF, te10_sprites_left,
+  build_year >= 1972 ? cargo_subtype + 2 :
+  LOAD_TEMP(2) >= date(1972,1,1) ? 3 - cargo_subtype : cargo_subtype)
+{
+  0: te10_v1_sprites_left;
+  1: te10_v2_sprites_left;
+  2: te10_v3_sprites_left;
+  3: te10_v4_sprites_left;
+     align_11_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, te10_sprites_right,
+  build_year >= 1972 ? cargo_subtype + 2 :
+  LOAD_TEMP(2) >= date(1972,1,1) ? 3 - cargo_subtype : cargo_subtype)
+{
+  0: te10_v1_sprites_right;
+  1: te10_v2_sprites_right;
+  2: te10_v3_sprites_right;
+  3: te10_v4_sprites_right;
+     align_11_sprites; 
+}
+
+engine_RNDany_direction_template(te10, 5, 3) 
+
+long_vehicle_sp(te10)
+
+engine_diesel_1_effect(te10, 3, 0, 12)
+
+engine_RNDany_effect_direction_template(te10, 5, 3) 
 
 switch (FEAT_TRAINS, SELF, te10_cargo_subtype_text3,
   cargo_subtype)
@@ -185,7 +100,7 @@ item (FEAT_TRAINS, te10) {
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(245.0, 138);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: te10_sprites;
@@ -200,6 +115,7 @@ item (FEAT_TRAINS, te10) {
     purchase_speed: te10_purchase_speed;
     running_cost_factor: te10_running_cost_factor;
     bitmask_vehicle_info: te10_bitmask_vehicle_info;
+    create_effect: te10_create_effect;
   }
 }
 
