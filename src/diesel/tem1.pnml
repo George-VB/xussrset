@@ -1,106 +1,13 @@
 ﻿ // tem1
 
-// Спрайты
-
-// 2 окраса в зависимости от года выпуска
-
 #define IMAGEFILE  "src/diesel/tem1.png"
+purchase_sprites(tem1_v1,   0, 0)
+purchase_sprites(tem1_v2, 100, 0)
 
-// покупка
-purchase_sprites(tem1_v1, 0, 0)
-
-// обычный: погрузка/перемещение
-spriteset (tem1_loading_spriteset, IMAGEFILE)
-{
-  s10_template(135, 29, 0)
-} 
-
-spriteset (tem1_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(135, 96, 0)
-} 
-
-spritegroup tem1_spritegroup
-{
-  loading: tem1_loading_spriteset;
-  loaded: tem1_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tem1_r_loading_spriteset, IMAGEFILE)
-{
-  s10_template(570, 29, 0)
-} 
-
-spriteset (tem1_r_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(570, 96, 0)
-} 
-
-spritegroup tem1_r_spritegroup
-{
-  loading: tem1_r_loading_spriteset;
-  loaded: tem1_r_traveling_spriteset;
-}
-
-// покупка
-purchase_sprites(tem1_v2, 0, 20)
-
-// обычный: погрузка/перемещение
-spriteset (tem1_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(135, 163, 0)
-} 
-
-spriteset (tem1_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(135, 230, 0)
-} 
-
-spritegroup tem1_v2_spritegroup
-{
-  loading: tem1_v2_loading_spriteset;
-  loaded: tem1_v2_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tem1_r_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(570, 163, 0)
-} 
-
-spriteset (tem1_r_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(570, 230, 0)
-} 
-
-spritegroup tem1_r_v2_spritegroup
-{
-  loading: tem1_r_v2_loading_spriteset;
-  loaded: tem1_r_v2_traveling_spriteset;
-}
-
+diesel1r_sprites(10, tem1_v1, 32,  40)
+diesel1r_sprites(10, tem1_v2, 32, 241)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, tem1_sprites_left,
-  build_year >= 1960 )
-{
-  0: tem1_spritegroup;
-     tem1_v2_spritegroup;
-}
-
-switch (FEAT_TRAINS, SELF, tem1_sprites_right,
-  build_year >= 1960)
-{
-  0: tem1_r_spritegroup;
-     tem1_r_v2_spritegroup;
-}
-
-engine_direction_template(tem1, ) 
-
-long_vehicle(tem1)
-
-// покупка
 switch (FEAT_TRAINS, SELF, tem1_purchase_sprites,
   build_year >= 1960)
 {
@@ -108,7 +15,32 @@ switch (FEAT_TRAINS, SELF, tem1_purchase_sprites,
      tem1_v2_purchase_sprites;
 }
 
-// уменьшаем массу до 120 выпущенным после 1965 года
+switch (FEAT_TRAINS, SELF, tem1_sprites_left,
+  build_year >= 1960 )
+{
+  0: tem1_v1_sprites_left;
+     tem1_v2_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, tem1_sprites_right,
+  build_year >= 1960)
+{
+  0: tem1_v1_sprites_right;
+     tem1_v2_sprites_right;
+}
+
+engine_direction_template(tem1, ) 
+
+engine_RND_direction_template(tem1, 1, 1) 
+
+long_vehicle_sp(tem1)
+
+engine_diesel_1_effect(tem1, 1, 0, 11)
+
+engine_direction_template(tem1, _create_effect) 
+
+engine_RND_effect_direction_template(tem1, 1, 1) 
+
 switch (FEAT_TRAINS, SELF, tem1_weight,
   build_year >= 1960)
 {
@@ -150,10 +82,10 @@ item (FEAT_TRAINS, tem1) {
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(120.0, 124);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: tem1_sprites;
@@ -169,6 +101,7 @@ item (FEAT_TRAINS, tem1) {
     tractive_effort_coefficient: tem1_tractive_effort_coefficient;
     bitmask_vehicle_info: tem1_bitmask_vehicle_info;
     cargo_capacity: return 0;
+    create_effect: tem1_create_effect;
   }
 }
 

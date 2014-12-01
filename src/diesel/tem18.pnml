@@ -1,145 +1,42 @@
 ﻿ // tem18
 
-// Спрайты
-
-// 2 окраса в зависимости от года выпуска
-
 #define IMAGEFILE  "src/diesel/tem18.png"
-
-// покупка
 purchase_sprites(tem18, 0, 0)
 
-// Окрас 1
-
-// обычный: погрузка/перемещение
-spriteset (tem18_loading_spriteset, IMAGEFILE)
-{
-  s10_template(0, 29, 0)
-} 
-
-spriteset (tem18_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(0, 96, 0)
-} 
-
-spritegroup tem18_spritegroup
-{
-  loading: tem18_loading_spriteset;
-  loaded: tem18_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tem18_r_loading_spriteset, IMAGEFILE)
-{
-  s10_template(435, 29, 0)
-} 
-
-spriteset (tem18_r_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(435, 96, 0)
-} 
-
-spritegroup tem18_r_spritegroup
-{
-  loading: tem18_r_loading_spriteset;
-  loaded: tem18_r_traveling_spriteset;
-}
-
-// Окрас 2
-
-// обычный: погрузка/перемещение
-spriteset (tem18_v2_loading_spriteset, IMAGEFILE)
-{
-  s10_template(0, 191, 0)
-} 
-
-spriteset (tem18_v2_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(0, 258, 0)
-} 
-
-spritegroup tem18_v2_spritegroup
-{
-  loading: tem18_v2_loading_spriteset;
-  loaded: tem18_v2_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tem18_v2_r_loading_spriteset, IMAGEFILE)
-{
-  s10_template(435, 191, 0)
-} 
-
-spriteset (tem18_v2_r_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(435, 258, 0)
-} 
-
-spritegroup tem18_v2_r_spritegroup
-{
-  loading: tem18_v2_r_loading_spriteset;
-  loaded: tem18_v2_r_traveling_spriteset;
-}
-
-// Окрас 3
-
-// обычный: погрузка/перемещение
-spriteset (tem18_v3_loading_spriteset, IMAGEFILE)
-{
-  s10_template(0, 353, 0)
-} 
-
-spriteset (tem18_v3_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(0, 420, 0)
-} 
-
-spritegroup tem18_v3_spritegroup
-{
-  loading: tem18_v3_loading_spriteset;
-  loaded: tem18_v3_traveling_spriteset;
-}
-
-// развёрнутый: погрузка/перемещение
-spriteset (tem18_v3_r_loading_spriteset, IMAGEFILE)
-{
-  s10_template(435, 353, 0)
-} 
-
-spriteset (tem18_v3_r_traveling_spriteset, IMAGEFILE)
-{
-  s10_template(435, 420, 0)
-} 
-
-spritegroup tem18_v3_r_spritegroup
-{
-  loading: tem18_v3_r_loading_spriteset;
-  loaded: tem18_v3_r_traveling_spriteset;
-}
-
+diesel1r_sprites(10, tem18_v1, 32,  40)
+diesel1r_sprites(10, tem18_v2, 32, 241)
+diesel1r_sprites(10, tem18_v3, 32, 442)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, tem18_sprites_left,
   cargo_subtype)
 {
-  0: tem18_spritegroup;
-  1: tem18_v2_spritegroup;
-  2: tem18_v3_spritegroup;
+  0: tem18_v1_sprites_left;
+  1: tem18_v2_sprites_left;
+  2: tem18_v3_sprites_left;
      align_10_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, tem18_sprites_right,
   cargo_subtype)
 {
-  0: tem18_r_spritegroup;
-  1: tem18_v2_r_spritegroup;
-  2: tem18_v3_r_spritegroup;
+  0: tem18_v1_sprites_right;
+  1: tem18_v2_sprites_right;
+  2: tem18_v3_sprites_right;
      align_10_sprites; 
 }
 
 engine_direction_template(tem18, ) 
 
-long_vehicle(tem18)
+engine_RND_direction_template(tem18, 1, 1) 
+
+long_vehicle_sp(tem18)
+
+engine_diesel_1_effect(tem18, 2, 0, 11)
+
+engine_direction_template(tem18, _create_effect) 
+
+engine_RND_effect_direction_template(tem18, 1, 1) 
  
 switch (FEAT_TRAINS, SELF, tem18_cargo_subtype_text,
   cargo_subtype)
@@ -176,10 +73,10 @@ item (FEAT_TRAINS, tem18) {
     engine_class: ENGINE_CLASS_DIESEL;
     tractive_effort_coefficient: get_tec(206.0, 126);
     length: 8;
-    visual_effect_and_powered: diesel_visual_effect_and_powered(0);
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
     cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
   }
   graphics {
     default: tem18_sprites;
@@ -194,6 +91,7 @@ item (FEAT_TRAINS, tem18) {
     bitmask_vehicle_info: tem18_bitmask_vehicle_info;
     cargo_subtype_text: tem18_cargo_subtype_text;
     cargo_capacity: return 0;
+    create_effect: tem18_create_effect;
   }
 }
 
