@@ -135,11 +135,26 @@ switch (FEAT_TRAINS, SELF, tep70_articulated_part,
      articulated_part_dummy4;
 }
 
+switch (FEAT_TRAINS, SELF, tep70_cost_factor,
+  build_year >= 1978)
+{
+  0: return 64;
+     return 58;
+}
+
 engine_speed_with_reduce_and_pre_model(tep70, 160, 140, 25, 7, 1978)
 
 engine_penalise_speed(tep70, 2)
 
-general_running_cost(tep70, 630)
+general_running_cost(tep70_v1, 630)
+general_running_cost(tep70_v2, 571)
+
+switch (FEAT_TRAINS, SELF, tep70_running_cost_factor,
+  build_year >= 1978)
+{
+  0: tep70_v1_running_cost_factor;
+     tep70_v2_running_cost_factor;
+}
 
 item (FEAT_TRAINS, tep70) {
   property {
@@ -171,6 +186,7 @@ item (FEAT_TRAINS, tep70) {
     default: tep70_sprites;
     purchase: tep70_purchase_sprites;
     can_attach_wagon: any_can_attach_wagon;
+    cost_factor: tep70_cost_factor;
     start_stop: any_start_stop;
     additional_text: tep70_additional_text;
     cargo_subtype_text: tep70_cargo_subtype_text;

@@ -16,7 +16,7 @@ switch (FEAT_TRAINS, SELF, tem1_purchase_sprites,
 }
 
 switch (FEAT_TRAINS, SELF, tem1_sprites_left,
-  build_year >= 1960 )
+  build_year >= 1960)
 {
   0: tem1_v1_sprites_left;
      tem1_v2_sprites_left;
@@ -42,25 +42,39 @@ engine_direction_template(tem1, _create_effect)
 engine_RND_effect_direction_template(tem1, 1, 1) 
 
 switch (FEAT_TRAINS, SELF, tem1_weight,
-  build_year >= 1960)
+  build_year >= 1965)
 {
   1: return 120;
      return 124;
 }
 
-// меняем tec выпущенным после 1965 года из-за смены массы
 switch (FEAT_TRAINS, SELF, tem1_tractive_effort_coefficient,
-  build_year >= 1960)
+  build_year >= 1965)
 {
   0: return get_tec_int(120.0, 124);
      return get_tec_int(120.0, 120);
+}
+
+switch (FEAT_TRAINS, SELF, tem1_cost_factor,
+  build_year >= 1965)
+{
+  0: return 17;
+     return 18;
 }
 
 engine_speed_change_build_after(tem1, 90, 100, 1965)       
 
 engine_penalise_speed(tem1, 2)
 
-general_running_cost(tem1, 129)
+general_running_cost(tem1_v1, 129)
+general_running_cost(tem1_v2, 134)
+
+switch (FEAT_TRAINS, SELF, tem1_running_cost_factor,
+  build_year >= 1965)
+{
+  0: tem1_v1_running_cost_factor;
+     tem1_v2_running_cost_factor;
+}
 
 item (FEAT_TRAINS, tem1) {
   property {
@@ -90,6 +104,7 @@ item (FEAT_TRAINS, tem1) {
   graphics {
     default: tem1_sprites;
     purchase: tem1_purchase_sprites;
+    cost_factor: tem1_cost_factor;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;

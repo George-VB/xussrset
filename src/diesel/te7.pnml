@@ -100,11 +100,26 @@ switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text,
      te7_cargo_subtype_text5;
 }
 
+switch (FEAT_TRAINS, SELF, te7_cost_factor,
+  build_year >= 1962)
+{
+  0: return 26;
+     return 31;
+}
+
 engine_speed_with_reduce_and_pre_model_no_reduce(te7, 100, 110, 25, 140, 1962)
 
 engine_penalise_speed(te7, 2)
 
-general_running_cost(te7, 303)
+general_running_cost(te7_v1, 256)
+general_running_cost(te7_v2, 303)
+
+switch (FEAT_TRAINS, SELF, te7_running_cost_factor,
+  build_year >= 1962)
+{
+  0: te7_v1_running_cost_factor;
+     te7_v2_running_cost_factor;
+}
 
 item (FEAT_TRAINS, te7) {
   property {
@@ -134,6 +149,7 @@ item (FEAT_TRAINS, te7) {
   graphics {
     default: te7_sprites;
     purchase: te7_purchase_sprites;
+    cost_factor: te7_cost_factor;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
