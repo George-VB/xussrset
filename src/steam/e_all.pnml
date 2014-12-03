@@ -74,7 +74,7 @@ switch (FEAT_TRAINS, SELF, e_all_weight,
 }
 
 switch (FEAT_TRAINS, SELF, e_all_tractive_effort_coefficient,
-  (build_year >= 1913) +
+  (build_year >= 1914) +
   (build_year >= 1916) +
   (build_year >= 1920) +
   (build_year >= 1926) +
@@ -142,7 +142,7 @@ switch (FEAT_TRAINS, SELF, e_e_weight,
 }
 
 switch (FEAT_TRAINS, SELF, e_e_tractive_effort_coefficient,
-  (build_year >= 1913) +
+  (build_year >= 1914) +
   (build_year >= 1916) +
   (build_year >= 1920))
 {
@@ -168,11 +168,95 @@ switch (FEAT_TRAINS, SELF, e_e_power,
      return get_power_in_cb(1100);
 }
 
+switch (FEAT_TRAINS, SELF, e_e_cost_factor,
+  (build_year >= 1914) +
+  (build_year >= 1916) +
+  (build_year >= 1920))
+{
+  0: return 8;
+  1: return 8;
+  2: return 9;
+     return 10;
+}
+
+switch (FEAT_TRAINS, SELF, e_er_cost_factor,
+  (build_year >= 1946) +
+  (build_year >= 1948))
+{
+  0: return 13;
+  1: return 13;
+     return 14;
+}
+
+switch (FEAT_TRAINS, SELF, e_all_cost_factor,
+  (build_year >= 1926) +
+  (build_year >= 1931) +
+  (build_year >= 1935))
+{
+  0: e_e_cost_factor;
+  1: return 12;
+  2: return 11;
+     e_er_cost_factor;
+}
+
 engine_speed_change_after(e_e, 55, 65, 1936)
 
 engine_penalise_speed0(e_e)
 
-general_running_cost(e_all, 183)
+general_running_cost(e_e_v1, 183)
+general_running_cost(e_e_v2, 193)
+general_running_cost(e_e_v3, 204)
+general_running_cost(e_e_v4, 230)
+
+switch (FEAT_TRAINS, SELF, e_e_running_cost_factor,
+  (build_year >= 1914) +
+  (build_year >= 1916) +
+  (build_year >= 1920))
+{
+  0: e_e_v1_running_cost_factor;
+  1: e_e_v2_running_cost_factor;
+  2: e_e_v3_running_cost_factor;
+     e_e_v4_running_cost_factor;
+}
+
+general_running_cost(e_eu, 269)
+
+general_running_cost(e_em_v1, 259)
+general_running_cost(e_em_v2, 244)
+general_running_cost(e_em_v3, 258)
+
+switch (FEAT_TRAINS, SELF, e_em_running_cost_factor,
+  (build_year >= 1933) +
+  (build_year >= 1934))
+{
+  0: e_em_v1_running_cost_factor;
+  1: e_em_v2_running_cost_factor;
+     e_em_v3_running_cost_factor;
+}
+
+general_running_cost(e_er_v1, 300)
+general_running_cost(e_er_v2, 307)
+general_running_cost(e_er_v3, 311)
+
+switch (FEAT_TRAINS, SELF, e_er_running_cost_factor,
+  (build_year >= 1946) +
+  (build_year >= 1948))
+{
+  0: e_er_v1_running_cost_factor;
+  1: e_er_v2_running_cost_factor;
+     e_er_v3_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, e_all_running_cost_factor,
+  (build_year >= 1926) +
+  (build_year >= 1931) +
+  (build_year >= 1935))
+{
+  0: e_e_running_cost_factor;
+  1: e_eu_running_cost_factor;
+  2: e_em_running_cost_factor;
+     e_er_running_cost_factor;
+}
 
 item (FEAT_TRAINS, e_e) {
   property {
@@ -214,7 +298,8 @@ item (FEAT_TRAINS, e_e) {
     tractive_effort_coefficient: e_e_tractive_effort_coefficient;
     weight: e_e_weight;
     create_effect: e_all_create_effect;
-    running_cost_factor: e_all_running_cost_factor;
+    cost_factor: e_e_cost_factor;
+    running_cost_factor: e_e_running_cost_factor;
   }
   livery_override(unitb) {
     length: return 4;
@@ -247,12 +332,13 @@ if (models_details_level == 0) {
       bitmask_vehicle_info: e_e_bitmask_vehicle_info;
       cargo_capacity: return 0;
       create_effect: e_all_create_effect;
-      running_cost_factor: e_all_running_cost_factor;
       articulated_part: articulated_part_tender1;
       power: e_all_power;
       tractive_effort_coefficient: e_all_tractive_effort_coefficient;
       weight: e_all_weight;
       cargo_subtype_text: e_all_cargo_subtype_text;
+      cost_factor: e_all_cost_factor;
+      running_cost_factor: e_all_running_cost_factor;
     }
     livery_override(unitb) {
       length: e_all_tender_length;
@@ -287,7 +373,6 @@ engine_speed_change_after(e_eu, 55, 65, 1936)
 
 engine_penalise_speed0(e_eu)
 
-general_running_cost(e_eu, 269)
 
 item (FEAT_TRAINS, e_eu) {
   property {
@@ -386,8 +471,6 @@ engine_speed_change_after(e_em, 55, 65, 1936)
 
 engine_penalise_speed0(e_em)
 
-general_running_cost(e_em, 259)
-
 item (FEAT_TRAINS, e_em) {
   property {
     name: string(STR_EM_NAME);
@@ -481,8 +564,6 @@ engine_speed_change_after(e_er, 55, 65, 1936)
 
 engine_penalise_speed0(e_er)
 
-general_running_cost(e_er, 300)
-
 item (FEAT_TRAINS, e_er) {
   property {
     name: string(STR_ER_NAME);
@@ -523,6 +604,7 @@ item (FEAT_TRAINS, e_er) {
     weight: e_er_weight;
     create_effect: e_all_create_effect;
     running_cost_factor: e_er_running_cost_factor;
+    cost_factor: e_er_cost_factor;
   }
   livery_override(unitb) {
     length: e_all_tender_length;
