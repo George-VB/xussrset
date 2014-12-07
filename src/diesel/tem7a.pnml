@@ -1,0 +1,166 @@
+﻿ // tem7a
+
+#define IMAGEFILE  "src/diesel/tem7a.png"
+purchase_sprites(tem7a_v1,   0, 0)
+purchase_sprites(tem7a_v2, 100, 0)
+purchase_sprites(tem7a_v3, 200, 0)
+
+diesel1r_sprites(12, tem7a_v1, 32,  40)
+diesel1r_sprites(12, tem7a_v2, 32, 241)
+diesel1r_sprites(12, tem7a_v3, 32, 442)
+diesel1r_sprites(12, tem7a_v4, 32, 643)
+diesel1r_sprites(12, tem7a_v5, 32, 844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tem7a_purchase_sprites,
+  (current_year >= 2008) +  
+  (current_year >= 2012))
+{
+  0: tem7a_v1_purchase_sprites;
+  1: tem7a_v2_purchase_sprites;
+     tem7a_v3_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_sprites_left,
+  ((build_year >= 2008) +
+  (build_year >= 2012)) * 10 +
+  cargo_subtype)
+{
+   0: tem7a_v1_sprites_left;
+   1: tem7a_v2_sprites_left;
+   2: tem7a_v3_sprites_left;
+  10: tem7a_v4_sprites_left;
+  11: tem7a_v5_sprites_left;
+  20: tem7a_v5_sprites_left;
+      align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_sprites_right,
+  ((build_year >= 2008) +
+  (build_year >= 2012)) * 10 +
+  cargo_subtype)
+{
+   0: tem7a_v1_sprites_right;
+   1: tem7a_v2_sprites_right;
+   2: tem7a_v3_sprites_right;
+  10: tem7a_v4_sprites_right;
+  11: tem7a_v5_sprites_right;
+  20: tem7a_v5_sprites_right;
+      align_10_sprites; 
+}
+
+engine_direction_template(tem7a, ) 
+
+engine_RND_direction_template(tem7a, 1, 1) 
+
+long_vehicle_sp(tem7a)
+
+engine_diesel_1_effect(tem7a, -1, 5, 12)
+
+engine_direction_template(tem7a, _create_effect) 
+
+engine_RND_effect_direction_template(tem7a, 1, 1) 
+
+
+switch (FEAT_TRAINS, SELF, tem7a_cargo_subtype_text5,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_93);
+  1: return string(STR_REFIT_TTD_B6);
+  2: return string(STR_REFIT_RZD_PID);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_cargo_subtype_text4,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_93);
+  1: return string(STR_REFIT_TTD_B6);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_cargo_subtype_text2,
+  current_year >= 2012)
+{
+  0: tem7a_cargo_subtype_text4;
+     tem7a_cargo_subtype_text5;
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_cargo_subtype_text3,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_RZD_PID);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_cargo_subtype_text1,
+  current_year >= 2012)
+{
+  1: tem7a_cargo_subtype_text3;
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tem7a_cargo_subtype_text,
+  (build_year >= 2008) +
+  (build_year >= 2012))
+{
+  0: tem7a_cargo_subtype_text2;
+  1: tem7a_cargo_subtype_text1;
+     return CB_RESULT_NO_TEXT;
+}
+
+engine_speed(tem7a, 100)
+
+engine_penalise_speed(tem7a, 2)
+
+general_running_cost(tem7a, 352)
+
+item (FEAT_TRAINS, tem7a) {
+  property {
+    name: string(STR_TEM7A_NAME);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1988), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1988,2050);
+    retire_early: get_retire_early(1988,2050);
+    reliability_decay: 20;
+    cost_factor: 46;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1360 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 180 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(300.0, 180);
+    length: 8;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+  }
+  graphics {
+    default: tem7a_sprites;
+    purchase: tem7a_purchase_sprites;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_TEM7A_PURCHASE_HINT);
+    speed: tem7a_speed;
+    purchase_speed: tem7a_purchase_speed;
+    running_cost_factor: tem7a_running_cost_factor;
+    bitmask_vehicle_info: tem7a_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: tem7a_create_effect;
+    cargo_subtype_text: tem7a_cargo_subtype_text;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, tem7a) {
+    property { name: string(STR_TEM7A_NAME_LONG); }
+  }
+}
+
