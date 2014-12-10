@@ -860,7 +860,7 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                       
   vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed))                           \
 {    1: return 1;                                                                                     \
   2..3: return min(32767, 5 * rc_base);                                                               \
-  4..7: return rc_base+ 2000;                                                                         \
+  4..7: return min(32767, rc_base + 2000);                                                                         \
         name##_running_cost_factor2; }                                                                \
 switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
 { 0: return rc_base;                                                                                  \
@@ -885,10 +885,44 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                       
   vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed))                           \
 {    1: return 1;                                                                                     \
   2..3: return min(32767, 5 * rc_base);                                                               \
-  4..7: return rc_base+ 2000;                                                                         \
+  4..7: return min(32767, rc_base+ 2000);                                                             \
         name##_running_cost_factor2; }                                                                \
 switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
 { 0: return rc_base;                                                                                  \
+     name##_running_cost_factor1; }                                                                   \
+
+#define emu_running_cost(name, rc_base, rc_base_notmotor)                                             \
+switch (FEAT_TRAINS, SELF, name##_running_cost_speed,                                                 \
+  LOAD_TEMP(1) < (LOAD_TEMP(2) * 9 / 10))                                                             \
+{ 1: return rc_base * RC_MAX + rc_base_notmotor;                                                      \
+     return rc_base + rc_base_notmotor; }                                                             \
+switch (FEAT_TRAINS, SELF, name##_running_cost_slope,                                                 \
+  (other_veh_z_offset(1) > 0) + (2 * (other_veh_z_offset(1) < 0)))                                    \
+{ 1: return rc_base * RC_MAX + rc_base_notmotor;                                                      \
+  2: return rc_base + rc_base_notmotor;                                                               \
+     name##_running_cost_speed; }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_running_cost_stop,                                                  \
+  LOAD_TEMP(1) < 2)                                                                                   \
+{ 1: return (rc_base + rc_base_notmotor) * RC_MIN;                                                    \
+     name##_running_cost_slope; }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_running_cost_service,                                               \
+  (current_date > date_of_last_service) && (current_date < date_of_last_service + 2))                 \
+{ 1: return min(32767, 5 * rc_base + rc_base_notmotor);                                               \
+     name##_running_cost_stop; }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor2,                                             \
+[  STORE_TEMP(current_speed, 1),                                                                      \
+   STORE_TEMP(current_max_speed, 2),                                                                  \
+   STORE_TEMP(breakdowns_since_last_service, 3),                                                      \
+   STORE_TEMP(reliability, 4)] )                                                                      \
+{ name##_running_cost_service; }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                                             \
+  vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed))                           \
+{    1: return 1;                                                                                     \
+  2..3: return min(32767, 5 * rc_base + rc_base_notmotor);                                            \
+  4..7: return min(32767, rc_base + rc_base_notmotor + 2000);                                         \
+        name##_running_cost_factor2; }                                                                \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
+{ 0: return (rc_base + rc_base_notmotor);                                                             \
      name##_running_cost_factor1; }                                                                   \
 
 // не выпускать новые тройники без средней секции
