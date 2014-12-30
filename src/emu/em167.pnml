@@ -4,9 +4,8 @@
 #define IMAGEFILE  "src/emu/em167.png"
 purchase_sprites(em167, 0, 0)
 
-MU_3r_0_0_sprites(10, em167, 32, 40)
+MU_5r_0_0_sprites(10, em167, 32, 40)
 MU_0_0_2_sprites(10, em167, 32, 40)
-MU_3r_0_0_sprites(10, em167_middle, 32, 442)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, em167_toomany_sections_sprites,
@@ -35,16 +34,36 @@ switch (FEAT_TRAINS, SELF, em167_2sections,
      dummy_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, em167_3sections,
+switch (FEAT_TRAINS, SELF, em167_3sections_a,
   position_in_vehid_chain % 12)
 {
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
   4: em167_c_sprites_right;
-  6: em167_middle_h_sprites_right;
+  6: em167_hm_sprites_right;
   8: em167_c_sprites_right;
  10: em167_h_sprites_right;
      dummy_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, em167_3sections_b,
+  position_in_vehid_chain % 12)
+{
+  0: em167_h_sprites_left;
+  2: em167_c_sprites_left;
+  4: em167_hm_sprites_left;
+  6: em167_c_sprites_left;
+  8: em167_c_sprites_right;
+ 10: em167_h_sprites_right;
+     dummy_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, em167_3sections,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() % 2])
+{
+  1: em167_3sections_a;
+     em167_3sections_b; 
 }
 
 switch (FEAT_TRAINS, SELF, em167_4sections,
@@ -53,15 +72,15 @@ switch (FEAT_TRAINS, SELF, em167_4sections,
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
   4: em167_c_sprites_right;
-  6: em167_middle_h_sprites_right;
-  8: em167_middle_h_sprites_left;
+  6: em167_hm_sprites_right;
+  8: em167_hm_sprites_left;
  10: em167_c_sprites_left;
  12: em167_c_sprites_right;
  14: em167_h_sprites_right;
      dummy_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, em167_sprites_start,
+switch (FEAT_TRAINS, SELF, em167_sprites_start2,
   num_vehs_in_vehid_chain +
   ((LOAD_TEMP(4) != em167) * 100) )
 {
@@ -74,6 +93,13 @@ switch (FEAT_TRAINS, SELF, em167_sprites_start,
   13..15: align_10_sprites;
       16: em167_4sections;
           em167_toomany_sections_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, em167_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: em167_sprites_start2;
+  1: em167_sprites_start2;
 }
 
 long_vehicle(em167)
@@ -119,11 +145,24 @@ switch (FEAT_TRAINS, SELF, em167_create_effect_2sections,
      return disable_create_effect();
 }
 
+random_switch (FEAT_TRAINS, FORWARD_SELF(2), em167_create_effect_sprites_start_b, 0)
+{                                                                                    
+  1: return disable_create_effect();
+  1: em167_create_effect_sprites_start;
+}
+
+random_switch (FEAT_TRAINS, SELF, em167_create_effect_sprites_start_a, 0)
+{                                                                                    
+  1: em167_create_effect_sprites_start;
+  1: return disable_create_effect();
+}
+
 switch (FEAT_TRAINS, SELF, em167_create_effect_3sections,
   position_in_vehid_chain % 12)
 {
   0: em167_create_effect_sprites_start;
-  6: em167_create_effect_sprites_start;
+  4: em167_create_effect_sprites_start_a;
+  6: em167_create_effect_sprites_start_b;
  10: em167_create_effect_sprites_start;
      return disable_create_effect();
 }
@@ -201,6 +240,13 @@ switch (FEAT_TRAINS, PARENT, em167_running_cost_factor,
      return RC_MU_AS_CAR * 3;
 }
 
+switch (FEAT_TRAINS, PARENT, em167_start_stop,
+  count_veh_id(em167))
+{
+  4: return string(STR_START_STOP_DUAL_END_REQUIRED);
+     return CB_RESULT_NO_TEXT;
+}
+
 item (FEAT_TRAINS, em167) {
   property {
     name: string(STR_EM167_NAME);
@@ -241,6 +287,7 @@ item (FEAT_TRAINS, em167) {
     cargo_capacity: em167_cargo_capacity;
     power: em167_power;
     create_effect: em167_create_effect;
+    start_stop: em167_start_stop;
   }
 }
 
