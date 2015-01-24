@@ -817,6 +817,16 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                  \
 { return; }                                                                                                  \
                                                                                          
+// Определение скорости с загрузкой
+
+#define wagon_speed_change_on_load(name, speed, loaded_speed, loaded_amount)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, 0)                          \
+{ return speed; }                                                             \
+switch (FEAT_TRAINS, SELF, name##_speed,                                      \
+  cargo_count > loaded_amount)                                                \
+{ 1: return loaded_speed;                                                     \
+     return speed; }                                                          \
+
 // определение расхода топлива
 // расход определяется граничным на разгоне, торможении, подъёме, спуске. 
 // в оставшемся случае расходуется часть, пропорциональная доли массы от общей доли в массе 
