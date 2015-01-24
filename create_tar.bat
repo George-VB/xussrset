@@ -9,7 +9,7 @@ set PATH=%PATHMINGW%;%PATH7Z%;%PATHTHG%;%PATH%
 call compile gethgrev
 
 :: имя папки
-set TITLE=xussr_railway_set-0.2.r%REPO_REVISION%
+set TITLE=xussr_railway_set-0.3.r%REPO_REVISION%
 
 :: prepare files
 md temp\%TITLE%

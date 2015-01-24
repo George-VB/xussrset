@@ -7,64 +7,38 @@
 // - ФД20 (1931-1940) и ФД21 (1940-1942).
 
 #define IMAGEFILE  "src/steam/fd.png"
-purchase_sprites(fd_all_v1, 0, 0)
-purchase_sprites(fd_all_v2, 110, 0)
-purchase_sprites(fd_all_v3, 220, 0)
-purchase_sprites(fd_all_v4, 330, 0)
-purchase_sprites(fd_all_v5, 440, 0)
+purchase_sprites(fd_fd20_v1, 0, 0)
+purchase_sprites(fd_fd20_v2, 110, 0)
+purchase_sprites(fd_fd20_v3, 220, 0)
+purchase_sprites(fd_fd20_v4, 330, 0)
+purchase_sprites(fd_fd21, 440, 0)
 
-steam_sprites(10, fd_all_v1, 32,   40)
-steam_sprites(10, fd_all_v2, 32,  844)
-steam_sprites(10, fd_all_v3, 32, 1648)
-steam_sprites(10, fd_all_v4, 32, 2452)
+steam_sprites(10, fd_fd20_v1, 32,   40)
+steam_sprites(10, fd_fd20_v2, 32,  844)
+steam_sprites(10, fd_fd20_v3, 32, 1648)
+steam_sprites(10, fd_fd21, 32, 2452)
 
-tender_sprites(6, fd_all_4o,  447,  40) // 1931
-tender_sprites(8, fd_all_t17, 447, 107) // 1932-1935
-tender_sprites(7, fd_all_t6p, 447, 174) // с 1936
+tender_sprites(6, fd_t_4o,  447,  40) // 1931
+tender_sprites(8, fd_t_t17, 447, 107) // 1932-1935
+tender_sprites(7, fd_t_t6p, 447, 174) // с 1936
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, fd_all_purchase_sprites,
-  (current_year >= 1932) +
-  (current_year >= 1934) +
-  (current_year >= 1936) +
-  (current_year >= 1940))
-{
-  0: fd_all_v1_purchase_sprites;
-  1: fd_all_v2_purchase_sprites;
-  2: fd_all_v3_purchase_sprites;
-  3: fd_all_v4_purchase_sprites;
-     fd_all_v5_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, fd_fd20_sprites_start,
-  (build_year >= 1932) +
-  (build_year >= 1934) +
-  (build_year >= 1940) * (models_details_level == 0))
-{
-  0: fd_all_v1_sprites_left;
-  1: fd_all_v2_sprites_left;
-  2: fd_all_v3_sprites_left;
-     fd_all_v4_sprites_left;
-}
-  
-long_vehicle(fd_fd20)
-
-switch (FEAT_TRAINS, SELF, fd_all_create_effect, 
+switch (FEAT_TRAINS, SELF, fd_create_effect, 
   steam_create_effect(-2, 13)) 
 { 
   return 1; 
 }    
 
-switch (FEAT_TRAINS, SELF, fd_all_tender_sprites,
+switch (FEAT_TRAINS, SELF, fd_tender_sprites,
   (build_year >= 1932) +
   (build_year >= 1936))
 {
-  0: fd_all_4o_sprites_left;
-  1: fd_all_t17_sprites_left;
-     fd_all_t6p_sprites_left;
+  0: fd_t_4o_sprites_start;
+  1: fd_t_t17_sprites_start;
+     fd_t_t6p_sprites_start;
 }
 
-switch (FEAT_TRAINS, SELF, fd_all_tender_length,
+switch (FEAT_TRAINS, SELF, fd_tender_length,
   (build_year >= 1932) +
   (build_year >= 1936))
 {
@@ -73,72 +47,42 @@ switch (FEAT_TRAINS, SELF, fd_all_tender_length,
      return 6;
 }
 
-switch (FEAT_TRAINS, SELF, fd_all_weight,
-  (build_year >= 1932) +
-  (build_year >= 1936) +
-  (build_year >= 1940))
-{
-  0: return (137+85);
-  1: return (137+123);
-  2: return (137+127);
-     return (135+127);
-}
-
-switch (FEAT_TRAINS, SELF, fd_all_tractive_effort_coefficient,
-  (build_year >= 1932) +
-  (build_year >= 1936) +
-  (build_year >= 1940))
-{
-  0: return get_tec_int(208.0, 137+85);
-  1: return get_tec_int(208.0, 137+123);
-  2: return get_tec_int(208.0, 137+127);
-     return get_tec_int(215.0, 135+127);
-}
-
-switch (FEAT_TRAINS, SELF, fd_all_power,
-  (build_year >= 1936) +
-  (build_year >= 1940))
-{
-  0: return get_power_in_cb(2600);
-  1: return get_power_in_cb(3000);
-     return get_power_in_cb(3100);
-}
-
-switch (FEAT_TRAINS, SELF, fd_all_cost_factor,
-  (current_year >= 1932) +
-  (current_year >= 1936) +
-  (current_year >= 1940))
-{
-  0: return 24;
-  1: return 27;
-  2: return 28;
-     return 33;
-}
-
-switch (FEAT_TRAINS, SELF, fd_all_cargo_subtype_text,
-  build_year >= 1940)
-{
-  0: return string(STR_REFIT_FACTORY_FD20);
-  1: return string(STR_REFIT_FACTORY_FD21);
-     return CB_RESULT_NO_TEXT;
-}
-
- // fd_fd20
+// fd20
 
 switch (FEAT_TRAINS, SELF, fd_fd20_purchase_sprites,
   (current_year >= 1932) +
   (current_year >= 1934) +
-  (current_year >= 1936))
+  (current_year >= 1936) )
 {
-  0: fd_all_v1_purchase_sprites;
-  1: fd_all_v2_purchase_sprites;
-  2: fd_all_v3_purchase_sprites;
-     fd_all_v4_purchase_sprites;
+  0: fd_fd20_v1_purchase_sprites;
+  1: fd_fd20_v2_purchase_sprites;
+  2: fd_fd20_v3_purchase_sprites;
+     fd_fd20_v4_purchase_sprites;
 }
 
-engine_speed_change_after2(fd_fd20, 65, 85, 1936, 90, 1956)
+switch (FEAT_TRAINS, SELF, fd_fd20_all_sprites_start,
+  (build_year >= 1932) +
+  (build_year >= 1934) )
+{
+  0: fd_fd20_v1_sprites_start;
+  1: fd_fd20_v2_sprites_start;
+     fd_fd20_v3_sprites_start;
+}
+  
+switch (FEAT_TRAINS, SELF, fd_all_sprites_start,
+  build_year >= 1940)
+{
+  0: fd_fd20_all_sprites_start;
+     fd_fd21_sprites_start;
+}
 
-engine_penalise_speed0(fd_fd20)
+switch (FEAT_TRAINS, PARENT, fd_fd20_sprites_start, models_details_level == 1)        
+{
+  1: fd_fd20_all_sprites_start;
+     fd_all_sprites_start;
+}
+
+long_vehicle(fd_fd20)
 
 switch (FEAT_TRAINS, SELF, fd_fd20_weight,
   (build_year >= 1932) +
@@ -159,7 +103,7 @@ switch (FEAT_TRAINS, SELF, fd_fd20_tractive_effort_coefficient,
 }
 
 switch (FEAT_TRAINS, SELF, fd_fd20_power,
-  (build_year >= 1936))
+  build_year >= 1936)
 {
   0: return get_power_in_cb(2600);
      return get_power_in_cb(3000);
@@ -174,30 +118,22 @@ switch (FEAT_TRAINS, SELF, fd_fd20_cost_factor,
      return 28;
 }
 
-general_running_cost(fd_all_v1, 551)
-general_running_cost(fd_all_v2, 632)
-general_running_cost(fd_all_v3, 636)
-general_running_cost(fd_fd21, 766)
-
-switch (FEAT_TRAINS, SELF, fd_all_running_cost_factor,
-  (current_year >= 1932) +
-  (current_year >= 1936) +
-  (current_year >= 1940))
-{
-  0: fd_all_v1_running_cost_factor;
-  1: fd_all_v2_running_cost_factor;
-  2: fd_all_v3_running_cost_factor;
-     fd_fd21_running_cost_factor;
-}
+general_running_cost(fd_fd20_v1, 551)
+general_running_cost(fd_fd20_v2, 632)
+general_running_cost(fd_fd20_v3, 636)
 
 switch (FEAT_TRAINS, SELF, fd_fd20_running_cost_factor,
-  (current_year >= 1932) +
-  (current_year >= 1936))
+  (build_year >= 1932) +
+  (build_year >= 1936))
 {
-  0: fd_all_v1_running_cost_factor;
-  1: fd_all_v2_running_cost_factor;
-     fd_all_v3_running_cost_factor;
+  0: fd_fd20_v1_running_cost_factor;
+  1: fd_fd20_v2_running_cost_factor;
+     fd_fd20_v3_running_cost_factor;
 }
+
+engine_speed_change_after2(fd_fd20, 65, 85, 1936, 90, 1956)
+
+engine_penalise_speed0(fd_fd20)
 
 item (FEAT_TRAINS, fd_fd20) {
   property {
@@ -240,12 +176,12 @@ item (FEAT_TRAINS, fd_fd20) {
     tractive_effort_coefficient: fd_fd20_tractive_effort_coefficient;
     power: fd_fd20_power;
     cost_factor: fd_fd20_cost_factor;
-    create_effect: fd_all_create_effect;
+    create_effect: fd_create_effect;
     running_cost_factor: fd_fd20_running_cost_factor;
   }
   livery_override(unitb) {
-    length: fd_all_tender_length;
-            fd_all_tender_sprites;
+    length: fd_tender_length;
+            fd_tender_sprites;
   }
 }
 
@@ -256,49 +192,11 @@ if (enable_long_names) {
   }
 }
 
-if (models_details_level == 0) {
-  item (FEAT_TRAINS, fd_fd20) {
-    property {
-      name: string(STR_FD_ALL_NAME);
-      model_life: get_model_life(1931,1942);
-      retire_early: get_retire_early(1931,1942);
-    }
-    graphics {
-      default: fd_fd20_sprites;
-      purchase: fd_all_purchase_sprites;
-      articulated_part: articulated_part_tender2;
-      can_attach_wagon: any_can_attach_wagon;
-      start_stop: any_start_stop;
-      additional_text: return string(STR_FD_ALL_PURCHASE_HINT);
-      speed: fd_fd20_speed;
-      purchase_speed: fd_fd20_purchase_speed;
-      bitmask_vehicle_info: fd_fd20_bitmask_vehicle_info;
-      cargo_capacity: return 0;
-      create_effect: fd_all_create_effect;
-      running_cost_factor: fd_all_running_cost_factor;
-      weight: fd_all_weight;
-      tractive_effort_coefficient: fd_all_tractive_effort_coefficient;
-      power: fd_all_power;
-      cost_factor: fd_all_cost_factor;
-      cargo_subtype_text: fd_all_cargo_subtype_text;
-    }
-  }
-  if (enable_long_names) {
-    item (FEAT_TRAINS, fd_fd20) {
-      property { 
-        name: string(STR_FD_ALL_NAME_LONG); }
-    }
-  }
-}
-
  // fd21
 
-switch (FEAT_TRAINS, SELF, fd_fd21_sprites_start, 0)
-{
-     fd_all_v4_sprites_left;
-}
-
 long_vehicle(fd_fd21)
+
+general_running_cost(fd_fd21, 766)
 
 engine_speed_change_after(fd_fd21, 85, 90, 1956)
 
@@ -332,7 +230,7 @@ item (FEAT_TRAINS, fd_fd21) {
 
   graphics {
     default: fd_fd21_sprites;
-    purchase: fd_all_v5_purchase_sprites;
+    purchase: fd_fd21_purchase_sprites;
     articulated_part: articulated_part_tender2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
@@ -341,13 +239,13 @@ item (FEAT_TRAINS, fd_fd21) {
     purchase_speed: fd_fd21_purchase_speed;
     bitmask_vehicle_info: fd_fd21_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    create_effect: fd_all_create_effect;
+    create_effect: fd_create_effect;
     running_cost_factor: fd_fd21_running_cost_factor;
   }
 
   livery_override(unitb) {
     length: return 6;
-    fd_all_t6p_sprites_left;
+    fd_t_t6p_sprites_start;
   }
 
 }
@@ -361,5 +259,92 @@ if (enable_long_names) {
 if (models_details_level == 1) {
   item (FEAT_TRAINS, fd_fd21) {
     property { climates_available: get_climates_available(); }
+  }
+}
+
+// FD all
+
+switch (FEAT_TRAINS, SELF, fd_all_purchase_sprites,
+  current_year >= 1940)
+{
+  0: fd_fd20_purchase_sprites;
+     fd_fd21_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_weight,
+  build_year >= 1940)
+{
+  0: fd_fd20_weight;
+     return (135+127);
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_tractive_effort_coefficient,
+  build_year >= 1940)
+{
+  0: fd_fd20_tractive_effort_coefficient;
+     return get_tec_int(215.0, 135+127);
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_power,
+  build_year >= 1940)
+{
+  0: fd_fd20_power;
+     return get_power_in_cb(3100);
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_cost_factor,
+  current_year >= 1940)
+{
+  0: fd_fd20_cost_factor;
+     return 33;
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_cargo_subtype_text,
+  build_year >= 1940)
+{
+  0: return string(STR_REFIT_FACTORY_FD20);
+  1: return string(STR_REFIT_FACTORY_FD21);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, fd_all_running_cost_factor,
+  build_year >= 1940)
+{
+  0: fd_fd20_running_cost_factor;
+     fd_fd21_running_cost_factor;
+}
+
+if (models_details_level == 0) {
+  item (FEAT_TRAINS, fd_fd20) {
+    property {
+      name: string(STR_FD_ALL_NAME);
+      model_life: get_model_life(1931,1942);
+      retire_early: get_retire_early(1931,1942);
+    }
+    graphics {
+      default: fd_fd20_sprites;
+      purchase: fd_all_purchase_sprites;
+      articulated_part: articulated_part_tender2;
+      can_attach_wagon: any_can_attach_wagon;
+      start_stop: any_start_stop;
+      additional_text: return string(STR_FD_ALL_PURCHASE_HINT);
+      speed: fd_fd20_speed;
+      purchase_speed: fd_fd20_purchase_speed;
+      bitmask_vehicle_info: fd_fd20_bitmask_vehicle_info;
+      cargo_capacity: return 0;
+      create_effect: fd_create_effect;
+      running_cost_factor: fd_all_running_cost_factor;
+      weight: fd_all_weight;
+      tractive_effort_coefficient: fd_all_tractive_effort_coefficient;
+      power: fd_all_power;
+      cost_factor: fd_all_cost_factor;
+      cargo_subtype_text: fd_all_cargo_subtype_text;
+    }
+  }
+  if (enable_long_names) {
+    item (FEAT_TRAINS, fd_fd20) {
+      property { 
+        name: string(STR_FD_ALL_NAME_LONG); }
+    }
   }
 }
