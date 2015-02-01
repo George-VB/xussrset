@@ -35,18 +35,13 @@ switch (FEAT_TRAINS, SELF, t8_sprites_right,
 }
 
 engine_direction_template(t8, ) 
-
 long_vehicle(t8)
 
 engine_electric2_1_effect(t8, 3, -3)
-
 engine_direction_template(t8, _create_effect) 
-
 engine_speed(t8, 100)
-
 engine_penalise_speed(t8, 2)
-
-general_running_cost(t8, 256)
+engine_RC_change_build_after(vl10, 256, 260, 1964)
 
 item (FEAT_TRAINS, t8) {
   property {
@@ -80,13 +75,18 @@ item (FEAT_TRAINS, t8) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     articulated_part: articulated_part_dummy1;
-    additional_text: return string(STR_T8_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC_PROTOTYPE), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_2), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1961, 1962), 
+                                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK_ELP), string(STR_PURCHASE_HINT_FACTORY_TBILISI_ELP)), 
+                                   1);
     cargo_capacity: return 0;
     speed: t8_speed;
     purchase_speed: t8_purchase_speed;
     bitmask_vehicle_info: t8_bitmask_vehicle_info;
     create_effect: t8_create_effect_sprites_start;
-    running_cost_factor: t8_running_cost_factor;
+    running_cost_factor: vl10_v1_running_cost_factor;
   }
 }
 
@@ -145,18 +145,18 @@ switch (FEAT_TRAINS, SELF, vl10_sprites_right,
 }
 
 engine_direction_template(vl10, ) 
-
 long_vehicle(vl10)
 
-engine_electric2_1_effect(vl10, -2, 3)
-
-engine_direction_template(vl10, _create_effect) 
+engine_electric2_1_effect(vl10_v1, 3, -3)
+engine_direction_template(vl10, _v1_create_effect) 
+engine_electric2_1_effect(vl10_v2, -2, 3)
+engine_direction_template(vl10, _v2_create_effect) 
 
 switch (FEAT_TRAINS, SELF, vl10_create_effect_sprites,
   build_year >= 1964)
 {
-  1: vl10_create_effect_sprites_start;
-     t8_create_effect_sprites_start;
+  0: vl10_v1_create_effect_sprites_start;
+     vl10_v2_create_effect_sprites_start;
 }
 
 switch (FEAT_TRAINS, SELF, vl10_cargo_subtype_text,
@@ -165,40 +165,29 @@ switch (FEAT_TRAINS, SELF, vl10_cargo_subtype_text,
   0: return string(STR_REFIT_FACTORY_T8);
      return CB_RESULT_NO_TEXT;
 }
+
+switch (FEAT_TRAINS, SELF, vl10_additional_text,
+   current_year >= 1964)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1961, 1962), 
+                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK_ELP), string(STR_PURCHASE_HINT_FACTORY_TBILISI_ELP)), 
+                   1);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC), 
+                   string(STR_PURCHASE_HINT_SECTIONS_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1964, 1976), 
+                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK_ELP), string(STR_PURCHASE_HINT_FACTORY_TBILISI_ELP)), 
+                   1);
+}
                         
-switch (FEAT_TRAINS, SELF, vl10_tractive_effort_coefficient,
-  build_year >= 1964)
-{
-  0: return get_tec_int(155.5, 92);
-     return get_tec_int(157.0, 92);
-}
-
-switch (FEAT_TRAINS, SELF, vl10_power,
-  build_year >= 1964)
-{
-  0: return get_power_in_cb(2960);
-     return get_power_in_cb(3030);
-}
-  
-switch (FEAT_TRAINS, SELF, vl10_length,
-  build_year >= 1964)
-{
-  0: return 7;
-     return 8;
-}
-  
+engine_TE_change_build_after(vl10, get_tec_int(155.5, 92), get_tec_int(157.0, 92), 1964)
+engine_power_change_build_after(vl10, 2960, 3030, 1964)
+engine_length_change_build_after(vl10, 7, 8, 1964)
 engine_speed(vl10, 100)
-
 engine_penalise_speed(vl10, 2)
-
-general_running_cost(vl10_v1, 260)
-
-switch (FEAT_TRAINS, SELF, vl10_running_cost_factor,
-  build_year >= 1964)
-{
-  0: t8_running_cost_factor;
-     vl10_v1_running_cost_factor;
-}
 
 item (FEAT_TRAINS, vl10) {
   property {
@@ -232,7 +221,7 @@ item (FEAT_TRAINS, vl10) {
     articulated_part: articulated_part_dummy1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_VL10_PURCHASE_HINT);
+    additional_text: vl10_additional_text;
     cargo_capacity: return 0;
     speed: vl10_speed;
     power: vl10_power;
