@@ -7,7 +7,7 @@
 purchase_sprites(n60, 0, 0)
 purchase_sprites(vl60_v1, 100, 0)
 
-electric1_2_sprites(12, n60_v1, 32,   40)
+electric1_2_sprites(12, n60,     32,   40)
 electric1_2_sprites(12, vl60_v1, 32,  241)
 electric1_2_sprites(12, vl60_v2, 32,  442)
 #undef IMAGEFILE
@@ -19,20 +19,12 @@ switch (FEAT_TRAINS, SELF, vl60_purchase_sprites,
      vl60_v1_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, n60_sprites_start, 0)
-{
-  n60_v1_sprites_left;
-}
-
 long_vehicle(n60)
 
 engine_electric1_2_effect(n60, -2, 6)
-
 engine_speed(n60, 100)
-
-engine_penalise_speed(n60, 2)
-
-general_running_cost(n60, 485)
+engine_penalise_speed0(n60)
+engine_RC_change_build_after(vl60, 485, 451, 1960)
 
 item (FEAT_TRAINS, n60) {
   property {
@@ -65,13 +57,18 @@ item (FEAT_TRAINS, n60) {
     articulated_part: articulated_part_dummy4;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_N60_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC_PROTOTYPE), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_IN, 1959), 
+                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK_ELP), 
+                                   1);
     speed: n60_speed;
     purchase_speed: n60_purchase_speed;
     bitmask_vehicle_info: n60_bitmask_vehicle_info;
     cargo_capacity: return 0;
     create_effect: n60_create_effect;
-    running_cost_factor: n60_running_cost_factor;
+    running_cost_factor: vl60_v1_running_cost_factor;
   }
 }
 
@@ -87,43 +84,13 @@ switch (FEAT_TRAINS, SELF, vl60_sprites_start,
   ((build_year >= 1960) * 2) +
   (LOAD_TEMP(2) >= date(1972, 1, 1)))
 {
-  0..1: n60_v1_sprites_left;
-  2: vl60_v1_sprites_left;
-  3: vl60_v2_sprites_left;
+  0..1: n60_sprites_start;
+  2: vl60_v1_sprites_start;
+  3: vl60_v2_sprites_start;
      align_12_sprites; 
 }
 
 long_vehicle(vl60)
-
-engine_electric1_2_effect(vl60, -2, 6)
-
-switch (FEAT_TRAINS, SELF, vl60_tractive_effort_coefficient,
-  build_year >= 1960)
-{
-  0: return get_tec_int(255.0, 140);
-     return get_tec_int(228.0, 138);
-}
-
-switch (FEAT_TRAINS, SELF, vl60_power,
-  build_year >= 1960)
-{
-  0: return get_power_in_cb(4470);
-     return get_power_in_cb(4380);
-}
-  
-switch (FEAT_TRAINS, SELF, vl60_weight,
-  build_year >= 1960)
-{
-  0: return 140;
-     return 138;
-}
-
-switch (FEAT_TRAINS, SELF, vl60_cost_factor,
-  build_year >= 1960)
-{
-  0: return 76;
-     return 64;
-}
 
 switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text,
   build_year >= 1960)
@@ -132,18 +99,30 @@ switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-engine_speed(vl60, 100)
-
-engine_penalise_speed3(vl60, vl60k, vl60pk, 2)
-
-general_running_cost(vl60_v1, 451)
-
-switch (FEAT_TRAINS, SELF, vl60_running_cost_factor,
+switch (FEAT_TRAINS, SELF, vl60_additional_text,
   build_year >= 1960)
 {
-  0: n60_running_cost_factor;
-     vl60_v1_running_cost_factor;
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_IN, 1959), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK_ELP), 
+                   1);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2_WITH_ATTACH, string(STR_VL60K_NAME), string(STR_VL60PK_NAME)), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1960, 1965), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK_ELP), 
+                   1);
 }
+
+engine_electric1_2_effect(vl60, -2, 6)
+engine_TE_change_build_after(vl60, get_tec_int(255.0, 140), get_tec_int(228.0, 138), 1960)
+engine_power_change_build_after(vl60, 4470, 4380, 1960)
+engine_weight_change_build_after(vl60, 140, 138, 1960)
+engine_cost_change_build_after(vl60, 76, 64, 1960)
+engine_speed(vl60, 100)
+engine_penalise_speed3(vl60, vl60k, vl60pk, 2)
 
 item (FEAT_TRAINS, vl60) {
   property {
@@ -177,7 +156,7 @@ item (FEAT_TRAINS, vl60) {
     articulated_part: articulated_part_dummy4;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_VL60_PURCHASE_HINT);
+    additional_text: vl60_additional_text;
     speed: vl60_speed;
     power: vl60_power;                           
     tractive_effort_coefficient: vl60_tractive_effort_coefficient;     
