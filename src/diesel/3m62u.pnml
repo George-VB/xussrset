@@ -79,7 +79,7 @@ switch (FEAT_TRAINS, SELF, _2m62u_sprites_DRB1,
 }
   
 switch (FEAT_TRAINS, PARENT, _2m62u_sprites_start_sp,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
   ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
 {
   1: _2m62u_sprites_DRB1;
@@ -87,10 +87,6 @@ switch (FEAT_TRAINS, PARENT, _2m62u_sprites_start_sp,
 }
  
 long_vehicle_sp(_2m62u)
-
-engine_diesel_1_effect(_2m62u, 3, -1, 11)
-
-engine_direction_template3m(_2m62u, _3m62u, _3m62u_m, _create_effect) 
 
 // прицепить 2М62у можно только к составу, не имеющему вагонов ДР1А или имеющему только прицепные вагоны
 switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon3,
@@ -132,6 +128,7 @@ switch (FEAT_TRAINS, SELF, _2m62u_can_attach_wagon,
   dr1a_n: _2m62u_can_attach_wagon1;
   dr1a_c: _2m62u_can_attach_wagon2;
   _2m62u: _2m62u_can_attach_wagon3;
+  _3m62u: _2m62u_can_attach_wagon3;
   dm62:   _2m62u_can_attach_wagon3;
           _2m62u_can_attach_wagon0;
 }
@@ -183,12 +180,14 @@ switch (FEAT_TRAINS, SELF, _2m62u_additional_text,
                    9);
 }
 
+engine_diesel_1_effect(_2m62u, 3, -1, 11)
+engine_direction_template3m(_2m62u, _3m62u, _3m62u_m, _create_effect) 
 engine_speed(_2m62u, 100)
 engine_penalise_speed3(_2m62u, _3m62u, _3m62u_m, 8)
 general_running_cost(_2m62u, 341) 
 // отключить пенальти для ДРБ1
 switch (FEAT_TRAINS, PARENT, _2m62u_bitmask_vehicle_info_drb1,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
   ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
 {
   1: return 0;
@@ -317,13 +316,21 @@ switch (FEAT_TRAINS, SELF, _3m62u_additional_text,
                    4);
 }
 
-// new_3x_train_start_stop(_3m62u)
+new_3x_train_start_stop(_3m62u)
 engine_diesel_1_effect(_3m62u, 3, -1, 11)
 engine_direction_template3m(_3m62u, _2m62u, _3m62u_m, _create_effect) 
 engine_speed(_3m62u, 100)
 engine_penalise_speed3(_3m62u, _2m62u, _3m62u_m, 8)
 general_running_cost(_3m62u, 341) 
 
+// отключить пенальти для ДРБ1
+switch (FEAT_TRAINS, PARENT, _3m62u_bitmask_vehicle_info_drb1,
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
+  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
+{
+  1: return 0;
+     _3m62u_bitmask_vehicle_info;
+}
 item (FEAT_TRAINS, _3m62u) {
   property {
     name: string(STR_3M62U_NAME);
@@ -355,15 +362,14 @@ item (FEAT_TRAINS, _3m62u) {
     purchase: _3m62u_purchase_sprites;
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
-//    start_stop: _3m62u_start_stop;
-    start_stop: any_start_stop;
+    start_stop: _3m62u_start_stop;
     additional_text: _3m62u_additional_text;
     cargo_subtype_text: _3m62u_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: _3m62u_speed;
     purchase_speed: _3m62u_purchase_speed;
     running_cost_factor: _3m62u_running_cost_factor;
-    bitmask_vehicle_info: _3m62u_bitmask_vehicle_info;
+    bitmask_vehicle_info: _3m62u_bitmask_vehicle_info_drb1;
     create_effect: _3m62u_create_effect_sprites_start;
   }
 }
@@ -445,13 +451,13 @@ switch (FEAT_TRAINS, SELF, _3m62u_m_additional_text,
   current_year >= 1991)
 {
   0: return string(STR_PURCHASE_HINT_ENGINE, 
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL), 
                    string(STR_PURCHASE_HINT_SECTIONS_MS, string(STR_PURCHASE_HINT_LIST2, string(STR_2M62U_NAME), string(STR_3M62U_NAME))), 	
                    string(STR_PURCHASE_HINT_FROMTO, 1986, 1992), 
                    string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD), 
                    2);
      return string(STR_PURCHASE_HINT_ENGINE, 
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL), 
                    string(STR_PURCHASE_HINT_SECTIONS_MS, string(STR_PURCHASE_HINT_LIST2, string(STR_2M62U_NAME), string(STR_3M62U_NAME))), 	
                    string(STR_PURCHASE_HINT_FROMTO, 1986, 1992), 
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK), 
@@ -511,3 +517,83 @@ if (enable_long_names) {
   }
 }
 
+switch (FEAT_TRAINS, SELF, _3m62u_additional_text_short,
+  current_year >= 1991)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_4), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 2000), 
+                   string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD), 
+                   2);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_4), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 2000), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK), 
+                   4);
+}
+switch (FEAT_TRAINS, SELF, _3m62u_m_additional_text_short,
+  current_year >= 1991)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_MS, string(STR_3M62U_NAME)), 	
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 2000), 
+                   string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD), 
+                   2);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_MS, string(STR_3M62U_NAME)), 	
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 2000), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK), 
+                   4);
+}
+
+if (models_details_level == 0) {
+  item (FEAT_TRAINS, _3m62u) {
+    property {
+      introduction_date: date(get_loc_year(1986), 1, 1);
+      model_life: get_model_life(1986,2000);
+      retire_early: get_retire_early(1986,2000);
+    }
+    graphics {
+      default: _3m62u_sprites;
+      purchase: _3m62u_purchase_sprites;
+      articulated_part: articulated_part_dummy2;
+      can_attach_wagon: any_can_attach_wagon;
+      start_stop: any_start_stop;
+      additional_text: _3m62u_additional_text_short;
+      cargo_subtype_text: _3m62u_cargo_subtype_text;
+      cargo_capacity: return 0;
+      speed: _3m62u_speed;
+      purchase_speed: _3m62u_purchase_speed;
+      running_cost_factor: _3m62u_running_cost_factor;
+      bitmask_vehicle_info: _3m62u_bitmask_vehicle_info_drb1;
+      create_effect: _3m62u_create_effect_sprites_start;
+    }
+  }
+  item (FEAT_TRAINS, _3m62u_m) {
+    property {
+      introduction_date: date(get_loc_year(1986), 1, 1);
+      model_life: get_model_life(1986,2000);
+      retire_early: get_retire_early(1986,2000);
+    }
+    graphics {
+      default: _3m62u_m_sprites;
+      purchase: _3m62u_m_purchase_sprites;
+      running_cost_factor: _3m62u_m_running_cost_factor;
+      articulated_part: articulated_part_dummy2;
+      can_attach_wagon: any_can_attach_wagon;
+      start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+      additional_text: _3m62u_m_additional_text_short;
+      cargo_subtype_text: _3m62u_m_cargo_subtype_text;
+      cargo_capacity: return 0;
+      speed: _3m62u_m_speed;
+      purchase_speed: _3m62u_m_purchase_speed; 
+      bitmask_vehicle_info: _3m62u_m_bitmask_vehicle_info;
+      create_effect: _3m62u_m_create_effect_sprites_start;
+    }
+  }
+}
+                             	

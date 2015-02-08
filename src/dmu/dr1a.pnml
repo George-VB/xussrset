@@ -183,7 +183,7 @@ switch (FEAT_TRAINS, SELF, dr1a_n_sprites_DRB1,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_n_sprites_start_sp,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
   ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
 {
   1: dr1a_n_sprites_DRB1;
@@ -258,7 +258,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_c_can_attach_wagon1,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_c_can_attach_wagon_h,
-  (count_veh_id(dr1a_h) + count_veh_id(_2m62u) + count_veh_id(dm62) + count_veh_id(dr1a_n)) % 2)
+  (count_veh_id(dr1a_h) + count_veh_id(_2m62u) + count_veh_id(_3m62u) + count_veh_id(dm62) + count_veh_id(dr1a_n)) % 2)
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
      dr1a_c_can_attach_wagon1;
@@ -272,6 +272,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_c_can_attach_wagon,
   dr1a_n: dr1a_c_can_attach_wagon_h;
   dr1a_h: dr1a_c_can_attach_wagon_h;
   _2m62u: dr1a_c_can_attach_wagon_h;
+  _3m62u: dr1a_c_can_attach_wagon_h;
   dm62:   dr1a_c_can_attach_wagon_h;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
@@ -343,7 +344,7 @@ switch (FEAT_TRAINS, PARENT, drb1_can_attach_wagon1,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon,
-  count_veh_id(_2m62u) + count_veh_id(dm62))
+  count_veh_id(_2m62u) + count_veh_id(_3m62u) + count_veh_id(dm62))
 {
   0: dr1a_n_can_attach_wagon1;
   1: drb1_can_attach_wagon1; 
@@ -351,7 +352,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon,
-  count_veh_id(_2m62u) + count_veh_id(dm62))
+  count_veh_id(_2m62u) + count_veh_id(_3m62u) + count_veh_id(dm62))
 {
   0: dr1a_can_attach_wagon_length;
      return string(STR_CAN_ATTACH_WRONG_DRB1);
@@ -361,6 +362,7 @@ switch (FEAT_TRAINS, PARENT, drb1_can_attach_wagon,
   (count_veh_id(dr1a_h) * 2) +
   count_veh_id(dr1a_n) + 
   count_veh_id(_2m62u) + 
+  count_veh_id(_3m62u) + 
   count_veh_id(dm62))
 {
   0..1: return CB_RESULT_ATTACH_ALLOW;
@@ -374,12 +376,13 @@ switch (FEAT_TRAINS, SELF, dr1a_can_attach_wagon,
   dr1a_n: dr1a_n_can_attach_wagon;
   dr1a_c: dr1a_c_can_attach_wagon;
   _2m62u: drb1_can_attach_wagon;
+  _3m62u: drb1_can_attach_wagon;
   dm62:   drb1_can_attach_wagon;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_h_start_stop,
-  (count_veh_id(dr1a_h) + count_veh_id(dr1a_n) + count_veh_id(_2m62u) + count_veh_id(dm62)) % 2)
+  (count_veh_id(dr1a_h) + count_veh_id(dr1a_n) + count_veh_id(_2m62u) + count_veh_id(_3m62u) + count_veh_id(dm62)) % 2)
 {
   0: return CB_RESULT_NO_TEXT;
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
@@ -416,7 +419,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_power,
      return 0;
 } 
 
-// Допускается эксплуатация с пассажирами только если голова - dr1a_h или dr1a_n или 2m62u или dm62
+// Допускается эксплуатация с пассажирами только если голова - dr1a_h или dr1a_n или 2[3]m62u или dm62
 switch (FEAT_TRAINS, PARENT, dr1a_h_cargo_capacity,
   (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) )
 {
@@ -425,14 +428,14 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_cargo_capacity,
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_n_cargo_capacity,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) || (vehicle_type_id == _2m62u) || (vehicle_type_id == dm62) )
+  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) || (vehicle_type_id == _2m62u) || (vehicle_type_id == _3m62u) || (vehicle_type_id == dm62) )
 {
   1: return 96;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, dr1a_c_cargo_capacity,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) || (vehicle_type_id == _2m62u) || (vehicle_type_id == dm62) )
+  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) || (vehicle_type_id == _2m62u) || (vehicle_type_id == _3m62u) || (vehicle_type_id == dm62) )
 {
   1: return 124;
      return 0;
