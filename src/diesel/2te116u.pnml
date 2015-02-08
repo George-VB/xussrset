@@ -22,8 +22,8 @@ switch (FEAT_TRAINS, SELF, _2te116u_purchase_sprites,
 }  
 
 switch (FEAT_TRAINS, SELF, _2te116u_sprites_left,
-  (LOAD_TEMP(2) >= date(2009,1,1)) +
-  (build_year >= 2011) )
+  (build_year >= 2011) || (cargo_subtype == 1) ? 2 :
+  (LOAD_TEMP(2) >= date(2009,1,1)) ? 1 : 0)
 {
   0: _2te116u_v1_sprites_left;
   1: _2te116u_v2_sprites_left;
@@ -32,8 +32,8 @@ switch (FEAT_TRAINS, SELF, _2te116u_sprites_left,
 }
 
 switch (FEAT_TRAINS, SELF, _2te116u_sprites_right,
-  (LOAD_TEMP(2) >= date(2009,1,1)) +
-  (build_year >= 2011) )
+  (build_year >= 2011) || (cargo_subtype == 1) ? 2 :
+  (LOAD_TEMP(2) >= date(2009,1,1)) ? 1 : 0)
 {
   0: _2te116u_v1_sprites_right;
   1: _2te116u_v2_sprites_right;
@@ -41,34 +41,22 @@ switch (FEAT_TRAINS, SELF, _2te116u_sprites_right,
      align_11_sprites;
 }
 
-engine_direction_template2(_2te116u, _2te116, ) 
-
+engine_direction_template(_2te116u, ) 
 long_vehicle(_2te116u)
 
-engine_diesel_1_effect(_2te116u, 2, 0, 11)
-
-engine_direction_template2(_2te116u, _2te116, _create_effect) 
-
 switch (FEAT_TRAINS, SELF, _2te116u_cargo_subtype_text,
-  (build_year >= 2011) +
-  (cargo_subtype * 2))
+  (build_year >= 2011) || (cargo_subtype == 1) ? 1 : 0)
 {
   0: return string(STR_REFIT_FACTORY);
   1: return string(STR_REFIT_RZD_PID);
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, _2te116u_cost_factor,
-  build_year >= 2009)
-{
-  0: return 64;
-     return 62;
-}
-
+engine_cost_change_build_after(_2te116u, 64, 62, 2009)
+engine_diesel_1_effect(_2te116u, 2, 0, 11)
+engine_direction_template(_2te116u, _create_effect) 
 engine_speed(_2te116u, 100)
-
 engine_penalise_speed(_2te116u, 4)
-
 general_running_cost(_2te116u, 624)
 
 item (FEAT_TRAINS, _2te116u) {
@@ -103,7 +91,12 @@ item (FEAT_TRAINS, _2te116u) {
     articulated_part: articulated_part_dummy3;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_2TE116U_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1_4_WITH_ATTACH, string(STR_2TE116_NAME)), 
+                                   string(STR_PURCHASE_HINT_FROM, 2007), 
+                                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK), 
+                                   1);
     speed: _2te116u_speed;
     purchase_speed: _2te116u_purchase_speed;
     running_cost_factor: _2te116u_running_cost_factor;
