@@ -44,28 +44,16 @@ switch (FEAT_TRAINS, SELF, te7_sprites_right,
 }
 
 engine_direction_template(te7, ) 
-
 long_vehicle(te7)
 
-engine_diesel_1r_effect(te7, 3, -1, 11)
-
-engine_direction_template(te7, _create_effect) 
-
-switch (FEAT_TRAINS, SELF, te7_additional_text,
-  current_year >= 1958)
-{
-  1: return string(STR_TE7_PURCHASE_HINT);
-     return string(STR_TE7_PURCHASE_HINT_PRE);
-}
-
-switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text5,
+switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text_b1958,
   cargo_subtype)
 {
   0: return string(STR_REFIT_PREPRODUCTION);
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text4,
+switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text_a1958_b1961,
   cargo_subtype )
 {
   0: return string(STR_REFIT_TTD_53);
@@ -75,7 +63,7 @@ switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text4,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text3,
+switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text_a1958_a1961,
   cargo_subtype )
 {
   0: return string(STR_REFIT_TTD_53);
@@ -86,31 +74,49 @@ switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text3,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text2,
+switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text_a1958,
   (current_year >= 1961) || (build_year >= 1961))
 {
-  1: te7_cargo_subtype_text3;
-     te7_cargo_subtype_text4;
+  1: te7_cargo_subtype_text_a1958_a1961;
+     te7_cargo_subtype_text_a1958_b1961;
 }
 
 switch (FEAT_TRAINS, SELF, te7_cargo_subtype_text,
   build_year >= 1958)
 {
-  1: te7_cargo_subtype_text2;
-     te7_cargo_subtype_text5;
+  1: te7_cargo_subtype_text_a1958;
+     te7_cargo_subtype_text_b1958;
 }
 
-switch (FEAT_TRAINS, SELF, te7_cost_factor,
-  build_year >= 1962)
+switch (FEAT_TRAINS, SELF, te7_additional_text,
+  (current_year >= 1958) +
+  (current_year >= 1961))
 {
-  0: return 26;
-     return 31;
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1956, 1957), 
+                   string(STR_PURCHASE_HINT_FACTORY_KHARKIV), 
+                   1);
+  1: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1958, 1964), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK), 
+                   4);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1958, 1964), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK), 
+                   5);
 }
 
+engine_diesel_1r_effect(te7, 3, -1, 11)
+engine_direction_template(te7, _create_effect) 
+engine_cost_change_build_after(te7, 26, 31, 1962)
 engine_speed_with_reduce_and_pre_model_no_reduce(te7, 100, 110, 25, 140, 1962)
-
 engine_penalise_speed(te7, 2)
-
 general_running_cost(te7_v1, 256)
 general_running_cost(te7_v2, 303)
 

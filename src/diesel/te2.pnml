@@ -50,12 +50,7 @@ switch (FEAT_TRAINS, SELF, te2_sprites_right,
 }
 
 engine_direction_template(te2, ) 
-
 short_vehicle(te2)
-
-engine_diesel_1r_effect(te2, -1, 0, 11)
-
-engine_direction_template(te2, _create_effect) 
 
 switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text2,
   cargo_subtype)
@@ -86,10 +81,27 @@ switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
+switch (FEAT_TRAINS, SELF, te2_additional_text,
+  current_year >= 1950)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_IN, 1949), 
+                   string(STR_PURCHASE_HINT_FACTORY_KHARKIV), 
+                   1);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1950, 1955), 
+                   string(STR_PURCHASE_HINT_FACTORY_KHARKIV), 
+                   1);
+}
+
+engine_diesel_1r_effect(te2, -1, 0, 11)
+engine_direction_template(te2, _create_effect) 
 engine_speed_change_after(te2, 93, 95, 1956)
-
 engine_penalise_speed(te2, 2)
-
 general_running_cost(te2, 143)
 
 item (FEAT_TRAINS, te2) {
@@ -125,7 +137,7 @@ item (FEAT_TRAINS, te2) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     articulated_part: articulated_part_dummy1;
-    additional_text: return string(STR_TE2_PURCHASE_HINT);
+    additional_text: te2_additional_text;
     cargo_subtype_text: te2_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: te2_speed;
