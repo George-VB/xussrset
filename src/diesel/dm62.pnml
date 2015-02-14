@@ -37,89 +37,12 @@ switch (FEAT_TRAINS, SELF, dm62_sprites_right,
   6: dm62_v7_sprites_right;
      align_10_sprites; 
 }
-/*
-engine_direction_template(dm62, ) 
 
-switch (FEAT_TRAINS, SELF, dm62_sprites_DRB1,
-  (position_in_consist != 0) +
-  (cargo_subtype * 2) )
-{
-   0: dm62_v1_sprites_left;
-   1: dm62_v1_sprites_right;
-   2: dm62_v2_sprites_left;
-   3: dm62_v2_sprites_right;
-   4: dm62_v3_sprites_left;
-   5: dm62_v3_sprites_right;
-   6: dm62_v4_sprites_left;
-   7: dm62_v4_sprites_right;
-   8: dm62_v5_sprites_left;
-   9: dm62_v5_sprites_right;
-  10: dm62_v6_sprites_left;
-  11: dm62_v6_sprites_right;
-  12: dm62_v7_sprites_left;
-  13: dm62_v7_sprites_right;
-      align_10_sprites; 
-}
-  
-switch (FEAT_TRAINS, PARENT, dm62_sprites_start_sp,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
-  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
-{
-  1: dm62_sprites_DRB1;
-     dm62_sprites_start;
-}
-*/
 engine_RNDany_direction_template(dm62, 5, 3) 
-
 long_vehicle_sp(dm62)
 
 engine_diesel_1_effect(dm62, 3, -1, 12)
-
 engine_RNDany_effect_direction_template(dm62, 5, 3) 
-
-// прицепить ДМ62 можно только к составу, не имеющему вагонов ДР1А или имеющему только прицепные вагоны
-switch (FEAT_TRAINS, PARENT, dm62_can_attach_wagon3,
-  ((count_veh_id(dr1a_c) + count_veh_id(dr1a_h) + count_veh_id(dr1a_n)) == 0) ||
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0) )
-{
-  1: return any_can_attach_wagon;
-     return string(STR_CAN_ATTACH_WRONG_DRB1);
-}
-
-// прицепить ДР1А прицепной можно только к составу, состоящему из 2М62у и не более чем 9 ДР1А прицепных
-switch (FEAT_TRAINS, PARENT, dm62_can_attach_wagon2,
-  (count_veh_id(dr1a_c) <= 9) && ( (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0) )
-{
-  1: return CB_RESULT_ATTACH_ALLOW;
-  return string(STR_CAN_ATTACH_WRONG_DRB1);
-}
-
-// прицепить ДР1А головной немоторный можно только к составу, состоящему из 2М62у и ДР1А прицепных
-switch (FEAT_TRAINS, PARENT, dm62_can_attach_wagon1,
-  (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0 )
-{
-  1: return CB_RESULT_ATTACH_ALLOW;
-  return string(STR_CAN_ATTACH_WRONG_DRB1);
-}
-
-// нельзя прицеплять ничего к ДР1Б кроме частей ДР1А
-switch (FEAT_TRAINS, PARENT, dm62_can_attach_wagon0,
-  (count_veh_id(dr1a_c)+count_veh_id(dr1a_n) >= 1) )
-{
-  1: return string(STR_CAN_ATTACH_WRONG_DRB1);
-     any_can_attach_wagon;
-}
-
-switch (FEAT_TRAINS, SELF, dm62_can_attach_wagon,
-  vehicle_type_id)
-{
-  dr1a_h: string(STR_CAN_ATTACH_WRONG_DRB1);
-  dr1a_n: dm62_can_attach_wagon1;
-  dr1a_c: dm62_can_attach_wagon2;
-  _2m62u: dm62_can_attach_wagon3;
-  dm62:   dm62_can_attach_wagon3;
-          dm62_can_attach_wagon0;
-}
 
 switch (FEAT_TRAINS, SELF, dm62_cargo_subtype_text,
   cargo_subtype)
@@ -135,19 +58,8 @@ switch (FEAT_TRAINS, SELF, dm62_cargo_subtype_text,
 }
 
 engine_speed(dm62, 100)
-
 engine_penalise_speed(dm62, 4)
-
 general_running_cost(dm62, 331)
-
-// отключить пенальти для ДРБ1
-switch (FEAT_TRAINS, PARENT, dm62_bitmask_vehicle_info_drb1,
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(dm62) * 2) == 0) && 
-  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) )
-{
-  1: return 0;
-     dm62_bitmask_vehicle_info;
-}
 
 item (FEAT_TRAINS, dm62) {
   property {
@@ -180,7 +92,7 @@ item (FEAT_TRAINS, dm62) {
     default: dm62_sprites;
     purchase: dm62_purchase_sprites;
     articulated_part: articulated_part_dummy2;
-    can_attach_wagon: dm62_can_attach_wagon;
+    can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_DM62_PURCHASE_HINT);
     cargo_subtype_text: dm62_cargo_subtype_text;
@@ -188,7 +100,7 @@ item (FEAT_TRAINS, dm62) {
     speed: dm62_speed;
     purchase_speed: dm62_purchase_speed;
     running_cost_factor: dm62_running_cost_factor;
-    bitmask_vehicle_info: dm62_bitmask_vehicle_info_drb1;
+    bitmask_vehicle_info: dm62_bitmask_vehicle_info;
     create_effect: dm62_create_effect;
   }
 }
