@@ -59,16 +59,8 @@ switch (FEAT_TRAINS, SELF, tem2_sprites_right,
 }
 
 engine_direction_template(tem2, ) 
-
 engine_RND_direction_template(tem2, 1, 1) 
-
 long_vehicle_sp(tem2)
-
-engine_diesel_1r_effect(tem2, 0, 2, 11)
-
-engine_direction_template(tem2, _create_effect) 
-
-engine_RND_effect_direction_template(tem2, 1, 1) 
 
 switch (FEAT_TRAINS, SELF, tem2_cargo_subtype_text,
   cargo_subtype)
@@ -79,33 +71,7 @@ switch (FEAT_TRAINS, SELF, tem2_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, tem2_tractive_effort_coefficient,
-  (build_year >= 1967) +
-  (build_year >= 1974))
-{
-  0: return get_tec_int(211.0, 120);
-  1: return get_tec_int(206.0, 120);
-     return get_tec_int(200.0, 120);
-}
-
-switch (FEAT_TRAINS, SELF, tem2_power,
-  build_year >= 1967)
-{
-  0: return get_power_in_cb(840);
-     return get_power_in_cb(890);
-}
-
-switch (FEAT_TRAINS, SELF, tem2_cost_factor,
-  (build_year >= 1967) +
-  (build_year >= 1974))
-{
-  0: return 26;
-  1: return 27;
-     return 26;
-}
-
 engine_speed(tem2, 100)
-
 engine_penalise_speed(tem2, 2)
 
 switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_pre1971,  
@@ -122,18 +88,30 @@ switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_year,
      tem2_bitmask_vehicle_info;
 }
 
-general_running_cost(tem2_v1, 199)
-general_running_cost(tem2_v2, 203)
-general_running_cost(tem2_v3, 200)
-
-switch (FEAT_TRAINS, SELF, tem2_running_cost_factor,
-  (build_year >= 1967) +
-  (build_year >= 1974))
+switch (FEAT_TRAINS, SELF, tem2_additional_text,
+  current_year >= 1971)
 {
-  0: tem2_v1_running_cost_factor;
-  1: tem2_v2_running_cost_factor;
-     tem2_v3_running_cost_factor;
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1960, 1984), 
+                   string(STR_PURCHASE_HINT_FACTORY_BRYANSK), 
+                   3);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1960, 1984), 
+                   string(STR_PURCHASE_HINT_FACTORY_BRYANSK), 
+                   3);
 }
+
+engine_RC_change_build_after2(tem2, 199, 203, 1967, 200, 1974)       
+engine_TE_change_build_after2(tem2, get_tec_int(211.0, 120), get_tec_int(206.0, 120), 1967, get_tec_int(200.0, 120), 1974)       
+engine_cost_change_build_after2(tem2, 26, 27, 1967, 26, 1974)       
+engine_power_change_build_after(tem2, 840, 890, 1967)       
+engine_diesel_1r_effect(tem2, 0, 2, 11)
+engine_direction_template(tem2, _create_effect) 
+engine_RND_effect_direction_template(tem2, 1, 1) 
 
 item (FEAT_TRAINS, tem2) {
   property {
@@ -171,7 +149,7 @@ item (FEAT_TRAINS, tem2) {
     purchase_speed: tem2_purchase_speed;
     power: tem2_power;
     running_cost_factor: tem2_running_cost_factor;
-    additional_text: return string(STR_TEM2_PURCHASE_HINT);
+    additional_text: tem2_additional_text;
     tractive_effort_coefficient: tem2_tractive_effort_coefficient;
     bitmask_vehicle_info: tem2_bitmask_vehicle_info_year;
     cargo_subtype_text: tem2_cargo_subtype_text;
