@@ -48,12 +48,8 @@ switch (FEAT_TRAINS, SELF, tg102_sprites_right,
 }
 
 engine_direction_template(tg102, ) 
-
 long_vehicle(tg102)
 
-engine_diesel_2_effect(tg102, 0, 1, 1, 2, 11)
-
-engine_direction_template(tg102, _create_effect) 
 
 switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text2,
   cargo_subtype)
@@ -73,10 +69,34 @@ switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
+switch (FEAT_TRAINS, SELF, tg102_additional_text,
+  (current_year >= 1960) +
+  (current_year >= 1963) )
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_2), 
+                   string(STR_PURCHASE_HINT_IN, 1959), 
+                   string(STR_PURCHASE_HINT_FACTORY_LENINGRAD), 
+                   1);
+  1: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1960, 1966), 
+                   string(STR_PURCHASE_HINT_FACTORY_LENINGRAD), 
+                   2);
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1960, 1966), 
+                   string(STR_PURCHASE_HINT_FACTORY_LENINGRAD), 
+                   1);
+}
+
+engine_diesel_2_effect(tg102, 0, 1, 1, 2, 11)
+engine_direction_template(tg102, _create_effect) 
 engine_speed(tg102, 120)
-
 engine_penalise_speed(tg102, 2)
-
 general_running_cost(tg102, 348)
 
 item (FEAT_TRAINS, tg102) {
@@ -111,7 +131,7 @@ item (FEAT_TRAINS, tg102) {
     articulated_part: articulated_part_dummy1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_TG102_PURCHASE_HINT);
+    additional_text: tg102_additional_text;
     cargo_subtype_text: tg102_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: tg102_speed;
