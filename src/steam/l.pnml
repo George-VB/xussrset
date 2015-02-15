@@ -10,46 +10,13 @@ tender_sprites(5, l_e_t, 447,  40)
 
 short_vehicle(l_e)
 
-switch (FEAT_TRAINS, SELF, l_e_create_effect, 
-  steam_create_effect(-3, 13)) 
-{ 
-  return 1; 
-}    
-
-switch (FEAT_TRAINS, SELF, l_e_tractive_effort_coefficient,
-  build_year >= 1923)
-{
-  0: return get_tec_int(100.0, 97+74);
-     return get_tec_int(105.0, 97+74);
-}
-
-switch (FEAT_TRAINS, SELF, l_e_power,
-  (build_year >= 1923))
-{
-  0: return get_power_in_cb(1500);
-     return get_power_in_cb(1600);
-}
-
-switch (FEAT_TRAINS, SELF, l_e_cost_factor,
-  current_year >= 1923)
-{
-  0: return 14;
-     return 16;
-}
-
+engine_steam_1_effect(l_e, -3, 13)
+engine_TE_change_build_after(l_e, get_tec_int(100.0, 97+74), get_tec_int(105.0, 97+74), 1923)       
+engine_power_change_build_after(l_e, 1500, 1600, 1923)       
+engine_cost_change_build_after(l_e, 14, 166, 1923)       
+engine_RC_change_build_after(l_e, 332, 376, 1923)       
 engine_speed_change_after(l_e, 105, 120, 1920)
-
 engine_penalise_speed0(l_e)
-
-general_running_cost(lp_e, 376)
-general_running_cost(l_e_v1, 332)
-
-switch (FEAT_TRAINS, SELF, l_e_running_cost_factor,
-  current_year >= 1923)
-{
-  0: l_e_v1_running_cost_factor;
-     lp_e_running_cost_factor;
-}
 
 item (FEAT_TRAINS, l_e) {
   property {
@@ -76,14 +43,17 @@ item (FEAT_TRAINS, l_e) {
     cargo_capacity: 1;
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
-
   graphics {
     default: l_e_sprites;
     purchase: l_e_purchase_sprites;
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_L_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1914, 1926), 
+                                   string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY));
     speed: l_e_speed;
     power: l_e_power;
     purchase_speed: l_e_purchase_speed;
@@ -93,12 +63,10 @@ item (FEAT_TRAINS, l_e) {
     create_effect: l_e_create_effect;
     running_cost_factor: l_e_running_cost_factor;
   }
-
   livery_override(unitb) {
     length: return 4;
     l_e_t_sprites_start;
   }
-
 }
 
 if (enable_long_names) {
@@ -110,7 +78,6 @@ if (enable_long_names) {
  // lp
 
 engine_speed(lp_e, 120)
-
 engine_penalise_speed0(lp_e)
 
 item (FEAT_TRAINS, lp_e) {
@@ -145,16 +112,19 @@ item (FEAT_TRAINS, lp_e) {
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_LP_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1923, 1926), 
+                                   string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY));
     speed: lp_e_speed;
     purchase_speed: lp_e_purchase_speed;
     bitmask_vehicle_info: lp_e_bitmask_vehicle_info;
     cargo_capacity: return 0;
     cost_factor: l_e_cost_factor;
     create_effect: l_e_create_effect;
-    running_cost_factor: lp_e_running_cost_factor;
+    running_cost_factor: l_e_v2_running_cost_factor;
   }
-
   livery_override(unitb) {
     length: return 4;
     l_e_t_sprites_start;

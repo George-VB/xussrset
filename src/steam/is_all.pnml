@@ -19,6 +19,31 @@ tender_sprites(7, is_all_t6p_v2, 447, 375)
 tender_sprites(7, is_all_t6p_v3, 447, 442)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, is_all_tender_sprites,
+[
+  set_offset_to(-2),
+  prev_vehicle_cargo_subtype() + 
+  ((build_year >= 1936) * 3) ])
+{
+  0: is_all_t4o_v1_sprites_start;
+  1: is_all_t4o_v2_sprites_start;
+  2: is_all_t4o_v3_sprites_start;
+  3: is_all_t6p_v1_sprites_start;
+  4: is_all_t6p_v2_sprites_start;
+     is_all_t6p_v3_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, is_is21_tender_sprites,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+  0: is_all_t6p_v1_sprites_start;
+  1: is_all_t6p_v2_sprites_start;
+     is_all_t6p_v3_sprites_start;
+}
+
+engine_length_change_build_after(is_all_tender, 5, 6, 1936)       
+
 switch (FEAT_TRAINS, SELF, is_all_purchase_sprites,
   current_year >= 1936)
 {
@@ -37,66 +62,7 @@ switch (FEAT_TRAINS, SELF, is_is20_sprites_start,
 
 long_vehicle(is_is20)
 
-switch (FEAT_TRAINS, SELF, is_all_create_effect, 
-  steam_create_effect(-2, 14)) 
-{ 
-  return 1; 
-}    
-
-switch (FEAT_TRAINS, SELF, is_all_tender_sprites,
-[
-  set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + 
-  ((build_year >= 1936) * 3) ])
-{
-  0: is_all_t4o_v1_sprites_start;
-  1: is_all_t4o_v2_sprites_start;
-  2: is_all_t4o_v3_sprites_start;
-  3: is_all_t6p_v1_sprites_start;
-  4: is_all_t6p_v2_sprites_start;
-     is_all_t6p_v3_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, is_all_tender_length,
-  build_year >= 1936)
-{
-  0: return 5;
-     return 6;
-}
-
  // is_is20
-
-switch (FEAT_TRAINS, SELF, is_is20_weight,
-  build_year >= 1936)
-{
-  0: return (133+85);
-     return (133+127);
-}
-
-switch (FEAT_TRAINS, SELF, is_is20_tractive_effort_coefficient,
-  build_year >= 1936)
-{
-  0: return get_tec_int(151.0, 133+85);
-     return get_tec_int(151.0, 133+127);
-}
-
-switch (FEAT_TRAINS, SELF, is_is20_purchase_sprites,
-  current_year >= 1936)
-{
-  1: is_all_v2_purchase_sprites;
-     is_all_v1_purchase_sprites;
-}
-
-engine_speed_change_after(is_is20, 110, 115, 1936)
-
-engine_penalise_speed0(is_is20)
-
-switch (FEAT_TRAINS, SELF, is_is20_cost_factor,
-  current_year >= 1936)
-{
-  0: return 46;
-     return 56;
-}
 
 switch (FEAT_TRAINS, SELF, is_is20_cargo_subtype_text,
   cargo_subtype)
@@ -107,15 +73,13 @@ switch (FEAT_TRAINS, SELF, is_is20_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-general_running_cost(is_all_v1, 672)
-general_running_cost(is_all_v2, 723)
-
-switch (FEAT_TRAINS, SELF, is_is20_running_cost_factor,
-  (build_year >= 1936))
-{
-  0: is_all_v1_running_cost_factor;
-     is_all_v2_running_cost_factor;
-}
+engine_steam_1_effect(is_all, -2, 14)
+engine_weight_change_build_after(is_is20, 133+85, 133+127, 1936)       
+engine_TE_change_build_after(is_is20, get_tec_int(151.0, 133+85), get_tec_int(151.0, 133+127), 1936)       
+engine_cost_change_build_after(is_is20, 46, 56, 1936)       
+engine_speed_change_after(is_is20, 110, 115, 1936)
+engine_penalise_speed0(is_is20)
+engine_RC_change_build_after(is_is20, 672, 723, 1936)       
 
 item (FEAT_TRAINS, is_is20) {
   property {
@@ -142,11 +106,15 @@ item (FEAT_TRAINS, is_is20) {
   }
   graphics {
     default: is_is20_sprites;
-    purchase: is_is20_purchase_sprites;
+    purchase: is_all_purchase_sprites;
     articulated_part: articulated_part_tender2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_IS20_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941), 
+                                   string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD));
     speed: is_is20_speed;
     purchase_speed: is_is20_purchase_speed;
     bitmask_vehicle_info: is_is20_bitmask_vehicle_info;
@@ -173,20 +141,6 @@ if (enable_long_names) {
 
  // is21
 
-engine_speed(is_is21, 115)
-
-switch (FEAT_TRAINS, SELF, is_is21_tender_sprites,
-[
-  set_offset_to(-2),
-  prev_vehicle_cargo_subtype()])
-{
-  0: is_all_t6p_v1_sprites_start;
-  1: is_all_t6p_v2_sprites_start;
-     is_all_t6p_v3_sprites_start;
-}
-
-engine_penalise_speed0(is_is21)
-
 switch (FEAT_TRAINS, SELF, is_is21_cargo_subtype_text,
   cargo_subtype)
 {
@@ -196,6 +150,8 @@ switch (FEAT_TRAINS, SELF, is_is21_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
+engine_speed(is_is21, 115)
+engine_penalise_speed0(is_is21)
 general_running_cost(is_is21, 761)
 
 item (FEAT_TRAINS, is_is21) {
@@ -223,14 +179,17 @@ item (FEAT_TRAINS, is_is21) {
     cargo_capacity: 1;
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
-
   graphics {
     default: is_is20_sprites;
     purchase: is_all_purchase_sprites;
     articulated_part: articulated_part_tender2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_IS21_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1941, 1942), 
+                                   string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD));
     speed: is_is21_speed;
     purchase_speed: is_is21_purchase_speed;
     bitmask_vehicle_info: is_is21_bitmask_vehicle_info;
@@ -244,7 +203,6 @@ item (FEAT_TRAINS, is_is21) {
     length: 6;
     is_is21_tender_sprites;
   }
-
 }
 
 if (enable_long_names) {
@@ -261,12 +219,7 @@ if (models_details_level == 1) {
 
 // is all
 
-switch (FEAT_TRAINS, SELF, is_all_power,
-  build_year >= 1941)
-{
-  0: return get_power_in_cb(3200);
-     return get_power_in_cb(3300);
-}
+engine_power_change_build_after(is_all, 3200, 3300, 1941)       
 
 switch (FEAT_TRAINS, SELF, is_all_weight,
   build_year >= 1941)
@@ -300,13 +253,34 @@ switch (FEAT_TRAINS, SELF, is_all_cargo_subtype_text,
   ((build_year >= 1941) * 100) +
   cargo_subtype)
 {
-    0: return string(STR_REFIT_FACTORY_IS20, string(STR_REFIT_TTD_53));
-    1: return string(STR_REFIT_FACTORY_IS20, string(STR_REFIT_TTD_59));
-    2: return string(STR_REFIT_FACTORY_IS20, string(STR_REFIT_RED_ARROW));
-  100: return string(STR_REFIT_FACTORY_IS21, string(STR_REFIT_TTD_53));
-  101: return string(STR_REFIT_FACTORY_IS21, string(STR_REFIT_TTD_59));
-  102: return string(STR_REFIT_FACTORY_IS21, string(STR_REFIT_RED_ARROW));
-     return CB_RESULT_NO_TEXT;
+    0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS20), string(STR_REFIT_TTD_53));
+    1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS20), string(STR_REFIT_TTD_59));
+    2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS20), string(STR_REFIT_RED_ARROW));
+  100: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS21), string(STR_REFIT_TTD_53));
+  101: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS21), string(STR_REFIT_TTD_59));
+  102: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS21), string(STR_REFIT_RED_ARROW));
+       return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, is_all_additional_text,
+  (current_year >= 1935) +
+  (current_year >= 1941))
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_IS20)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  1: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_IS20)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941), 
+                   string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_IS21)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1941, 1942), 
+                   string(STR_PURCHASE_HINT_FACTORY_VOROSHILOVGRAD));
 }
 
 if (models_details_level == 0) {
@@ -322,7 +296,7 @@ if (models_details_level == 0) {
       articulated_part: articulated_part_tender2;
       can_attach_wagon: any_can_attach_wagon;
       start_stop: any_start_stop;
-      additional_text: return string(STR_IS_ALL_PURCHASE_HINT);
+      additional_text: is_all_additional_text;
       speed: is_is20_speed;
       purchase_speed: is_is20_purchase_speed;
       bitmask_vehicle_info: is_is20_bitmask_vehicle_info;

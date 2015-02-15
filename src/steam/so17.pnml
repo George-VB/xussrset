@@ -30,53 +30,13 @@ switch (FEAT_TRAINS, PARENT, so17_sprites_start,
 
 short_vehicle(so17)
 
-switch (FEAT_TRAINS, SELF, so17_create_effect, 
-  steam_create_effect(-3, 12)) 
-{ 
-  return 1; 
-}    
-
-switch (FEAT_TRAINS, SELF, so17_weight,
-  (build_year >= 1942) +
-  (build_year >= 1948))
-{
-  0: return (97+68);
-  1: return (103+68);
-     return (103+82);
-}
-
-switch (FEAT_TRAINS, SELF, so17_tractive_effort_coefficient,
-  (build_year >= 1942) +
-  (build_year >= 1948))
-{
-  0: return get_tec_int(193.0, 97+68);
-  1: return get_tec_int(203.0, 103+68);
-     return get_tec_int(203.0, 103+82);
-}
-
+engine_steam_1_effect(so17, -3, 12)
+engine_weight_change_build_after2(so17, 97+68, 103+68, 1942, 103+82, 1948)       
+engine_TE_change_build_after2(so17, get_tec_int(193.0, 97+68), get_tec_int(203.0, 103+68), 1942, get_tec_int(203.0, 103+82), 1948)       
 engine_speed_change_after2(so17, 65, 70, 1935, 75, 1936)
-
 engine_penalise_speed0(so17)
-
-switch (FEAT_TRAINS, SELF, so17_cost_factor,
-  current_year >= 1942)
-{
-  0: return 18;
-     return 19;
-}
-
-general_running_cost(so17_v1, 441)
-general_running_cost(so17_v2, 427)
-general_running_cost(so17_v3, 440)
-
-switch (FEAT_TRAINS, SELF, so17_running_cost_factor,
-  (current_year >= 1942) +
-  (current_year >= 1948))
-{
-  0: so17_v1_running_cost_factor;
-  1: so17_v2_running_cost_factor;
-     so17_v3_running_cost_factor;
-}
+engine_cost_change_build_after(so17, 18, 19, 1942)       
+engine_RC_change_build_after2(so17, 441, 427, 1942, 440, 1948)       
 
 item (FEAT_TRAINS, so17) {
   property {
@@ -103,14 +63,17 @@ item (FEAT_TRAINS, so17) {
     cargo_capacity: 1;
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
   }
-
   graphics {
     default: so17_sprites;
     purchase: so17_purchase_sprites;
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_SO17_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1934, 1951), 
+                                   string(STR_PURCHASE_HINT_FACTORY_KHARKIV));
     speed: so17_speed;
     purchase_speed: so17_purchase_speed;
     bitmask_vehicle_info: so17_bitmask_vehicle_info;
@@ -121,7 +84,6 @@ item (FEAT_TRAINS, so17) {
     cost_factor: so17_cost_factor;
     running_cost_factor: so17_running_cost_factor;
   }
-
   livery_override(unitb) {
     length: e_tender_length;
             e_tender_sprites;
