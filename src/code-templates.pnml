@@ -646,6 +646,19 @@ switch (FEAT_TRAINS, SELF, name##_running_cost_factor, (build_year >= year) + (b
   1: name##_v2_running_cost_factor;                                                                      \
      name##_v3_running_cost_factor; }                                                                    \
 
+// Определение стоимости обслуживания с изменением по 3-м годам постройки
+
+#define engine_RC_change_build_after3(name, Rcost, new_Rcost, year, new_Rcost2, year2, new_Rcost3, year3)                     \
+general_running_cost(name##_v1, Rcost)                                                                                        \
+general_running_cost(name##_v2, new_Rcost)                                                                                    \
+general_running_cost(name##_v3, new_Rcost2)                                                                                   \
+general_running_cost(name##_v4, new_Rcost3)                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor, (build_year >= year) + (build_year >= year2) + (build_year >= year3))  \
+{ 0: name##_v1_running_cost_factor;                                                                                           \
+  1: name##_v2_running_cost_factor;                                                                                           \
+  2: name##_v3_running_cost_factor;                                                                                           \
+     name##_v4_running_cost_factor; }                                                                                         \
+
 // Определение пенальти на скорость (схема без СМЕ)
 
 #define engine_penalise_speed0(name)                                        \
@@ -970,6 +983,15 @@ switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= 
   2: return new_weight2;                                                                        \
      return weight; }                                                                           \
 
+// Определение массы с изменением по 3-м годам постройки
+
+#define engine_weight_change_build_after3(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3)   \
+switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3))     \
+{ 1: return new_weight;                                                                                             \
+  2: return new_weight2;                                                                                            \
+  3: return new_weight3;                                                                                            \
+     return weight; }                                                                                               \
+
 // Определение цены с изменением по году постройки
 
 #define engine_cost_change_build_after(name, cost, new_cost, year)        \
@@ -984,6 +1006,15 @@ switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_yea
 { 1: return new_cost;                                                                            \
   2: return new_cost2;                                                                           \
      return cost; }                                                                              \
+
+// Определение цены с изменением по 3-м годам постройки
+
+#define engine_cost_change_build_after3(name, cost, new_cost, year, new_cost2, year2, new_cost3, year3)                  \
+switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2) + (build_year >= year3))     \
+{ 1: return new_cost;                                                                                                    \
+  2: return new_cost2;                                                                                                   \
+  3: return new_cost3;                                                                                                   \
+     return cost; }                                                                                                      \
 
 // Определение мощности с изменением по году постройки
 
@@ -1000,6 +1031,22 @@ switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= y
   2: return get_power_in_cb(new_power2);                                                      \
      return get_power_in_cb(power); }                                                         \
 
+// Определение мощности с изменением по 3-м годам постройки
+
+#define engine_power_change_build_after3(name, power, new_power, year, new_power2, year2, new_power3, year3)       \
+switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2) + (build_year >= year3))     \
+{ 1: return get_power_in_cb(new_power);                                                                            \
+  2: return get_power_in_cb(new_power2);                                                                           \
+  3: return get_power_in_cb(new_power3);                                                                           \
+     return get_power_in_cb(power); }                                                                              \
+
+// Определение мощности с изменением по году 
+
+#define engine_power_change_after(name, power, new_power, year)                    \
+switch (FEAT_TRAINS, SELF, name##_power, date_of_last_service >= date(year,1,1))   \
+{ 1: return get_power_in_cb(new_power);                                            \
+     return get_power_in_cb(power); }                                              \
+
 // Определение ТЕ с изменением по году постройки
 
 #define engine_TE_change_build_after(name, TE, new_TE, year)                           \
@@ -1015,12 +1062,29 @@ switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, (build_year >= ye
   2: return new_TE2;                                                                                             \
      return TE; }                                                                                                \
 
+// Определение ТЕ с изменением по 3-м годам постройки
+
+#define engine_TE_change_build_after3(name, TE, new_TE, year, new_TE2, year2, new_TE3, year3)                                          \
+switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, (build_year >= year) + (build_year >= year2) + (build_year >= year3))   \
+{ 1: return new_TE;                                                                                                                    \
+  2: return new_TE2;                                                                                                                   \
+  3: return new_TE3;                                                                                                                   \
+     return TE; }                                                                                                                      \
+
 // Определение длины с изменением по году постройки
 
 #define engine_length_change_build_after(name, length, new_length, year)     \
 switch (FEAT_TRAINS, SELF, name##_length, build_year >= year)                \
 { 1: return new_length;                                                      \
      return length; }                                                        \
+
+// Определение длины с изменением по 2-м годам постройки
+
+#define engine_length_change_build_after2(name, length, new_length, year, new_length2, year2)     \
+switch (FEAT_TRAINS, SELF, name##_length, (build_year >= year) + (build_year >= year2))           \
+{ 1: return new_length;                                                                           \
+  2: return new_length2;                                                                          \
+     return length; }                                                                             \
 
 // Определение длины с изменением по году постройки
 

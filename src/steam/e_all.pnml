@@ -15,24 +15,11 @@ tender_sprites(5, e_t_v1, 447,  40)
 tender_sprites(6, e_t_v2, 447, 107)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, e_create_effect, 
-  steam_create_effect(-3, 12)) 
-{ 
-  return 1; 
-}    
-
 switch (FEAT_TRAINS, SELF, e_tender_sprites,
   build_year >= 1948)
 {
   0: e_t_v1_sprites_start;
      e_t_v2_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, e_tender_length,
-  build_year >= 1948)
-{
-  0: return 4;
-     return 5;
 }
 
  // e
@@ -56,76 +43,23 @@ switch (FEAT_TRAINS, PARENT, e_e_sprites_start, models_details_level == 1)
 
 short_vehicle(e_e)
 
-switch (FEAT_TRAINS, SELF, e_e_weight,
-  (build_year >= 1914) +
-  (build_year >= 1916) +
-  (build_year >= 1920))
-{
-  0: return (80+64);
-  1: return (81+64);
-  2: return (81+72);
-     return (82+72);
-}
-
-switch (FEAT_TRAINS, SELF, e_e_tractive_effort_coefficient,
-  (build_year >= 1914) +
-  (build_year >= 1916) +
-  (build_year >= 1920))
-{
-  0: return get_tec_int(127.0, 80+64);
-  1: return get_tec_int(140.0, 81+64);
-  2: return get_tec_int(149.0, 81+72);
-     return get_tec_int(149.0, 82+72);
-}
-
-switch (FEAT_TRAINS, SELF, e_e_power2,
-  (build_year >= 1916) +
-  (build_year >= 1920))
-{
-  0: return 780;  
-  1: return 790;  
-     return 1000;  
-}
-
+engine_length_change_build_after(e_tender, 4, 5, 1948)       
+engine_steam_1_effect(e, -3, 12)
+engine_weight_change_build_after3(e_e, 80+64, 81+64, 1914, 81+72, 1916, 82+72, 1920)       
+engine_TE_change_build_after3(e_e, get_tec_int(127.0, 80+64), get_tec_int(127.0, 80+64), 1914, get_tec_int(149.0, 81+72), 1916, get_tec_int(149.0, 82+72), 1920)       
+engine_cost_change_build_after3(e_e, 8, 8, 1914, 9, 1916, 10, 1920)       
+engine_RC_change_build_after3(e_e, 183, 193, 1914, 204, 1916, 230, 1920)       
+engine_speed_change_after(e_e, 55, 65, 1936)
+engine_penalise_speed0(e_e)
+engine_power_change_build_after2(e_e_v2, 780, 790, 1916, 1000, 1920)       
 switch (FEAT_TRAINS, SELF, e_e_power,
   (LOAD_TEMP(2) >= date(1920,1,1)) +
   (LOAD_TEMP(2) >= date(1936,1,1)))
 {
-  0: e_e_power2;  
+  0: e_e_v2_power;  
   1: return get_power_in_cb(1000); 
      return get_power_in_cb(1100);
 }
-
-switch (FEAT_TRAINS, SELF, e_e_cost_factor,
-  (build_year >= 1914) +
-  (build_year >= 1916) +
-  (build_year >= 1920))
-{
-  0: return 8;
-  1: return 8;
-  2: return 9;
-     return 10;
-}
-
-general_running_cost(e_e_v1, 183)
-general_running_cost(e_e_v2, 193)
-general_running_cost(e_e_v3, 204)
-general_running_cost(e_e_v4, 230)
-
-switch (FEAT_TRAINS, SELF, e_e_running_cost_factor,
-  (build_year >= 1914) +
-  (build_year >= 1916) +
-  (build_year >= 1920))
-{
-  0: e_e_v1_running_cost_factor;
-  1: e_e_v2_running_cost_factor;
-  2: e_e_v3_running_cost_factor;
-     e_e_v4_running_cost_factor;
-}
-
-engine_speed_change_after(e_e, 55, 65, 1936)
-
-engine_penalise_speed0(e_e)
 
 item (FEAT_TRAINS, e_e) {
   property {
@@ -158,7 +92,11 @@ item (FEAT_TRAINS, e_e) {
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_E_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1912, 1926), 
+                                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
     speed: e_e_speed;
     purchase_speed: e_e_purchase_speed;
     bitmask_vehicle_info: e_e_bitmask_vehicle_info;
@@ -187,17 +125,9 @@ if (enable_long_names) {
 
 short_vehicle(e_eu)
 
-switch (FEAT_TRAINS, SELF, e_eu_power,
-  (LOAD_TEMP(2) >= date(1936,1,1)))
-{
-  0: return get_power_in_cb(1250);
-     return get_power_in_cb(1320);
-}
-
+engine_power_change_after(e_eu, 1250, 1320, 1936)       
 general_running_cost(e_eu, 269)
-
 engine_speed_change_after(e_eu, 55, 65, 1936)
-
 engine_penalise_speed0(e_eu)
 
 item (FEAT_TRAINS, e_eu) {
@@ -231,7 +161,11 @@ item (FEAT_TRAINS, e_eu) {
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_EU_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1926, 1931), 
+                                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
     speed: e_eu_speed;
     purchase_speed: e_eu_purchase_speed;
     bitmask_vehicle_info: e_eu_bitmask_vehicle_info;
@@ -263,46 +197,11 @@ if ((models_details_level == 1) || (models_details_level == 2)) {
 
 short_vehicle(e_em)
 
-switch (FEAT_TRAINS, SELF, e_em_weight,
-  (build_year >= 1933) +
-  (build_year >= 1934))
-{
-  0: return (85+68);
-  1: return (78+68);
-     return (89+68);
-}
-
-switch (FEAT_TRAINS, SELF, e_em_tractive_effort_coefficient,
-  (build_year >= 1933) +
-  (build_year >= 1934))
-{
-  0: return get_tec_int(158.0, 85+68);
-  1: return get_tec_int(145.0, 78+68);
-     return get_tec_int(154.0, 89+68);
-}
-
-switch (FEAT_TRAINS, SELF, e_em_power,
-  (LOAD_TEMP(2) >= date(1936,1,1)))
-{
-  0: return get_power_in_cb(1200);
-     return get_power_in_cb(1250);
-}
-
-general_running_cost(e_em_v1, 259)
-general_running_cost(e_em_v2, 244)
-general_running_cost(e_em_v3, 258)
-
-switch (FEAT_TRAINS, SELF, e_em_running_cost_factor,
-  (build_year >= 1933) +
-  (build_year >= 1934))
-{
-  0: e_em_v1_running_cost_factor;
-  1: e_em_v2_running_cost_factor;
-     e_em_v3_running_cost_factor;
-}
-
+engine_weight_change_build_after2(e_em, 85+68, 78+68, 1933, 89+68, 1934)       
+engine_TE_change_build_after2(e_em, get_tec_int(158.0, 85+68), get_tec_int(145.0, 78+68), 1933, get_tec_int(154.0, 89+68), 1934)       
+engine_power_change_after(e_em, 1200, 1250, 1936)       
+engine_RC_change_build_after2(e_em, 259, 244, 1933, 258, 1934)       
 engine_speed_change_after(e_em, 55, 65, 1936)
-
 engine_penalise_speed0(e_em)
 
 item (FEAT_TRAINS, e_em) {
@@ -336,7 +235,11 @@ item (FEAT_TRAINS, e_em) {
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_EM_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1931, 1935), 
+                                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
     speed: e_em_speed;
     purchase_speed: e_em_purchase_speed;
     bitmask_vehicle_info: e_em_bitmask_vehicle_info;
@@ -371,47 +274,11 @@ if (models_details_level == 1) {
 
 short_vehicle(e_er)
 
-switch (FEAT_TRAINS, SELF, e_er_weight,
-  (build_year >= 1946) +
-  (build_year >= 1948))
-{
-  0: return (84+68);
-  1: return (85+77);
-     return (85+82);
-}
-
-switch (FEAT_TRAINS, SELF, e_er_tractive_effort_coefficient,
-  build_year >= 1948)
-{
-  0: return get_tec_int(186.0, 84+68);
-  1: return get_tec_int(186.0, 85+77);
-     return get_tec_int(186.0, 85+82);
-}
-
-switch (FEAT_TRAINS, SELF, e_er_cost_factor,
-  (build_year >= 1946) +
-  (build_year >= 1948))
-{
-  0: return 13;
-  1: return 13;
-     return 14;
-}
-
-general_running_cost(e_er_v1, 300)
-general_running_cost(e_er_v2, 307)
-general_running_cost(e_er_v3, 311)
-
-switch (FEAT_TRAINS, SELF, e_er_running_cost_factor,
-  (build_year >= 1946) +
-  (build_year >= 1948))
-{
-  0: e_er_v1_running_cost_factor;
-  1: e_er_v2_running_cost_factor;
-     e_er_v3_running_cost_factor;
-}
-
+engine_weight_change_build_after2(e_er, 84+68, 85+77, 1946, 85+82, 1948)
+engine_TE_change_build_after2(e_er, get_tec_int(186.0, 84+68), get_tec_int(186.0, 85+77), 1946, get_tec_int(186.0, 85+82), 1948)
+engine_cost_change_build_after2(e_er, 13, 13, 1946, 14, 1948)
+engine_RC_change_build_after2(e_er, 300, 307, 1946, 311, 1948)
 engine_speed_change_after(e_er, 55, 65, 1936)
-
 engine_penalise_speed0(e_er)
 
 item (FEAT_TRAINS, e_er) {
@@ -445,7 +312,11 @@ item (FEAT_TRAINS, e_er) {
     articulated_part: articulated_part_tender1;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_ER_PURCHASE_HINT);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1933, 1957), 
+                                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
     tractive_effort_coefficient: e_er_tractive_effort_coefficient;
     speed: e_er_speed;
     purchase_speed: e_er_purchase_speed;
@@ -536,10 +407,10 @@ switch (FEAT_TRAINS, SELF, e_all_cargo_subtype_text,
   (build_year >= 1931) +
   (build_year >= 1935))
 {
-  0: return string(STR_REFIT_FACTORY_E);
-  1: return string(STR_REFIT_FACTORY_EU);
-  2: return string(STR_REFIT_FACTORY_EM);
-  3: return string(STR_REFIT_FACTORY_ER);
+  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E), "");
+  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_EU), "");
+  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_EM), "");
+  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_ER), "");
      return CB_RESULT_NO_TEXT;
 }
 
@@ -554,6 +425,33 @@ switch (FEAT_TRAINS, SELF, e_all_running_cost_factor,
      e_er_running_cost_factor;
 }
 
+switch (FEAT_TRAINS, SELF, e_all_additional_text,
+  (current_year >= 1926) +
+  (current_year >= 1931) +
+  (current_year >= 1935))
+{
+  0:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1912, 1926), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  1:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_EU)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1926, 1931), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  2:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_EM)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1931, 1935), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+    return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_ER)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1935, 1957), 
+                  string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
+}
+
 if (models_details_level == 0) {
   item (FEAT_TRAINS, e_e) {
     property { 
@@ -566,7 +464,7 @@ if (models_details_level == 0) {
       purchase: e_all_purchase_sprites;
       can_attach_wagon: any_can_attach_wagon;
       start_stop: any_start_stop;
-      additional_text: return string(STR_E_ALL_PURCHASE_HINT);
+      additional_text: e_all_additional_text;
       speed: e_e_speed;
       purchase_speed: e_e_purchase_speed;
       bitmask_vehicle_info: e_e_bitmask_vehicle_info;
