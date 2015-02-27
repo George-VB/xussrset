@@ -246,20 +246,11 @@ switch (FEAT_TRAINS, PARENT, dr1_c_cargo_capacity,
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, dr1_h_additional_text,
-  (current_year >= 1966) +
-  (current_year >= 1968) )
-{
-  0: return string(STR_DR1_H_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_4));
-  1: return string(STR_DR1_H_1966_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_4));
-     return string(STR_DR1_H_1968_PURCHASE_HINT, string(STR_SECTIONS_DMU_2_6));
-}
-
 switch (FEAT_TRAINS, SELF, dr1_cargo_subtype_text,
   (build_year >= 1966) )
 {
-  0: return string(STR_REFIT_FACTORY_BALTICA, "");
-     string(STR_REFIT_FACTORY_DYRKA, "");
+  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_BALTICA), "");
+     string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_DYRKA), "");
 }
 
 general_running_cost(dr1_h_v1, 203)
@@ -280,9 +271,39 @@ switch (FEAT_TRAINS, PARENT, dr1_c_running_cost_factor,
      return RC_MU_AS_CAR;
 }
 
+switch (FEAT_TRAINS, SELF, dr1_h_additional_text,
+  current_year >= 1968)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H),
+                                   string(STR_SECTIONS_DMU_2_4),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1963, 1967),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+     return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H),
+                                   string(STR_SECTIONS_DMU_2_6),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1968, 1969),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+}
+
+switch (FEAT_TRAINS, SELF, dr1_c_additional_text,
+  current_year >= 1968)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C),
+                                   string(STR_SECTIONS_DMU_2_4),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1963, 1967),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+     return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C),
+                                   string(STR_SECTIONS_DMU_2_6),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1968, 1969),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+}
+
 item (FEAT_TRAINS, dr1_h) {
   property {
-    name: string(STR_NAME_DR1_H);
+    name: string(STR_NAME_DR1);
     climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1963), 1, 1);
     model_life: get_model_life(1963,1969);
@@ -328,7 +349,7 @@ item (FEAT_TRAINS, dr1_h) {
 
 item (FEAT_TRAINS, dr1_c) {
   property {
-    name: string(STR_NAME_DR1_C);
+    name: string(STR_NAME_DR1);
     climates_available: get_climates_available();
     introduction_date: date(get_car_year(1963), 1, 1);
     model_life: get_model_life(1963,1969);
@@ -364,7 +385,7 @@ item (FEAT_TRAINS, dr1_c) {
     can_attach_wagon: dr1_can_attach_wagon;
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
     cargo_subtype_text: dr1_cargo_subtype_text;
-    additional_text: dr1_h_additional_text;
+    additional_text: dr1_c_additional_text;
     cargo_capacity: dr1_c_cargo_capacity;
   }
 }
