@@ -121,6 +121,25 @@ engine_cost_change_build_after(vl60, 76, 64, 1960)
 engine_speed(vl60, 100)
 engine_penalise_speed3(vl60, vl60k, vl60pk, 2)
 
+switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced2,
+  (position_in_consist == 0) || vehicle_is_not_powered)
+{ 1: return 0;                                                              
+     return FLAG_PENALISE_SPEED; }
+
+switch (FEAT_TRAINS, PARENT, vl60_bitmask_vehicle_info_advanced1,
+  build_year >= 1960)
+{
+  0: return FLAG_PENALISE_SPEED;
+     vl60_bitmask_vehicle_info;
+}    
+                  
+switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced,
+  build_year >= 1960)
+{
+  0: vl60_bitmask_vehicle_info_advanced2;
+     vl60_bitmask_vehicle_info_advanced1;
+}    
+
 item (FEAT_TRAINS, vl60) {
   property {
     name: string(STR_NAME_VL60);
@@ -159,7 +178,7 @@ item (FEAT_TRAINS, vl60) {
     tractive_effort_coefficient: vl60_tractive_effort_coefficient;     
     weight: vl60_weight;                          
     purchase_speed: vl60_purchase_speed;
-    bitmask_vehicle_info: vl60_bitmask_vehicle_info;
+    bitmask_vehicle_info: vl60_bitmask_vehicle_info_advanced;
     cargo_capacity: return 0;
     cargo_subtype_text: vl60_cargo_subtype_text;
     create_effect: vl60_create_effect;
