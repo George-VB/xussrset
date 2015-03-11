@@ -26,13 +26,14 @@ switch (FEAT_TRAINS, SELF, _2m62u_sprites_left,
 {
   0: _2m62u_v1_sprites_left;
   1: _2m62u_v2_sprites_left;
-  2: _2m62u_v3_sprites_left;
-  3: _2m62u_v4_sprites_left;
-  4: _2m62u_v5_sprites_left;
-  5: _2m62u_v6_sprites_left;
-  6: _2m62u_v7_sprites_left;
-  7: _2m62u_v8_sprites_left;
-  8: _2m62u_v9_sprites_left;
+  2: _2m62u_v10_sprites_left;
+  3: _2m62u_v8_sprites_left;
+  4: _2m62u_v4_sprites_left;
+  5: _2m62u_v3_sprites_left;
+  6: _2m62u_v5_sprites_left;
+  7: _2m62u_v6_sprites_left;
+  8: _2m62u_v7_sprites_left;
+  9: _2m62u_v9_sprites_left;
      align_10_sprites;
 }
 
@@ -41,13 +42,14 @@ switch (FEAT_TRAINS, SELF, _2m62u_sprites_right,
 {
   0: _2m62u_v1_sprites_right;
   1: _2m62u_v2_sprites_right;
-  2: _2m62u_v3_sprites_right;
-  3: _2m62u_v4_sprites_right;
-  4: _2m62u_v5_sprites_right;
-  5: _2m62u_v6_sprites_right;
-  6: _2m62u_v7_sprites_right;
-  7: _2m62u_v8_sprites_right;
-  8: _2m62u_v9_sprites_right;
+  2: _2m62u_v10_sprites_right;
+  3: _2m62u_v8_sprites_right;
+  4: _2m62u_v4_sprites_right;
+  5: _2m62u_v3_sprites_right;
+  6: _2m62u_v5_sprites_right;
+  7: _2m62u_v6_sprites_right;
+  8: _2m62u_v7_sprites_right;
+  9: _2m62u_v9_sprites_right;
      align_10_sprites;
 }  
 
@@ -61,20 +63,22 @@ switch (FEAT_TRAINS, SELF, _2m62u_sprites_DRB1,
   1: _2m62u_v1_sprites_right;
   2: _2m62u_v2_sprites_left;
   3: _2m62u_v2_sprites_right;
-  4: _2m62u_v3_sprites_left;
-  5: _2m62u_v3_sprites_right;
-  6: _2m62u_v4_sprites_left;
-  7: _2m62u_v4_sprites_right;
-  8: _2m62u_v5_sprites_left;
-  9: _2m62u_v5_sprites_right;
-  10: _2m62u_v6_sprites_left;
-  11: _2m62u_v6_sprites_right;
-  12: _2m62u_v7_sprites_left;
-  13: _2m62u_v7_sprites_right;
-  14: _2m62u_v8_sprites_left;
-  15: _2m62u_v8_sprites_right;
-  16: _2m62u_v9_sprites_left;
-  17: _2m62u_v9_sprites_right;
+  4: _2m62u_v10_sprites_left;
+  5: _2m62u_v10_sprites_right;
+  6: _2m62u_v8_sprites_left;
+  7: _2m62u_v8_sprites_right;
+  8: _2m62u_v4_sprites_left;
+  9: _2m62u_v4_sprites_right;
+  10: _2m62u_v3_sprites_left;
+  11: _2m62u_v3_sprites_right;
+  12: _2m62u_v5_sprites_left;
+  13: _2m62u_v5_sprites_right;
+  14: _2m62u_v6_sprites_left;
+  15: _2m62u_v6_sprites_right;
+  16: _2m62u_v7_sprites_left;
+  17: _2m62u_v7_sprites_right;
+  18: _2m62u_v9_sprites_left;
+  19: _2m62u_v9_sprites_right;
       align_10_sprites;
 }
   
@@ -87,50 +91,6 @@ switch (FEAT_TRAINS, PARENT, _2m62u_sprites_start_sp,
 }
  
 long_vehicle_sp(_2m62u)
-
-// прицепить 2М62у можно только к составу, не имеющему вагонов ДР1А или имеющему только прицепные вагоны
-switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon3,
-  ((count_veh_id(dr1a_c) + count_veh_id(dr1a_h) + count_veh_id(dr1a_n)) == 0) ||
-  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0))
-{
-  1: return any_can_attach_wagon;
-     return string(STR_CAN_ATTACH_WRONG_DRB1);
-}
-
-// прицепить ДР1А прицепной можно только к составу, состоящему из 2М62у и не более чем 9 ДР1А прицепных
-switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon2,
-  (count_veh_id(dr1a_c) <= 9) && ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0))
-{
-  1: return CB_RESULT_ATTACH_ALLOW;
-  return string(STR_CAN_ATTACH_WRONG_DRB1);
-}
-
-// прицепить ДР1А головной немоторный можно только к составу, состоящему из 2М62у и ДР1А прицепных
-switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon1,
-  (num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - 2) == 0)
-{
-  1: return CB_RESULT_ATTACH_ALLOW;
-  return string(STR_CAN_ATTACH_WRONG_DRB1);
-}
-
-// нельзя прицеплять ничего к ДР1Б кроме частей ДР1А
-switch (FEAT_TRAINS, PARENT, _2m62u_can_attach_wagon0,
-  (count_veh_id(dr1a_c)+count_veh_id(dr1a_n) >= 1))
-{
-  1: return string(STR_CAN_ATTACH_WRONG_DRB1);
-     any_can_attach_wagon;
-}
-
-switch (FEAT_TRAINS, SELF, _2m62u_can_attach_wagon,
-  vehicle_type_id)
-{
-  dr1a_h: string(STR_CAN_ATTACH_WRONG_DRB1);
-  dr1a_n: _2m62u_can_attach_wagon1;
-  dr1a_c: _2m62u_can_attach_wagon2;
-  _2m62u: _2m62u_can_attach_wagon3;
-  _3m62u: _2m62u_can_attach_wagon3;
-          _2m62u_can_attach_wagon0;
-}
 
 switch (FEAT_TRAINS, SELF, _2m62u_cargo_subtype_text3,
   cargo_subtype)
@@ -145,13 +105,14 @@ switch (FEAT_TRAINS, SELF, _2m62u_cargo_subtype_text2,
 {
   0: return string(STR_REFIT_TTD_59);
   1: return string(STR_REFIT_TTD_53);
-  2: return string(STR_REFIT_BELARUSSIAN_RAILWAY);
-  3: return string(STR_REFIT_BELARUSSIAN_RAILWAY_DDB1_DRB1);
-  4: return string(STR_REFIT_LG);
-  5: return string(STR_REFIT_LDZ, string(STR_REFIT_TTD_53));
-  6: return string(STR_REFIT_LDZ, string(STR_REFIT_TTD_B5));
-  7: return string(STR_REFIT_KALININGRAD_RAILWAY);
-  8: return string(STR_REFIT_OCTOBER_RAILWAY);
+  2: return string(STR_REFIT_MOSCOW_RAILWAY, "");
+  3: return string(STR_REFIT_KALININGRAD_RAILWAY);
+  4: return string(STR_REFIT_BELARUSSIAN_RAILWAY_DDB1_DRB1);
+  5: return string(STR_REFIT_BELARUSSIAN_RAILWAY);
+  6: return string(STR_REFIT_LG);
+  7: return string(STR_REFIT_LDZ, string(STR_REFIT_TTD_53));
+  8: return string(STR_REFIT_LDZ, string(STR_REFIT_TTD_B5));
+  9: return string(STR_REFIT_OCTOBER_RAILWAY);
      return CB_RESULT_NO_TEXT;
 }
 
@@ -177,17 +138,32 @@ switch (FEAT_TRAINS, SELF, _2m62u_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK_AUSSR));
 }
 
+switch (FEAT_TRAINS, SELF, _2m62u_refit_cost,
+  ((extra_callback_info1 & 0xFF00) == 0x400) || (cargo_subtype == 4))
+{
+  1: return 2;
+     return 0; 
+}            
+
 engine_diesel_1r_effect(_2m62u, 3, -1, 11)
 engine_direction_template3m(_2m62u, _3m62u, _3m62u_m, _create_effect) 
 engine_speed(_2m62u, 100)
-engine_penalise_speed3(_2m62u, _3m62u, _3m62u_m, 8)
+engine_penalise_speed3(_2m62u, _3m62u, _3m62u_m, 4)
 general_running_cost(_2m62u, 341) 
+
 // отключить пенальти для ДРБ1
+switch (FEAT_TRAINS, SELF, _2m62u_bitmask_vehicle_info_drb1_2,
+  (position_in_consist_from_end == 1) && (cargo_subtype == 4))
+{
+  1: return FLAG_DRB1_SH;
+     return 0;
+}
+
 switch (FEAT_TRAINS, PARENT, _2m62u_bitmask_vehicle_info_drb1,
   ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2) == 0) && 
   ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1))
 {
-  1: return 0;
+  1: _2m62u_bitmask_vehicle_info_drb1_2;
      _2m62u_bitmask_vehicle_info;
 }
 
@@ -221,7 +197,7 @@ item (FEAT_TRAINS, _2m62u) {
     default: _2m62u_sprites;
     purchase: _2m62u_purchase_sprites;
     articulated_part: articulated_part_dummy2;
-    can_attach_wagon: _2m62u_can_attach_wagon;
+    can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: _2m62u_additional_text;
     cargo_subtype_text: _2m62u_cargo_subtype_text;
@@ -231,6 +207,7 @@ item (FEAT_TRAINS, _2m62u) {
     running_cost_factor: _2m62u_running_cost_factor;
     bitmask_vehicle_info: _2m62u_bitmask_vehicle_info_drb1;
     create_effect: _2m62u_create_effect_sprites_start;
+    refit_cost: _2m62u_refit_cost;
   }
 }
 
@@ -315,15 +292,22 @@ new_3x_train_start_stop(_3m62u)
 engine_diesel_1r_effect(_3m62u, 3, -1, 11)
 engine_direction_template3m(_3m62u, _2m62u, _3m62u_m, _create_effect) 
 engine_speed(_3m62u, 100)
-engine_penalise_speed3(_3m62u, _2m62u, _3m62u_m, 8)
+engine_penalise_speed3(_3m62u, _2m62u, _3m62u_m, 4)
 general_running_cost(_3m62u, 341) 
 
 // отключить пенальти для ДРБ1
+switch (FEAT_TRAINS, SELF, _3m62u_bitmask_vehicle_info_drb1_2,
+  (position_in_consist_from_end == 1) && (cargo_subtype == 4))
+{
+  1: return FLAG_DRB1_SH;
+     return 0;
+}
+
 switch (FEAT_TRAINS, PARENT, _3m62u_bitmask_vehicle_info_drb1,
   ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2) == 0) && 
   ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1))
 {
-  1: return 0;
+  1: _3m62u_bitmask_vehicle_info_drb1_2;
      _3m62u_bitmask_vehicle_info;
 }
 item (FEAT_TRAINS, _3m62u) {
@@ -366,6 +350,7 @@ item (FEAT_TRAINS, _3m62u) {
     running_cost_factor: _3m62u_running_cost_factor;
     bitmask_vehicle_info: _3m62u_bitmask_vehicle_info_drb1;
     create_effect: _3m62u_create_effect_sprites_start;
+    refit_cost: _2m62u_refit_cost;
   }
 }
 
@@ -458,7 +443,7 @@ switch (FEAT_TRAINS, SELF, _3m62u_m_additional_text,
 }
 
 engine_speed(_3m62u_m, 100)
-engine_penalise_speed3(_3m62u_m, _2m62u, _3m62u, 8)
+engine_penalise_speed3(_3m62u_m, _2m62u, _3m62u, 4)
 general_running_cost(_3m62u_m, 307) 
 
 item (FEAT_TRAINS, _3m62u_m) {
@@ -547,19 +532,20 @@ if (models_details_level == 0) {
       retire_early: get_retire_early(1986,2000);
     }
     graphics {
-      default: _3m62u_sprites;
+      default: _2m62u_sprites;
       purchase: _3m62u_purchase_sprites;
       articulated_part: articulated_part_dummy2;
       can_attach_wagon: any_can_attach_wagon;
       start_stop: any_start_stop;
       additional_text: _3m62u_additional_text_short;
-      cargo_subtype_text: _3m62u_cargo_subtype_text;
+      cargo_subtype_text: _2m62u_cargo_subtype_text;
       cargo_capacity: return 0;
       speed: _3m62u_speed;
       purchase_speed: _3m62u_purchase_speed;
       running_cost_factor: _3m62u_running_cost_factor;
       bitmask_vehicle_info: _3m62u_bitmask_vehicle_info_drb1;
       create_effect: _3m62u_create_effect_sprites_start;
+      refit_cost: _2m62u_refit_cost;
     }
   }
   item (FEAT_TRAINS, _3m62u_m) {

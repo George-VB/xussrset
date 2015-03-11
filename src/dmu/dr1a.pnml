@@ -424,17 +424,51 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_cargo_capacity,
      return 0;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1a_n_cargo_capacity,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) || (vehicle_type_id == _2m62u) || (vehicle_type_id == _3m62u) )
+switch (FEAT_TRAINS, SELF, dr1a_n_cargo_capacity_drb1,
+  cargo_subtype == 3)
 {
   1: return 96;
      return 0;
 }
 
-switch (FEAT_TRAINS, PARENT, dr1a_c_cargo_capacity,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n) || (vehicle_type_id == _2m62u) || (vehicle_type_id == _3m62u) )
+switch (FEAT_TRAINS, PARENT, dr1a_n_cargo_capacity,
+  (((((cargo_subtype == 4) && ((vehicle_type_id == _2m62u) || (vehicle_type_id == _3m62u))) ||
+    ((vehicle_type_id == dr1a_n) && (cargo_subtype == 3))) && 
+    is_drb1sh() && 
+    ((count_veh_id(_2m62u) + count_veh_id(_3m62u) + count_veh_id(dr1a_n)) == 2) && 
+    (count_veh_id(dr1a_h) == 0) && (count_veh_id(dr1a_c) <= 9)) * 2) +                                                    // ДРБ1
+  (((count_veh_id(_2m62u) + count_veh_id(_3m62u)) == 0) && ((vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n)))) // Не ДРБ1
+{
+  0: return 0;
+  1: return 96;
+     dr1a_n_cargo_capacity_drb1;
+}
+
+switch (FEAT_TRAINS, SELF, dr1a_c_cargo_capacity_drb1,
+  cargo_subtype == 4)
 {
   1: return 124;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_c_cargo_capacity,
+  (((((cargo_subtype == 4) && ((vehicle_type_id == _2m62u) || (vehicle_type_id == _3m62u))) ||
+    ((vehicle_type_id == dr1a_n) && (cargo_subtype == 3))) && 
+    is_drb1sh() && 
+    ((count_veh_id(_2m62u) + count_veh_id(_3m62u) + count_veh_id(dr1a_n)) == 2) && 
+    (count_veh_id(dr1a_h) == 0) && (count_veh_id(dr1a_c) <= 9)) * 2) +                                                    // ДРБ1
+  (((count_veh_id(_2m62u) + count_veh_id(_3m62u)) == 0) && ((vehicle_type_id == dr1a_h) ||(vehicle_type_id == dr1a_n) ||  // Не ДРБ1
+   (vehicle_type_id == dr1a_c))))                                                                                         // одинокий вагон
+{
+  0: return 0;
+  1: return 124;
+     dr1a_c_cargo_capacity_drb1;
+}
+
+switch (FEAT_TRAINS, SELF, dr1a_n_bitmask_vehicle_info_drb1,
+  (position_in_consist_from_end == 1) && (cargo_subtype == 3))
+{
+  1: return FLAG_DRB1_SH;
      return 0;
 }
 
@@ -700,9 +734,11 @@ item (FEAT_TRAINS, dr1a_n) {
     speed: speed_after25_120to110;
     purchase_speed: return 120;
     power: return 0;
+    purchase_cargo_capacity: return 96;
     additional_text: dr1a_n_additional_text;
     cargo_subtype_text: dr1a_n_cargo_subtype_text;
     cargo_capacity: dr1a_n_cargo_capacity;
+    bitmask_vehicle_info: dr1a_n_bitmask_vehicle_info_drb1;
   }
 }
 
@@ -741,6 +777,7 @@ item (FEAT_TRAINS, dr1a_c) {
     cargo_subtype_text: dr1a_cargo_subtype_text;
     speed: speed_after25_120to110;
     purchase_speed: return 120;
+    purchase_cargo_capacity: return 124;
     power: return 0;
     can_attach_wagon: dr1a_can_attach_wagon; 
     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
