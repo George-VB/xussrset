@@ -15,6 +15,17 @@ diesel1r_sprites(13, tep70_v8,  32, 1447)
 diesel1r_sprites(13, tep70_v9,  32, 1648)
 diesel1r_sprites(13, tep70_v10, 32, 1849)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/tep70u.png"
+purchase_sprites(tep70u, 0, 0)
+
+diesel1r_sprites(13, tep70u,  32,   40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/tep70bs.png"
+purchase_sprites(tep70bs, 0, 0)
+
+diesel1r_sprites(13, tep70bs_v1,  32,   40)
+diesel1r_sprites(13, tep70bs_v2,  32,  241)
+#undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, tep70_purchase_sprites,
   current_year >= 1978)
@@ -23,10 +34,40 @@ switch (FEAT_TRAINS, SELF, tep70_purchase_sprites,
      tep70_v2_purchase_sprites;
 }
 
+switch (FEAT_TRAINS, SELF, tep70_all_purchase_sprites,
+  (current_year >= 1978) +
+  (current_year >= 2006) +
+  (current_year >= 2008))
+{
+  0: tep70_v1_purchase_sprites;
+  1: tep70_v2_purchase_sprites;
+  2: tep70u_purchase_sprites;
+     tep70bs_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tep70bs_sprites_left,
+  cargo_subtype)
+{
+  0: tep70bs_v2_sprites_left;
+  1: tep70bs_v1_sprites_left;
+     align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tep70bs_sprites_right,
+  cargo_subtype)
+{
+  0: tep70bs_v2_sprites_right;
+  1: tep70bs_v1_sprites_right;
+     align_13_sprites;
+}
+
 switch (FEAT_TRAINS, SELF, tep70_sprites_left,
   ((build_year >= 1978)) +
   ((build_year >= USSREND) * 4) +
-  cargo_subtype)
+  cargo_subtype +
+  ((models_details_level == 0) * 100 * 
+  ((build_year >= 2006) +
+   (build_year >= 2008))))
 {
   0: tep70_v1_sprites_left;
   1: tep70_v2_sprites_left;
@@ -38,13 +79,19 @@ switch (FEAT_TRAINS, SELF, tep70_sprites_left,
   7: tep70_v8_sprites_left;
   8: tep70_v9_sprites_left;
   9: tep70_v10_sprites_left;
+105: tep70u_sprites_left;
+205: tep70bs_v2_sprites_left;
+206: tep70bs_v1_sprites_left;
      align_13_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, tep70_sprites_right,
-  ((build_year >= 1978)) +
+  (build_year >= 1978) +
   ((build_year >= USSREND) * 4) +
-  cargo_subtype)
+  cargo_subtype +
+  ((models_details_level == 0) * 100 * 
+  ((build_year >= 2006) +
+   (build_year >= 2008))))
 {
   0: tep70_v1_sprites_right;
   1: tep70_v2_sprites_right;
@@ -56,6 +103,9 @@ switch (FEAT_TRAINS, SELF, tep70_sprites_right,
   7: tep70_v8_sprites_right;
   8: tep70_v9_sprites_right;
   9: tep70_v10_sprites_right;
+105: tep70u_sprites_right;
+205: tep70bs_v2_sprites_right;
+206: tep70bs_v1_sprites_right;
      align_13_sprites;
 }
 
@@ -178,3 +228,277 @@ if (enable_long_names) {
   }
 }
 
+ // tep70u
+
+engine_direction_template(tep70u, ) 
+engine_RND_direction_template(tep70u, 5, 3) 
+long_vehicle_sp(tep70u)
+
+engine_diesel_1r_effect(tep70u, 3, 2, 13)
+engine_direction_template(tep70u, _create_effect) 
+engine_RND_effect_direction_template(tep70u, 5, 3) 
+engine_speed_with_reduce(tep70u, 160, 140, 25)
+engine_penalise_speed(tep70u, 2)
+general_running_cost(tep70u, 905)
+
+item (FEAT_TRAINS, tep70u) {
+  property {
+    name: string(STR_NAME_TEP70U);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(2006), 1, 1);
+    vehicle_life: 25;
+    model_life: get_model_life(2006,2007);
+    retire_early: get_retire_early(2006,2007);
+    reliability_decay: 10;
+    cost_factor: 76;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3020 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 135 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(167.0, 135);
+    length: 8;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+  }
+  graphics {
+    default: tep70u_sprites;
+    purchase: tep70u_purchase_sprites;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 2006, 2007), 
+                                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
+    speed: tep70u_speed;
+    purchase_speed: tep70u_purchase_speed;
+    running_cost_factor: tep70u_running_cost_factor;
+    bitmask_vehicle_info: tep70u_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: tep70u_create_effect;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, tep70u) {
+    property { name: string(STR_LONGNAME_TEP70U); }
+  }
+}
+
+ // tep70bs
+
+engine_direction_template(tep70bs, ) 
+engine_RND_direction_template(tep70bs, 5, 3) 
+long_vehicle_sp(tep70bs)
+
+switch (FEAT_TRAINS, SELF, tep70bs_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_BELARUSSIAN_RAILWAY);
+  1: return string(STR_REFIT_RZD_PID);
+     return CB_RESULT_NO_TEXT;
+}
+
+engine_diesel_1r_effect(tep70bs, 3, 2, 13)
+engine_direction_template(tep70bs, _create_effect) 
+engine_RND_effect_direction_template(tep70bs, 5, 3) 
+
+switch (FEAT_TRAINS, SELF, tep70bs_refit_cost,
+  ((extra_callback_info1 & 0xFF00) == 0x100) +
+  ((cargo_subtype == 1) * 2))
+{
+  1: return -5;
+  2: return 9;
+     return 0; 
+}            
+
+engine_speed_with_reduce(tep70bs, ((cargo_subtype >= 1) ? 120 : 160), ((cargo_subtype >= 1) ? 120 : 140), 30)
+engine_penalise_speed(tep70bs, 2)
+general_running_cost(tep70bs_160, 902)
+general_running_cost(tep70bs_120, 840)
+
+switch (FEAT_TRAINS, SELF, tep70bs_running_cost_factor,
+  cargo_subtype >= 1)
+{
+  0: tep70bs_160_running_cost_factor;
+     tep70bs_120_running_cost_factor;
+}
+
+item (FEAT_TRAINS, tep70bs) {
+  property {
+    name: string(STR_NAME_TEP70BS);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(2006), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(2006,2050);
+    retire_early: get_retire_early(2006,2050);
+    reliability_decay: 10;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: 92;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    speed: 160 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3020 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    cargo_capacity: 1;
+    weight: 135 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(167.0, 135);
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+  }
+  graphics {
+    default: tep70bs_sprites;
+    purchase: tep70bs_purchase_sprites;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_WITH_COMMENT, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                                   string(STR_PURCHASE_HINT_FROM, 2006), 
+                                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+                                   string(STR_PURCHASE_HINT_EDITION_NEW_SPEED, 120));
+    cargo_subtype_text: tep70bs_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: tep70bs_speed;
+    purchase_speed: tep70bs_purchase_speed;
+    running_cost_factor: tep70bs_running_cost_factor;
+    bitmask_vehicle_info: tep70bs_bitmask_vehicle_info;
+    create_effect: tep70bs_create_effect;
+    refit_cost: tep70bs_refit_cost;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, tep70bs) {
+    property { name: string(STR_LONGNAME_TEP70BS); }
+  }
+}
+
+switch (FEAT_TRAINS, SELF, tep70_all_cost_factor,
+  (build_year >= 2006)+
+  (build_year >= 2008))
+{
+  0: tep70_cost_factor;
+  1: return 76;
+     return 92;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_all_refit_cost,
+  (build_year >= 2006)+
+  (build_year >= 2008))
+{
+  0: return 0;
+  1: return 0;
+     tep70bs_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_all_running_cost_factor,
+  (build_year >= 2006)+
+  (build_year >= 2008))
+{
+  0: tep70_running_cost_factor;
+  1: tep70u_running_cost_factor;
+     tep70bs_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_all_speed,
+  (build_year >= 2006)+
+  (build_year >= 2008))
+{
+  0: tep70_speed;
+  1: tep70u_speed;
+     tep70bs_speed;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_all_cargo_subtype_text,
+  (build_year >= 2006)+
+  (build_year >= 2008))
+{
+  0: tep70_cargo_subtype_text;
+  1: return CB_RESULT_NO_TEXT;
+     tep70bs_cargo_subtype_text;
+}
+
+switch (FEAT_TRAINS, SELF, tep70_all_additional_text,
+  (current_year >= 1978) +
+  (current_year >= USSREND)+
+  (current_year >= 2006) +
+  (current_year >= 2008))
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_PROTOTYPE_WITH_SUBTYPE, string(STR_NAME_TEP70)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1973, 1977), 
+                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
+  1: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_WITH_SUBTYPE, string(STR_NAME_TEP70)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1978, 2006), 
+                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
+  2: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_WITH_SUBTYPE, string(STR_NAME_TEP70)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1978, 2006), 
+                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
+  3: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_WITH_SUBTYPE, string(STR_NAME_TEP70U)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 2006, 2007), 
+                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
+     return string(STR_PURCHASE_HINT_ENGINE_WITH_COMMENT, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_WITH_SUBTYPE, string(STR_NAME_TEP70BS)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROM, 2008), 
+                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+                   string(STR_PURCHASE_HINT_EDITION_NEW_SPEED, 120));
+}
+
+if (models_details_level == 0) {
+  item (FEAT_TRAINS, tep70u) {
+    property { climates_available: NO_CLIMATE; }
+  }
+  item (FEAT_TRAINS, tep70bs) {
+    property { climates_available: NO_CLIMATE; }
+  }
+  item (FEAT_TRAINS, tep70) {
+    property { 
+      introduction_date: date(get_loc_year(1973), 1, 1);
+      model_life: get_model_life(1973,2050);
+      retire_early: get_retire_early(1973,2050);
+    }
+    graphics {
+      default: tep70_sprites;
+      purchase: tep70_all_purchase_sprites;
+      can_attach_wagon: any_can_attach_wagon;
+      cost_factor: tep70_all_cost_factor;
+      refit_cost: tep70_all_refit_cost;
+      start_stop: any_start_stop;
+      additional_text: tep70_all_additional_text;
+      cargo_subtype_text: tep70_all_cargo_subtype_text;
+      cargo_capacity: return 0;
+      power: tep70_power;
+      weight: tep70_weight;
+      tractive_effort_coefficient: tep70_tractive_effort_coefficient;
+      articulated_part: tep70_articulated_part;
+      speed: tep70_all_speed;
+      purchase_speed: tep70_purchase_speed;
+      running_cost_factor: tep70_all_running_cost_factor;
+      bitmask_vehicle_info: tep70_bitmask_vehicle_info;
+      create_effect: tep70_create_effect;
+    }
+  }
+}

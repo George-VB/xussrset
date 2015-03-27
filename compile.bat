@@ -1,4 +1,7 @@
 @echo off
+clean-lng.pl
+if ERRORLEVEL 1 goto :EOF
+
 if /i "%1" == "selfconfig" goto :SelfConfig
 if /i "%1" == "gethgrev" goto :GetHgRev
 if /i "%1" == "writecustomtags" goto :WriteCustomTags

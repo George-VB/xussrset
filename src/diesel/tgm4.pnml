@@ -1,0 +1,165 @@
+﻿ // tgm4
+
+#define IMAGEFILE  "src/diesel/tgm4.png"
+purchase_sprites(tgm4_v1,   0, 0)
+purchase_sprites(tgm4_v2, 102, 0)
+purchase_sprites(tgm4_v3, 204, 0)
+purchase_sprites(tgm4_v4, 306, 0)
+purchase_sprites(tgm4_v5, 408, 0)
+
+diesel1r_sprites(7, tgm4_v1, 32,  40)
+diesel1r_sprites(7, tgm4_v2, 32, 241)
+diesel1r_sprites(7, tgm4_v3, 32, 442)
+diesel1r_sprites(7, tgm4_v4, 32, 643)
+diesel1r_sprites(7, tgm4_v5, 32, 844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tgm4_purchase_sprites,
+  (current_year >= 1975) +
+  (current_year >= 1977) +
+  (current_year >= 1978) +
+  (current_year >= 1984))
+{
+  0: tgm4_v1_purchase_sprites;
+  1: tgm4_v2_purchase_sprites;
+  2: tgm4_v3_purchase_sprites;
+  3: tgm4_v4_purchase_sprites;
+     tgm4_v5_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tgm4_sprites_left,
+  (build_year >= 1975) +
+  (build_year >= 1977) +
+  (build_year >= 1978) +
+  (build_year >= 1984))
+{
+   0: tgm4_v1_sprites_left;
+   1: tgm4_v2_sprites_left;
+   2: tgm4_v3_sprites_left;
+   3: tgm4_v4_sprites_left;
+   4: tgm4_v5_sprites_left;
+      align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, tgm4_sprites_right, 
+  (build_year >= 1975) +
+  (build_year >= 1977) +
+  (build_year >= 1978) +
+  (build_year >= 1984))
+{
+   0: tgm4_v1_sprites_right;
+   1: tgm4_v2_sprites_right;
+   2: tgm4_v3_sprites_right;
+   3: tgm4_v4_sprites_right;
+   4: tgm4_v5_sprites_right;
+      align_10_sprites; 
+}
+
+engine_direction_template(tgm4, ) 
+engine_RND_direction_template(tgm4, 1, 3) 
+long_vehicle_sp(tgm4)
+
+switch (FEAT_TRAINS, SELF, tgm4_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_B6);
+  1: return string(STR_REFIT_TTD_B4);
+  2: return string(STR_REFIT_TTD_63);
+  3: return string(STR_REFIT_TTD_53);
+  4: return string(STR_REFIT_TTD_31);
+  5: return string(STR_REFIT_TTD_93);
+  6: return string(STR_REFIT_TTD_96);
+  7: return string(STR_REFIT_TTD_42);
+     return CB_RESULT_NO_TEXT;
+}
+
+
+switch (FEAT_TRAINS, SELF, tgm4_colour_mapping,
+  cargo_subtype)
+{                          
+  0: return tgm23_cc + 0;
+  1: return tgm23_cc + 1;
+  2: return tgm23_cc + 2;
+  3: return tgm23_cc + 3;
+  4: return tgm23_cc + 4;
+  5: return tgm23_cc + 5;
+  6: return tgm23_cc + 6;
+  7: return tgm23_cc + 7;
+     return CB_FAILED;
+}
+
+engine_diesel_1r_effect(tgm4_v1, -1, 0, 11) 
+engine_diesel_1r_effect(tgm4_v2, 0, -1, 11) 
+
+switch (FEAT_TRAINS, SELF, tgm4_create_effect_sprites_left,
+  build_year >= 1978)
+{
+  0: tgm4_v1_create_effect_sprites_left;
+     tgm4_v2_create_effect_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, tgm4_create_effect_sprites_right,
+  build_year >= 1978)
+{
+  0: tgm4_v1_create_effect_sprites_right;
+     tgm4_v2_create_effect_sprites_right;
+}
+
+engine_direction_template(tgm4, _create_effect) 
+engine_RND_effect_direction_template(tgm4, 1, 3) 
+engine_speed(tgm4, 55)
+engine_penalise_speed0(tgm4)
+general_running_cost(tgm4, 72)
+
+item (FEAT_TRAINS, tgm4) {
+  property {
+    name: string(STR_NAME_TGM4);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1973), 1, 1);
+    vehicle_life: 20;
+    model_life: get_model_life(1973,1990);
+    retire_early: get_retire_early(1973,1990);
+    reliability_decay: 10;
+    cost_factor: 9;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 500 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 68 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(120.0, 68);
+    length: 6;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+  }
+  graphics {
+    default: tgm4_sprites;
+    purchase: tgm4_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1973, 1990), 
+                                   string(STR_PURCHASE_HINT_FACTORY_LYUDINOVSK));
+    speed: tgm4_speed;
+    purchase_speed: tgm4_purchase_speed;
+    running_cost_factor: tgm4_running_cost_factor;
+    bitmask_vehicle_info: tgm4_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: tgm4_create_effect;
+    cargo_subtype_text: tgm4_cargo_subtype_text;
+    colour_mapping: tgm4_colour_mapping;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, tgm4) {
+    property { name: string(STR_LONGNAME_TGM4); }
+  }
+}

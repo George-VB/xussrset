@@ -69,7 +69,7 @@ item (FEAT_TRAINS, tgm23b) {
     cost_factor: 4;
     sprite_id: SPRITE_ID_NEW_TRAIN; 
     speed: 60 km/h;
-    misc_flags: bitmask(TRAIN_FLAG_FLIP);
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: get_normal_track_type();
     power: 230 hpM;
     running_cost_base: RUNNING_COST_DIESEL;
@@ -128,7 +128,7 @@ item (FEAT_TRAINS, tgm23v) {
     cost_factor: 5;
     sprite_id: SPRITE_ID_NEW_TRAIN; 
     speed: 60 km/h;
-    misc_flags: bitmask(TRAIN_FLAG_FLIP);
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: get_normal_track_type();
     power: 260 hpM;
     running_cost_base: RUNNING_COST_DIESEL;
@@ -187,7 +187,7 @@ item (FEAT_TRAINS, tgm23d) {
     cost_factor: 7;
     sprite_id: SPRITE_ID_NEW_TRAIN; 
     speed: 60 km/h;
-    misc_flags: bitmask(TRAIN_FLAG_FLIP);
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: get_normal_track_type();
     power: 400 hpM;
     running_cost_base: RUNNING_COST_DIESEL;
@@ -220,9 +220,69 @@ item (FEAT_TRAINS, tgm23d) {
   }
 }
 
+switch (FEAT_TRAINS, SELF, tgm23b_additional_text_short,
+  (current_year >= 1980) +
+  (current_year >= 1991))
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL_WITH_SUBTYPE, string(STR_NAME_TGM23B)),
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1973, 1985), 
+                   string(STR_PURCHASE_HINT_FACTORY_MUROM));
+  1: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL_WITH_SUBTYPE, string(STR_NAME_TGM23V)),
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1980, 1991), 
+                   string(STR_PURCHASE_HINT_FACTORY_MUROM));
+
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL_WITH_SUBTYPE, string(STR_NAME_TGM23D)),
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROM, 1991), 
+                   string(STR_PURCHASE_HINT_FACTORY_MUROM));
+}
+
 if (enable_long_names) {
   item (FEAT_TRAINS, tgm23d) {
     property { name: string(STR_LONGNAME_TGM23D); }
   }
 }
 
+if (models_details_level == 0) {
+  item (FEAT_TRAINS, tgm23v) {
+    property { climates_available: NO_CLIMATE; }
+  }
+  item (FEAT_TRAINS, tgm23d) {
+    property { climates_available: NO_CLIMATE; }
+  }
+  item (FEAT_TRAINS, tgm23b) {
+    property { 
+      name: string(STR_NAME_TGM23_ALL);
+      introduction_date: date(get_loc_year(1973), 1, 1);
+      model_life: get_model_life(1973,2050);
+      retire_early: get_retire_early(1973,2050);
+    }
+    graphics {
+      default: tgm23b_sprites;
+      purchase: tgm23_purchase_sprites;
+      can_attach_wagon: any_can_attach_wagon;
+      start_stop: any_start_stop;
+      articulated_part: articulated_part_dummy1;
+      speed: tgm23b_speed;
+      purchase_speed: tgm23b_purchase_speed;
+      running_cost_factor: tgm23b_running_cost_factor;
+      additional_text: tgm23b_additional_text_short;
+      cargo_subtype_text: tgm23b_cargo_subtype_text;
+      cargo_capacity: return 0;
+      bitmask_vehicle_info: tgm23b_bitmask_vehicle_info;
+      create_effect: tgm23b_create_effect;
+      colour_mapping: tgm23b_colour_mapping;
+    }
+  }
+  if (enable_long_names) {
+    item (FEAT_TRAINS, tgm23b) {
+      property { 
+        name: string(STR_LONGNAME_TGM23_ALL); }
+    }
+  }
+}
