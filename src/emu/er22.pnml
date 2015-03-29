@@ -1,0 +1,239 @@
+﻿ // er22
+
+#define IMAGEFILE  "src/emu/er22.png"
+purchase_sprites(er22, 0, 0)
+
+MU_5r_0_0_sprites(15, er22_v1, 32, 40)
+MU_0_0_2_sprites(15, er22_v1, 32, 40)
+MU_5r_0_0_sprites(15, er22_v2, 32, 710)
+MU_0_0_2_sprites(15, er22_v2, 32, 710)
+MU_5r_0_0_sprites(15, er22_v2u, 32, 1380)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, er22_sprites_start,
+  ((position_in_consist == 0) * 100) +
+  ((LOAD_TEMP(2) >= date(1972,1,1)) * 10) +
+  cargo_subtype)
+{
+  0: er22_v1_hm_sprites_left;
+  1: er22_v2_hm_sprites_left;
+ 10: er22_v1_hm_sprites_left;
+ 11: er22_v2u_hm_sprites_left;
+100: er22_v1_h_sprites_left;
+101: er22_v2_h_sprites_left;
+110: er22_v1_h_sprites_left;
+111: er22_v2u_h_sprites_left;
+     align_15_sprites;
+}
+
+long_vehicle(er22)
+
+switch (FEAT_TRAINS, SELF, er22_b_sprites_start,
+[  set_offset_to(-2),
+   ((LOAD_TEMP(4) != er22) * 100) +
+   (prev_vehicle_cargo_subtype()) ])
+{
+    0: er22_v1_c_sprites_left;
+    1: er22_v2_c_sprites_left;
+  100: er22_v1_c_notpowered_sprites_left;
+  101: er22_v2_c_notpowered_sprites_left;
+       align_15_sprites;
+}
+
+long_vehicle_nocount(er22_b)
+
+switch (FEAT_TRAINS, SELF, er22_c_sprites_start,
+[  set_offset_to(-4),
+   ((LOAD_TEMP(4) != er22) * 100) +
+   (prev_vehicle_cargo_subtype()) ])
+{
+    0: er22_v1_c_sprites_right;
+    1: er22_v2_c_sprites_right;
+  100: er22_v1_c_notpowered_sprites_right;
+  101: er22_v2_c_notpowered_sprites_right;
+       align_15_sprites;
+}
+
+long_vehicle_nocount(er22_c)
+
+switch (FEAT_TRAINS, SELF, er22_d_sprites_start,
+[ set_offset_to(-6),
+  ((position_in_consist_from_end == 1) * 100) +
+  ((LOAD_TEMP(2) >= date(1972,1,1)) * 10) +
+  (prev_vehicle_cargo_subtype()) ])
+{
+  0: er22_v1_hm_sprites_right;
+  1: er22_v2_hm_sprites_right;
+ 10: er22_v1_hm_sprites_right;
+ 11: er22_v2u_hm_sprites_right;
+100: er22_v1_h_sprites_right;
+101: er22_v2_h_sprites_right;
+110: er22_v1_h_sprites_right;
+111: er22_v2u_h_sprites_right;
+     align_15_sprites;
+}
+
+long_vehicle_nocount(er22_d)
+
+// считаем уже имеющиеся вагоны
+
+switch (FEAT_TRAINS, PARENT, er22_can_attach_wagon1,
+  count_veh_id(er22) < 2)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, er22_can_attach_wagon,
+  vehicle_type_id == er22)
+{
+  1: er22_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, er22_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy7;
+  2: return unitb;
+  3: return dummy7;
+  4: return unitc;
+  5: return dummy7;
+  6: return unitd;
+  7: return dummy7;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, er22_create_effect1, 
+  electric_create_effect(9)) 
+{ 
+  return 1; 
+}    
+
+switch (FEAT_TRAINS, SELF, er22_create_effect2, 
+  electric_create_effect(-2)) 
+{ 
+  return 1; 
+}    
+  
+// Визуализируем эффекты тяги у er22, только если локомотив - er22
+switch (FEAT_TRAINS, PARENT, er22_create_effect,
+  vehicle_type_id == er22)
+{
+  1: er22_create_effect1;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, er22_create_effect_rh,
+  vehicle_type_id == er22)
+{
+  1: er22_create_effect2;
+     return disable_create_effect();
+}
+
+// Даём тягу, только если локомотив - er22
+switch (FEAT_TRAINS, PARENT, er22_power,
+  (vehicle_type_id == er22) *
+  (1 + (build_year >= 1967)))
+{
+  1: return get_power_in_cb(948.5);
+  2: return get_power_in_cb(1039);
+     return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - er22
+switch (FEAT_TRAINS, PARENT, er22_cargo_capacity,
+  vehicle_type_id == er22)
+{
+  1: return 494;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, er22_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_53);
+     return CB_RESULT_NO_TEXT;
+}
+
+emu_running_cost(er22_v1, 114 + 114, 64 + 64)
+
+switch (FEAT_TRAINS, PARENT, er22_running_cost_factor,
+  vehicle_type_id == er22)
+{
+  1: er22_v1_running_cost_factor;
+     return RC_MU_AS_CAR * 3;
+}
+
+item (FEAT_TRAINS, er22) {
+  property {
+    name: string(STR_NAME_ER22);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1964), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1964,1968);
+    retire_early: get_retire_early(1964,1968);
+    reliability_decay: 10;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: 15 + 8 + 8 + 15;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 130 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    refit_cost: 0;
+    track_type: get_dc_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 948 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    loading_speed: 255;
+    cargo_capacity: 255;
+    weight: (66 + 41 + 41 + 66) ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(59.0 + 59.0, 66 + 66);
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: er22_sprites;
+    purchase: er22_purchase_sprites;
+    loading_speed: return 24*3*4;
+    cargo_age_period: return 50;
+    speed: speed_after30_130to110;
+    running_cost_factor: er22_running_cost_factor;
+    articulated_part: er22_articulated_part;
+    can_attach_wagon: er22_can_attach_wagon;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_105)),
+                                   string(STR_SECTIONS_MU_S1_2of4),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1964, 1968),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+    cargo_capacity: er22_cargo_capacity;
+    cargo_subtype_text: er22_cargo_subtype_text;
+    power: er22_power;
+    create_effect: er22_create_effect;
+  }
+  livery_override(unitb) {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    length: return 8;
+    er22_b_sprites;
+  }
+  livery_override(unitc) {
+    length: return 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    er22_c_sprites;
+  }
+  livery_override(unitd) {
+    length: return 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+    create_effect: er22_create_effect_rh;
+    er22_d_sprites;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, er22) {
+    property { name: string(STR_LONGNAME_ER22); }
+  }
+}
+
