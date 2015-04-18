@@ -531,21 +531,29 @@ switch (FEAT_TRAINS, SELF, name##suffix##_sprites_start ,                   \
 
 #define RC_MAX 17/10
 #define RC_MIN 1/10
+#define RC_SME 8/10 // снижение СО для локомотива в СМЕ
 #define RC_MU_AS_CAR 2
 
 #define general_running_cost(name, rc_base)                                                           \
 switch (FEAT_TRAINS, SELF, name##_running_cost_speed,                                                 \
-  LOAD_TEMP(1) < (LOAD_TEMP(2) * 9 / 10))                                                             \
+  (LOAD_TEMP(1) < (LOAD_TEMP(2) * 9 / 10)) *                                                          \
+    (1 + ((is_penalise_speed() == 0) && (position_in_consist > 0))))                                  \
 { 1: return rc_base * RC_MAX;                                                                         \
+  2: return rc_base * RC_MAX * RC_SME;                                                                \
      return rc_base; }                                                                                \
 switch (FEAT_TRAINS, SELF, name##_running_cost_slope,                                                 \
-  (other_veh_z_offset(1) > 0) + (2 * (other_veh_z_offset(1) < 0)))                                    \
+  (other_veh_z_offset(1) > 0) + (2 * (other_veh_z_offset(1) < 0)) *                                   \
+    (1 + ((is_penalise_speed() == 0) && (position_in_consist > 0))))                                  \
 { 1: return rc_base * RC_MAX;                                                                         \
   2: return rc_base;                                                                                  \
+  3: return rc_base * RC_MAX * RC_SME;                                                                \
+  4: return rc_base * RC_SME;                                                                         \
      name##_running_cost_speed; }                                                                     \
 switch (FEAT_TRAINS, SELF, name##_running_cost_stop,                                                  \
-  LOAD_TEMP(1) < 2)                                                                                   \
+  (LOAD_TEMP(1) < 2) *                                                                                \
+    (1 + ((is_penalise_speed() == 0) && (position_in_consist > 0))))                                  \
 { 1: return rc_base * RC_MIN;                                                                         \
+  2: return rc_base * RC_MIN * RC_SME;                                                                \
      name##_running_cost_slope; }                                                                     \
 switch (FEAT_TRAINS, SELF, name##_running_cost_service,                                               \
   (current_date > date_of_last_service) && (current_date < date_of_last_service + 2))                 \
@@ -563,8 +571,10 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                       
   2..3: return min(32767, 5 * rc_base);                                                               \
   4..7: return min(32767, rc_base + 2000);                                                            \
         name##_running_cost_factor2; }                                                                \
-switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
-{ 0: return rc_base;                                                                                  \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor, (age_in_days + 1) -                            \
+          ((is_penalise_speed() == 0) && (position_in_consist > 0)))                                  \
+{ 0: return rc_base * RC_SME;                                                                         \
+  1: return rc_base;                                                                                  \
      name##_running_cost_factor1; }                                                                   \
 
 #define wagon_running_cost(name, rc_base)                                                             \
