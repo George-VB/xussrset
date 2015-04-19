@@ -10,6 +10,12 @@ diesel1r_sprites(10, tem2_v4,  32,  643)
 diesel1r_sprites(10, tem2_v5,  32,  844)
 diesel1r_sprites(10, tem2_v6,  32, 1045)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/tem2u.png"
+purchase_sprites(tem2u, 0, 0)
+
+diesel1r_sprites(10, tem2u_v1, 32,  40)
+diesel1r_sprites(10, tem2u_v2, 32, 241)
+#undef IMAGEFILE
 
 random_switch (FEAT_TRAINS, PARENT, tem2_sprites_green_left, 0)
 {
@@ -41,22 +47,44 @@ random_switch (FEAT_TRAINS, PARENT, tem2_sprites_blue_right, 0)
 }
 
 switch (FEAT_TRAINS, SELF, tem2_sprites_left, 
-  cargo_subtype)
+  cargo_subtype + (((models_details_level == 0) && (build_year >= 1984)) * 10))
 {
   0: tem2_sprites_green_left;
   1: tem2_sprites_blue_left;
   2: tem2_v6_sprites_left;
+ 10: tem2u_v1_sprites_left;
+ 11: tem2u_v2_sprites_left;
      align_10_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, tem2_sprites_right, 
-  cargo_subtype)
+  cargo_subtype + (((models_details_level == 0) && (build_year >= 1984)) * 10))
 {
   0: tem2_sprites_green_right;
   1: tem2_sprites_blue_right;
   2: tem2_v6_sprites_right;
+ 10: tem2u_v1_sprites_right;
+ 11: tem2u_v2_sprites_right;
      align_10_sprites; 
 }
+
+switch (FEAT_TRAINS, SELF, tem2u_sprites_left,
+  cargo_subtype)
+{
+  0: tem2u_v1_sprites_left;
+  1: tem2u_v2_sprites_left;
+     align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, tem2u_sprites_right,
+  cargo_subtype)
+{
+  0: tem2u_v1_sprites_right;
+  1: tem2u_v2_sprites_right;
+     align_10_sprites; 
+}
+
+
 
 engine_direction_template(tem2, ) 
 engine_RND_direction_template(tem2, 1, 1) 
@@ -124,7 +152,7 @@ item (FEAT_TRAINS, tem2) {
     sprite_id: SPRITE_ID_NEW_TRAIN; 
     speed: 100 km/h;
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
-    track_type: get_normal_track_type();
+    track_type: get_normal_track_type_diesel();
     power: 840 hpM;
     running_cost_base: RUNNING_COST_DIESEL;
     weight: 120 ton;
@@ -162,3 +190,269 @@ if (enable_long_names) {
   }
 }
 
+ // tem2u
+
+engine_direction_template(tem2u, ) 
+engine_RND_direction_template(tem2u, 1, 1) 
+long_vehicle_sp(tem2u)
+
+switch (FEAT_TRAINS, SELF, tem2u_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_93);
+     return CB_RESULT_NO_TEXT;
+}
+
+engine_diesel_1r_effect(tem2u, 0, 2, 11)
+engine_direction_template(tem2u, _create_effect) 
+engine_RND_effect_direction_template(tem2u, 1, 1) 
+engine_speed(tem2u, 100)
+engine_penalise_speed(tem2u, 2)
+general_running_cost(tem2u, 201)
+
+item (FEAT_TRAINS, tem2u) {
+  property {
+    name: string(STR_NAME_TEM2U);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1984), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1984,1989);
+    retire_early: get_retire_early(1984,1989);
+    reliability_decay: 10;
+    cost_factor: 26;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type_diesel();
+    power: 840 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 124 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(210.0, 124);
+    length: 8;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+  }
+  graphics {
+    default: tem2u_sprites;
+    purchase: tem2u_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: tem2u_speed;
+    purchase_speed: tem2u_purchase_speed;
+    running_cost_factor: tem2u_running_cost_factor;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1984, 1989), 
+                                   string(STR_PURCHASE_HINT_FACTORY_BRYANSK));
+    bitmask_vehicle_info: tem2u_bitmask_vehicle_info;
+    cargo_subtype_text: tem2u_cargo_subtype_text;
+    cargo_capacity: return 0;
+    create_effect: tem2u_create_effect;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, tem2u) {
+    property { name: string(STR_LONGNAME_TEM2U); }
+  }
+}
+
+ // tem2um
+
+switch (FEAT_TRAINS, SELF, tem2um_sprites_left,
+  cargo_subtype)
+{
+  0: tem2u_v1_sprites_left;
+  1: tem2u_v2_sprites_left;
+     align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, tem2um_sprites_right,
+  cargo_subtype)
+{
+  0: tem2u_v1_sprites_right;
+  1: tem2u_v2_sprites_right;
+     align_10_sprites; 
+}
+
+engine_direction_template(tem2um, ) 
+engine_RND_direction_template(tem2um, 1, 1) 
+long_vehicle_sp(tem2um)
+
+engine_diesel_1r_effect(tem2um, 0, 2, 11)
+engine_direction_template(tem2um, _create_effect) 
+engine_RND_effect_direction_template(tem2um, 1, 1) 
+engine_speed(tem2um, 100)
+engine_penalise_speed(tem2um, 2)
+general_running_cost(tem2um, 212)
+
+item (FEAT_TRAINS, tem2um) {
+  property {
+    name: string(STR_NAME_TEM2UM);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1989), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1989,1995);
+    retire_early: get_retire_early(1989,1995);
+    reliability_decay: 10;
+    cost_factor: 28;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    speed: 100 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type_diesel();
+    power: 840 hpM;
+    running_cost_base: RUNNING_COST_DIESEL;
+    weight: 126 ton;
+    engine_class: ENGINE_CLASS_DIESEL;
+    tractive_effort_coefficient: get_tec(230.0, 126);
+    length: 8;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;
+  }
+  graphics {
+    default: tem2um_sprites;
+    purchase: tem2u_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: tem2um_speed;
+    purchase_speed: tem2um_purchase_speed;
+    running_cost_factor: tem2um_running_cost_factor;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1989, 1995), 
+                                   string(STR_PURCHASE_HINT_FACTORY_BRYANSK));
+    bitmask_vehicle_info: tem2um_bitmask_vehicle_info;
+    cargo_subtype_text: tem2u_cargo_subtype_text;
+    cargo_capacity: return 0;
+    create_effect: tem2um_create_effect;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, tem2um) {
+    property { name: string(STR_LONGNAME_TEM2UM); }
+  }
+}
+
+// TEM2 ALL
+
+switch (FEAT_TRAINS, SELF, tem2_all_purchase_sprites,
+  (current_year >= 1984))
+{
+  0: tem2_purchase_sprites;
+     tem2u_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_cargo_subtype_text,
+  (build_year >= 1984))
+{
+  0: tem2_cargo_subtype_text;
+     tem2u_cargo_subtype_text;
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_power,
+  (build_year >= 1984))
+{
+  0: tem2_power;
+     return get_power_in_cb(840);
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_tractive_effort_coefficient,
+  (build_year >= 1984) +
+  (build_year >= 1989))
+{
+  0: tem2_tractive_effort_coefficient;
+  1: return get_tec_int(210.0, 124);
+     return get_tec_int(230.0, 126);
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_cost_factor,
+  (build_year >= 1984) +
+  (build_year >= 1989))
+{
+  0: tem2_cost_factor;
+  1: return 26;
+     return 28;
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_weight,
+  (build_year >= 1984) +
+  (build_year >= 1989))
+{
+  0: return 120;
+  1: return 124;
+     return 126;
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_running_cost_factor,
+  (build_year >= 1984) +
+  (build_year >= 1989))
+{
+  0: tem2_running_cost_factor;
+  1: tem2u_running_cost_factor;
+     tem2um_running_cost_factor;
+}
+
+switch (FEAT_TRAINS, SELF, tem2_all_additional_text,
+  (build_year >= 1984) +
+  (build_year >= 1989))
+{
+  0: tem2_additional_text;
+  1: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL_WITH_SUBTYPE, string(STR_NAME_TEM2U)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1984, 1989), 
+                   string(STR_PURCHASE_HINT_FACTORY_BRYANSK));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL_WITH_SUBTYPE, string(STR_NAME_TEM2UM)), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1989, 1995), 
+                   string(STR_PURCHASE_HINT_FACTORY_BRYANSK));
+}
+
+engine_penalise_speed_build_after2(tem2, 1984, 1989)
+
+if (models_details_level == 0) {
+  item (FEAT_TRAINS, tem2u) {
+    property { climates_available: NO_CLIMATE; }
+  }
+  item (FEAT_TRAINS, tem2um) {
+    property { climates_available: NO_CLIMATE; }
+  }
+  item (FEAT_TRAINS, tem2) {
+    property {
+      introduction_date: date(get_loc_year(1975), 1, 1);
+      model_life: get_model_life(1975,2050);
+      retire_early: get_retire_early(1975,2050);
+    }
+    graphics {
+      default: tem2_sprites;
+      purchase: tem2_all_purchase_sprites;
+      articulated_part: articulated_part_dummy2;
+      can_attach_wagon: any_can_attach_wagon;
+      start_stop: any_start_stop;
+      additional_text: tem2_all_additional_text;
+      cargo_subtype_text: tem2_all_cargo_subtype_text;
+      cargo_capacity: return 0;
+      speed: tem2_speed;
+      power: tem2_all_power;
+      weight: tem2_all_weight;
+      tractive_effort_coefficient: tem2_all_tractive_effort_coefficient;
+      purchase_speed: tem2_purchase_speed;
+      cost_factor: tem2_all_cost_factor;
+      running_cost_factor: tem2_all_running_cost_factor;
+      bitmask_vehicle_info: tem2_bitmask_vehicle_info_change;
+      create_effect: tem2_create_effect;
+    }
+  }
+}
