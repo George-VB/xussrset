@@ -1,0 +1,114 @@
+﻿ // 19_9870_hopper
+
+/// Вагон
+// конструкция bitmask(TRIGGER_VEHICLE_SERVICE) внесена в шаблон
+
+#define IMAGEFILE  "src/freight/hoppers/19-9870.png"
+purchase_sprites(hopper_19_9870, 0, 0)
+tanker_layout_template(hopper_19_9870_v1, 9, 0, 18)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_sprites_start, 0)
+{
+  hopper_19_9870_v1_sprites;
+}
+
+long_vehicle_RND(hopper_19_9870, hopper_19_9870_v1_sprites)
+
+// cb colour_mapping
+random_switch (FEAT_TRAINS, SELF, hopper_19_9870_random, 0 )
+{
+  independent: hopper_19_9870_v1_sprites;
+  5: return ttdall_cc + 0x71;   
+  4: return ttdall_cc + 0x7B;   
+  5: return ttdall_cc + 0x4B;   
+  2: return ttdall_cc + 0x08;   
+}                      
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_colour_mapping2,
+  cargo_subtype)
+{
+  0: hopper_19_9870_random;
+  1: return ttdall_cc + 0x71;   
+  2: return ttdall_cc + 0x7B;   
+  3: return ttdall_cc + 0x4B;   
+  4: return ttdall_cc + 0x08;   
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_colour_mapping,
+  cargo_type_in_veh)
+{
+  FERT: return ttdall_cc + 0x62;
+        hopper_19_9870_colour_mapping2;
+}
+
+// cb cargo_subtype_text
+switch (FEAT_TRAINS, SELF, hopper_19_9870_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_71);
+  2: return string(STR_REFIT_TTD_7B);
+  3: return string(STR_REFIT_TTD_4B);
+  4: return string(STR_REFIT_TTD_08);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_cargo_subtype_text,
+  cargo_type_in_veh)
+{
+  FERT: return CB_RESULT_NO_TEXT;
+        hopper_19_9870_cargo_subtype_text2;
+}
+
+wagon_running_cost(hopper_19_9870, 47)
+
+item (FEAT_TRAINS, hopper_19_9870) {
+  property {
+    name: string(STR_NAME_HOPPER_19_9870);
+    climates_available: get_climates_available();
+    introduction_date: date(get_car_year(2012), 1, 1);
+    model_life: get_model_life(2012,2050);
+    retire_early: get_retire_early(2012,2050);
+    vehicle_life: 26;
+    reliability_decay: 10;
+    cargo_allow_refit: [GRAI, WHEA, MAIZ, CERE, FERT];
+    default_cargo_type: FERT;
+    refit_cost: 0;
+    cost_factor: 7;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    track_type: get_normal_track_type();
+    power: 0 hpM;
+    running_cost_base: RUNNING_COST_ROADVEH;
+    loading_speed: 18;
+    cargo_capacity: 77;
+    weight: 23.5 ton;
+    length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    bitmask_vehicle_info: 0;
+  }
+  graphics {
+    default: hopper_19_9870_sprites;
+    purchase: hopper_19_9870_purchase_sprites;
+    running_cost_factor: hopper_19_9870_running_cost_factor;
+    articulated_part: articulated_part_dummy1;
+    colour_mapping: hopper_19_9870_colour_mapping;
+    cargo_subtype_text: hopper_19_9870_cargo_subtype_text;
+    additional_text: return string(STR_PURCHASE_HINT_WAGON,
+                                   77, 101, 
+                                   string(STR_PURCHASE_HINT_WAGON_TYPE_HOPPER_4AXLE_TSMW),
+                                   string(STR_PURCHASE_HINT_FROM, 2012), 
+                                   string(STR_PURCHASE_HINT_FACTORY_TIKHVIN_CBP));
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, hopper_19_9870) {
+    property { name: string(STR_LONGNAME_HOPPER_19_9870); }
+  }
+}
+
