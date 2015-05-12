@@ -43,6 +43,43 @@ switch (FEAT_TRAINS, PARENT, e_e_sprites_start, models_details_level == 0)
 
 short_vehicle(e_e)
 
+switch (FEAT_TRAINS, SELF, e_additional_text,
+  (current_year >= 1914) +
+  (current_year >= 1916) +
+  (current_year >= 1920))
+{
+  0:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_6606)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1912, 1913), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  1:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_9201)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1914, 1915), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  2:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_9555A)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1916, 1919), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+    return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_9555A)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1920, 1926), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+}
+
+switch (FEAT_TRAINS, SELF, e_cargo_subtype_text,
+  (build_year >= 1914) +
+  (build_year >= 1916))
+{
+  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E_6606), "");
+  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E_9201), "");
+  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E_9555A), "");
+     return CB_RESULT_NO_TEXT;
+}
+
 engine_length_change_build_after(e_tender, 4, 5, 1948)       
 engine_steam_1_effect(e, -3, 12)
 engine_weight_change_build_after3(e_e, 80+64, 81+64, 1914, 81+72, 1916, 82+72, 1920)       
@@ -107,6 +144,7 @@ item (FEAT_TRAINS, e_e) {
     create_effect: e_create_effect;
     cost_factor: e_e_cost_factor;
     running_cost_factor: e_e_running_cost_factor;
+    cargo_subtype_text: e_cargo_subtype_text;
   }
   livery_override(unitb) {
     length: return 4;
@@ -388,10 +426,10 @@ switch (FEAT_TRAINS, SELF, e_all_cargo_subtype_text,
   (build_year >= 1931) +
   (build_year >= 1935))
 {
-  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E), "");
-  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_EU), "");
-  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_EM), "");
-  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_ER), "");
+  0: e_cargo_subtype_text;
+  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_EU), "");
+  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_EM), "");
+  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_ER), "");
      return CB_RESULT_NO_TEXT;
 }
 
@@ -411,23 +449,19 @@ switch (FEAT_TRAINS, SELF, e_all_additional_text,
   (current_year >= 1931) +
   (current_year >= 1935))
 {
-  0:return string(STR_PURCHASE_HINT_ENGINE, 
-                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E)), 
-                  string(STR_PURCHASE_HINT_SECTIONS_1), 
-                  string(STR_PURCHASE_HINT_FROMTO, 1912, 1926), 
-                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  0:e_additional_text;
   1:return string(STR_PURCHASE_HINT_ENGINE, 
-                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_EU)), 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_NAME_EU)), 
                   string(STR_PURCHASE_HINT_SECTIONS_1), 
                   string(STR_PURCHASE_HINT_FROMTO, 1926, 1931), 
                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
   2:return string(STR_PURCHASE_HINT_ENGINE, 
-                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_EM)), 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_NAME_EM)), 
                   string(STR_PURCHASE_HINT_SECTIONS_1), 
                   string(STR_PURCHASE_HINT_FROMTO, 1931, 1935), 
                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
     return string(STR_PURCHASE_HINT_ENGINE, 
-                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_ER)), 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_NAME_ER)), 
                   string(STR_PURCHASE_HINT_SECTIONS_1), 
                   string(STR_PURCHASE_HINT_FROMTO, 1935, 1957), 
                   string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
