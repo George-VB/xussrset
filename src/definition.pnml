@@ -9,19 +9,19 @@ traininfo_y_offset = 3;
 new_train_age = 5;
 
 // Истечение срока
-retire_early_default = -8;
+retire_early_default = -8; //minimal model life span
+retire_late_default = 31; //extended reliability time span 30-8-8 = 15 years
 age_erlanger = 8;
 delta_age = 1;
 USSREND = 1991;
 // RE
-#define get_retire_early(x, y) x-y-delta_age < retire_early_default ? retire_early_default+delta_age+age_erlanger : x-y-delta_age+age_erlanger
+#define get_retire_early(x, y) x-y-2 < retire_early_default ? retire_early_default+1+retire_late_default : x-y-1+retire_late_default
 // модель
-#define get_model_life(x, y) y >= 2050 ? VEHICLE_NEVER_EXPIRES : (x-y-delta_age < retire_early_default ? y-x+delta_age+age_erlanger : -retire_early_default+age_erlanger)
+#define get_model_life(x, y) y >= 2050 ? VEHICLE_NEVER_EXPIRES : (x-y-2 < retire_early_default ? y-x+2+retire_late_default : -retire_early_default+retire_late_default)
 // вычитаем delta_age из года ввода ТС, для прицепных и немоторных вагонов
 #define get_car_year(year) year - delta_age
 // вычитаем delta_age из года ввода ТС, для головных вагонов и локомотивов
 #define get_loc_year(year) year - delta_age
-
 // максимальная скорость
 #define get_max_speed(life, slow, normal) (age_in_days >= (life * 365 + life / 4)) ? slow : normal
 
