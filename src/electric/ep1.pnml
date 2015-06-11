@@ -1,0 +1,120 @@
+ // ep1
+
+#define IMAGEFILE  "src/electric/ep1.png"
+purchase_sprites(ep1_v1,   0, 0)
+purchase_sprites(ep1_v2, 100, 0)
+
+electric1r_2_sprites(13, ep1_v1,  32,  40)
+electric1r_2_sprites(13, ep1_v2,  32, 375)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ep1_purchase_sprites,
+  current_year >= 2000)
+{
+  0: ep1_v1_purchase_sprites;
+     ep1_v2_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ep1_sprites_left,
+  build_year >= 2000)
+{
+  0: ep1_v1_sprites_left;
+  1: ep1_v2_sprites_left;
+     align_13_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, ep1_sprites_right,
+  build_year >= 2000)
+{
+  0: ep1_v1_sprites_right;
+  1: ep1_v2_sprites_right;
+     align_13_sprites; 
+}
+
+engine_RNDany_direction_template(ep1, 5, 3) 
+long_vehicle_sp(ep1)
+
+engine_electric1_2_effect(ep1, -1, 6)
+engine_speed_with_reduce(ep1, 140, 120, 30)
+engine_penalise_speed0(ep1)
+general_running_cost(ep1, 575)
+
+item (FEAT_TRAINS, ep1) {
+  property {
+    name: string(STR_NAME_EP1);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1999), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1999,2007);
+    retire_early: get_retire_early(1999,2007);
+    reliability_decay: 10;
+    cost_factor: 82;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    speed: 140 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 5700 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    weight: 132 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(210.0, 132);
+    length: 8;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: ep1_sprites;
+    purchase: ep1_purchase_sprites;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1999, 2007), 
+                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+    speed: ep1_speed;
+    purchase_speed: ep1_purchase_speed;
+    bitmask_vehicle_info: ep1_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: ep1_create_effect;
+    running_cost_factor: ep1_running_cost_factor;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, ep1) {
+    property { name: string(STR_LONGNAME_EP1); }
+  }
+}
+
+if (models_default_cargo == 1) {
+  item (FEAT_TRAINS, ep1) {
+    property {
+      cargo_allow_refit: [GOOD];
+      default_cargo_type: GOOD;
+    }
+  }
+}
+
+if (models_default_cargo == 2) {
+  item (FEAT_TRAINS, ep1) {
+    property {
+      cargo_allow_refit: [PASS];
+      default_cargo_type: PASS;
+    }
+  }
+}
+
+if (models_default_cargo == 3) {
+  item (FEAT_TRAINS, ep1) {
+    property {
+      cargo_allow_refit: [MAIL];
+      default_cargo_type: MAIL;
+    }
+  }
+}
+
