@@ -1,0 +1,129 @@
+ // vl65
+
+#define IMAGEFILE  "src/electric/vl65.png"
+purchase_sprites(vl65_v1,   0, 0)
+purchase_sprites(vl65_v2, 100, 0)
+purchase_sprites(vl65_v3, 200, 0)
+
+electric1r_2_sprites(13, vl65_v1, 32,   40)
+electric1r_2_sprites(13, vl65_v2, 32,  375)
+electric1r_2_sprites(13, vl65_v3, 32,  710)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl65_purchase_sprites,
+  (current_year >= 1994) +
+  (current_year >= 1996))
+{
+  0: vl65_v1_purchase_sprites;
+  1: vl65_v2_purchase_sprites;
+     vl65_v3_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, vl65_sprites_left,
+  (build_year>= 1994) +
+  (build_year>= 1996))
+{
+  0: vl65_v1_sprites_left;
+  1: vl65_v2_sprites_left;
+  2: vl65_v3_sprites_left;
+     align_13_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, vl65_sprites_right,
+  (build_year>= 1994) +
+  (build_year>= 1996))
+{
+  0: vl65_v1_sprites_right;
+  1: vl65_v2_sprites_right;
+  2: vl65_v3_sprites_right;
+     align_13_sprites; 
+}
+
+engine_RNDany_direction_template(vl65, 5, 3) 
+long_vehicle_sp(vl65)
+
+engine_electric1_2_effect(vl65, -2, 7)
+engine_speed(vl65, 120)
+engine_penalise_speed(vl65, 2)
+general_running_cost(vl65, 595)
+
+item (FEAT_TRAINS, vl65) {
+  property {
+    name: string(STR_NAME_VL65);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1992), 1, 1);
+    vehicle_life: 30;
+    model_life: get_model_life(1992,1998);
+    retire_early: get_retire_early(1992,1998);
+    reliability_decay: 10;
+    cost_factor: 85;
+    sprite_id: SPRITE_ID_NEW_TRAIN; 
+    speed: 120 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_ac_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 6225 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    weight: 140 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(230.0, 140);
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+    cargo_allow_refit: [MAIL];
+    default_cargo_type: MAIL;
+    cargo_capacity: 1;
+  }
+  graphics {
+    default: vl65_sprites;
+    purchase: vl65_purchase_sprites;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1992, 1998), 
+                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+    speed: vl65_speed;
+    purchase_speed: vl65_purchase_speed;
+    bitmask_vehicle_info: vl65_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    cargo_subtype_text: return CB_RESULT_NO_TEXT;
+    create_effect: vl65_create_effect;
+    running_cost_factor: vl65_running_cost_factor;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, vl65) {
+    property { name: string(STR_LONGNAME_VL65); }
+  }
+}
+
+if (models_default_cargo == 1) {
+  item (FEAT_TRAINS, vl65) {
+    property {
+      cargo_allow_refit: [GOOD];
+      default_cargo_type: GOOD;
+    }
+  }
+}
+
+if (models_default_cargo == 2) {
+  item (FEAT_TRAINS, vl65) {
+    property {
+      cargo_allow_refit: [PASS];
+      default_cargo_type: PASS;
+    }
+  }
+}
+
+if (models_default_cargo == 3) {
+  item (FEAT_TRAINS, vl65) {
+    property {
+      cargo_allow_refit: [MAIL];
+      default_cargo_type: MAIL;
+    }
+  }
+}
+
