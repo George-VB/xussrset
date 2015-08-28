@@ -956,6 +956,24 @@ new_speed2 : new_speed) : speed , 0),                                           
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
 { return; }                                                                                          \
 
+// Определение скорости с изменением в 3 заданных года
+
+#define engine_speed_change_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +                              \
+                                                  (current_year >= year2) +                             \
+                                                  (current_year >= year3))                              \
+{ 1: return new_speed;                                                                                  \
+  2: return new_speed2;                                                                                 \
+  3: return new_speed3;                                                                                 \
+     return speed; }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                \
+[ STORE_TEMP(date_of_last_service >= date(year,1,1) ?                                                   \
+            (date_of_last_service >= date(year2,1,1) ?                                                  \
+            (date_of_last_service >= date(year3,1,1) ?                                                  \
+new_speed3 : new_speed2) : new_speed) : speed , 0),                                                     \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                             \
+{ return; }                                                                                             \
+
 // Определение скорости со снижением для старых
 
 #define engine_speed_with_reduce(name, speed, speed_red, life)                                       \
