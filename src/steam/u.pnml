@@ -1,0 +1,166 @@
+ // u_u
+
+#define IMAGEFILE  "src/steam/u.png"
+purchase_sprites(u_u_v1, 0, 0)
+purchase_sprites(u_u_v2, 102, 0)
+purchase_sprites(u_u_v3, 204, 0)
+
+steam_sprites(6, u_u, 32,  40)
+
+tender_sprites(5, u_u_t_v1, 447,  40)
+tender_sprites(4, u_u_t_v2, 447,  107)
+tender_sprites(5, u_u_t_v3, 447,  174)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, u_u_purchase_sprites,
+  (current_year >= 1908) +
+  (current_year >= 1910))
+{
+  0: u_u_v1_purchase_sprites;
+  1: u_u_v2_purchase_sprites;
+     u_u_v3_purchase_sprites;
+}
+
+short_vehicle(u_u)
+
+switch (FEAT_TRAINS, SELF, u_u_t_sprites_start,
+  (build_year >= 1908) +
+  (build_year >= 1910))
+{
+  0: u_u_t_v1_sprites_start;
+  1: u_u_t_v2_sprites_start;
+     u_u_t_v3_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, u_u_t_length,
+  (build_year >= 1908) +
+  (build_year >= 1910))
+{
+  0: return 4;
+  1: return 3;
+     return 4;
+}
+
+switch (FEAT_TRAINS, SELF, u_u_colour_mapping,
+  cargo_subtype)
+{
+  0: return ttdall_cc + 0x53; 
+  1: return ttdall_cc + 0x63;
+  2: return ttdall_cc + 0xB3;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, u_u_t_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+  0: return ttdall_cc + 0x53; 
+  1: return ttdall_cc + 0x63;
+  2: return ttdall_cc + 0xB3;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, u_u_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_63);
+  2: return string(STR_REFIT_TTD_B3);
+     return CB_RESULT_NO_TEXT;
+}
+
+engine_steam_1_effect(u_u, -3, 12)
+engine_weight_change_build_after2(u_u, 76+53, 76+47, 1908, 76+64, 1910)       
+engine_TE_change_build_after2(u_u, get_tec_int(82.0, 76+53), get_tec_int(82.0, 76+47), 1908, get_tec_int(82.0, 76+64), 1910)       
+engine_speed(u_u, 105)
+engine_penalise_speed0(u_u)
+general_running_cost(u_u, 232)
+
+item (FEAT_TRAINS, u_u) {
+  property {
+    name: string(STR_NAME_U_U);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1906), 1, 1);
+    model_life: get_model_life(1906,1910);
+    retire_early: get_retire_early(1906,1910);
+    vehicle_life: 40;
+    reliability_decay: 10;
+    cost_factor: 10;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 1100 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (76+53) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(82.0, 76+53);
+    length: 5;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+  graphics {
+    default: u_u_sprites;
+    purchase: u_u_purchase_sprites;
+    articulated_part: articulated_part_tender1;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                                   string(STR_PURCHASE_HINT_FROMTO, 1910, 1919), 
+                                   string(STR_PURCHASE_HINT_LIST3, string(STR_PURCHASE_HINT_FACTORY_SORMOVO), 
+                                                                   string(STR_PURCHASE_HINT_FACTORY_NEVSKY), 
+                                                                   string(STR_PURCHASE_HINT_FACTORY_KHARKIV)));
+    speed: u_u_speed;
+    weight: u_u_weight;
+    purchase_speed: u_u_purchase_speed;
+    bitmask_vehicle_info: u_u_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: u_u_create_effect;
+    running_cost_factor: u_u_running_cost_factor;
+    colour_mapping: u_u_colour_mapping;
+    cargo_subtype_text: u_u_cargo_subtype_text;
+    tractive_effort_coefficient: u_u_tractive_effort_coefficient;
+  }
+  livery_override(unitb) {
+    length: u_u_t_length;
+    colour_mapping: u_u_t_colour_mapping;
+    u_u_t_sprites_start;
+  }
+}
+
+if (enable_long_names) {
+  item (FEAT_TRAINS, u_u) {
+    property { name: string(STR_LONGNAME_U_U); }
+  }
+}
+
+if (models_default_cargo == 1) {
+  item (FEAT_TRAINS, u_u) {
+    property { 
+      cargo_allow_refit: [GOOD];
+      default_cargo_type: GOOD;
+    }
+  }
+}
+
+if (models_default_cargo == 2) {
+  item (FEAT_TRAINS, u_u) {
+    property { 
+      cargo_allow_refit: [PASS];
+      default_cargo_type: PASS;
+    }
+  }
+}
+
+if (models_default_cargo == 3) {
+  item (FEAT_TRAINS, u_u) {
+    property { 
+      cargo_allow_refit: [MAIL];
+      default_cargo_type: MAIL;
+    }
+  }
+}
