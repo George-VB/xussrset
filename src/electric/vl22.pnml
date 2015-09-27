@@ -26,10 +26,15 @@ switch (FEAT_TRAINS, SELF, vl22_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
+engine_refit_cost_for_cargo_change(vl22, 2)
+engine_TE_change_on_cargo_type(vl22, get_tec_int(201.0, 132), 
+                                     get_tec_int(167.0, 132), PASS)
+engine_power_change_on_cargo_type(vl22, get_power_in_cb(2430), 
+                                        get_power_in_cb(2447), PASS)
 engine_electric1_2_effect(vl22, -2, 4)
-engine_speed(vl22, 70)
+engine_speed(vl22, (cargo_type_in_veh == PASS) ? 85 : 70)
 engine_penalise_speed(vl22, 2)
-general_running_cost(vl22, 228)
+general_running_cost(vl22, (cargo_type_in_veh == PASS) ? 252 : 250)
 
 item (FEAT_TRAINS, vl22) {
   property {
@@ -40,12 +45,11 @@ item (FEAT_TRAINS, vl22) {
     model_life: get_model_life(1938,1946);
     retire_early: get_retire_early(1938,1946);
     reliability_decay: 10;
-    cargo_allow_refit: [MAIL];
+    cargo_allow_refit: [MAIL, PASS];
     default_cargo_type: MAIL;
-    cost_factor: 29;
+    cost_factor: 32;
     sprite_id: SPRITE_ID_NEW_TRAIN; 
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
-    refit_cost: 0;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
     track_type: get_dc_track_type();
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 2447 hpM;
@@ -63,18 +67,22 @@ item (FEAT_TRAINS, vl22) {
     articulated_part: articulated_part_dummy2;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_WITH_COMMENT, 
                                    string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC), 
                                    string(STR_PURCHASE_HINT_SECTIONS_1_2), 
                                    string(STR_PURCHASE_HINT_FROMTO, 1938, 1946), 
-                                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_KOLOMNA), string(STR_PURCHASE_HINT_FACTORY_DINAMO)));
+                                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_KOLOMNA), string(STR_PURCHASE_HINT_FACTORY_DINAMO)),
+                                   string(STR_PURCHASE_HINT_PASSENGER_EDITION1));
     cargo_subtype_text: vl22_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: vl22_speed;
+    power: vl22_power;
+    tractive_effort_coefficient: vl22_tractive_effort_coefficient;
     purchase_speed: vl22_purchase_speed;
     bitmask_vehicle_info: vl22_bitmask_vehicle_info;
     create_effect: vl22_create_effect;
     running_cost_factor: vl22_running_cost_factor;
+    refit_cost: vl22_refit_cost;
   }
 }
 
@@ -87,7 +95,7 @@ if (enable_long_names) {
 if (models_default_cargo == 1) {
   item (FEAT_TRAINS, vl22) {
     property {
-      cargo_allow_refit: [GOOD];
+      cargo_allow_refit: [GOOD, PASS];
       default_cargo_type: GOOD;
     }
   }
@@ -96,7 +104,7 @@ if (models_default_cargo == 1) {
 if (models_default_cargo == 2) {
   item (FEAT_TRAINS, vl22) {
     property {
-      cargo_allow_refit: [PASS];
+      cargo_allow_refit: [PASS, MAIL];
       default_cargo_type: PASS;
     }
   }
@@ -105,7 +113,7 @@ if (models_default_cargo == 2) {
 if (models_default_cargo == 3) {
   item (FEAT_TRAINS, vl22) {
     property {
-      cargo_allow_refit: [MAIL];
+      cargo_allow_refit: [MAIL, PASS];
       default_cargo_type: MAIL;
     }
   }

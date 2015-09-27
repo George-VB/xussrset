@@ -32,39 +32,20 @@ switch (FEAT_TRAINS, SELF, vl22m_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, vl22m_power,
-  cargo_type_in_veh != PASS)
-{
-  1: return get_power_in_cb(2480);
-     return get_power_in_cb(2460);
-}
-
-switch (FEAT_TRAINS, SELF, vl22m_tractive_effort_coefficient,
-  cargo_type_in_veh != PASS)
-{
-  1: return get_tec_int(151.0, 132);
-     return get_tec_int(106.0, 132);
-}
- 
-switch (FEAT_TRAINS, SELF, vl22m_refit_cost,
-  (extra_callback_info1 & 0x00FF) == cargo_type_in_veh)
-{
-  1: return 0;
-     return 1; 
-}            
-
+engine_refit_cost_for_cargo_change(vl22m, 1)
+engine_TE_change_build_after2(vl22m, (cargo_type_in_veh == PASS) ? get_tec_int(145.0, 132) : get_tec_int(172.0, 132), 
+                                     (cargo_type_in_veh == PASS) ? get_tec_int(144.0, 132) : get_tec_int(176.0, 132), 1956, 
+                                     (cargo_type_in_veh == PASS) ? get_tec_int(125.0, 132) : get_tec_int(151.0, 132), 1957)
+engine_power_change_build_after2(vl22m, (cargo_type_in_veh == PASS) ? get_power_in_cb(2480) : get_power_in_cb(2470), 
+                                        (cargo_type_in_veh == PASS) ? get_power_in_cb(2450) : get_power_in_cb(2460), 1956, 
+                                        (cargo_type_in_veh == PASS) ? get_power_in_cb(2460) : get_power_in_cb(2480), 1957)
 engine_electric1_2_effect(vl22m, -2, 4)
-engine_speed(vl22m, (cargo_type_in_veh != PASS) ? 80 : 90)
+engine_speed_change_build_after(vl22m, (cargo_type_in_veh == PASS) ? 90 : 75, 
+                                       (cargo_type_in_veh == PASS) ? 100 : 80, 1957)
 engine_penalise_speed(vl22m, 2)
-general_running_cost(vl22m_v1, 234)
-general_running_cost(vl22m_v2, 228)
-
-switch (FEAT_TRAINS, SELF, vl22m_running_cost_factor,
-  cargo_type_in_veh != PASS)
-{
-  1: vl22m_v1_running_cost_factor;
-     vl22m_v2_running_cost_factor;
-}
+engine_RC_change_build_after2(vl22m, (cargo_type_in_veh == PASS) ? 267 : 241, 
+                                     (cargo_type_in_veh == PASS) ? 265 : 243, 1956, 
+                                     (cargo_type_in_veh == PASS) ? 260 : 234, 1957)
 
 item (FEAT_TRAINS, vl22m) {
   property {
@@ -79,8 +60,7 @@ item (FEAT_TRAINS, vl22m) {
     default_cargo_type: GOOD;
     cost_factor: 30;
     sprite_id: SPRITE_ID_NEW_TRAIN; 
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
-    refit_cost: 0;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
     track_type: get_dc_track_type();
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 2480 hpM;
