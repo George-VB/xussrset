@@ -17,17 +17,56 @@ switch (FEAT_TRAINS, SELF, vl60p_sprites_start,
 
 long_vehicle(vl60p)
 
+switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text2,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text1,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_59);
+  2: return string(STR_REFIT_UKRAINIAN_RAILWAY);
+  3: return string(STR_REFIT_NORTHERN_RAILWAY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text,
+  (current_year >= USSREND) || (build_year >= USSREND))
+{
+  1: vl60p_cargo_subtype_text1;
+     vl60p_cargo_subtype_text2;
+}
+
 engine_electric1_2_effect(vl60p, -2, 6)
 engine_speed(vl60p, 110)
 engine_penalise_speed3(vl60p, vl60, vl60k, 2)
 general_running_cost(vl60p, 400)
 
-switch (FEAT_TRAINS, PARENT, vl60p_bitmask_vehicle_info_advanced,
-  (vehicle_type_id == vl60) && (build_year < 1960) && vehicle_is_powered)
+switch (FEAT_TRAINS, PARENT, vl60p_bitmask_vehicle_info_advanced2,
+  ((cargo_subtype == 0) && (vehicle_type_id == vl60)))
 {
   1: return FLAG_PENALISE_SPEED;
      vl60p_bitmask_vehicle_info;
 }    
+                  
+switch (FEAT_TRAINS, SELF, vl60p_bitmask_vehicle_info_advanced1,
+  cargo_subtype <= 4)
+{
+  1: return FLAG_PENALISE_SPEED;
+     vl60p_bitmask_vehicle_info_advanced2;
+}    
+
+switch (FEAT_TRAINS, SELF, vl60p_bitmask_vehicle_info_advanced,
+  (position_in_consist == 0) || vehicle_is_not_powered)
+{ 
+  1: return 0;                                                              
+     vl60p_bitmask_vehicle_info_advanced1; 
+}
 
 item (FEAT_TRAINS, vl60p) {
   property {
@@ -68,7 +107,7 @@ item (FEAT_TRAINS, vl60p) {
     speed: vl60p_speed;
     purchase_speed: vl60p_purchase_speed;
     bitmask_vehicle_info: vl60p_bitmask_vehicle_info_advanced;
-    cargo_subtype_text: vl60k_cargo_subtype_text;
+    cargo_subtype_text: vl60p_cargo_subtype_text;
     cargo_capacity: return 0;
     create_effect: vl60p_create_effect;
     running_cost_factor: vl60p_running_cost_factor;

@@ -95,11 +95,33 @@ switch (FEAT_TRAINS, SELF, vl60_sprites_start,
 
 long_vehicle(vl60)
 
-switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text,
+switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text_b1966,
   build_year >= 1960)
 {
   0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_N60), "");
+     return string(STR_REFIT_FACTORY);
+}
+
+switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text_a1966,
+  cargo_subtype)
+{
+  0: vl60_cargo_subtype_text_b1966;
+  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60K), "");
      return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text1,
+  (build_year >= 1966) || (current_year >= 1966))
+{
+  0: vl60_cargo_subtype_text_b1966;
+     vl60_cargo_subtype_text_a1966;
+}    
+
+switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text,
+  build_year >= 1959)
+{
+  0: return string(STR_REFIT_PREPRODUCTION);
+     vl60_cargo_subtype_text1;
 }
 
 switch (FEAT_TRAINS, SELF, vl60_additional_text,
@@ -148,24 +170,26 @@ engine_cost_change_build_after4(vl60, 89,
                                       64, 1960,
                                       75, 1965)
 
-switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced2,
-  (position_in_consist == 0) || vehicle_is_not_powered)
-{ 1: return 0;                                                              
-     return FLAG_PENALISE_SPEED; }
-
-switch (FEAT_TRAINS, PARENT, vl60_bitmask_vehicle_info_advanced1,
-  build_year >= 1960)
+switch (FEAT_TRAINS, PARENT, vl60_bitmask_vehicle_info_advanced2,
+  (cargo_subtype <= 4) && (vehicle_type_id == vl60p))
 {
-  0: return FLAG_PENALISE_SPEED;
+  1: return FLAG_PENALISE_SPEED;
      vl60_bitmask_vehicle_info;
 }    
                   
-switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced,
-  build_year >= 1960)
+switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced1,
+  cargo_subtype == 0)
 {
-  0: vl60_bitmask_vehicle_info_advanced2;
-     vl60_bitmask_vehicle_info_advanced1;
+  1: return FLAG_PENALISE_SPEED;
+     vl60_bitmask_vehicle_info_advanced2;
 }    
+
+switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced,
+  (position_in_consist == 0) || vehicle_is_not_powered)
+{ 
+  1: return 0;                                                              
+     vl60_bitmask_vehicle_info_advanced1; 
+}
 
 item (FEAT_TRAINS, vl60) {
   property {
