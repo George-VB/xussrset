@@ -8,16 +8,33 @@ switch (FEAT_TRAINS, SELF, vl60p_sprites_start,
   1: vl60k_v2_sprites_start;
   2: vl60k_v3_sprites_start;
   3: vl60k_v4_sprites_start;
-  4: vl60k_v5_sprites_start;
-  5: vl60k_v5_sprites_start;
-  6: vl60k_v6_sprites_start;
-  7: vl60k_v6_sprites_start;
+  4: vl60k_v1_sprites_start;
+  5: vl60k_v2_sprites_start;
+  6: vl60k_v3_sprites_start;
+  7: vl60k_v4_sprites_start;
+
+  8: vl60k_v5_sprites_start;
+  9: vl60k_v5_sprites_start;
+ 10: vl60k_v6_sprites_start;
+ 11: vl60k_v6_sprites_start;
+ 12: vl60k_v5_sprites_start;
+ 13: vl60k_v5_sprites_start;
+ 14: vl60k_v6_sprites_start;
+ 15: vl60k_v6_sprites_start;
      align_12_sprites; 
 }
 
 long_vehicle(vl60p)
 
-switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text2,
+switch (FEAT_TRAINS, SELF, vl60p_refit_cost,
+  (((extra_callback_info1 & 0xFF00) == 0x200) || ((extra_callback_info1 & 0xFF00) == 0x300) || ((extra_callback_info1 & 0xFF00) == 0x600) || ((extra_callback_info1 & 0xFF00) == 0x700))+
+  (((cargo_subtype == 2) || (cargo_subtype == 3) || (cargo_subtype == 6) || (cargo_subtype == 7)) * 2))
+{
+  1: return 2;
+     return 0; 
+}            
+
+switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text_b1966,
   cargo_subtype)
 {
   0: return string(STR_REFIT_TTD_53);
@@ -25,21 +42,37 @@ switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text2,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text1,
+switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text_a1966,
   cargo_subtype)
 {
   0: return string(STR_REFIT_TTD_53);
   1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_UKRAINIAN_RAILWAY);
-  3: return string(STR_REFIT_NORTHERN_RAILWAY);
+  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60PK), string(STR_REFIT_TTD_53));
+  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60PK), string(STR_REFIT_TTD_59));
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text_aussr,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_59);
+  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60PK), string(STR_REFIT_TTD_53));
+  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60PK), string(STR_REFIT_TTD_59));
+  4: return string(STR_REFIT_UKRAINIAN_RAILWAY);
+  5: return string(STR_REFIT_NORTHERN_RAILWAY);
+  6: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60PK), string(STR_REFIT_UKRAINIAN_RAILWAY));
+  7: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60PK), string(STR_REFIT_NORTHERN_RAILWAY));
      return CB_RESULT_NO_TEXT;
 }
 
 switch (FEAT_TRAINS, SELF, vl60p_cargo_subtype_text,
-  (current_year >= USSREND) || (build_year >= USSREND))
+  ((current_year >= 1966) || (build_year >= 1966)) +
+  ((current_year >= USSREND) || (build_year >= USSREND)))
 {
-  1: vl60p_cargo_subtype_text1;
-     vl60p_cargo_subtype_text2;
+  0: vl60p_cargo_subtype_text_b1966;
+  1: vl60p_cargo_subtype_text_a1966;
+     vl60p_cargo_subtype_text_aussr;
 }
 
 engine_electric1_2_effect(vl60p, -2, 6)
@@ -55,7 +88,7 @@ switch (FEAT_TRAINS, PARENT, vl60p_bitmask_vehicle_info_advanced2,
 }    
                   
 switch (FEAT_TRAINS, SELF, vl60p_bitmask_vehicle_info_advanced1,
-  cargo_subtype <= 4)
+  (cargo_subtype == 2) || (cargo_subtype == 3) || (cargo_subtype == 6) || (cargo_subtype == 7))
 {
   1: return FLAG_PENALISE_SPEED;
      vl60p_bitmask_vehicle_info_advanced2;
@@ -111,6 +144,7 @@ item (FEAT_TRAINS, vl60p) {
     cargo_capacity: return 0;
     create_effect: vl60p_create_effect;
     running_cost_factor: vl60p_running_cost_factor;
+    refit_cost: vl60p_refit_cost;
   }
 }
 
