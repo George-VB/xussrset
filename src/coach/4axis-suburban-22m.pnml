@@ -6,43 +6,36 @@
 // 4 axis suburban
 
 #define IMAGEFILE  "src/coach/4axis-suburban-22m.png"
-purchase_sprites(_4axis_suburban_22m, 0, 12)
+purchase_sprites(_4axis_suburban_22m, 0, 0)
 
-// вид 
-spriteset (_4axis_suburban_22m_spriteset, IMAGEFILE)
-{
-  s13_template(0, 57, 0)
-}
-
-spriteset (_4axis_suburban_22m_v2_spriteset, IMAGEFILE)
-{
-  s13_template(0, 129, 0)
-}
-
-spriteset (_4axis_suburban_22m_tail_spriteset, IMAGEFILE)
-{
-  s13_template(0, 221, 0)
-}
-
-spriteset (_4axis_suburban_22m_tail_v2_spriteset, IMAGEFILE)
-{
-  s13_template(0, 293, 0)
-}
-
+pass_wagon_sprites(13, _4axis_suburban_22m_v1, 32, 40)
+pass_wagon_sprites(13, _4axis_suburban_22m_v2, 32, 40+268)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, _4axis_suburban_22m_sprites_start,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (((cargo_subtype == 1) || (build_year >= 1918)) * 2) )
+switch (FEAT_TRAINS, SELF, _4axis_suburban_22m_sprites_left,
+  (build_year >= 1918) || (cargo_subtype == 1))
 {
-  0: _4axis_suburban_22m_spriteset;
-  1: _4axis_suburban_22m_tail_spriteset;
-  2: _4axis_suburban_22m_v2_spriteset;
-  3: _4axis_suburban_22m_tail_v2_spriteset;
+  0: _4axis_suburban_22m_v1_sprites_left;
+  1: _4axis_suburban_22m_v2_sprites_left;
      align_13_sprites;
 }
 
-long_vehicle(_4axis_suburban_22m)
+switch (FEAT_TRAINS, SELF, _4axis_suburban_22m_sprites_right,
+  (build_year >= 1918) || (cargo_subtype == 1))
+{
+  0: _4axis_suburban_22m_v1_sprites_right;
+  1: _4axis_suburban_22m_v2_sprites_right;
+     align_13_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, _4axis_suburban_22m_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: _4axis_suburban_22m_sprites_left;
+  1: _4axis_suburban_22m_sprites_right;
+}
+
+long_vehicle_RND(_4axis_suburban_22m, _4axis_suburban_22m_sprites_start)
 
 wagon_running_cost(_4axis_suburban_22m, 48)
 
