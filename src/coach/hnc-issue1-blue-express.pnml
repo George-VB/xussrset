@@ -8,77 +8,39 @@
 /// Голубой экспресс, жесткий некупейный 1 выпуска (1946-1949)
 
 #define IMAGEFILE  "src/coach/hnc-issue1-blue-express.png"
-
-// покупка
 purchase_sprites(hnc_issue1_blue_express, 0, 0)
 
-// вид 1
-spriteset (hnc_issue1_blue_express_spriteset, IMAGEFILE)
-{
-  s14_template(0, 42, 0)
-}
-
-spriteset (hnc_issue1_blue_express_r_spriteset, IMAGEFILE)
-{
-  s14_template(459, 42, 0)
-}
-
-// вид 2
-spriteset (hnc_issue1_blue_express_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 114, 0)
-}
-
-spriteset (hnc_issue1_blue_express_r_v2_spriteset, IMAGEFILE)
-{
-  s14_template(459, 114, 0)
-}
-
-// вид 3
-spriteset (hnc_issue1_blue_express_v3_spriteset, IMAGEFILE)
-{
-  s14_template(0, 186, 0)
-}
-
-spriteset (hnc_issue1_blue_express_r_v3_spriteset, IMAGEFILE)
-{
-  s14_template(459, 186, 0)
-}
-
-// вид 1 в конце
-spriteset (hnc_issue1_blue_express_tail_spriteset, IMAGEFILE)
-{
-  s14_template(0, 258, 0)
-}
-
-// вид 2 в конце
-spriteset (hnc_issue1_blue_express_tail_v2_spriteset, IMAGEFILE)
-{
-  s14_template(0, 330, 0)
-}
-
-// вид 3 в конце
-spriteset (hnc_issue1_blue_express_tail_v3_spriteset, IMAGEFILE)
-{
-  s14_template(0, 402, 0)
-}
-
+pass_wagon_sprites(11, hnc_issue1_blue_express_v1, 32, 40)
+pass_wagon_sprites(11, hnc_issue1_blue_express_v2, 32, 40+268  )
+pass_wagon_sprites(11, hnc_issue1_blue_express_v3, 32, 40+268*2)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, hnc_issue1_blue_express_sprites_start,
-  (position_in_consist_from_end == 1) + // последний вагон?
-  (cargo_subtype * 2) )
+switch (FEAT_TRAINS, SELF, hnc_issue1_blue_express_sprites_left,
+  cargo_subtype)
 {
-  0: hnc_issue1_blue_express_spriteset;
-  1: hnc_issue1_blue_express_tail_spriteset;
-  2: hnc_issue1_blue_express_v2_spriteset;
-  3: hnc_issue1_blue_express_tail_v2_spriteset;
-  4: hnc_issue1_blue_express_v3_spriteset;
-  5: hnc_issue1_blue_express_tail_v3_spriteset;
-     align_14_sprites;
+  0: hnc_issue1_blue_express_v1_sprites_left;
+  1: hnc_issue1_blue_express_v2_sprites_left;
+  2: hnc_issue1_blue_express_v3_sprites_left;
+     align_12_sprites;
 }
 
-long_vehicle(hnc_issue1_blue_express)
+switch (FEAT_TRAINS, SELF, hnc_issue1_blue_express_sprites_right,
+  cargo_subtype)
+{
+  0: hnc_issue1_blue_express_v1_sprites_right;
+  1: hnc_issue1_blue_express_v2_sprites_right;
+  2: hnc_issue1_blue_express_v3_sprites_right;
+     align_12_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, hnc_issue1_blue_express_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: hnc_issue1_blue_express_sprites_left;
+  1: hnc_issue1_blue_express_sprites_right;
+}
+
+long_vehicle_RND(hnc_issue1_blue_express, hnc_issue1_blue_express_sprites_start)
 
 wagon_running_cost(hnc_issue1_blue_express, 90)
 
