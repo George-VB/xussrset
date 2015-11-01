@@ -51,6 +51,31 @@ switch (FEAT_TRAINS, SELF, su_tender_sprites_start,
 
 short_vehicle(su)
 
+switch (FEAT_TRAINS, SELF, su_colour_mapping,
+  cargo_subtype)
+{
+  0: return ttdall_cc + 0x53; 
+  1: return ttdall_cc + 0x63;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, su_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+  0: return ttdall_cc + 0x53; 
+  1: return ttdall_cc + 0x63;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, su_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_TTD_53);
+  1: return string(STR_REFIT_TTD_63);
+     return CB_RESULT_NO_TEXT;
+}
+
 engine_steam_1_effect(su, -3, 11)
 engine_speed_change_after2(su, 110, 
                                115, 1926, 
@@ -126,11 +151,12 @@ item (FEAT_TRAINS, su) {
     cargo_capacity: return 0;
     create_effect: su_create_effect;
     running_cost_factor: su_running_cost_factor;
-    colour_mapping: return ttdall_cc + 0x53;
+    colour_mapping: su_colour_mapping;
+    cargo_subtype_text: su_cargo_subtype_text;
   }
   livery_override(unitb) {
     length: su_tender_length;
-    colour_mapping: return ttdall_cc + 0x53;
+    colour_mapping: su_tender_colour_mapping;
     su_tender_sprites_start;
   }
 }
