@@ -10,12 +10,31 @@ tender_sprites(4, nv_tender, 447,  40)
 
 short_vehicle(nv)
 
+switch (FEAT_TRAINS, SELF, nv_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: return ttdall_cc + 0x53; 
+  LV_RAL6002: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, nv_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+{
+  0: return ttdall_cc + 0x53; 
+  LV_RAL6002: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
 engine_steam_1_effect(nv, -3, 12)
 engine_speed_change_after2(nv, 90, 
                                105, 1912, 
                                120, 1936)
 engine_penalise_speed0(nv)
 general_running_cost(nv, 157)
+
+livery_template(nv, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 item (FEAT_TRAINS, nv) {
   property {
@@ -64,9 +83,12 @@ item (FEAT_TRAINS, nv) {
     cargo_capacity: return 0;
     create_effect: nv_create_effect;
     running_cost_factor: nv_running_cost_factor;
+    colour_mapping: nv_colour_mapping; 
+    cargo_subtype_text: nv_cargo_subtype_text;
   }
   livery_override(unitb) {
     length: return 3;
+    colour_mapping: nv_tender_colour_mapping; 
     nv_tender_sprites_start;
   }
 }

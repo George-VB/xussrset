@@ -6,40 +6,18 @@
 purchase_sprites(is_all_v1, 0, 0)
 purchase_sprites(is_all_v2, 110, 0)
 
-steam_sprites(10, is_all_v1, 32,   40)
-steam_sprites(10, is_all_v2, 32,  844)
-steam_sprites(10, is_all_v3, 32, 1648)
+steam_sprites(10, is_is20, 32, 40)
 
-tender_sprites(6, is_all_t4o_v1, 447,  40)
-tender_sprites(6, is_all_t4o_v2, 447, 107)
-tender_sprites(6, is_all_t4o_v3, 447, 174)
+tender_sprites(6, is_all_t4o, 447, 40)
 
-tender_sprites(7, is_all_t6p_v1, 447, 308)
-tender_sprites(7, is_all_t6p_v2, 447, 375)
-tender_sprites(7, is_all_t6p_v3, 447, 442)
+tender_sprites(7, is_all_t6p, 447, 107)      // 53 61 9A
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, is_all_tender_sprites,
-[
-  set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + 
-  ((build_year >= 1936) * 3) ])
+  build_year >= 1936 )
 {
-  0: is_all_t4o_v1_sprites_start;
-  1: is_all_t4o_v2_sprites_start;
-  2: is_all_t4o_v3_sprites_start;
-  3: is_all_t6p_v1_sprites_start;
-  4: is_all_t6p_v2_sprites_start;
-     is_all_t6p_v3_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, is_is21_tender_sprites,
-[ set_offset_to(-2),
-  prev_vehicle_cargo_subtype()])
-{
-  0: is_all_t6p_v1_sprites_start;
-  1: is_all_t6p_v2_sprites_start;
-     is_all_t6p_v3_sprites_start;
+  0: is_all_t4o_sprites_start;
+     is_all_t6p_sprites_start;
 }
 
 engine_length_change_build_after(is_all_tender, 5, 
@@ -52,27 +30,32 @@ switch (FEAT_TRAINS, SELF, is_all_purchase_sprites,
      is_all_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, is_is20_sprites_start,
-  cargo_subtype)
+switch (FEAT_TRAINS, SELF, is_all_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
-  0: is_all_v1_sprites_start;
-  1: is_all_v2_sprites_start;
-  2: is_all_v3_sprites_start;
-     align_10_sprites;
+  0: return ttdall_cc + 0x53; 
+  LV_RAL6002:       return ttdall_cc + 0x53;
+  LV_RAL6020:       return ttdall_cc + 0x61;
+  LV_RED_ARROW_OLD: return ttdall_cc + 0x9A;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, is_all_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+{
+  0: return ttdall_cc + 0x53; 
+  LV_RAL6002:       return ttdall_cc + 0x53;
+  LV_RAL6020:       return ttdall_cc + 0x61;
+  LV_RED_ARROW_OLD: return ttdall_cc + 0x9A;
+     return CB_FAILED;
 }
 
 long_vehicle(is_is20)
 
  // is_is20
 
-switch (FEAT_TRAINS, SELF, is_is20_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_RED_ARROW);
-     return CB_RESULT_NO_TEXT;
-}
+livery_template(is_all, TTD_53, LV_RAL6002, LV_RAL6020, LV_RED_ARROW_OLD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 switch (FEAT_TRAINS, SELF, is_is20_additional_text,
   current_year >= 1935)
@@ -138,13 +121,15 @@ item (FEAT_TRAINS, is_is20) {
     cargo_capacity: return 0;
     weight: is_is20_weight;
     cost_factor: is_is20_cost_factor;
-    cargo_subtype_text: is_is20_cargo_subtype_text;
+    cargo_subtype_text: is_all_cargo_subtype_text;
     tractive_effort_coefficient: is_is20_tractive_effort_coefficient;
     create_effect: is_all_create_effect;
     running_cost_factor: is_is20_running_cost_factor;
+    colour_mapping: is_all_colour_mapping;
   }
   livery_override(unitb) {
     length: is_all_tender_length;
+    colour_mapping: is_all_tender_colour_mapping;
             is_all_tender_sprites;
   }
 }
@@ -152,16 +137,6 @@ item (FEAT_TRAINS, is_is20) {
 long_name_template(is_is20, STR_LONGNAME_IS20)
 models_default_cargo_template(is_is20)
 // is21
-
-switch (FEAT_TRAINS, SELF, is_is21_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_RED_ARROW);
-     return CB_RESULT_NO_TEXT;
-}
-
 engine_speed(is_is21, 115)
 engine_penalise_speed0(is_is21)
 general_running_cost(is_is21, 739)
@@ -206,14 +181,16 @@ item (FEAT_TRAINS, is_is21) {
     purchase_speed: is_is21_purchase_speed;
     bitmask_vehicle_info: is_is21_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    cargo_subtype_text: is_is21_cargo_subtype_text;
+    cargo_subtype_text: is_all_cargo_subtype_text;
     create_effect: is_all_create_effect;
     running_cost_factor: is_is21_running_cost_factor;
+    colour_mapping: is_all_colour_mapping;
   }
 
   livery_override(unitb) {
     length: 6;
-    is_is21_tender_sprites;
+    colour_mapping: is_all_tender_colour_mapping;
+    is_all_t6p_sprites_start;
   }
 }
 
@@ -250,19 +227,6 @@ switch (FEAT_TRAINS, SELF, is_all_running_cost_factor,
 {
   0: is_is20_running_cost_factor;
      is_is21_running_cost_factor;
-}
-
-switch (FEAT_TRAINS, SELF, is_all_cargo_subtype_text,
-  ((build_year >= 1941) * 100) +
-  cargo_subtype)
-{
-    0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS20), string(STR_REFIT_TTD_53));
-    1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS20), string(STR_REFIT_TTD_59));
-    2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS20), string(STR_REFIT_RED_ARROW));
-  100: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS21), string(STR_REFIT_TTD_53));
-  101: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS21), string(STR_REFIT_TTD_59));
-  102: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_IS21), string(STR_REFIT_RED_ARROW));
-       return CB_RESULT_NO_TEXT;
 }
 
 switch (FEAT_TRAINS, SELF, is_all_additional_text,
@@ -314,6 +278,7 @@ if (models_details_level == 0) {
       cost_factor: is_all_cost_factor;
       cargo_subtype_text: is_all_cargo_subtype_text;
       power: is_all_power;
+      colour_mapping: is_all_colour_mapping;
     }
   }
   long_name_template(is_is20, STR_LONGNAME_IS_ALL)
