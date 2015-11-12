@@ -46,6 +46,7 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
+set time_start=%time%
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
@@ -54,7 +55,7 @@ if /i not "%GRFFOLDER%" == "" (
   if /i not %errorlevel% == 0 goto :Error
 )
 echo [Ok]
-goto :EOF
+goto :END
 :Error
 echo [ERR]
 goto :EOF
@@ -110,3 +111,9 @@ del /q /f %NMLNAME%.grf.cache %NMLNAME%.grf.cacheindex %NMLNAME%.grf ^
   %NMLNAME%.nfo %NMLNAME%.nml %NMLNAME%_optimized.nml parsetab.py ^
   custom_tags.txt %NMLNAME%_dep.txt
 goto :EOF
+
+:END
+echo %time_start%
+set time_finish=%time%
+echo %time_finish%
+
