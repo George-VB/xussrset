@@ -58,7 +58,7 @@ echo [Ok]
 goto :END
 :Error
 echo [ERR]
-goto :EOF
+goto :END
 
 :: GetHgRev
 :GetHgRev
