@@ -1,4 +1,6 @@
 @echo off
+set datebeg=%date%
+set timest=%time%
 clean-lng.pl
 if ERRORLEVEL 1 goto :EOF
 
@@ -46,7 +48,6 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-set time_start=%time%
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
@@ -113,7 +114,26 @@ del /q /f %NMLNAME%.grf.cache %NMLNAME%.grf.cacheindex %NMLNAME%.grf ^
 goto :EOF
 
 :END
-echo %time_start%
-set time_finish=%time%
-echo %time_finish%
+set timefin=%time%
+set timest=%timest:~0,8%
+set timefin=%timefin:~0,8%
+set timest=%timest: =0%
+set timefin=%timefin: =0%
+set /a gettick1=(1%timest:~6,2%-100)+(1%timest:~3,2%-100)*60+(1%timest:~0,2%-100)*3600
+set /a gettick2=(1%timefin:~6,2%-100)+(1%timefin:~3,2%-100)*60+(1%timefin:~0,2%-100)*3600
+set /a timetot=gettick2-gettick1
+set /a timetot1=timetot-(timetot/60)*60
+set timetot1=0%timetot1%
+set timetot1=%timetot1:~-2%
+set /a timetot=timetot/60
+set /a timetot2=timetot-(timetot/60)*60
+set timetot2=0%timetot2%
+set timetot2=%timetot2:~-2%
+set /a timetot=timetot/60
+set /a timetot3=timetot-(timetot/24)*24
+set timetot3=0%timetot3%
+set timetot3=%timetot3:~-2%
+rem более 24 часов не считает
+echo Total time: %timetot3%:%timetot2%:%timetot1%
+echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1%>>compile.stat
 
