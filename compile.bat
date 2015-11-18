@@ -56,9 +56,11 @@ if /i not "%GRFFOLDER%" == "" (
   if /i not %errorlevel% == 0 goto :Error
 )
 echo [Ok]
+set compres=[Ok]
 goto :END
 :Error
 echo [ERR]
+set compres=[Err %errorlevel%]
 goto :END
 
 :: GetHgRev
@@ -135,5 +137,5 @@ set timetot3=0%timetot3%
 set timetot3=%timetot3:~-2%
 rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
-echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1%>>compile.stat
+echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
 
