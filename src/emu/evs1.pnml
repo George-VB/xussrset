@@ -167,19 +167,25 @@ switch (FEAT_TRAINS, PARENT, evs1_b_create_effect,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - evs1
-switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
-  (vehicle_type_id == evs1) * (1 + (build_year >= 2014)))
+switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
+  build_year >= 2014)
 {
-  1: return 562;
-  2: return 506;
+  0: return 604;
+     return 508;
+}
+
+switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
+  vehicle_type_id == evs1)
+{
+  1: evs1_cargo_capacity2;
      return 0;
 }
 
-switch (FEAT_TRAINS, PARENT, evs1_purchase_cargo_capacity,
+switch (FEAT_TRAINS, SELF, evs1_purchase_cargo_capacity,
   current_year >= 2014)
 {
-  0: return 562;
-     return 506;
+  0: return 604;
+     return 508;
 }
 
 switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
@@ -242,6 +248,13 @@ switch (FEAT_TRAINS, SELF, evs1_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_SIEMENS));
 }
 
+switch (FEAT_TRAINS, SELF, evs1_cargo_age_period,
+  build_year >= 2014)
+{
+  1: return 121;
+     return 114;
+}
+
 item (FEAT_TRAINS, evs1) {
   property {
     name: string(STR_NAME_EVS1);
@@ -263,16 +276,16 @@ item (FEAT_TRAINS, evs1) {
     running_cost_base: RUNNING_COST_ELECTRIC;
     loading_speed: (15*10);
     cargo_capacity: 255;
-    weight: 662 ton;
+    weight: 576.8 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
-    tractive_effort_coefficient: get_tec(380.0, 651);
+    tractive_effort_coefficient: get_tec(328.0, 576.8);
     length: 8;
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
   }
   graphics {
     default: evs1_sprites;
     purchase: evs1_purchase_sprites;
-    cargo_age_period: return 110;
+    cargo_age_period: evs1_cargo_age_period;
     running_cost_factor: evs1_running_cost_factor;
     articulated_part: evs1_articulated_part;
     can_attach_wagon: evs1_can_attach_wagon;
