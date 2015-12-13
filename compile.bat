@@ -60,7 +60,7 @@ set compres=[Ok]
 goto :END
 :Error
 echo [ERR]
-set compres=[Err %errorlevel%]
+set compres=[Err]
 goto :END
 
 :: GetHgRev
