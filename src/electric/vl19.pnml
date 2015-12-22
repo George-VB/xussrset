@@ -20,36 +20,46 @@ switch (FEAT_TRAINS, SELF, vl19_purchase_sprites,
      vl19_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl19_sprites_left,
-  (build_year >= 1933) +
+switch (FEAT_TRAINS, SELF, vl19_sprites_left_a1933,
   cargo_subtype)
 {
+  0: vl19_v2_sprites_left;
+  1: vl19_v4_sprites_left;
+  LV_RAL6002: vl19_v2_sprites_left;
+  LV_RAL6020: vl19_v3_sprites_left;
+
+  0xE0: vl19_v2_sprites_left;
+  0xE1: vl19_v3_sprites_left;
+  0xE2: vl19_v4_sprites_left;
+        align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_left,
+  build_year >= 1933)
+{
   0: vl19_v1_sprites_left;
+     vl19_sprites_left_a1933;
+}
 
-  1: vl19_v2_sprites_left;
-  2: vl19_v3_sprites_left;
-  3: vl19_v4_sprites_left;
+switch (FEAT_TRAINS, SELF, vl19_sprites_right_a1933,
+  cargo_subtype)
+{
+  0: vl19_v2_sprites_right;
+  1: vl19_v4_sprites_right;
+  LV_RAL6002: vl19_v2_sprites_right;
+  LV_RAL6020: vl19_v3_sprites_right;
 
-  4: vl19_v2_sprites_left;
-  5: vl19_v3_sprites_left;
-  6: vl19_v4_sprites_left;
-     align_10_sprites; 
+  0xE0: vl19_v2_sprites_right;
+  0xE1: vl19_v3_sprites_right;
+  0xE2: vl19_v4_sprites_right;
+        align_10_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, vl19_sprites_right,
-  (build_year >= 1933) +
-  cargo_subtype)
+  build_year >= 1933)
 {
   0: vl19_v1_sprites_right;
-
-  1: vl19_v2_sprites_right;
-  2: vl19_v3_sprites_right;
-  3: vl19_v4_sprites_right;
-
-  4: vl19_v2_sprites_right;
-  5: vl19_v3_sprites_right;
-  6: vl19_v4_sprites_right;
-     align_10_sprites; 
+     vl19_sprites_right_a1933;
 }
 
 engine_RNDany_direction_template(vl19, 5, 3) 
@@ -57,47 +67,33 @@ engine_RNDany_direction_template(vl19, 5, 3)
 long_vehicle_sp(vl19)
 
 switch (FEAT_TRAINS, SELF, vl19_refit_cost,
-  (((extra_callback_info1 & 0xFF00) == 0x300) || ((extra_callback_info1 & 0xFF00) == 0x400) || ((extra_callback_info1 & 0xFF00) == 0x500)) +
-  (((cargo_subtype == 3) || (cargo_subtype == 4) || (cargo_subtype == 5)) * 2))
+  (((extra_callback_info1 & 0xFF00) == 0xE000) || ((extra_callback_info1 & 0xFF00) == 0xE100) || ((extra_callback_info1 & 0xFF00) == 0xE200)) +
+  (((cargo_subtype == 0xE0) || (cargo_subtype == 0xE1) || (cargo_subtype == 0xE2)) * 2))
 {
   1: return 2;
      return 0; 
 }            
 
-switch (FEAT_TRAINS, SELF, vl19_cargo_subtype_text_b1947,
+livery_template(vl19_b1947, TTD_53, LV_RAL6002, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl19_b1947, TTD_96)
+
+switch (FEAT_TRAINS, SELF, vl19_a1947_cargo_subtype_text_pre,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_TTD_96);
-     return CB_RESULT_NO_TEXT;
+  0xE0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL19M), string(STR_REFIT_TTD_53));
+  0xE1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL19M), string(STR_REFIT_TTD_59));
+  0xE2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL19M), string(STR_REFIT_TTD_96));
+        vl19_b1947_cargo_subtype_text_pre;
 }
 
-switch (FEAT_TRAINS, SELF, vl19_cargo_subtype_text_a1947,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_TTD_96);
-  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL19M), string(STR_REFIT_TTD_53));
-  4: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL19M), string(STR_REFIT_TTD_59));
-  5: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL19M), string(STR_REFIT_TTD_96));
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl19_cargo_subtype_text1,
+switch (FEAT_TRAINS, SELF, vl19_a1933_cargo_subtype_text_pre,
   (build_year >= 1947) || (current_year >= 1947))
 {
-  0: vl19_cargo_subtype_text_b1947;
-     vl19_cargo_subtype_text_a1947;
+  0: vl19_b1947_cargo_subtype_text_pre;
+     vl19_a1947_cargo_subtype_text_pre;
 }    
 
-switch (FEAT_TRAINS, SELF, vl19_cargo_subtype_text,
-  build_year >= 1933)
-{
-  0: return string(STR_REFIT_PREPRODUCTION);
-     vl19_cargo_subtype_text1;
-}    
+livery_template_prealt(vl19, 1933)
 
 switch (FEAT_TRAINS, SELF, vl19_additional_text,
    current_year >= 1933)
@@ -117,22 +113,22 @@ switch (FEAT_TRAINS, SELF, vl19_additional_text,
 switch (FEAT_TRAINS, SELF, vl19_power,
   cargo_subtype)
 {
-  3..5: return get_power_in_cb(2661);
-        return get_power_in_cb(2447);
+  0xE0..0xE2: return get_power_in_cb(2661);
+              return get_power_in_cb(2447);
 }
 
 switch (FEAT_TRAINS, SELF, vl19_weight,
   cargo_subtype)
 {
-  3..5: return 120;
-        return 117;
+  0xE0..0xE2: return 120;
+              return 117;
 }
 
 switch (FEAT_TRAINS, SELF, vl19_tractive_effort_coefficient,
   cargo_subtype)
 {
-  3..5: return get_tec_int(392.0, 120);
-        return get_tec_int(335.0, 117);
+  0xE0..0xE2: return get_tec_int(392.0, 120);
+              return get_tec_int(335.0, 117);
 }
 
 general_running_cost(vl19_v1, 241)
@@ -141,12 +137,12 @@ general_running_cost(vl19_v2, 242)
 switch (FEAT_TRAINS, SELF, vl19_running_cost_factor,
   cargo_subtype)
 {
-  3..5: vl19_v2_running_cost_factor;
-        vl19_v1_running_cost_factor;
+  0xE0..0xE0: vl19_v2_running_cost_factor;
+              vl19_v1_running_cost_factor;
 }
 
 engine_electric1_2_effect(vl19, -2, 4)
-engine_speed(vl19, ((cargo_subtype >= 3) ? 90 : 85))
+engine_speed(vl19, ((cargo_subtype >= 0xE0) ? 90 : 85))
 engine_penalise_speed(vl19, 2)
 
 item (FEAT_TRAINS, vl19) {
@@ -181,7 +177,7 @@ item (FEAT_TRAINS, vl19) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: vl19_additional_text;
-    cargo_subtype_text: vl19_cargo_subtype_text;
+    cargo_subtype_text: vl19_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: vl19_speed;
     purchase_speed: vl19_purchase_speed;
