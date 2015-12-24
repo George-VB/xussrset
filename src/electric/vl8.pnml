@@ -1,11 +1,10 @@
- // vl8m
-// 177 (B1h) 178 (B2h) 179 (B3h) 
+ // vl8
+// 178 (B2h) 
 
 #define IMAGEFILE  "src/electric/vl8.png"
-purchase_sprites(n8_v1,   0, 0)
-purchase_sprites(n8_v2, 100, 0)
-purchase_sprites(n8_v3, 200, 0)
-purchase_sprites(vl8m,  300, 0)
+purchase_sprites(vl8_v1,   0, 0)
+purchase_sprites(vl8_v2, 100, 0)
+purchase_sprites(vl8_v3, 200, 0)
 
 electric2_1_sprites(8, n8_v1,   32,   40)
 electric2_1_sprites(8, n8_v2,   32,  241)
@@ -17,15 +16,13 @@ electric2_1_sprites(8, vl8m_v1, 32, 1246)
 electric2_1_sprites(8, vl8m_v2, 32, 1447)
 #undef IMAGEFILE
 
- // n8 + VL8
-
-switch (FEAT_TRAINS, SELF, n8_purchase_sprites,
+switch (FEAT_TRAINS, SELF, vl8_purchase_sprites,
   (current_year >= 1956) +
   (current_year >= 1957))
 {
-  0: n8_v1_purchase_sprites;
-  1: n8_v2_purchase_sprites;
-     n8_v3_purchase_sprites;
+  0: vl8_v1_purchase_sprites;
+  1: vl8_v2_purchase_sprites;
+     vl8_v3_purchase_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, n8_sprites_left,
@@ -55,108 +52,6 @@ switch (FEAT_TRAINS, SELF, n8_sprites_right,
   5: n8_v6_sprites_right;
      align_8_sprites; 
 }
-
-engine_direction_template(n8, ) 
-long_vehicle(n8)
-
-switch (FEAT_TRAINS, SELF, n8_cargo_subtype_text4,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_SOUTHERN_RAILWAY);
-  1: return string(STR_REFIT_TTD_53);
-     return CB_RESULT_NO_TEXT;
-}
-switch (FEAT_TRAINS, SELF, n8_cargo_subtype_text3,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_09);
-  1: return string(STR_REFIT_TTD_93);
-     return CB_RESULT_NO_TEXT;
-}
-switch (FEAT_TRAINS, SELF, n8_cargo_subtype_text2,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_96);
-  1: return string(STR_REFIT_TTD_63);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, n8_cargo_subtype_text,
-  (build_year >= 1956) +
-  (build_year >= 1957))
-{
-  0: n8_cargo_subtype_text2;
-  1: n8_cargo_subtype_text3;
-  2: n8_cargo_subtype_text4;
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, n8_cost_factor,
-  (build_year >= 1957))
-{
-  0: return 28;
-     return 29;
-}
-
-engine_electric2_1_effect(n8, -1, 1)
-engine_direction_template(n8, _create_effect) 
-engine_RC_change_build_after(n8, 215, 
-                                 227, 1957)
-engine_speed_change_build_after_and_year(n8, 90, 
-                                             100, 1957, 
-                                             80, 1962)
-engine_penalise_speed(n8, 2)
-
-item (FEAT_TRAINS, n8, 177) {
-  property {
-    name: string(STR_NAME_N8);
-    climates_available: NO_CLIMATE;
-    introduction_date: date(get_loc_year(1953), 1, 1);
-    vehicle_life: 20;
-    model_life: get_model_life(1953,1962);
-    retire_early: get_retire_early(1953,1962);
-    reliability_decay: 10;
-    cargo_allow_refit: [MAIL];
-    default_cargo_type: MAIL;
-    cost_factor: 28;
-    sprite_id: SPRITE_ID_NEW_TRAIN; 
-    misc_flags: bitmask(TRAIN_FLAG_TILT); 
-    track_type: get_dc_track_type();
-    ai_special_flag: AI_FLAG_PASSENGER;
-    power: 2485 hpM;
-    running_cost_base: RUNNING_COST_ELECTRIC;
-    cargo_capacity: 1;
-    weight: (180/2) ton;
-    engine_class: ENGINE_CLASS_ELECTRIC;
-    tractive_effort_coefficient: get_tec(297.6, 180/2);
-    length: 7;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-  }
-  graphics {
-    default: n8_sprites;
-    purchase: n8_purchase_sprites;
-    cost_factor: n8_cost_factor;
-    can_attach_wagon: any_can_attach_wagon;
-    start_stop: any_start_stop;
-    articulated_part: articulated_part_dummy1;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_2), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1953, 1962), 
-                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
-    cargo_subtype_text: n8_cargo_subtype_text;
-    cargo_capacity: return 0;
-    speed: n8_speed;
-    purchase_speed: n8_purchase_speed;
-    bitmask_vehicle_info: n8_bitmask_vehicle_info;
-    create_effect: n8_create_effect_sprites_start;
-    running_cost_factor: n8_running_cost_factor;
-  }
-}
-
-long_name_template(n8, STR_LONGNAME_N8)
-models_default_cargo_template(n8)
-// vl8
 
 switch (FEAT_TRAINS, SELF, vl8_sprites_l1,
   cargo_subtype)
@@ -261,35 +156,6 @@ switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, vl8_cost_factor,
-  (build_year >= 1963))
-{
-  0: n8_cost_factor;
-     return 26;
-}
-
-engine_speed_change_build_after_and_year(vl8, 90, 
-                                              100, 1957, 
-                                              80, 1962)
-engine_penalise_speed(vl8, 2)
-engine_speed_with_reduce(vl8m, 95, 90, 15)
-engine_penalise_speed(vl8m, 2)
-
-switch (FEAT_TRAINS, SELF, vl8_speed_sp,
-  cargo_subtype)
-{  
-  3..4: vl8m_speed;
-        vl8_speed;
-}
-
-general_running_cost(vl8_v1, 203)
-
-switch (FEAT_TRAINS, SELF, vl8_running_cost_factor, build_year >= 1963)
-{
-  0: n8_running_cost_factor;
-     vl8_v1_running_cost_factor;
-}
-
 switch (FEAT_TRAINS, SELF, vl8_additional_text,
   current_year >= 1976)
 {
@@ -304,6 +170,24 @@ switch (FEAT_TRAINS, SELF, vl8_additional_text,
                    string(STR_PURCHASE_HINT_FROMTO, 1953, 1967), 
                    string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK), string(STR_PURCHASE_HINT_FACTORY_TBILISI)),
                    string(STR_PURCHASE_HINT_UPGRADE));
+}
+
+engine_RC_change_build_after2(vl8, 215,
+                                  227, 1957, 
+                                  203, 1963)
+engine_cost_change_build_after2(vl8, 28, 
+                                    29, 1957,      
+                                    26, 1963)       
+engine_penalise_speed(vl8, 2)
+engine_speed_change_build_after_and_year(vl8, 90, 
+                                              100, 1957, 
+                                              80, 1962)
+engine_speed_with_reduce(vl8m, 95, 90, 15)
+switch (FEAT_TRAINS, SELF, vl8_speed_sp,
+  cargo_subtype)
+{  
+  3..4: vl8m_speed;
+        vl8_speed;
 }
 
 item (FEAT_TRAINS, vl8, 178) {
@@ -333,7 +217,7 @@ item (FEAT_TRAINS, vl8, 178) {
   }
   graphics {
     default: vl8_sprites;
-    purchase: n8_purchase_sprites;
+    purchase: vl8_purchase_sprites;
     cost_factor: vl8_cost_factor;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
@@ -352,85 +236,3 @@ item (FEAT_TRAINS, vl8, 178) {
 
 long_name_template(vl8, STR_LONGNAME_VL8)
 models_default_cargo_template(vl8)
-// vl8m
-
-switch (FEAT_TRAINS, SELF, vl8m_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_SOUTHERN_RAILWAY);
-  1: return string(STR_REFIT_TTD_53);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl8m_sprites_left,
-  cargo_subtype)
-{
-  0: vl8m_v1_sprites_left;
-  1: vl8m_v2_sprites_left;
-     align_8_sprites; 
-}
-
-switch (FEAT_TRAINS, SELF, vl8m_sprites_right,
-  cargo_subtype)
-{
-  0: vl8m_v1_sprites_right;
-  2: vl8m_v2_sprites_right;
-     align_8_sprites; 
-}
-
-engine_direction_template(vl8m, ) 
-long_vehicle(vl8m)
-
-engine_electric2_1_effect(vl8m, -1, 1)
-engine_direction_template(vl8m, _create_effect) 
-general_running_cost(vl8m, 221)
-
-item (FEAT_TRAINS, vl8m, 179) {
-  property {
-    name: string(STR_NAME_VL8M);
-    climates_available: NO_CLIMATE;
-    introduction_date: date(get_loc_year(1976), 1, 1);
-    vehicle_life: 15;
-    model_life: get_model_life(1976,1985);
-    retire_early: get_retire_early(1976,1985);
-    reliability_decay: 10;
-    cargo_allow_refit: [MAIL];
-    default_cargo_type: MAIL;
-    cost_factor: 28;
-    sprite_id: SPRITE_ID_NEW_TRAIN; 
-    speed: 95 km/h;
-    misc_flags: bitmask(TRAIN_FLAG_TILT); 
-    track_type: get_dc_track_type();
-    ai_special_flag: AI_FLAG_PASSENGER;
-    power: 2485 hpM;
-    running_cost_base: RUNNING_COST_ELECTRIC;
-    cargo_capacity: 1;
-    weight: (180/2) ton;
-    engine_class: ENGINE_CLASS_ELECTRIC;
-    tractive_effort_coefficient: get_tec(297.6, 180/2);
-    length: 7;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-  }
-  graphics {
-    default: vl8m_sprites;
-    purchase: vl8m_purchase_sprites;
-    can_attach_wagon: any_can_attach_wagon;
-    start_stop: any_start_stop;
-    articulated_part: articulated_part_dummy1;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_2), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1976, 1985), 
-                                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK), string(STR_PURCHASE_HINT_FACTORY_TBILISI)));
-    cargo_subtype_text: vl8m_cargo_subtype_text;
-    cargo_capacity: return 0;
-    speed: vl8m_speed;
-    purchase_speed: vl8m_purchase_speed;
-    bitmask_vehicle_info: vl8m_bitmask_vehicle_info;
-    create_effect: vl8m_create_effect_sprites_start;
-    running_cost_factor: vl8m_running_cost_factor;
-  }
-}
-
-long_name_template(vl8m, STR_LONGNAME_VL8M)
-models_default_cargo_template(vl8m)
