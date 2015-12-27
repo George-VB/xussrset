@@ -1,0 +1,177 @@
+﻿ // sd
+// 443
+
+#define IMAGEFILE  "src/emu/sd.png"
+purchase_sprites(sd, 0, 0)
+
+MU_4r_0_0_sprites(12, sd_v1, 32, 40)
+MU_0_3r_0_sprites(12, sd_v1, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, sd_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  0: sd_v1_h_notpowered_normal_sprites_left;
+  1: sd_v1_h_sprites_left;
+     align_12_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, sd_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: sd_h_sprites_left_check;
+  1: sd_h_sprites_left_check;
+}
+
+long_vehicle_RND(sd, sd_sprites_start)
+
+switch (FEAT_TRAINS, SELF, sd_b_sprites_start,
+[  set_offset_to(-2),
+   ((LOAD_TEMP(4) != sd) * 100) +
+   (prev_vehicle_randombits() % 2) ])
+{
+    0: sd_v1_m_sprites_left;
+    1: sd_v1_m_sprites_right;
+  100: sd_v1_m_notpowered_sprites_left;
+  101: sd_v1_m_notpowered_sprites_right;
+       align_12_sprites;
+}
+
+long_vehicle_nocount(sd_b)
+
+switch (FEAT_TRAINS, SELF, sd_c_sprites_start,
+[ set_offset_to(-4),
+  (position_in_consist_from_end == 1) ])
+{
+  0: sd_v1_h_notpowered_normal_sprites_right;
+  1: sd_v1_h_sprites_right;
+     align_12_sprites;
+}
+
+long_vehicle_nocount(sd_c)
+
+// считаем уже имеющиеся вагоны
+
+switch (FEAT_TRAINS, PARENT, sd_can_attach_wagon1,
+  count_veh_id(sd) < (2 + (current_year >= 1939)) )
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, sd_can_attach_wagon,
+  vehicle_type_id == sd)
+{
+  1: sd_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, sd_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return unitb;
+  3: return dummy4;
+  4: return unitc;
+  5: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, sd_create_effect1, 
+  electric_create_effect(4)) 
+{ 
+  return 1; 
+}    
+
+// Визуализируем эффекты тяги у sd, только если локомотив - sd
+switch (FEAT_TRAINS, PARENT, sd_create_effect,
+  vehicle_type_id == sd)
+{
+  1: sd_create_effect1;
+     return disable_create_effect();
+}
+
+// Даём тягу, только если локомотив - sd
+switch (FEAT_TRAINS, PARENT, sd_power,
+  vehicle_type_id == sd)
+{
+  1: return get_power_in_cb(680);
+     return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - sd
+switch (FEAT_TRAINS, PARENT, sd_cargo_capacity,
+  vehicle_type_id == sd)
+{
+  1: return 321;
+     return 0;
+}
+
+emu_running_cost(sd_v1, 59, 50 + 50)
+
+switch (FEAT_TRAINS, PARENT, sd_running_cost_factor,
+  vehicle_type_id == sd)
+{
+  1: sd_v1_running_cost_factor;
+     return RC_MU_AS_CAR * 3;
+}
+
+item (FEAT_TRAINS, sd, 443) {
+  property {
+    name: string(STR_NAME_SD);
+    climates_available: get_climates_available();
+    introduction_date: date(get_loc_year(1932), 1, 1);
+    vehicle_life: 20;
+    model_life: get_model_life(1932,1941);
+    retire_early: get_retire_early(1932,1941);
+    reliability_decay: 10;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cost_factor: 8 + 6 + 6;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    speed: 85 km/h;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
+    track_type: get_dc_track_type_emu();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 680 hpM;
+    running_cost_base: RUNNING_COST_ELECTRIC;
+    loading_speed: 24*2*3;
+    cargo_capacity: 255;
+    weight: 59 + 38 + 38 ton;
+    engine_class: ENGINE_CLASS_ELECTRIC;
+    tractive_effort_coefficient: get_tec(95.0, 59 + 38 + 38);
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+  }
+  graphics {
+    default: sd_sprites;
+    purchase: sd_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: sd_running_cost_factor;
+    articulated_part: sd_articulated_part;
+    can_attach_wagon: sd_can_attach_wagon;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_05)),
+                                   string(STR_SECTIONS_MU_S1_3of3),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1952, 1955),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+    cargo_capacity: sd_cargo_capacity;
+    power: sd_power;
+  }
+  livery_override(unitb) {
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+    length: return 8;
+    create_effect: sd_create_effect;
+    sd_b_sprites;
+
+  }
+  livery_override(unitc) {
+    length: return 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    sd_c_sprites;
+  }
+}
+
+long_name_template(sd, STR_LONGNAME_SD)
