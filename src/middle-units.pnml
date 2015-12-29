@@ -1,5 +1,17 @@
  // Специальная проверка для локомтивов, требующих 2+ головы (ВЛ80С, 2ЕС5К, 3ЕС5К, ВЛ11, 2ЭС4К, 2ЭС6, ВЛ82)
 
+switch (FEAT_TRAINS, PARENT, q_2ev120_can_attach_wagon,
+[  set_offset_to(num_vehs_in_consist-2),
+   STORE_TEMP (prev_vehicle_type_id(), 3),
+   set_offset_to(num_vehs_in_consist-4),
+   (LOAD_TEMP(3) == _2ev120) &&
+   (!(prev_vehicle_type_id() == _2ev120)) &&
+   (!(LOAD_TEMP(5) == _2ev120)) ])
+{                        
+  1: return string(STR_CAN_ATTACH_DUAL);
+     loco_limit_can_attach_wagon;
+}
+
 switch (FEAT_TRAINS, PARENT, q_2es6_can_attach_wagon,
 [  set_offset_to(num_vehs_in_consist-2),
    STORE_TEMP (prev_vehicle_type_id(), 3),
@@ -9,7 +21,7 @@ switch (FEAT_TRAINS, PARENT, q_2es6_can_attach_wagon,
    (!(LOAD_TEMP(5) == _2es6)) ])
 {                        
   1: return string(STR_CAN_ATTACH_DUAL);
-     loco_limit_can_attach_wagon;
+     q_2ev120_can_attach_wagon;
 }
 
 switch (FEAT_TRAINS, PARENT, q_2es4k_can_attach_wagon,
@@ -374,6 +386,17 @@ switch (FEAT_TRAINS, SELF, any_can_attach_wagon,
 // для локомотивов, требующих 2+ часть, необходимо проверить, что в конце он не одинок 
 // (ВЛ80С, 2ЕС5К, 3ЕС5К, ВЛ11, 2ЭС4К, 2ЭС6, ВЛ82)
 
+switch (FEAT_TRAINS, PARENT, q_2ev120_start_stop,
+[  set_offset_to(num_vehs_in_consist-2),
+   STORE_TEMP (prev_vehicle_type_id(), 3),
+   set_offset_to(num_vehs_in_consist-4),
+   (LOAD_TEMP(3) == _2ev120) &&
+   (!(prev_vehicle_type_id() == _2ev120)) ])
+{                        
+  1: return string(STR_START_STOP_DUAL_END_REQUIRED);
+     return CB_RESULT_NO_TEXT;
+}
+
 switch (FEAT_TRAINS, PARENT, q_2es6_start_stop,
 [  set_offset_to(num_vehs_in_consist-2),
    STORE_TEMP (prev_vehicle_type_id(), 3),
@@ -382,7 +405,7 @@ switch (FEAT_TRAINS, PARENT, q_2es6_start_stop,
    (!(prev_vehicle_type_id() == _2es6)) ])
 {                        
   1: return string(STR_START_STOP_DUAL_END_REQUIRED);
-     return CB_RESULT_NO_TEXT;
+     q_2ev120_start_stop;
 }
 
 switch (FEAT_TRAINS, PARENT, q_2es4k_start_stop,
