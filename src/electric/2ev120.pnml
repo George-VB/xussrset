@@ -4,16 +4,16 @@
 #define IMAGEFILE  "src/electric/2ev120.png"
 purchase_sprites(_2ev120, 0, 0)
 
-electric2_3d_sprites(13, _2ev120,  32,   40)
+electric2_3d_sprites(11, _2ev120,  32,   40)
 #undef IMAGEFILE
 
 engine_direction_template(_2ev120, ) 
 
 long_vehicle(_2ev120)
                            
-engine_electric2_2_effect(_2ev120_DC, 6, -1, 6)
-engine_electric1r_1_effect(_2ev120_AC, 4, 1)
-engine_diesel_1r_effect(_2ev120_None, 4, 1, 13)
+engine_electric2_2_effect(_2ev120_DC, 5, -2, 4)
+engine_electric1_1_effect(_2ev120_AC, 4)
+engine_diesel_1r_effect(_2ev120_None, 2, 1, 13)
 
 switch (FEAT_TRAINS, SELF, _2ev120_create_effect_sprites_left, 
   current_railtype)
@@ -31,64 +31,97 @@ switch (FEAT_TRAINS, SELF, _2ev120_create_effect_sprites_left,
 switch (FEAT_TRAINS, SELF, _2ev120_create_effect_sprites_right, 
   current_railtype)
 { 
-  ERA1: _2ev120_AC_create_effect_sprites_right;
-  ERA2: _2ev120_AC_create_effect_sprites_right;
-  ERA3: _2ev120_AC_create_effect_sprites_right;
-  ERA4: _2ev120_AC_create_effect_sprites_right;
-  ER2S: _2ev120_AC_create_effect_sprites_right;
+  ERA1: _2ev120_AC_create_effect_sprites_left;
+  ERA2: _2ev120_AC_create_effect_sprites_left;
+  ERA3: _2ev120_AC_create_effect_sprites_left;
+  ERA4: _2ev120_AC_create_effect_sprites_left;
+  ER2S: _2ev120_AC_create_effect_sprites_left;
   ERD1: _2ev120_DC_create_effect_sprites_right;
   ERD2: _2ev120_DC_create_effect_sprites_right;
   ERD3: _2ev120_DC_create_effect_sprites_right;
         _2ev120_None_create_effect_sprites_right; 
 }
 
+switch (FEAT_TRAINS, SELF, _2ev120_power, 
+  current_railtype)
+{
+  ERA1: return get_power_in_cb(5900);
+  ERA2: return get_power_in_cb(5900);
+  ERA3: return get_power_in_cb(5900);
+  ERA4: return get_power_in_cb(5900);
+  ER2S: return get_power_in_cb(5900);
+  ERD1: return get_power_in_cb(5900);
+  ERD2: return get_power_in_cb(5900);
+  ERD3: return get_power_in_cb(5900);
+        return get_power_in_cb(670);
+}
+
+general_running_cost(_2ev120_DC, 600)
+general_running_cost(_2ev120_AC, 800)
+general_running_cost(_2ev120_Diesel, 1200)
+
+switch (FEAT_TRAINS, SELF, _2ev120_running_cost_factor, 
+  current_railtype)
+{
+  ERA1: _2ev120_AC_running_cost_factor;
+  ERA2: _2ev120_AC_running_cost_factor;
+  ERA3: _2ev120_AC_running_cost_factor;
+  ERA4: _2ev120_AC_running_cost_factor;
+  ER2S: _2ev120_AC_running_cost_factor;
+  ERD1: _2ev120_DC_running_cost_factor;
+  ERD2: _2ev120_DC_running_cost_factor;
+  ERD3: _2ev120_DC_running_cost_factor;
+        _2ev120_Diesel_running_cost_factor;
+}
+
 engine_direction_template(_2ev120, _create_effect) 
 engine_speed(_2ev120, 100)
 engine_penalise_speed(_2ev120, 2)
-general_running_cost(_2ev120, 580)
 
 item (FEAT_TRAINS, _2ev120, 444) {
   property {
     name: string(STR_NAME_2EV120);
     climates_available: get_climates_available();
-    introduction_date: date(get_loc_year(1984), 1, 1);
+    introduction_date: date(get_loc_year(2016), 1, 1);
     vehicle_life: 40;
-    model_life: get_model_life(1984,1991);
-    retire_early: get_retire_early(1984,1991);
+    model_life: get_model_life(2016,2050);
+    retire_early: get_retire_early(2016,2050);
     reliability_decay: 10;
     cargo_allow_refit: [GOOD];
     default_cargo_type: GOOD;
-    cost_factor: 74;
+    cost_factor: 110;
     sprite_id: SPRITE_ID_NEW_TRAIN; 
     misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
     track_type: get_normal_track_type_diesel();
     ai_special_flag: AI_FLAG_PASSENGER;
-    power: 5510 hpM;
+    power: 5900 hpM;
     running_cost_base: RUNNING_COST_ELECTRIC;
     cargo_capacity: 1;
-    weight: 150 ton;
+    weight: 100 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
-    tractive_effort_coefficient: get_tec(450.0, 150);
+    tractive_effort_coefficient: get_tec(350.0, 100);
     length: 8;
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: _2ev120_sprites;
     purchase: _2ev120_purchase_sprites;
-    articulated_part: articulated_part_dummy5;
+    articulated_part: articulated_part_dummy3;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_2), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1984, 1991), 
-                                   string(STR_PURCHASE_HINT_FACTORY_TBILISI));    
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_ACDC), 
+                                   string(STR_PURCHASE_HINT_SECTIONS_2_4), 
+                                   string(STR_PURCHASE_HINT_FROM, 2016), 
+                                   string(STR_PURCHASE_HINT_FACTORY_ENGELS_A2012));    
     cargo_capacity: return 0;
     speed: _2ev120_speed;
+    power: _2ev120_power;
     purchase_speed: _2ev120_purchase_speed;
     bitmask_vehicle_info: _2ev120_bitmask_vehicle_info;
     create_effect: _2ev120_create_effect_sprites_start;
     running_cost_factor: _2ev120_running_cost_factor;
+
   }
 }
 

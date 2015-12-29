@@ -20,32 +20,45 @@ switch (FEAT_TRAINS, SELF, ss_purchase_sprites,
      ss_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, ss_sprites_left,
+switch (FEAT_TRAINS, SELF, ss_sprites_left_a1933,
   (build_year >= 1933) +
   cargo_subtype)
 {
-  0: ss_v1_sprites_left;
-  1: ss_v2_sprites_left;
-  2: ss_v3_sprites_left;
-  3: ss_v4_sprites_left;
+  0: ss_v2_sprites_left;
+  1: ss_v4_sprites_left;
+  LV_RAL6002: ss_v2_sprites_left;
+  LV_RAL6020: ss_v3_sprites_left;
 
-  4: ssm_v1_sprites_left;
-  5: ssm_v2_sprites_left;
-     align_10_sprites; 
+  0xE0: ssm_v1_sprites_left;
+  0xE1: ssm_v2_sprites_left;
+        align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, ss_sprites_left,
+  build_year >= 1933)
+{
+  0: ss_v1_sprites_left;
+     ss_sprites_left_a1933;
+}
+
+switch (FEAT_TRAINS, SELF, ss_sprites_right_a1933,
+  cargo_subtype)
+{
+  0: ss_v2_sprites_right;
+  1: ss_v4_sprites_right;
+  LV_RAL6002: ss_v2_sprites_right;
+  LV_RAL6020: ss_v3_sprites_right;
+
+  0xE0: ssm_v1_sprites_right;
+  0xE1: ssm_v2_sprites_right;
+        align_10_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, ss_sprites_right,
-  (build_year >= 1933) +
-  cargo_subtype)
+  build_year >= 1933)
 {
   0: ss_v1_sprites_right;
-  1: ss_v2_sprites_right;
-  2: ss_v3_sprites_right;
-  3: ss_v4_sprites_right;
-
-  4: ssm_v1_sprites_right;
-  5: ssm_v2_sprites_right;
-     align_10_sprites; 
+     ss_sprites_right_a1933;
 }
 
 engine_RNDany_direction_template(ss, 5, 3) 
@@ -53,8 +66,8 @@ engine_RNDany_direction_template(ss, 5, 3)
 long_vehicle_sp(ss)
 
 switch (FEAT_TRAINS, SELF, ss_refit_cost,
-  (((extra_callback_info1 & 0xFF00) == 0x300) || ((extra_callback_info1 & 0xFF00) == 0x400))+
-  (((cargo_subtype == 3) || (cargo_subtype == 4)) * 2))
+  (((extra_callback_info1 & 0xFF00) == 0xE000) || ((extra_callback_info1 & 0xFF00) == 0xE100))+
+  (((cargo_subtype == 0xE0) || (cargo_subtype == 0xE1)) * 2))
 {
   1: return 2;
      return 0; 
@@ -63,39 +76,29 @@ switch (FEAT_TRAINS, SELF, ss_refit_cost,
 switch (FEAT_TRAINS, SELF, ss_power,
   cargo_subtype)
 {
-  3..4: return get_power_in_cb(2450);
-        return get_power_in_cb(2430);
+  0xE0..0xE1: return get_power_in_cb(2450);
+              return get_power_in_cb(2430);
 }
 
-switch (FEAT_TRAINS, SELF, ss_cargo_subtype_text_a1933,
+livery_template(ss_b1952, TTD_53, LV_RAL6002, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(ss_b1952, TTD_96)
+
+switch (FEAT_TRAINS, SELF, ss_a1952_cargo_subtype_text_pre,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_TTD_96);
-     return CB_RESULT_NO_TEXT;
+  0xE0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_SSM), string(STR_REFIT_TTD_53));
+  0xE1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_SSM), string(STR_REFIT_TTD_96));
+        ss_b1952_cargo_subtype_text_pre;
 }
 
-switch (FEAT_TRAINS, SELF, ss_cargo_subtype_text_a1952,
-  cargo_subtype)
+switch (FEAT_TRAINS, SELF, ss_a1933_cargo_subtype_text_pre,
+  (build_year >= 1952) || (current_year >= 1952))
 {
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_59);
-  2: return string(STR_REFIT_TTD_96);
-  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_SSM), string(STR_REFIT_TTD_53));
-  4: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_SSM), string(STR_REFIT_TTD_96));
-     return CB_RESULT_NO_TEXT;
-}
+  0: ss_b1952_cargo_subtype_text_pre;
+     ss_a1952_cargo_subtype_text_pre;
+}    
 
-switch (FEAT_TRAINS, SELF, ss_cargo_subtype_text,
-  (build_year >= 1933) +
-  ((current_year >= 1952) || (build_year >= 1952)))
-{
-  0: return string(STR_REFIT_PREPRODUCTION);
-  1: ss_cargo_subtype_text_a1933;
-  2: ss_cargo_subtype_text_a1952;
-     return CB_RESULT_NO_TEXT;
-}  
+livery_template_prealt(ss, 1933)
 
 switch (FEAT_TRAINS, SELF, ss_additional_text,
   (current_year >= 1933)+
@@ -158,7 +161,7 @@ item (FEAT_TRAINS, ss, 310) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: ss_additional_text;
-    cargo_subtype_text: ss_cargo_subtype_text;
+    cargo_subtype_text: ss_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: ss_speed;
     power: ss_power; 
