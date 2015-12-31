@@ -2,38 +2,46 @@
 // 434 (1B2h)
 
 #define IMAGEFILE  "src/steam/u.png"
-purchase_sprites(u_u_v1, 0, 0)
-purchase_sprites(u_u_v2, 102, 0)
-purchase_sprites(u_u_v3, 204, 0)
+purchase_sprites(u_v1, 0, 0)
+purchase_sprites(u_v2, 102, 0)
+purchase_sprites(u_v3, 204, 0)
 
-steam_sprites(6, u_u, 32,  40)
+steam_sprites(6, u_engine, 32,  40)
 
-tender_sprites(5, u_u_tender_v1, 447,  40)
-tender_sprites(4, u_u_tender_v2, 447,  107)
-tender_sprites(5, u_u_tender_v3, 447,  174)
+tender_sprites(5, u_tender_v1, 447,  40)
+tender_sprites(4, u_tender_v2, 447,  107)
+tender_sprites(5, u_tender_v3, 447,  174)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, u_u_purchase_sprites,
   (current_year >= 1908) +
   (current_year >= 1910))
 {
-  0: u_u_v1_purchase_sprites;
-  1: u_u_v2_purchase_sprites;
-     u_u_v3_purchase_sprites;
+  0: u_v1_purchase_sprites;
+  1: u_v2_purchase_sprites;
+     u_v3_purchase_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, u_tender_sprites_start,
+  (build_year >= 1908) +
+  (build_year >= 1910))
+{
+  0: u_tender_v1_sprites_start;
+  1: u_tender_v2_sprites_start;
+     u_tender_v3_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, u_u_sprites_start,
+  position_in_articulated_veh)
+{
+  0: u_engine_sprites_start;
+  2: u_tender_sprites_start;
+     dummy_sprites;
 }
 
 short_vehicle(u_u)
 
-switch (FEAT_TRAINS, SELF, u_u_tender_sprites_start,
-  (build_year >= 1908) +
-  (build_year >= 1910))
-{
-  0: u_u_tender_v1_sprites_start;
-  1: u_u_tender_v2_sprites_start;
-     u_u_tender_v3_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, u_u_colour_mapping,
+switch (FEAT_TRAINS, SELF, u_engine_colour_mapping,
   cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
   0: return ttdall_cc + 0x53; 
@@ -43,7 +51,7 @@ switch (FEAT_TRAINS, SELF, u_u_colour_mapping,
      return CB_FAILED;
 }
 
-switch (FEAT_TRAINS, SELF, u_u_tender_colour_mapping,
+switch (FEAT_TRAINS, SELF, u_tender_colour_mapping,
 [ set_offset_to(-2),
   prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
 {
@@ -51,6 +59,14 @@ switch (FEAT_TRAINS, SELF, u_u_tender_colour_mapping,
   1: return ttdall_cc + 0x63;
   2: return ttdall_cc + 0xB3;
   LV_RAL6002: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, u_u_colour_mapping,
+  position_in_articulated_veh)
+{
+  0: u_engine_colour_mapping;
+  2: u_tender_colour_mapping;
      return CB_FAILED;
 }
 
@@ -64,6 +80,10 @@ switch (FEAT_TRAINS, SELF, u_u_cargo_subtype_text_pre,
      u_u_cargo_subtype_text;
 }
 
+engine_tender(u_u)
+engine_tender_length_change_build_after2(u_u, 5, 1, 4, 1,
+                                              5, 1, 3, 1, 1908,
+                                              5, 1, 4, 1, 1910)
 engine_steam_1_effect(u_u, -3, 12)
 engine_speed(u_u, 105)
 engine_penalise_speed0(u_u)
@@ -74,9 +94,6 @@ engine_weight_change_build_after2(u_u, 76+53,
 engine_TE_change_build_after2(u_u, get_tec_int(93.0, 76+53), 
                                    get_tec_int(93.0, 76+47), 1908, 
                                    get_tec_int(93.0, 76+64), 1910)       
-engine_length_change_build_after2(u_u_tender, 4,
-                                              3, 1908,
-                                              4, 1910)
 
 item (FEAT_TRAINS, u_u, 434) {
   property {
@@ -106,7 +123,8 @@ item (FEAT_TRAINS, u_u, 434) {
   graphics {
     default: u_u_sprites;
     purchase: u_u_purchase_sprites;
-    articulated_part: articulated_part_tender1;
+    articulated_part: u_u_articulated_part;
+    length: u_u_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
@@ -124,11 +142,6 @@ item (FEAT_TRAINS, u_u, 434) {
     colour_mapping: u_u_colour_mapping;
     cargo_subtype_text: u_u_cargo_subtype_text_pre;
     tractive_effort_coefficient: u_u_tractive_effort_coefficient;
-  }
-  livery_override(unitb) {
-    length: u_u_tender_length;
-    colour_mapping: u_u_tender_colour_mapping;
-    u_u_tender_sprites_start;
   }
 }
 

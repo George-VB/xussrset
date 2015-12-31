@@ -28,7 +28,7 @@ switch (FEAT_TRAINS, SELF, su_purchase_sprites,
      su_v4_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, su_sprites_start,
+switch (FEAT_TRAINS, SELF, su_engine_sprites_start,
   (build_year >= 1932) +
   (build_year >= 1935) +
   (build_year >= 1947))
@@ -50,9 +50,17 @@ switch (FEAT_TRAINS, SELF, su_tender_sprites_start,
      su_tender_v3_sprites_start;
 }
 
+switch (FEAT_TRAINS, SELF, su_sprites_start,
+  position_in_articulated_veh)
+{
+  0: su_engine_sprites_start;
+  2: su_tender_sprites_start;
+     dummy_sprites;
+}     
+
 short_vehicle(su)
 
-switch (FEAT_TRAINS, SELF, su_colour_mapping,
+switch (FEAT_TRAINS, SELF, su_engine_colour_mapping,
   cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
   0: return ttdall_cc + 0x53; 
@@ -71,6 +79,14 @@ switch (FEAT_TRAINS, SELF, su_tender_colour_mapping,
      return CB_FAILED;
 }
 
+switch (FEAT_TRAINS, SELF, su_colour_mapping,
+  position_in_articulated_veh)
+{
+  0: su_engine_colour_mapping;
+  2: su_tender_colour_mapping;
+     return CB_FAILED;
+}
+
 livery_template(su, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 switch (FEAT_TRAINS, SELF, su_cargo_subtype_text_pre,
@@ -80,6 +96,9 @@ switch (FEAT_TRAINS, SELF, su_cargo_subtype_text_pre,
      su_cargo_subtype_text;
 }
 
+engine_tender(su)
+engine_tender_length_change_build_after(su, 7, 1, 4, 1,
+                                            7, 1, 5, 1, 1947)
 engine_steam_1_effect(su, -3, 11)
 engine_speed_change_after2(su, 110, 
                                115, 1926, 
@@ -102,8 +121,6 @@ engine_TE_change_build_after3(su, get_tec_int(129.0, 84+64),
                                   get_tec_int(130.0, 87+82), 1947)
 engine_cost_change_build_after(su, 14, 
                                    15, 1947)
-engine_length_change_build_after(su_tender, 4,
-                                            5, 1947)
 
 item (FEAT_TRAINS, su, 437) {
   property {
@@ -133,7 +150,8 @@ item (FEAT_TRAINS, su, 437) {
   graphics {
     default: su_sprites;
     purchase: su_purchase_sprites;
-    articulated_part: articulated_part_tender1;
+    articulated_part: su_articulated_part;
+    length: su_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
@@ -157,11 +175,6 @@ item (FEAT_TRAINS, su, 437) {
     running_cost_factor: su_running_cost_factor;
     colour_mapping: su_colour_mapping;
     cargo_subtype_text: su_cargo_subtype_text_pre;
-  }
-  livery_override(unitb) {
-    length: su_tender_length;
-    colour_mapping: su_tender_colour_mapping;
-    su_tender_sprites_start;
   }
 }
 

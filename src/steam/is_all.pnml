@@ -1,28 +1,15 @@
 ﻿ // is_all
 // 292 (124h) 293 (125h)
 
-// Пассажирские паровозы семейства ИС (Иосиф Сталин)
-
 #define IMAGEFILE  "src/steam/is.png"
 purchase_sprites(is_all_v1, 0, 0)
 purchase_sprites(is_all_v2, 110, 0)
 
-steam_sprites(10, is_is20, 32, 40)
+steam_sprites(10, is_all_engine, 32, 40)
 
 tender_sprites(6, is_all_t4o, 447, 40)
-
-tender_sprites(7, is_all_t6p, 447, 107)      // 53 61 9A
+tender_sprites(7, is_all_t6p, 447, 107)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, is_all_tender_sprites,
-  build_year >= 1936 )
-{
-  0: is_all_t4o_sprites_start;
-     is_all_t6p_sprites_start;
-}
-
-engine_length_change_build_after(is_all_tender, 5, 
-                                                6, 1936)       
 
 switch (FEAT_TRAINS, SELF, is_all_purchase_sprites,
   current_year >= 1936)
@@ -31,7 +18,24 @@ switch (FEAT_TRAINS, SELF, is_all_purchase_sprites,
      is_all_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, is_all_colour_mapping,
+switch (FEAT_TRAINS, SELF, is_all_tender_sprites_start,
+  build_year >= 1936 )
+{
+  0: is_all_t4o_sprites_start;
+     is_all_t6p_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, is_is20_sprites_start,
+  position_in_articulated_veh)
+{
+  0: is_all_engine_sprites_start;
+  2: is_all_tender_sprites_start;
+     dummy_sprites;
+}     
+
+long_vehicle(is_is20)
+
+switch (FEAT_TRAINS, SELF, is_all_engine_colour_mapping,
   cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
   0: return ttdall_cc + 0x53; 
@@ -52,7 +56,13 @@ switch (FEAT_TRAINS, SELF, is_all_tender_colour_mapping,
      return CB_FAILED;
 }
 
-long_vehicle(is_is20)
+switch (FEAT_TRAINS, SELF, is_all_colour_mapping,
+  position_in_articulated_veh)
+{
+  0: is_all_engine_colour_mapping;
+  2: is_all_tender_colour_mapping;
+     return CB_FAILED;
+}
 
  // is_is20
 
@@ -73,6 +83,9 @@ switch (FEAT_TRAINS, SELF, is_is20_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
 }
 
+engine_tender(is_is20)
+engine_tender_length_change_build_after(is_all, 8, 2, 5, 1,
+                                                8, 2, 6, 1, 1936)
 engine_steam_1_effect(is_all, -2, 14)
 engine_weight_change_build_after(is_is20, 133+85, 
                                           133+127, 1936)       
@@ -112,7 +125,8 @@ item (FEAT_TRAINS, is_is20, 292) {
   graphics {
     default: is_is20_sprites;
     purchase: is_all_purchase_sprites;
-    articulated_part: articulated_part_tender2;
+    articulated_part: is_is20_articulated_part;
+    length: is_all_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: is_is20_additional_text;
@@ -128,11 +142,6 @@ item (FEAT_TRAINS, is_is20, 292) {
     running_cost_factor: is_is20_running_cost_factor;
     colour_mapping: is_all_colour_mapping;
   }
-  livery_override(unitb) {
-    length: is_all_tender_length;
-    colour_mapping: is_all_tender_colour_mapping;
-            is_all_tender_sprites;
-  }
 }
 
 long_name_template(is_is20, STR_LONGNAME_IS20)
@@ -141,6 +150,7 @@ models_default_cargo_template(is_is20)
 engine_speed(is_is21, 115)
 engine_penalise_speed0(is_is21)
 general_running_cost(is_is21, 739)
+engine_tender(is_is21)
 
 item (FEAT_TRAINS, is_is21, 293) {
   property {
@@ -170,7 +180,8 @@ item (FEAT_TRAINS, is_is21, 293) {
   graphics {
     default: is_is20_sprites;
     purchase: is_all_purchase_sprites;
-    articulated_part: articulated_part_tender2;
+    articulated_part: is_is21_articulated_part;
+    length: is_all_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
@@ -186,12 +197,6 @@ item (FEAT_TRAINS, is_is21, 293) {
     create_effect: is_all_create_effect;
     running_cost_factor: is_is21_running_cost_factor;
     colour_mapping: is_all_colour_mapping;
-  }
-
-  livery_override(unitb) {
-    length: 6;
-    colour_mapping: is_all_tender_colour_mapping;
-    is_all_t6p_sprites_start;
   }
 }
 
@@ -264,7 +269,8 @@ if (models_details_level == 0) {
     graphics {
       default: is_is20_sprites;
       purchase: is_all_purchase_sprites;
-      articulated_part: articulated_part_tender2;
+      articulated_part: is_is20_articulated_part;
+      length: is_all_length;
       can_attach_wagon: any_can_attach_wagon;
       start_stop: any_start_stop;
       additional_text: is_all_additional_text;
