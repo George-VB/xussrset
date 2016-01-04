@@ -1,0 +1,136 @@
+ // e 
+// 330
+
+#define IMAGEFILE  "src/steam/e.png"
+purchase_sprites(e_e, 0, 0)
+purchase_sprites(e_eu, 110, 0)
+purchase_sprites(e_em, 220, 0)
+purchase_sprites(e_er, 330, 0)
+steam_sprites(7, e_e_engine,  32,   40)
+steam_sprites(7, e_em_engine, 32,  844)
+steam_sprites(7, e_eu_engine, 32, 1648)
+steam_sprites(7, e_er_engine, 32, 2452)
+tender_sprites(5, e_e_tender, 447,  40) 
+tender_sprites(6, e_er_v1_tender, 447, 107)
+#undef IMAGEFILE
+
+steamer_direction_template(e_e, _sprites_start)
+short_vehicle(e_e)
+
+switch (FEAT_TRAINS, SELF, e_e_additional_text,
+  (current_year >= 1914) +
+  (current_year >= 1916) +
+  (current_year >= 1920))
+{
+  0:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_6606)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1912, 1913), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  1:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_9201)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1914, 1915), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+  2:return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_9555A)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1916, 1919), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+    return string(STR_PURCHASE_HINT_ENGINE, 
+                  string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, string(STR_PURCHASE_HINT_E_9555A)), 
+                  string(STR_PURCHASE_HINT_SECTIONS_1), 
+                  string(STR_PURCHASE_HINT_FROMTO, 1920, 1926), 
+                  string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
+}
+
+switch (FEAT_TRAINS, SELF, e_e_cargo_subtype_text,
+  (build_year >= 1914) +
+  (build_year >= 1916))
+{
+  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E_6606), "");
+  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E_9201), "");
+  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_E_9555A), "");
+     return CB_RESULT_NO_TEXT;
+}
+
+engine_tender(e_e)
+engine_tender_length(e_e, 6, 1, 4, 1)
+engine_steam_1_effect(e, -3, 12)
+engine_weight_change_build_after3(e_e, 80+64, 
+                                       81+64, 1914, 
+                                       81+72, 1916, 
+                                       82+72, 1920)       
+engine_TE_change_build_after3(e_e, get_tec_int(184.0, 80+64), 
+                                   get_tec_int(203.0, 80+64), 1914, 
+                                   get_tec_int(216.0, 81+72), 1916, 
+                                   get_tec_int(216.0, 82+72), 1920)       
+engine_cost_change_build_after3(e_e, 9, 
+                                     10, 1914, 
+                                     11, 1916, 
+                                     11, 1920)       
+engine_RC_change_build_after3(e_e, 209, 
+                                   220, 1914, 
+                                   233, 1916, 
+                                   233, 1920)       
+engine_speed_change_after(e_e, 55, 
+                               65, 1936)
+engine_penalise_speed0(e_e)
+engine_power_change_build_after(e_e_v2, get_power_in_cb(1018), 
+                                        get_power_in_cb(1031), 1916)       
+switch (FEAT_TRAINS, SELF, e_e_power,
+  LOAD_TEMP(2) >= date(1920,1,1))
+{
+  0: e_e_v2_power;  
+     return get_power_in_cb(1306);
+}
+
+item (FEAT_TRAINS, e_e, 330) {
+  property {
+    name: string(STR_NAME_E);
+    climates_available: get_climates_available(); 
+    introduction_date: date(get_loc_year(1912), 1, 1);
+    model_life: get_model_life(1912,1926);
+    retire_early: get_retire_early(1912,1926);
+    vehicle_life: 40;
+    reliability_decay: 10;
+    cost_factor: 8;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_CARGO;
+    power: 780 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    weight: (78+64) ton;
+    engine_class: ENGINE_CLASS_STEAM;
+    tractive_effort_coefficient: get_tec(127.0, 78+64);
+    length: 6;
+    cargo_allow_refit: [GOOD];
+    default_cargo_type: GOOD;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+  graphics {
+    default: e_e_sprites;
+    purchase: e_e_purchase_sprites;
+    articulated_part: e_e_articulated_part;
+    length: e_e_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: e_e_additional_text;
+    speed: e_e_speed;
+    purchase_speed: e_e_purchase_speed;
+    bitmask_vehicle_info: e_e_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    power: e_e_power;
+    tractive_effort_coefficient: e_e_tractive_effort_coefficient;
+    weight: e_e_weight;
+    create_effect: e_create_effect;
+    cost_factor: e_e_cost_factor;
+    running_cost_factor: e_e_running_cost_factor;
+    cargo_subtype_text: e_e_cargo_subtype_text;
+  }
+}
+
+long_name_template(e_e, STR_LONGNAME_E)
+models_default_cargo_template(e_e)

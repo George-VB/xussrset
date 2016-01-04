@@ -4,26 +4,18 @@
 #define IMAGEFILE  "src/steam/y.png"
 purchase_sprites(y_y_v1, 0, 0)
 purchase_sprites(y_y_v2, 110, 0)
-
-steam_sprites(6y, y_y_v1, 32,  40)
-steam_sprites(6y, y_y_v2, 32, 844)
-
+purchase_sprites_select(y_y, 1914)
+steam_sprites(6y, y_y_engine_v1, 32,  40)
+steam_sprites(6y, y_y_engine_v2, 32, 844)
 tender_sprites(4, y_y_tender_v1, 447,  40)
 tender_sprites(4, y_y_tender_v2, 447, 107)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, y_y_purchase_sprites,
-  current_year >= 1914)
-{
-  1: y_y_v2_purchase_sprites;
-     y_y_v1_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, y_y_sprites_start,
+switch (FEAT_TRAINS, SELF, y_y_engine_sprites_start,
   build_year >= 1914)
 {
-  0: y_y_v1_sprites_start;
-     y_y_v2_sprites_start;
+  0: y_y_engine_v1_sprites_start;
+     y_y_engine_v2_sprites_start;
 }
 
 switch (FEAT_TRAINS, SELF, y_y_tender_sprites_start,
@@ -33,8 +25,11 @@ switch (FEAT_TRAINS, SELF, y_y_tender_sprites_start,
      y_y_tender_v2_sprites_start;
 }
 
+steamer_direction_template(y_y, _sprites_start)
 long_vehicle(y_y)
 
+engine_tender(y_y)
+engine_tender_length(y_y, 5, 1, 3, 1)
 engine_steam_1_effect(y_y, -3, 13)
 engine_speed(y_y, 60)
 engine_penalise_speed0(y_y)
@@ -69,7 +64,8 @@ item (FEAT_TRAINS, y_y, 419) {
   graphics {
     default: y_y_sprites;
     purchase: y_y_purchase_sprites;
-    articulated_part: articulated_part_tender1;
+    articulated_part: y_y_articulated_part;
+    length: y_y_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
@@ -84,11 +80,6 @@ item (FEAT_TRAINS, y_y, 419) {
     create_effect: y_y_create_effect;
     running_cost_factor: y_y_running_cost_factor;
   }
-  livery_override(unitb) {
-    length: 3;
-    y_y_tender_sprites_start;
-  }
-
 }
 
 long_name_template(y_y, STR_LONGNAME_Y_Y)

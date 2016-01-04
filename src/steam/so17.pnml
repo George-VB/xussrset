@@ -5,22 +5,13 @@
 purchase_sprites(so17_v1, 0, 0)
 purchase_sprites(so17_v2, 110, 0)
 purchase_sprites(so17_v3, 220, 0)
-                             
+purchase_sprites_select2(so17, 1946, 1948)
 steam_sprites(7, so17_v1, 32,   40)
 steam_sprites(7, so17_v2, 32,  844)
 steam_sprites(7, so17_v3, 32, 1648)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, PARENT, so17_purchase_sprites,
-  (current_year >= 1946) +
-  (current_year >= 1948))
-{
-  0: so17_v1_purchase_sprites;
-  1: so17_v2_purchase_sprites;
-     so17_v3_purchase_sprites;
-} 
-
-switch (FEAT_TRAINS, PARENT, so17_sprites_start,
+switch (FEAT_TRAINS, SELF, so17_engine_sprites_start,
   (build_year >= 1946) +
   (build_year >= 1948))
 {
@@ -29,8 +20,17 @@ switch (FEAT_TRAINS, PARENT, so17_sprites_start,
      so17_v3_sprites_start;
 } 
 
+switch (FEAT_TRAINS, SELF, so17_tender_sprites_start, 0)
+{
+  e_e_tender_sprites_start;
+}
+
+steamer_direction_template(so17, _sprites_start)
 short_vehicle(so17)
 
+engine_tender(so17)
+engine_tender_length_change_build_after(so17, 6, 1, 4, 1,
+                                              6, 1, 5, 1, 1948)
 engine_steam_1_effect(so17, -3, 12)
 engine_weight_change_build_after2(so17, 97+68, 
                                         103+68, 1942, 
@@ -76,7 +76,8 @@ item (FEAT_TRAINS, so17, 386) {
   graphics {
     default: so17_sprites;
     purchase: so17_purchase_sprites;
-    articulated_part: articulated_part_tender1;
+    articulated_part: so17_articulated_part;
+    length: so17_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
@@ -93,10 +94,6 @@ item (FEAT_TRAINS, so17, 386) {
     create_effect: so17_create_effect;
     cost_factor: so17_cost_factor;
     running_cost_factor: so17_running_cost_factor;
-  }
-  livery_override(unitb) {
-    length: e_tender_length;
-            e_tender_sprites;
   }
 }
 

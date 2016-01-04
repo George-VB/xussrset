@@ -1,208 +1,18 @@
 ﻿ // is_all
-// 292 (124h) 293 (125h)
+// 447
 
-#define IMAGEFILE  "src/steam/is.png"
-purchase_sprites(is_all_v1, 0, 0)
-purchase_sprites(is_all_v2, 110, 0)
-
-steam_sprites(10, is_all_engine, 32, 40)
-
-tender_sprites(6, is_all_t4o, 447, 40)
-tender_sprites(7, is_all_t6p, 447, 107)
-#undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, is_all_purchase_sprites,
-  current_year >= 1936)
+switch (FEAT_TRAINS, SELF, is_all_engine_sprites_start, 0)
 {
-  0: is_all_v1_purchase_sprites;
-     is_all_v2_purchase_sprites;
+  is20_engine_sprites_start;
 }
 
-switch (FEAT_TRAINS, SELF, is_all_tender_sprites_start,
-  build_year >= 1936 )
+switch (FEAT_TRAINS, SELF, is_all_tender_sprites_start, 0)
 {
-  0: is_all_t4o_sprites_start;
-     is_all_t6p_sprites_start;
+  is20_tender_sprites_start;
 }
 
-switch (FEAT_TRAINS, SELF, is_is20_sprites_start,
-  position_in_articulated_veh)
-{
-  0: is_all_engine_sprites_start;
-  2: is_all_tender_sprites_start;
-     dummy_sprites;
-}     
-
-long_vehicle(is_is20)
-
-switch (FEAT_TRAINS, SELF, is_all_engine_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
-{
-  0: return ttdall_cc + 0x53; 
-  LV_RAL6002:       return ttdall_cc + 0x53;
-  LV_RAL6020:       return ttdall_cc + 0x61;
-  LV_RED_ARROW_OLD: return ttdall_cc + 0x9A;
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, is_all_tender_colour_mapping,
-[ set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
-{
-  0: return ttdall_cc + 0x53; 
-  LV_RAL6002:       return ttdall_cc + 0x53;
-  LV_RAL6020:       return ttdall_cc + 0x61;
-  LV_RED_ARROW_OLD: return ttdall_cc + 0x9A;
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, is_all_colour_mapping,
-  position_in_articulated_veh)
-{
-  0: is_all_engine_colour_mapping;
-  2: is_all_tender_colour_mapping;
-     return CB_FAILED;
-}
-
- // is_is20
-
-livery_template(is_all, TTD_53, LV_RAL6002, LV_RAL6020, LV_RED_ARROW_OLD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-switch (FEAT_TRAINS, SELF, is_is20_additional_text,
-  current_year >= 1935)
-{
-  0: return string(STR_PURCHASE_HINT_ENGINE, 
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
-                   string(STR_PURCHASE_HINT_SECTIONS_1), 
-                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941), 
-                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
-     return string(STR_PURCHASE_HINT_ENGINE, 
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
-                   string(STR_PURCHASE_HINT_SECTIONS_1), 
-                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941), 
-                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
-}
-
-engine_tender(is_is20)
-engine_tender_length_change_build_after(is_all, 8, 2, 5, 1,
-                                                8, 2, 6, 1, 1936)
-engine_steam_1_effect(is_all, -2, 14)
-engine_weight_change_build_after(is_is20, 133+85, 
-                                          133+127, 1936)       
-engine_TE_change_build_after(is_is20, get_tec_int(196.0, 133+85), 
-                                      get_tec_int(196.0, 133+127), 1936)       
-engine_cost_change_build_after(is_is20, 29, 
-                                        31, 1936)       
-engine_speed_change_after(is_is20, 110, 
-                                   115, 1936)
-engine_penalise_speed0(is_is20)
-engine_RC_change_build_after(is_is20, 664, 
-                                      714, 1936)       
-
-item (FEAT_TRAINS, is_is20, 292) {
-  property {
-    name: string(STR_NAME_IS20);
-    climates_available: get_climates_available();
-    introduction_date: date(get_loc_year(1932), 1, 1);
-    model_life: get_model_life(1932,1941);
-    retire_early: get_retire_early(1932,1941);
-    vehicle_life: 30;
-    reliability_decay: 10;
-    cost_factor: 29;
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
-    track_type: get_normal_track_type();
-    ai_special_flag: AI_FLAG_PASSENGER;
-    power: 3120 hpM;
-    running_cost_base: RUNNING_COST_STEAM;
-    engine_class: ENGINE_CLASS_STEAM;
-    length: 8;
-    cargo_allow_refit: [PASS];
-    default_cargo_type: PASS;
-    cargo_capacity: 1;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
-  }
-  graphics {
-    default: is_is20_sprites;
-    purchase: is_all_purchase_sprites;
-    articulated_part: is_is20_articulated_part;
-    length: is_all_length;
-    can_attach_wagon: any_can_attach_wagon;
-    start_stop: any_start_stop;
-    additional_text: is_is20_additional_text;
-    speed: is_is20_speed;
-    purchase_speed: is_is20_purchase_speed;
-    bitmask_vehicle_info: is_is20_bitmask_vehicle_info;
-    cargo_capacity: return 0;
-    weight: is_is20_weight;
-    cost_factor: is_is20_cost_factor;
-    cargo_subtype_text: is_all_cargo_subtype_text;
-    tractive_effort_coefficient: is_is20_tractive_effort_coefficient;
-    create_effect: is_all_create_effect;
-    running_cost_factor: is_is20_running_cost_factor;
-    colour_mapping: is_all_colour_mapping;
-  }
-}
-
-long_name_template(is_is20, STR_LONGNAME_IS20)
-models_default_cargo_template(is_is20)
-// is21
-engine_speed(is_is21, 115)
-engine_penalise_speed0(is_is21)
-general_running_cost(is_is21, 739)
-engine_tender(is_is21)
-
-item (FEAT_TRAINS, is_is21, 293) {
-  property {
-    name: string(STR_NAME_IS21);
-    climates_available: get_climates_available();
-    introduction_date: date(get_loc_year(1941), 1, 1);
-    model_life: get_model_life(1941,1942);
-    retire_early: get_retire_early(1941,1942);
-    vehicle_life: 30;
-    reliability_decay: 10;
-    cost_factor: 32;
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
-    track_type: get_normal_track_type();
-    ai_special_flag: AI_FLAG_PASSENGER;
-    power: 3200 hpM;
-    running_cost_base: RUNNING_COST_STEAM;
-    weight: (133+127) ton;
-    engine_class: ENGINE_CLASS_STEAM;
-    tractive_effort_coefficient: get_tec(155.0, 133+127);
-    length: 8;
-    cargo_allow_refit: [PASS];
-    default_cargo_type: PASS;
-    cargo_capacity: 1;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
-  }
-  graphics {
-    default: is_is20_sprites;
-    purchase: is_all_purchase_sprites;
-    articulated_part: is_is21_articulated_part;
-    length: is_all_length;
-    can_attach_wagon: any_can_attach_wagon;
-    start_stop: any_start_stop;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1941, 1942), 
-                                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
-    speed: is_is21_speed;
-    purchase_speed: is_is21_purchase_speed;
-    bitmask_vehicle_info: is_is21_bitmask_vehicle_info;
-    cargo_capacity: return 0;
-    cargo_subtype_text: is_all_cargo_subtype_text;
-    create_effect: is_all_create_effect;
-    running_cost_factor: is_is21_running_cost_factor;
-    colour_mapping: is_all_colour_mapping;
-  }
-}
-
-long_name_template(is_is21, STR_LONGNAME_IS21)
-models_default_cargo_template(is_is21)
-// is all
+steamer_direction_template(is_all, _sprites_start)
+long_vehicle(is_all)
 
 engine_power_change_build_after(is_all, get_power_in_cb(3120), 
                                         get_power_in_cb(3200), 1941)       
@@ -210,29 +20,29 @@ engine_power_change_build_after(is_all, get_power_in_cb(3120),
 switch (FEAT_TRAINS, SELF, is_all_weight,
   build_year >= 1941)
 {
-  0: is_is20_weight;
+  0: is20_weight;
      return (133+127);
 }
 
 switch (FEAT_TRAINS, SELF, is_all_tractive_effort_coefficient,
   build_year >= 1941)
 {
-  0: is_is20_tractive_effort_coefficient;
+  0: is20_tractive_effort_coefficient;
      return get_tec_int(196.0, 133+127);
 }
 
 switch (FEAT_TRAINS, SELF, is_all_cost_factor,
   current_year >= 1941)
 {
-  0: is_is20_cost_factor;
+  0: is20_cost_factor;
      return 32;
 }
 
 switch (FEAT_TRAINS, SELF, is_all_running_cost_factor,
   build_year >= 1941)
 {
-  0: is_is20_running_cost_factor;
-     is_is21_running_cost_factor;
+  0: is20_running_cost_factor;
+     is21_running_cost_factor;
 }
 
 switch (FEAT_TRAINS, SELF, is_all_additional_text,
@@ -256,37 +66,67 @@ switch (FEAT_TRAINS, SELF, is_all_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
 }
 
+engine_tender(is_all)
+engine_tender_length_change_build_after(is_all, 8, 2, 5, 1,
+                                                8, 2, 6, 1, 1936)
+
+item (FEAT_TRAINS, is_all, 447) {
+  property { 
+    name: string(STR_NAME_IS_ALL);
+    climates_available: NO_CLIMATE;
+    introduction_date: date(get_loc_year(1932), 1, 1);
+    model_life: get_model_life(1932,1942);
+    retire_early: get_retire_early(1932,1942);
+    vehicle_life: 30;
+    reliability_decay: 10;
+    cost_factor: 29;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    track_type: get_normal_track_type();
+    ai_special_flag: AI_FLAG_PASSENGER;
+    power: 3120 hpM;
+    running_cost_base: RUNNING_COST_STEAM;
+    engine_class: ENGINE_CLASS_STEAM;
+    length: 8;
+    cargo_allow_refit: [PASS];
+    default_cargo_type: PASS;
+    cargo_capacity: 1;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;
+  }
+  graphics {
+    default: is_all_sprites;
+    purchase: is_all_purchase_sprites;
+    articulated_part: is_all_articulated_part;
+    length: is_all_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    additional_text: is_all_additional_text;
+    speed: is20_speed;
+    purchase_speed: is20_purchase_speed;
+    bitmask_vehicle_info: is20_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    weight: is_all_weight;
+    tractive_effort_coefficient: is_all_tractive_effort_coefficient;
+    create_effect: is_all_create_effect;
+    running_cost_factor: is_all_running_cost_factor;
+    cost_factor: is_all_cost_factor;
+    cargo_subtype_text: is_all_cargo_subtype_text;
+    power: is_all_power;
+    colour_mapping: is_all_colour_mapping;
+  }
+}
+
+long_name_template(is_all, STR_LONGNAME_IS_ALL)
+models_default_cargo_template(is_all)
+
 if (models_details_level == 0) {
-  item (FEAT_TRAINS, is_is21) {
+  item (FEAT_TRAINS, is20) {
     property { climates_available: NO_CLIMATE; }
   }
-  item (FEAT_TRAINS, is_is20) {
-    property { 
-      name: string(STR_NAME_IS_ALL);
-      model_life: get_model_life(1932,1942);
-      retire_early: get_retire_early(1932,1942);
-    }
-    graphics {
-      default: is_is20_sprites;
-      purchase: is_all_purchase_sprites;
-      articulated_part: is_is20_articulated_part;
-      length: is_all_length;
-      can_attach_wagon: any_can_attach_wagon;
-      start_stop: any_start_stop;
-      additional_text: is_all_additional_text;
-      speed: is_is20_speed;
-      purchase_speed: is_is20_purchase_speed;
-      bitmask_vehicle_info: is_is20_bitmask_vehicle_info;
-      cargo_capacity: return 0;
-      weight: is_all_weight;
-      tractive_effort_coefficient: is_all_tractive_effort_coefficient;
-      create_effect: is_all_create_effect;
-      running_cost_factor: is_all_running_cost_factor;
-      cost_factor: is_all_cost_factor;
-      cargo_subtype_text: is_all_cargo_subtype_text;
-      power: is_all_power;
-      colour_mapping: is_all_colour_mapping;
-    }
+  item (FEAT_TRAINS, is21) {
+    property { climates_available: NO_CLIMATE; }
   }
-  long_name_template(is_is20, STR_LONGNAME_IS_ALL)
+  item (FEAT_TRAINS, is_all) {
+    property { climates_available: get_climates_available(); }
+  }
 }

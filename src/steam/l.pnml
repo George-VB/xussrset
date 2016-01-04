@@ -3,23 +3,14 @@
 
 #define IMAGEFILE  "src/steam/l.png"
 purchase_sprites(l_e, 0, 0)
-
-steam_sprites(8, l_engine, 32,  40)
-
-tender_sprites(5, l_tender, 447,  40)
+steam_sprites(8, l_e_engine, 32,  40)
+tender_sprites(5, l_e_tender, 447,  40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, l_e_sprites_start,
-  position_in_articulated_veh)
-{
-  0: l_engine_sprites_start;
-  2: l_tender_sprites_start;
-     dummy_sprites;
-}
-
+steamer_direction_template(l_e, _sprites_start)
 short_vehicle(l_e)
 
-switch (FEAT_TRAINS, SELF, l_engine_colour_mapping,
+switch (FEAT_TRAINS, SELF, l_e_engine_colour_mapping,
   cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
   0: return ttdall_cc + 0x53; 
@@ -27,7 +18,7 @@ switch (FEAT_TRAINS, SELF, l_engine_colour_mapping,
      return CB_FAILED;
 }
 
-switch (FEAT_TRAINS, SELF, l_tender_colour_mapping,
+switch (FEAT_TRAINS, SELF, l_e_tender_colour_mapping,
 [ set_offset_to(-2),
   prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
 {
@@ -36,14 +27,7 @@ switch (FEAT_TRAINS, SELF, l_tender_colour_mapping,
      return CB_FAILED;
 }
 
-switch (FEAT_TRAINS, SELF, l_e_colour_mapping,
-  position_in_articulated_veh)
-{
-  0: l_engine_colour_mapping;
-  2: l_tender_colour_mapping;
-     return CB_FAILED;
-}
-
+steamer_direction_template(l_e, _colour_mapping)
 engine_steam_1_effect(l_e, -3, 13)
 engine_speed_change_after(l_e, 105, 
                                120, 1920)
@@ -51,7 +35,6 @@ engine_penalise_speed0(l_e)
 general_running_cost(l_e, 369)
 engine_tender(l_e)
 engine_tender_length(l_e, 7, 1, 4, 1)
-
 livery_template(l_e, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 item (FEAT_TRAINS, l_e, 142) {
