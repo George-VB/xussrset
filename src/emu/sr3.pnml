@@ -33,14 +33,12 @@ switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_check,
      align_12_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, sr3_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, sr3_a_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: sr3_h_sprites_left_check;
   1: sr3_h_sprites_left_check;
 }
-
-long_vehicle_RND(sr3, sr3_sprites_start)
 
 switch (FEAT_TRAINS, SELF, sr3_b_sprites_start,
 [  set_offset_to(-2),
@@ -59,8 +57,6 @@ switch (FEAT_TRAINS, SELF, sr3_b_sprites_start,
   103: sr3_v2_m_notpowered_sprites_right;
        align_12_sprites;
 }
-
-long_vehicle_nocount(sr3_b)
 
 switch (FEAT_TRAINS, SELF, sr3_c_sprites_start,
 [ set_offset_to(-4),
@@ -81,12 +77,21 @@ switch (FEAT_TRAINS, SELF, sr3_c_sprites_start,
      align_12_sprites;
 }
 
-long_vehicle_nocount(sr3_c)
+switch (FEAT_TRAINS, SELF, sr3_sprites_start, 
+  position_in_articulated_veh)    
+{ 
+  0: sr3_a_sprites_start;
+  2: sr3_b_sprites_start;                                        
+  4: sr3_c_sprites_start;                                        
+     dummy_sprites; 
+}                                           
+
+long_vehicle_RND(sr3, sr3_a_sprites_start)
 
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon1,
-  count_veh_id(sr3) < 3)
+  count_veh_id(sr3) < 3 * 3)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -103,24 +108,31 @@ switch (FEAT_TRAINS, SELF, sr3_articulated_part,
   extra_callback_info1)
 {
   1: return dummy4;
-  2: return unitb;
+  2: return sr3;
   3: return dummy4;
-  4: return unitc;
+  4: return sr3;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, sr3_create_effect1, 
+// Визуализируем эффекты тяги у sr3, только если локомотив - sr3
+switch (FEAT_TRAINS, SELF, sr3_create_effect2, 
   electric_create_effect(4)) 
 { 
   return 1; 
 }    
 
-// Визуализируем эффекты тяги у sr3, только если локомотив - sr3
-switch (FEAT_TRAINS, PARENT, sr3_create_effect,
+switch (FEAT_TRAINS, PARENT, sr3_create_effect1,
   vehicle_type_id == sr3)
 {
-  1: sr3_create_effect1;
+  1: sr3_create_effect2;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, sr3_create_effect,
+  position_in_articulated_veh)
+{
+  2: sr3_create_effect1;
      return disable_create_effect();
 }
 
@@ -133,10 +145,17 @@ switch (FEAT_TRAINS, PARENT, sr3_power,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - sr3
+switch (FEAT_TRAINS, SELF, sr3_cargo_capacity2,
+  position_in_articulated_veh)
+{
+  0: return 321;
+     return 0;
+}
+
 switch (FEAT_TRAINS, PARENT, sr3_cargo_capacity,
   vehicle_type_id == sr3)
 {
-  1: return 321;
+  1: sr3_cargo_capacity2;
      return 0;
 }
 
@@ -182,7 +201,7 @@ item (FEAT_TRAINS, sr3, 415) {
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(96.1, 139);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: sr3_sprites;
@@ -201,18 +220,7 @@ item (FEAT_TRAINS, sr3, 415) {
     cargo_capacity: sr3_cargo_capacity;
     cargo_subtype_text: sr3_cargo_subtype_text;
     power: sr3_power;
-  }
-  livery_override(unitb) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    length: return 8;
     create_effect: sr3_create_effect;
-    sr3_b_sprites;
-
-  }
-  livery_override(unitc) {
-    length: return 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
-    sr3_c_sprites;
   }
 }
 

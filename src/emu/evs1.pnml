@@ -22,14 +22,12 @@ switch (FEAT_TRAINS, SELF, evs1_gbt_h_sprites_left_check,
      evs1_gbt_middle_h_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, evs1_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, evs1_h_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: evs1_gbt_h_sprites_left_check;
   1: evs1_gbt_h_sprites_left_check;
 }
-
-long_vehicle_RND(evs1, evs1_sprites_start)
 
 switch (FEAT_TRAINS, SELF, evs1_gbt_h_sprites_right_check,
   position_in_consist_from_end == 1)
@@ -53,12 +51,13 @@ switch (FEAT_TRAINS, SELF, evs_never_train, 0)
       align_14_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, evs1_b_sprites_start,
+switch (FEAT_TRAINS, SELF, evs1_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != evs1) * 200) +
    (prev_vehicle_randombits() % 2) * 100 +
    position_in_articulated_veh])
 {
+   0: evs1_h_sprites_start;
    2: evs1_dt_m_sprites_left;
    4: evs1_t_c_sprites_left;
    6: evs1_tt_c_sprites_left;
@@ -69,6 +68,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_start,
   16: evs1_dt_m_sprites_right;
   18: evs1_gbt_h_sprites_right_check;
 
+ 100: evs1_h_sprites_start;
  102: evs1_dt_m_sprites_left;
  104: evs1_t_c_sprites_left;
  106: evs1_tt_c_sprites_left;
@@ -79,6 +79,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_start,
  116: evs1_dt_m_sprites_right;
  118: evs1_gbt_h_sprites_right_check;
 
+ 200: evs1_h_sprites_start;
  202: evs1_dt_m_notpowered_sprites_left;
  204: evs1_t_c_notpowered_sprites_left;
  206: evs1_tt_c_notpowered_sprites_left;
@@ -89,6 +90,7 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_start,
  216: evs1_dt_m_notpowered_sprites_right;
  218: evs1_gbt_h_notpowered_sprites_right_check;
 
+ 300: evs1_h_sprites_start;
  302: evs1_dt_m_notpowered_sprites_left;
  304: evs1_t_c_notpowered_sprites_left;
  306: evs1_tt_c_notpowered_sprites_left;
@@ -104,29 +106,29 @@ switch (FEAT_TRAINS, SELF, evs1_b_sprites_start,
       align_14_sprites;
 }
 
-long_vehicle_nocount(evs1_b)
+long_vehicle_RND(evs1, evs1_h_sprites_start)
 
 switch (FEAT_TRAINS, SELF, evs1_articulated_part,
   extra_callback_info1)
 {
   1: return dummy7;
-  2: return unitb;
+  2: return evs1;
   3: return dummy6;
-  4: return unitb;
+  4: return evs1;
   5: return dummy6;
-  6: return unitb;
+  6: return evs1;
   7: return dummy6;
-  8: return unitb;
+  8: return evs1;
   9: return dummy6;
- 10: return unitb;
+ 10: return evs1;
  11: return dummy6;
- 12: return unitb;
+ 12: return evs1;
  13: return dummy6;
- 14: return unitb;
+ 14: return evs1;
  15: return dummy6;
- 16: return unitb;
+ 16: return evs1;
  17: return dummy6;
- 18: return unitb;
+ 18: return evs1;
  19: return dummy7;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -139,40 +141,47 @@ switch (FEAT_TRAINS, PARENT, evs1_power,
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, evs1_b_create_effect3, 
+switch (FEAT_TRAINS, SELF, evs1_create_effect3, 
   electric_create_effect(-3)) 
 { 
   return 1; 
 }    
 
-switch (FEAT_TRAINS, SELF, evs1_b_create_effect2, 
+switch (FEAT_TRAINS, SELF, evs1_create_effect2, 
   electric_create_effect(7)) 
 { 
   return 1; 
 }    
 
-switch (FEAT_TRAINS, SELF, evs1_b_create_effect1,
+switch (FEAT_TRAINS, SELF, evs1_create_effect1,
   position_in_articulated_veh)
 {
-   2: evs1_b_create_effect2;
-  16: evs1_b_create_effect3;
+   2: evs1_create_effect2;
+  16: evs1_create_effect3;
       return disable_create_effect();
 }
 
 // показываем визуальные эффекты, если локомотив evs1
-switch (FEAT_TRAINS, PARENT, evs1_b_create_effect,
+switch (FEAT_TRAINS, PARENT, evs1_create_effect,
   vehicle_type_id == evs1)
 {
-  1: evs1_b_create_effect1;
+  1: evs1_create_effect1;
      return disable_create_effect();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - evs1
-switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
+switch (FEAT_TRAINS, SELF, evs1_cargo_capacity3,
   build_year >= 2014)
 {
   0: return 564;
      return 508;
+}
+
+switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
+  position_in_articulated_veh)
+{
+  0: evs1_cargo_capacity3;
+     return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
@@ -190,7 +199,7 @@ switch (FEAT_TRAINS, SELF, evs1_purchase_cargo_capacity,
 }
 
 switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
-  LOAD_TEMP(0) <= 1)
+  LOAD_TEMP(0) <= 1 * 10)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -198,7 +207,7 @@ switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
 
 switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon2,
   (LOAD_TEMP(1) >= 2014) +
-  ((build_year >= 2014) *10) )
+  ((build_year >= 2014) * 10) )
 {
    0: return string(STR_CAN_ATTACH_NO_MORE);
    1: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
@@ -277,7 +286,7 @@ item (FEAT_TRAINS, evs1, 400) {
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(328.0, 576.8);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: evs1_sprites;
@@ -292,13 +301,8 @@ item (FEAT_TRAINS, evs1, 400) {
     purchase_cargo_capacity: evs1_purchase_cargo_capacity;
     cost_factor: return 1696;
     colour_mapping: return ttdall_cc + 0xC9;
+    create_effect: evs1_create_effect;
   }
-  livery_override(unitb) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    length: return 8;
-    create_effect: evs1_b_create_effect;
-            evs1_b_sprites;
-  }  
 }
 
 long_name_template(evs1, STR_LONGNAME_EVS1)

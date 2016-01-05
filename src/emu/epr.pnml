@@ -16,14 +16,12 @@ switch (FEAT_TRAINS, SELF, epr_h_sprites_left_check,
      epr_h_notpowered_normal_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, epr_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, epr_a_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: epr_h_sprites_left_check;
   1: epr_h_sprites_left_check;
 }
-
-long_vehicle_RND(epr, epr_sprites_start)
 
 switch (FEAT_TRAINS, SELF, epr_b_sprites_start,
 [  set_offset_to(-2),
@@ -37,8 +35,6 @@ switch (FEAT_TRAINS, SELF, epr_b_sprites_start,
      align_11_sprites;
 }
 
-long_vehicle_nocount(epr_b)
-
 switch (FEAT_TRAINS, SELF, epr_c_sprites_start,
 [  set_offset_to(-4),
    ((LOAD_TEMP(4) != epr) * 2) +
@@ -50,8 +46,6 @@ switch (FEAT_TRAINS, SELF, epr_c_sprites_start,
   3: epr_1_m_notpowered_sprites_right;
      align_11_sprites;
 }
-
-long_vehicle_nocount(epr_c)
 
 switch (FEAT_TRAINS, SELF, epr_h_sprites_right_check,
   position_in_consist_from_end == 1)
@@ -70,18 +64,28 @@ switch (FEAT_TRAINS, SELF, epr_never_train, 0)
 }
 
 switch (FEAT_TRAINS, SELF, epr_d_sprites_start,
-   LOAD_TEMP(4) == epr)
+  LOAD_TEMP(4) == epr)
 {
    1: epr_h_sprites_right_check;
    0: epr_h_notpowered_sprites_right;
       epr_never_train;
 }
 
-long_vehicle_nocount(epr_d)
+switch (FEAT_TRAINS, SELF, epr_sprites_start, 
+  position_in_articulated_veh)    
+{ 
+  0: epr_a_sprites_start;
+  2: epr_b_sprites_start;                                        
+  4: epr_c_sprites_start;                                        
+  6: epr_d_sprites_start;                                        
+     dummy_sprites; 
+}                                           
+
+long_vehicle_RND(epr, epr_a_sprites_start)
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epr_can_attach_wagon2,
-  LOAD_TEMP(0) < 3)
+  LOAD_TEMP(0) < 3 * 4)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -106,49 +110,63 @@ switch (FEAT_TRAINS, SELF, epr_articulated_part,
   extra_callback_info1)
 {
   1: return dummy3;
-  2: return unitb;
+  2: return epr;
   3: return dummy2;
-  4: return unitc;
+  4: return epr;
   5: return dummy2;
-  6: return unitd;
+  6: return epr;
   7: return dummy3;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 // даём тягу, если локомотив epr
 switch (FEAT_TRAINS, PARENT, epr_power,
-  vehicle_type_id == epr)
+  (vehicle_type_id == epr) || (vehicle_type_id == epg))
 {
   1: return get_power_in_cb(2719);
      return 0;
 }
 
+// показываем визуальные эффекты, если локомотив epr
 switch (FEAT_TRAINS, SELF, epr_c_create_effect1, 
   electric_create_effect(4)) 
 { 
   return 1; 
 }    
 
-// показываем визуальные эффекты, если локомотив epr
 switch (FEAT_TRAINS, PARENT, epr_c_create_effect,
-  vehicle_type_id == epr)
+  (vehicle_type_id == epr) || (vehicle_type_id == epg))
 {
   1: epr_c_create_effect1;
      return disable_create_effect();
 }
 
+switch (FEAT_TRAINS, SELF, epr_create_effect, 
+  position_in_articulated_veh)    
+{ 
+  4: epr_c_create_effect;                                        
+     return disable_create_effect();
+}                                           
+
 // Допускается эксплуатация с пассажирами только если голова - epr
-switch (FEAT_TRAINS, PARENT, epr_cargo_capacity,
-  (vehicle_type_id == epr))
+switch (FEAT_TRAINS, SELF, epr_cargo_capacity2,
+  position_in_articulated_veh)
 {
-  1: return 217;
+  0: return 217;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, epr_cargo_capacity,
+  (vehicle_type_id == epr) || (vehicle_type_id == epg))
+{
+  1: epr_cargo_capacity2;
      return 0;
 }
 
 emu_running_cost(epr_v1, 436 * 2, 186 * 2)
 
 switch (FEAT_TRAINS, PARENT, epr_running_cost_factor,
-  vehicle_type_id == epr)
+  (vehicle_type_id == epr) || (vehicle_type_id == epg))
 {
   1: epr_v1_running_cost_factor;
      return RC_MU_AS_CAR * 4;
@@ -179,7 +197,7 @@ item (FEAT_TRAINS, epr, 226) {
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(200.0, 132);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: epr_sprites;
@@ -198,23 +216,7 @@ item (FEAT_TRAINS, epr, 226) {
     power: epr_power;
     cost_factor: return 276;
     cargo_capacity: epr_cargo_capacity;
-  }
-  livery_override(unitb) {
-    length: return 8;
-    epr_b_sprites;
-
-  }
-  livery_override(unitc) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    length: return 8;
-    create_effect: epr_c_create_effect;
-    epr_c_sprites;
-
-  }
-  livery_override(unitd) {
-    length: return 8;
-    epr_d_sprites;
-
+    create_effect: epr_create_effect;
   }
 }
 

@@ -16,14 +16,12 @@ switch (FEAT_TRAINS, SELF, epg_h_sprites_left_check,
      epg_h_notpowered_normal_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, epg_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, epg_a_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: epg_h_sprites_left_check;
   1: epg_h_sprites_left_check;
 }
-
-long_vehicle_RND(epg, epg_sprites_start)
 
 switch (FEAT_TRAINS, SELF, epg_b_sprites_start,
 [  set_offset_to(-2),
@@ -37,8 +35,6 @@ switch (FEAT_TRAINS, SELF, epg_b_sprites_start,
      align_11_sprites;
 }
 
-long_vehicle_nocount(epg_b)
-
 switch (FEAT_TRAINS, SELF, epg_c_sprites_start,
 [  set_offset_to(-4),
    ((LOAD_TEMP(4) != epg) * 2) +
@@ -50,8 +46,6 @@ switch (FEAT_TRAINS, SELF, epg_c_sprites_start,
   3: epg_1_m_notpowered_sprites_right;
      align_11_sprites;
 }
-
-long_vehicle_nocount(epg_c)
 
 switch (FEAT_TRAINS, SELF, epg_never_train, 0)
 {
@@ -77,11 +71,21 @@ switch (FEAT_TRAINS, SELF, epg_d_sprites_start,
       epg_h_notpowered_sprites_right;
 }
 
-long_vehicle_nocount(epg_d)
+switch (FEAT_TRAINS, SELF, epg_sprites_start, 
+  position_in_articulated_veh)    
+{ 
+  0: epg_a_sprites_start;
+  2: epg_b_sprites_start;                                        
+  4: epg_c_sprites_start;                                        
+  6: epg_d_sprites_start;                                        
+     dummy_sprites; 
+}                                           
+
+long_vehicle_RND(epg, epg_a_sprites_start)
 
 // Можно ли ещё присоединить? (1..3 секции)
 switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
-  LOAD_TEMP(0) < 3)
+  LOAD_TEMP(0) < 3 * 4)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -106,49 +110,64 @@ switch (FEAT_TRAINS, SELF, epg_articulated_part,
   extra_callback_info1)
 {
   1: return dummy3;
-  2: return unitb;
+  2: return epg;
   3: return dummy2;
-  4: return unitc;
+  4: return epg;
   5: return dummy2;
-  6: return unitd;
+  6: return epg;
   7: return dummy3;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 // даём тягу, если локомотив epg
 switch (FEAT_TRAINS, PARENT, epg_power,
-  vehicle_type_id == epg)
+  (vehicle_type_id == epg) || (vehicle_type_id == epr))
 {
   1: return get_power_in_cb(2719);
      return 0;
 }
 
+// показываем визуальные эффекты, если локомотив epg
 switch (FEAT_TRAINS, SELF, epg_c_create_effect1, 
   electric_create_effect(4)) 
 { 
   return 1; 
 }    
 
-// показываем визуальные эффекты, если локомотив epg
 switch (FEAT_TRAINS, PARENT, epg_c_create_effect,
-  vehicle_type_id == epg)
+  (vehicle_type_id == epg) || (vehicle_type_id == epr))
 {
   1: epg_c_create_effect1;
      return disable_create_effect();
 }
 
+switch (FEAT_TRAINS, SELF, epg_create_effect,
+  position_in_articulated_veh)    
+{ 
+  4: epg_c_create_effect;                                        
+     return disable_create_effect();
+}
+
 // Допускается эксплуатация с пассажирами только если голова - epg
-switch (FEAT_TRAINS, PARENT, epg_cargo_capacity,
-  (vehicle_type_id == epg) )
+
+switch (FEAT_TRAINS, SELF, epg_cargo_capacity2,
+  position_in_articulated_veh)
 {
-  1: return 260;
+  0: return 260;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, epg_cargo_capacity,
+  (vehicle_type_id == epg) || (vehicle_type_id == epr))
+{
+  1: epg_cargo_capacity2;
      return 0;
 }
 
 emu_running_cost(epg_v1, 439 * 2, 187 * 2)
 
 switch (FEAT_TRAINS, PARENT, epg_running_cost_factor,
-  vehicle_type_id == epg)
+  (vehicle_type_id == epg) || (vehicle_type_id == epr))
 {
   1: epg_v1_running_cost_factor;
      return RC_MU_AS_CAR * 4;
@@ -179,7 +198,7 @@ item (FEAT_TRAINS, epg, 225) {
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(200.0, 132);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: epg_sprites;
@@ -187,6 +206,7 @@ item (FEAT_TRAINS, epg, 225) {
     cargo_age_period: return 68;
     running_cost_factor: epg_running_cost_factor;
     articulated_part: epg_articulated_part;
+    create_effect: epg_create_effect;
     can_attach_wagon: epg_can_attach_wagon;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
                                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
@@ -198,23 +218,6 @@ item (FEAT_TRAINS, epg, 225) {
     power: epg_power;
     cargo_capacity: epg_cargo_capacity;
     cost_factor: return 274;
-  }
-  livery_override(unitb) {
-    length: return 8;
-    epg_b_sprites;
-
-  }
-  livery_override(unitc) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    length: return 8;
-    create_effect: epg_c_create_effect;
-    epg_c_sprites;
-
-  }
-  livery_override(unitd) {
-    length: return 8;
-    epg_d_sprites;
-
   }
 }
 

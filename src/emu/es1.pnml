@@ -16,14 +16,12 @@ switch (FEAT_TRAINS, SELF, es1_h_sprites_left_check,
      es1_h_notpowered_normal_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, es1_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, es1_h_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: es1_h_sprites_left_check;
   1: es1_h_sprites_left_check;
 }
-
-long_vehicle_RND(es1, es1_sprites_start)
 
 switch (FEAT_TRAINS, SELF, es1_h_sprites_right_check, 
   position_in_consist_from_end == 1)
@@ -39,27 +37,31 @@ switch (FEAT_TRAINS, SELF, es1_never_train, 0)
       align_14_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, es1_b_sprites_start,
+switch (FEAT_TRAINS, SELF, es1_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != es1) * 200) +
    (prev_vehicle_randombits() % 2) * 100 +
    position_in_articulated_veh])
 {
+   0: es1_h_sprites_start;
    2: es1_m_notpowered_normal_sprites_right;
    4: es1_c_sprites_left;
    6: es1_m_sprites_left;
    8: es1_h_sprites_right_check;
 
+ 100: es1_h_sprites_start;
  102: es1_m_notpowered_normal_sprites_right;
  104: es1_c_sprites_right;
  106: es1_m_sprites_left;
  108: es1_h_sprites_right_check;
 
+ 200: es1_h_sprites_start;
  202: es1_m_notpowered_sprites_right;
  204: es1_c_notpowered_sprites_left;
  206: es1_m_notpowered_sprites_left;
  208: es1_h_notpowered_sprites_right;
                                
+ 300: es1_h_sprites_start;
  302: es1_m_notpowered_sprites_right;
  304: es1_c_notpowered_sprites_right;
  306: es1_m_notpowered_sprites_left;
@@ -70,19 +72,19 @@ switch (FEAT_TRAINS, SELF, es1_b_sprites_start,
       align_14_sprites;
 }
 
-long_vehicle_nocount(es1_b)
+long_vehicle_RND(es1, es1_h_sprites_start)
 
 switch (FEAT_TRAINS, SELF, es1_articulated_part,
   extra_callback_info1)
 {
   1: return dummy7;
-  2: return unitb;
+  2: return es1;
   3: return dummy6;
-  4: return unitb;
+  4: return es1;
   5: return dummy6;
-  6: return unitb;
+  6: return es1;
   7: return dummy6;
-  8: return unitb;
+  8: return es1;
   9: return dummy7;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -95,37 +97,44 @@ switch (FEAT_TRAINS, PARENT, es1_power,
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, es1_b_create_effect3, 
+switch (FEAT_TRAINS, SELF, es1_create_effect3, 
   electric_create_effect(7)) 
 { 
   return 1; 
 }    
 
-switch (FEAT_TRAINS, SELF, es1_b_create_effect2,
+switch (FEAT_TRAINS, SELF, es1_create_effect2,
   position_in_articulated_veh == 6)
 {
-  1: es1_b_create_effect3;
+  1: es1_create_effect3;
      return disable_create_effect();
 }                                               
 
 // показываем визуальные эффекты, если локомотив es1
-switch (FEAT_TRAINS, PARENT, es1_b_create_effect,
+switch (FEAT_TRAINS, PARENT, es1_create_effect,
   vehicle_type_id == es1)
 {
-  1: es1_b_create_effect2;
+  1: es1_create_effect2;
      return disable_create_effect();
 }
 
 // Допускается эксплуатация с пассажирами только если голова - es1
+switch (FEAT_TRAINS, SELF, es1_cargo_capacity1,
+  position_in_articulated_veh)
+{
+  0: return 443;
+     return 0;
+}
+
 switch (FEAT_TRAINS, PARENT, es1_cargo_capacity,
   (vehicle_type_id == es1) )
 {
-  1: return 443;
+  1: es1_cargo_capacity1;
      return 0;
 }
 
 switch (FEAT_TRAINS, SELF, es1_can_attach_wagon2,
-  LOAD_TEMP(0) <= 1)
+  LOAD_TEMP(0) <= 1 * 5)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -197,7 +206,7 @@ item (FEAT_TRAINS, es1, 413) {
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(256.0, 263.2);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: es1_sprites;
@@ -211,13 +220,8 @@ item (FEAT_TRAINS, es1, 413) {
     cargo_capacity: es1_cargo_capacity;
     cost_factor: return 506;
     colour_mapping: return ttdall_cc + 0xC9;
+    create_effect: es1_create_effect;
   }
-  livery_override(unitb) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    length: return 8;
-    create_effect: es1_b_create_effect;
-            es1_b_sprites;
-  }  
 }
 
 long_name_template(es1, STR_LONGNAME_ES1)

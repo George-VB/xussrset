@@ -16,14 +16,12 @@ switch (FEAT_TRAINS, SELF, sd_h_sprites_left_check,
      align_12_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, sd_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, sd_a_sprites_start,
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: sd_h_sprites_left_check;
   1: sd_h_sprites_left_check;
 }
-
-long_vehicle_RND(sd, sd_sprites_start)
 
 switch (FEAT_TRAINS, SELF, sd_b_sprites_start,
 [  set_offset_to(-2),
@@ -37,8 +35,6 @@ switch (FEAT_TRAINS, SELF, sd_b_sprites_start,
        align_12_sprites;
 }
 
-long_vehicle_nocount(sd_b)
-
 switch (FEAT_TRAINS, SELF, sd_c_sprites_start,
 [ set_offset_to(-4),
   (position_in_consist_from_end == 1) ])
@@ -48,12 +44,21 @@ switch (FEAT_TRAINS, SELF, sd_c_sprites_start,
      align_12_sprites;
 }
 
-long_vehicle_nocount(sd_c)
+switch (FEAT_TRAINS, SELF, sd_sprites_start, 
+  position_in_articulated_veh)    
+{ 
+  0: sd_a_sprites_start;
+  2: sd_b_sprites_start;                                        
+  4: sd_c_sprites_start;                                        
+     dummy_sprites; 
+}                                           
+
+long_vehicle_RND(sd, sd_a_sprites_start)
 
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, sd_can_attach_wagon1,
-  count_veh_id(sd) < (2 + (current_year >= 1939)) )
+  count_veh_id(sd) < (3 * (2 + (current_year >= 1939))) )
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -70,24 +75,31 @@ switch (FEAT_TRAINS, SELF, sd_articulated_part,
   extra_callback_info1)
 {
   1: return dummy4;
-  2: return unitb;
+  2: return sd;
   3: return dummy4;
-  4: return unitc;
+  4: return sd;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, sd_create_effect1, 
-  electric_create_effect(4)) 
-{ 
-  return 1; 
-}    
-
 // Визуализируем эффекты тяги у sd, только если локомотив - sd
-switch (FEAT_TRAINS, PARENT, sd_create_effect,
+switch (FEAT_TRAINS, SELF, sd_create_effect2,
+  electric_create_effect(4))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, PARENT, sd_create_effect1,
   vehicle_type_id == sd)
 {
-  1: sd_create_effect1;
+  1: sd_create_effect2;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, sd_create_effect,
+  position_in_articulated_veh)
+{
+  2: sd_create_effect1;
      return disable_create_effect();
 }
 
@@ -100,10 +112,17 @@ switch (FEAT_TRAINS, PARENT, sd_power,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - sd
+switch (FEAT_TRAINS, SELF, sd_cargo_capacity2,
+  position_in_articulated_veh)
+{
+  0: return 321;
+     return 0;
+}
+
 switch (FEAT_TRAINS, PARENT, sd_cargo_capacity,
   vehicle_type_id == sd)
 {
-  1: return 321;
+  1: sd_cargo_capacity2;
      return 0;
 }
 
@@ -149,7 +168,7 @@ item (FEAT_TRAINS, sd, 443) {
     cost_factor: 8 + 6 + 6;
     sprite_id: SPRITE_ID_NEW_TRAIN;
     speed: 85 km/h;
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     track_type: get_dc_track_type_emu();
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 680 hpM;
@@ -160,7 +179,7 @@ item (FEAT_TRAINS, sd, 443) {
     engine_class: ENGINE_CLASS_ELECTRIC;
     tractive_effort_coefficient: get_tec(95.0, 59 + 38 + 38);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: sd_sprites;
@@ -172,18 +191,7 @@ item (FEAT_TRAINS, sd, 443) {
     additional_text: sd_additional_text;
     cargo_capacity: sd_cargo_capacity;
     power: sd_power;
-  }
-  livery_override(unitb) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    length: return 8;
     create_effect: sd_create_effect;
-    sd_b_sprites;
-
-  }
-  livery_override(unitc) {
-    length: return 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
-    sd_c_sprites;
   }
 }
 

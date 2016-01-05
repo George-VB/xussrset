@@ -11,7 +11,7 @@ MU_0_0_2_sprites(15, er22_v2, 32, 710)
 MU_5r_0_0_sprites(15, er22_v2u, 32, 1380)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, er22_sprites_start,
+switch (FEAT_TRAINS, SELF, er22_a_sprites_start,
   ((position_in_consist == 0) * 100) +
   ((LOAD_TEMP(2) >= LV_GREAT_CHANGE_DATE) * 10) +
   cargo_subtype)
@@ -27,8 +27,6 @@ switch (FEAT_TRAINS, SELF, er22_sprites_start,
      align_15_sprites;
 }
 
-long_vehicle(er22)
-
 switch (FEAT_TRAINS, SELF, er22_b_sprites_start,
 [  set_offset_to(-2),
    ((LOAD_TEMP(4) != er22) * 100) +
@@ -41,8 +39,6 @@ switch (FEAT_TRAINS, SELF, er22_b_sprites_start,
        align_15_sprites;
 }
 
-long_vehicle_nocount(er22_b)
-
 switch (FEAT_TRAINS, SELF, er22_c_sprites_start,
 [  set_offset_to(-4),
    ((LOAD_TEMP(4) != er22) * 100) +
@@ -54,8 +50,6 @@ switch (FEAT_TRAINS, SELF, er22_c_sprites_start,
   101: er22_v2_c_notpowered_sprites_right;
        align_15_sprites;
 }
-
-long_vehicle_nocount(er22_c)
 
 switch (FEAT_TRAINS, SELF, er22_d_sprites_start,
 [ set_offset_to(-6),
@@ -74,12 +68,22 @@ switch (FEAT_TRAINS, SELF, er22_d_sprites_start,
      align_15_sprites;
 }
 
-long_vehicle_nocount(er22_d)
+switch (FEAT_TRAINS, SELF, er22_sprites_start, 
+  position_in_articulated_veh)    
+{ 
+  0: er22_a_sprites_start;
+  2: er22_b_sprites_start;                                        
+  4: er22_c_sprites_start;                                        
+  6: er22_d_sprites_start;                                        
+     dummy_sprites; 
+}                                           
+
+long_vehicle(er22)
 
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, er22_can_attach_wagon1,
-  count_veh_id(er22) < 2)
+  count_veh_id(er22) < 2 * 4)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -96,11 +100,11 @@ switch (FEAT_TRAINS, SELF, er22_articulated_part,
   extra_callback_info1)
 {
   1: return dummy7;
-  2: return unitb;
+  2: return er22;
   3: return dummy7;
-  4: return unitc;
+  4: return er22;
   5: return dummy7;
-  6: return unitd;
+  6: return er22;
   7: return dummy7;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -118,7 +122,7 @@ switch (FEAT_TRAINS, SELF, er22_create_effect2,
 }    
   
 // Визуализируем эффекты тяги у er22, только если локомотив - er22
-switch (FEAT_TRAINS, PARENT, er22_create_effect,
+switch (FEAT_TRAINS, PARENT, er22_create_effect_lh,
   vehicle_type_id == er22)
 {
   1: er22_create_effect1;
@@ -132,6 +136,14 @@ switch (FEAT_TRAINS, PARENT, er22_create_effect_rh,
      return disable_create_effect();
 }
 
+switch (FEAT_TRAINS, SELF, er22_create_effect, 
+  position_in_articulated_veh)    
+{ 
+  0: er22_create_effect_lh;                                        
+  6: er22_create_effect_rh;                                        
+     return disable_create_effect();
+}                                           
+
 // Даём тягу, только если локомотив - er22
 switch (FEAT_TRAINS, PARENT, er22_power,
   (vehicle_type_id == er22) *
@@ -143,10 +155,17 @@ switch (FEAT_TRAINS, PARENT, er22_power,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - er22
+switch (FEAT_TRAINS, SELF, er22_cargo_capacity2,
+  position_in_articulated_veh)
+{
+  0: return 494;
+     return 0;
+}
+
 switch (FEAT_TRAINS, PARENT, er22_cargo_capacity,
   vehicle_type_id == er22)
 {
-  1: return 494;
+  1: er22_cargo_capacity2;
      return 0;
 }
 
@@ -215,22 +234,6 @@ item (FEAT_TRAINS, er22, 426) {
     cargo_subtype_text: er22_cargo_subtype_text;
     power: er22_power;
     create_effect: er22_create_effect;
-  }
-  livery_override(unitb) {
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
-    length: return 8;
-    er22_b_sprites;
-  }
-  livery_override(unitc) {
-    length: return 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_NONE;
-    er22_c_sprites;
-  }
-  livery_override(unitd) {
-    length: return 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    create_effect: er22_create_effect_rh;
-    er22_d_sprites;
   }
 }
 
