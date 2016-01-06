@@ -10,41 +10,84 @@ electric1_2_sprites(12, vl22m_v3, 32,  442)
 electric1_2_sprites(12, vl22m_v4, 32,  643)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl22m_sprites_start,
-  (LOAD_TEMP(2) >= date(1972, 1, 1)) + 
-  (cargo_subtype * 2))
+switch (FEAT_TRAINS, SELF, vl22m_sprites_start_gr,
+  LOAD_TEMP(2) >= date(1972, 1, 1))
 {
   0: vl22m_v1_sprites_start;
   1: vl22m_v2_sprites_start;
-  2: vl22m_v3_sprites_start;
-  3: vl22m_v4_sprites_start;
      align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, vl22m_sprites_start_bm,
+  LOAD_TEMP(2) >= date(1972, 1, 1))
+{
+  0: vl22m_v3_sprites_start;
+  1: vl22m_v4_sprites_start;
+     align_10_sprites; 
+}
+switch (FEAT_TRAINS, SELF, vl22m_sprites_start,
+  cargo_subtype)
+{
+  0: vl22m_sprites_start_gr;
+  1: vl22m_sprites_start_bm;
+  LV_RAL6002: vl22m_sprites_start_gr;
+  align_10_sprites; 
 }
 
 long_vehicle(vl22m)
 
-switch (FEAT_TRAINS, SELF, vl22m_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_96);
-     return CB_RESULT_NO_TEXT;
-}
+livery_template(vl22m, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl22m, TTD_96)
 
 engine_refit_cost_for_cargo_change(vl22m, 1)
-engine_TE_change_build_after2(vl22m, (cargo_type_in_veh == PASS) ? get_tec_int(353.0, 132) : get_tec_int(378.5, 132), 
-                                     (cargo_type_in_veh == PASS) ? get_tec_int(355.0, 132) : get_tec_int(369.0, 132), 1956, 
-                                     (cargo_type_in_veh == PASS) ? get_tec_int(292.0, 132) : get_tec_int(364.8, 132), 1957)
-engine_power_change_build_after2(vl22m, (cargo_type_in_veh == PASS) ? get_power_in_cb(2480) : get_power_in_cb(2470), 
-                                        (cargo_type_in_veh == PASS) ? get_power_in_cb(2450) : get_power_in_cb(2460), 1956, 
-                                        (cargo_type_in_veh == PASS) ? get_power_in_cb(2460) : get_power_in_cb(2480), 1957)
+engine_TE_change_build_after2(vl22mpass, get_tec_int(353.0, 132), 
+                                         get_tec_int(355.0, 132), 1956, 
+                                         get_tec_int(292.0, 132), 1957)
+engine_TE_change_build_after2(vl22mcargo, get_tec_int(378.5, 132), 
+                                          get_tec_int(369.0, 132), 1956, 
+                                          get_tec_int(364.8, 132), 1957)
+switch (FEAT_TRAINS, SELF, vl22m_tractive_effort_coefficient,
+  cargo_type_in_veh == PASS)
+{
+  1: vl22mpass_tractive_effort_coefficient;
+     vl22mcargo_tractive_effort_coefficient;
+}
+engine_power_change_build_after2(vl22mpass, get_power_in_cb(2480), 
+                                            get_power_in_cb(2450), 1956, 
+                                            get_power_in_cb(2460), 1957)
+engine_power_change_build_after2(vl22mcargo, get_power_in_cb(2470), 
+                                             get_power_in_cb(2460), 1956, 
+                                             get_power_in_cb(2480), 1957)
+switch (FEAT_TRAINS, SELF, vl22m_power,
+  cargo_type_in_veh == PASS)
+{
+  1: vl22mpass_power;
+     vl22mcargo_power;
+}
 engine_electric1_2_effect(vl22m, -2, 4)
-engine_speed_change_build_after(vl22m, (cargo_type_in_veh == PASS) ? 90 : 75, 
-                                       (cargo_type_in_veh == PASS) ? 100 : 80, 1957)
+engine_speed_change_build_after(vl22mpass, 90, 
+                                           100, 1957)
+engine_speed_change_build_after(vl22mcargo, 75, 
+                                            80, 1957)
+switch (FEAT_TRAINS, SELF, vl22m_speed,
+  cargo_type_in_veh == PASS)
+{
+  1: vl22mpass_speed;
+     vl22mcargo_speed;
+}
 engine_penalise_speed(vl22m, 2)
-engine_RC_change_build_after2(vl22m, (cargo_type_in_veh == PASS) ? 267 : 241, 
-                                     (cargo_type_in_veh == PASS) ? 265 : 243, 1956, 
-                                     (cargo_type_in_veh == PASS) ? 260 : 234, 1957)
+engine_RC_change_build_after2(vl22mpass, 267, 
+                                         265, 1956, 
+                                         260, 1957)
+engine_RC_change_build_after2(vl22mcargo, 241, 
+                                          243, 1956, 
+                                          234, 1957)
+switch (FEAT_TRAINS, SELF, vl22m_running_cost_factor,
+  cargo_type_in_veh == PASS)
+{
+  1: vl22mpass_running_cost_factor;
+     vl22mcargo_running_cost_factor;
+}
 
 item (FEAT_TRAINS, vl22m, 314) {
   property {
@@ -83,12 +126,12 @@ item (FEAT_TRAINS, vl22m, 314) {
                                    string(STR_PURCHASE_HINT_FROMTO, 1947, 1958), 
                                    string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_KOLOMNA), string(STR_PURCHASE_HINT_FACTORY_DINAMO)), 
                                    string(STR_PURCHASE_HINT_PASSENGER_EDITION1));
-    cargo_subtype_text: vl22m_cargo_subtype_text;
+    cargo_subtype_text: vl22m_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: vl22m_speed;
     power: vl22m_power;
     tractive_effort_coefficient: vl22m_tractive_effort_coefficient;
-    purchase_speed: vl22m_purchase_speed;
+    purchase_speed: vl22mpass_purchase_speed;
     bitmask_vehicle_info: vl22m_bitmask_vehicle_info;
     create_effect: vl22m_create_effect;
     running_cost_factor: vl22m_running_cost_factor;

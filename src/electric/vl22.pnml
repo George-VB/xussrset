@@ -27,9 +27,23 @@ engine_TE_change_on_cargo_type(vl22, get_tec_int(353.0, 132),
 engine_power_change_on_cargo_type(vl22, get_power_in_cb(2430), 
                                         get_power_in_cb(2447), PASS)
 engine_electric1_2_effect(vl22, -2, 4)
-engine_speed(vl22, (cargo_type_in_veh == PASS) ? 85 : 70)
+engine_speed(vl22cargo, 70)
+engine_speed(vl22pass, 85)
+switch (FEAT_TRAINS, SELF, vl22_speed,
+  cargo_type_in_veh == PASS)
+{
+  1: vl22pass_speed;
+     vl22cargo_speed;
+}
 engine_penalise_speed(vl22, 2)
-general_running_cost(vl22, (cargo_type_in_veh == PASS) ? 252 : 250)
+general_running_cost(vl22pass, 252)
+general_running_cost(vl22cargo, 250)
+switch (FEAT_TRAINS, SELF, vl22_running_cost_factor,
+  cargo_type_in_veh == PASS)
+{
+  1: vl22pass_running_cost_factor;
+     vl22cargo_running_cost_factor;
+}
 
 item (FEAT_TRAINS, vl22, 313) {
   property {
@@ -73,7 +87,7 @@ item (FEAT_TRAINS, vl22, 313) {
     speed: vl22_speed;
     power: vl22_power;
     tractive_effort_coefficient: vl22_tractive_effort_coefficient;
-    purchase_speed: vl22_purchase_speed;
+    purchase_speed: vl22cargo_purchase_speed;
     bitmask_vehicle_info: vl22_bitmask_vehicle_info;
     create_effect: vl22_create_effect;
     running_cost_factor: vl22_running_cost_factor;

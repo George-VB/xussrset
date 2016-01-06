@@ -75,7 +75,7 @@ switch (FEAT_TRAINS, PARENT, er200_c_sprites_start,
 
 long_vehicle(er200_c)
 
-switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon_2, 
+switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon3, 
 [  set_offset_to(num_vehs_in_consist-2),
    prev_vehicle_type_id()])
 {
@@ -83,14 +83,19 @@ switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon_2,
            return CB_RESULT_ATTACH_ALLOW;
 }
 
-switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon, 
-  (count_veh_id(er200_h) > 1) ? 0 : 
-  (((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) < 5) ||
-  ((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) % 2 == 0 ) ) ? 1 : 2)
+switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon2, 
+  ((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) < 5) ||
+  ((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) % 2 == 0))
 {
-  0: return string(STR_CAN_ATTACH_NO_MORE_THAN_2_HEAD);
   1: return string(STR_CAN_ATTACH_CAR_ONLY);
-     er200_h_can_attach_wagon_2;
+     er200_h_can_attach_wagon3;
+}
+
+switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon, 
+  count_veh_id(er200_h) > 1)
+{
+  1: return string(STR_CAN_ATTACH_NO_MORE_THAN_2_HEAD);
+     er200_h_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_m_can_attach_wagon, 
@@ -109,7 +114,7 @@ switch (FEAT_TRAINS, PARENT, er200_c_can_attach_wagon,
            return CB_RESULT_ATTACH_ALLOW;
 }
 
-switch (FEAT_TRAINS, SELF, er200_can_attach_wagon2,
+switch (FEAT_TRAINS, SELF, er200_can_attach_wagon3,
   vehicle_type_id)
 {
   er200_h: er200_h_can_attach_wagon;
@@ -118,12 +123,17 @@ switch (FEAT_TRAINS, SELF, er200_can_attach_wagon2,
            return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon1,
-  (count_veh_id(er200_h) > 1) ? 0 : 
-  (((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) >= 13) && (LOAD_TEMP(0) != er200_h)) ? 1 : 2)
+switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon2,
+  ((count_veh_id(er200_h) + count_veh_id(er200_m) + count_veh_id(er200_c)) >= 13) && (LOAD_TEMP(0) != er200_h))
 {
-  0: return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
   1: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     er200_can_attach_wagon3;
+}
+
+switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon1,
+  count_veh_id(er200_h) > 1)
+{
+  1: return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
      er200_can_attach_wagon2;
 }
 

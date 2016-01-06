@@ -315,9 +315,23 @@ livery_template(tep70bs, BELARUSSIAN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_RZD_PID
 engine_diesel_1r_effect(tep70bs, 3, 2, 13)
 engine_direction_template(tep70bs, _create_effect) 
 engine_RND_effect_direction_template(tep70bs, 5, 3) 
-engine_speed_with_reduce(tep70bs, ((cargo_subtype >= 1) ? 120 : 160), ((cargo_subtype >= 1) ? 120 : 140), 25)
+engine_speed_with_reduce(tep70bs_160, 160, 140, 25)
+engine_speed(tep70bs_120, 120)
+switch (FEAT_TRAINS, SELF, tep70bs_speed,
+  cargo_subtype == LV_RZD_PID)
+{
+  1: tep70bs_160_speed;
+     tep70bs_120_speed;
+}
 engine_penalise_speed(tep70bs, 2)
-general_running_cost(tep70bs, (cargo_subtype >= 1) ? 860 : 924)
+general_running_cost(tep70bs_120, 860)
+general_running_cost(tep70bs_160, 924)
+switch (FEAT_TRAINS, SELF, tep70bs_running_cost_factor,
+  cargo_subtype == LV_RZD_PID)
+{
+  1: tep70bs_160_running_cost_factor;
+     tep70bs_120_running_cost_factor;
+}
 
 item (FEAT_TRAINS, tep70bs, 175) {
   property {
@@ -360,7 +374,7 @@ item (FEAT_TRAINS, tep70bs, 175) {
     cargo_subtype_text: tep70bs_cargo_subtype_text;
     cargo_capacity: return 0;
     speed: tep70bs_speed;
-    purchase_speed: tep70bs_purchase_speed;
+    purchase_speed: tep70bs_120_purchase_speed;
     running_cost_factor: tep70bs_running_cost_factor;
     bitmask_vehicle_info: tep70bs_bitmask_vehicle_info;
     create_effect: tep70bs_create_effect;
