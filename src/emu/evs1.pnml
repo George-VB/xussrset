@@ -112,23 +112,23 @@ switch (FEAT_TRAINS, SELF, evs1_articulated_part,
   extra_callback_info1)
 {
   1: return dummy7;
-  2: return evs1;
+  2: return evs1_part2;
   3: return dummy6;
-  4: return evs1;
+  4: return evs1_part3;
   5: return dummy6;
-  6: return evs1;
+  6: return evs1_part3;
   7: return dummy6;
-  8: return evs1;
+  8: return evs1_part3;
   9: return dummy6;
- 10: return evs1;
+ 10: return evs1_part3;
  11: return dummy6;
- 12: return evs1;
+ 12: return evs1_part3;
  13: return dummy6;
- 14: return evs1;
+ 14: return evs1_part3;
  15: return dummy6;
- 16: return evs1;
+ 16: return evs1_part3;
  17: return dummy6;
- 18: return evs1;
+ 18: return evs1_part3;
  19: return dummy7;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -170,18 +170,11 @@ switch (FEAT_TRAINS, PARENT, evs1_create_effect,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - evs1
-switch (FEAT_TRAINS, SELF, evs1_cargo_capacity3,
+switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
   build_year >= 2014)
 {
-  0: return 564;
-     return 508;
-}
-
-switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
-  position_in_articulated_veh)
-{
-  0: evs1_cargo_capacity3;
-     return 0;
+  0: return 564-75;
+     return 508-75;
 }
 
 switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
@@ -194,8 +187,8 @@ switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
 switch (FEAT_TRAINS, SELF, evs1_purchase_cargo_capacity,
   current_year >= 2014)
 {
-  0: return 564;
-     return 508;
+  0: return 564-75;
+     return 508-75;
 }
 
 switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
@@ -258,6 +251,7 @@ switch (FEAT_TRAINS, SELF, evs1_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_SIEMENS));
 }
 
+livery_template(evs1, FACTORY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 engine_CAP_change_build_after(evs1, 145, 
                                     135, 2014)
 
@@ -280,7 +274,7 @@ item (FEAT_TRAINS, evs1, 400) {
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 10876 hpM;
     running_cost_base: RUNNING_COST_ELECTRIC;
-    loading_speed: (15*10);
+    loading_speed: (15*8);
     cargo_capacity: 255;
     weight: 576.8 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
@@ -295,6 +289,7 @@ item (FEAT_TRAINS, evs1, 400) {
     running_cost_factor: evs1_running_cost_factor;
     articulated_part: evs1_articulated_part;
     can_attach_wagon: evs1_can_attach_wagon;
+    cargo_subtype_text: evs1_cargo_subtype_text;
     additional_text: evs1_additional_text;
     power: evs1_power;
     cargo_capacity: evs1_cargo_capacity;
@@ -306,3 +301,46 @@ item (FEAT_TRAINS, evs1, 400) {
 }
 
 long_name_template(evs1, STR_LONGNAME_EVS1)
+
+switch (FEAT_TRAINS, PARENT, evs1_part2_cargo_capacity,
+  vehicle_type_id == evs1)
+{
+  1: return 75;
+     return 0;
+}
+
+item (FEAT_TRAINS, evs1_part2, 451) {
+  property {
+    climates_available: NO_CLIMATE;
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    loading_speed: 15*2;
+    cargo_capacity: 75;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: evs1_sprites;
+    cargo_age_period: return 145;
+    create_effect: evs1_create_effect;
+    cargo_capacity: evs1_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+item (FEAT_TRAINS, evs1_part3, 452) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    cargo_capacity: 0;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: evs1_sprites;
+    create_effect: evs1_create_effect;
+  }
+}
