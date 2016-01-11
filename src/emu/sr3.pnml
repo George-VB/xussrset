@@ -89,9 +89,8 @@ switch (FEAT_TRAINS, SELF, sr3_sprites_start,
 long_vehicle_RND(sr3, sr3_a_sprites_start)
 
 // считаем уже имеющиеся вагоны
-
 switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon1,
-  count_veh_id(sr3) < 3 * 3)
+  count_veh_id(sr3) < 3)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -108,9 +107,9 @@ switch (FEAT_TRAINS, SELF, sr3_articulated_part,
   extra_callback_info1)
 {
   1: return dummy4;
-  2: return sr3;
+  2: return sr3_part2;
   3: return dummy4;
-  4: return sr3;
+  4: return sr3_part2;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -145,17 +144,10 @@ switch (FEAT_TRAINS, PARENT, sr3_power,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - sr3
-switch (FEAT_TRAINS, SELF, sr3_cargo_capacity2,
-  position_in_articulated_veh)
-{
-  0: return 321;
-     return 0;
-}
-
 switch (FEAT_TRAINS, PARENT, sr3_cargo_capacity,
   vehicle_type_id == sr3)
 {
-  1: sr3_cargo_capacity2;
+  1: return 321;
      return 0;
 }
 
@@ -225,3 +217,18 @@ item (FEAT_TRAINS, sr3, 415) {
 }
 
 long_name_template(sr3, STR_LONGNAME_SR3)
+
+item (FEAT_TRAINS, sr3_part2, 460) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    cargo_capacity: 0;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: sr3_sprites;
+    create_effect: sr3_create_effect;
+  }
+}

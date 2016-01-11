@@ -134,17 +134,17 @@ switch (FEAT_TRAINS, SELF, sm6_articulated_part,
   extra_callback_info1)
 {
   1: return dummy8;
-  2: return sm6;
+  2: return sm6_part2;
   3: return dummy6;
-  4: return sm6;
+  4: return sm6_part3;
   5: return dummy6;
-  6: return sm6;
+  6: return sm6_part3;
   7: return dummy6;
-  8: return sm6;
+  8: return sm6_part3;
   9: return dummy6;
- 10: return sm6;
+ 10: return sm6_part3;
  11: return dummy6;
- 12: return sm6;
+ 12: return sm6_part3;
  13: return dummy8;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -248,17 +248,10 @@ switch (FEAT_TRAINS, PARENT, sm6_create_effect,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - sm6
-switch (FEAT_TRAINS, SELF, sm6_cargo_capacity2,
-  position_in_articulated_veh)
-{
-  0: return 341;
-     return 0;
-}
-
 switch (FEAT_TRAINS, PARENT, sm6_cargo_capacity,
   vehicle_type_id == sm6)
 {
-  1: sm6_cargo_capacity2;
+  1: return 341-48;
      return 0;
 }
 
@@ -310,7 +303,7 @@ item (FEAT_TRAINS, sm6, 412) {
     ai_special_flag: AI_FLAG_PASSENGER;
     power: 7478 hpM;
     running_cost_base: RUNNING_COST_ELECTRIC;
-    loading_speed: (15*7);
+    loading_speed: (15*5);
     cargo_capacity: 255; 
     weight: 423 ton;
     engine_class: ENGINE_CLASS_ELECTRIC;
@@ -341,3 +334,46 @@ item (FEAT_TRAINS, sm6, 412) {
 }
 
 long_name_template(sm6, STR_LONGNAME_SM6)
+
+switch (FEAT_TRAINS, PARENT, sm6_part2_cargo_capacity,
+  vehicle_type_id == sm6)
+{
+  1: return 48;
+     return 0;
+}
+
+item (FEAT_TRAINS, sm6_part2, 457) {
+  property {
+    climates_available: NO_CLIMATE;
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    loading_speed: 15*1;
+    cargo_capacity: 48;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: sm6_sprites;
+    cargo_age_period: return 370;
+    create_effect: sm6_create_effect;
+    cargo_capacity: sm6_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+item (FEAT_TRAINS, sm6_part3, 458) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    cargo_capacity: 0;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: sm6_sprites;
+    create_effect: sm6_create_effect;
+  }
+}

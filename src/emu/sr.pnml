@@ -59,7 +59,7 @@ long_vehicle_RND(sr, sr_a_sprites_start)
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, sr_can_attach_wagon1,
-  count_veh_id(sr) < 3 * 3)
+  count_veh_id(sr) < 3 * 2)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -78,7 +78,7 @@ switch (FEAT_TRAINS, SELF, sr_articulated_part,
   1: return dummy4;
   2: return sr;
   3: return dummy4;
-  4: return sr;
+  4: return sr_part2;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -116,7 +116,7 @@ switch (FEAT_TRAINS, PARENT, sr_power,
 switch (FEAT_TRAINS, SELF, sr_cargo_capacity2,
   position_in_articulated_veh)
 {
-  0: return 321;
+  0: return 306;
      return 0;
 }
 
@@ -180,7 +180,52 @@ item (FEAT_TRAINS, sr, 442) {
     cargo_capacity: sr_cargo_capacity;
     power: sr_power;
     create_effect: sr_create_effect;
+    purchase_cargo_capacity: return 306/2;
   }
 }
 
 long_name_template(sr, STR_LONGNAME_SR)
+
+switch (FEAT_TRAINS, SELF, sr_part2_cargo_capacity3,
+  cargo_type_in_veh)
+{
+  MAIL: return 20;
+  GOOD: return 10;
+//  PASS: return 15;
+        return 0;        
+}
+
+switch (FEAT_TRAINS, SELF, sr_part2_cargo_capacity2,
+  position_in_articulated_veh)
+{
+  4: sr_part2_cargo_capacity3;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, sr_part2_cargo_capacity,
+  vehicle_type_id == sr)
+{
+  1: sr_part2_cargo_capacity2;
+     return 0;
+}
+
+item (FEAT_TRAINS, sr_part2, 461) {
+  property {
+    climates_available: NO_CLIMATE;
+    cargo_allow_refit: [MAIL, GOOD];
+    default_cargo_type: MAIL;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    loading_speed: 10;
+    cargo_capacity: 20;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: sr_sprites;
+    cargo_age_period: return 60;
+    create_effect: sr_create_effect;
+    cargo_capacity: sr_part2_cargo_capacity;
+    refit_cost: return 1;
+  }
+}
