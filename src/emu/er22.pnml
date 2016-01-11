@@ -83,7 +83,7 @@ long_vehicle(er22)
 // считаем уже имеющиеся вагоны
 
 switch (FEAT_TRAINS, PARENT, er22_can_attach_wagon1,
-  count_veh_id(er22) < 2 * 4)
+  count_veh_id(er22) < 2)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -100,11 +100,11 @@ switch (FEAT_TRAINS, SELF, er22_articulated_part,
   extra_callback_info1)
 {
   1: return dummy7;
-  2: return er22;
+  2: return er22_part2;
   3: return dummy7;
-  4: return er22;
+  4: return er22_part2;
   5: return dummy7;
-  6: return er22;
+  6: return er22_part2;
   7: return dummy7;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -149,23 +149,16 @@ switch (FEAT_TRAINS, PARENT, er22_power,
   (vehicle_type_id == er22) *
   (1 + (build_year >= 1967)))
 {
-  1: return get_power_in_cb(2*948.5);
-  2: return get_power_in_cb(2*1039);
+  1: return get_power_in_cb(2 * 948.5);
+  2: return get_power_in_cb(2 * 1039);
      return 0;
 }
 
 // Допускается эксплуатация с пассажирами только если голова - er22
-switch (FEAT_TRAINS, SELF, er22_cargo_capacity2,
-  position_in_articulated_veh)
-{
-  0: return 494;
-     return 0;
-}
-
 switch (FEAT_TRAINS, PARENT, er22_cargo_capacity,
   vehicle_type_id == er22)
 {
-  1: er22_cargo_capacity2;
+  1: return 494;
      return 0;
 }
 
@@ -238,3 +231,18 @@ item (FEAT_TRAINS, er22, 426) {
 }
 
 long_name_template(er22, STR_LONGNAME_ER22)
+
+item (FEAT_TRAINS, er22_part2, 454) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    cargo_capacity: 0;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: er22_sprites;
+    create_effect: er22_create_effect;
+  }
+}

@@ -85,7 +85,7 @@ long_vehicle_RND(epg, epg_a_sprites_start)
 
 // Можно ли ещё присоединить (1..3 секции)
 switch (FEAT_TRAINS, SELF, epg_can_attach_wagon2,
-  LOAD_TEMP(0) < 3 * 4)
+  LOAD_TEMP(0) < 3)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -110,11 +110,11 @@ switch (FEAT_TRAINS, SELF, epg_articulated_part,
   extra_callback_info1)
 {
   1: return dummy3;
-  2: return epg;
+  2: return epg_part2;
   3: return dummy2;
-  4: return epg;
+  4: return epg_part2;
   5: return dummy2;
-  6: return epg;
+  6: return epg_part2;
   7: return dummy3;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -149,18 +149,10 @@ switch (FEAT_TRAINS, SELF, epg_create_effect,
 }
 
 // Допускается эксплуатация с пассажирами только если голова - epg
-
-switch (FEAT_TRAINS, SELF, epg_cargo_capacity2,
-  position_in_articulated_veh)
-{
-  0: return 260;
-     return 0;
-}
-
 switch (FEAT_TRAINS, PARENT, epg_cargo_capacity,
   (vehicle_type_id == epg) || (vehicle_type_id == epr))
 {
-  1: epg_cargo_capacity2;
+  1: return 260;
      return 0;
 }
 
@@ -222,3 +214,18 @@ item (FEAT_TRAINS, epg, 225) {
 }
 
 long_name_template(epg, STR_LONGNAME_EPG)
+
+item (FEAT_TRAINS, epg_part2, 455) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    cargo_capacity: 0;
+    length: 8;
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: epg_sprites;
+    create_effect: epg_create_effect;
+  }
+}
