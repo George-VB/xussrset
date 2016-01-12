@@ -1,5 +1,5 @@
 ﻿ // rs1
-// 393 (189h) 394 (18Ah)
+//  394 (18Ah)
 
 #define IMAGEFILE  "src/freight/refrigerators/rs1.png"
 purchase_sprites(rs1, 0, 0)
@@ -10,154 +10,93 @@ flatbed_empty_layout_template(rs1_diesel, 10, 113, 333)
 switch (FEAT_TRAINS, SELF, rs1_food_sprites_left, 
   cargo_count)
 {
-     0..59: rs1_food_sprites_left1;
-   60..119: rs1_food_sprites_left2;
-  120..179: rs1_food_sprites_left3;
-            rs1_food_sprites_left0;
+   0..14: rs1_food_sprites_left1;
+  15..29: rs1_food_sprites_left2;
+  30..44: rs1_food_sprites_left3;
+          rs1_food_sprites_left0;
 } 
 
 switch (FEAT_TRAINS, SELF, rs1_food_sprites_right, 
   cargo_count)
 {
-     0..59: rs1_food_sprites_right1;
-   60..119: rs1_food_sprites_right2;
-  120..179: rs1_food_sprites_right3;
-            rs1_food_sprites_right0;
+   0..14: rs1_food_sprites_right1;
+  15..29: rs1_food_sprites_right2;
+  30..44: rs1_food_sprites_right3;
+          rs1_food_sprites_right0;
 } 
 
-random_switch (FEAT_TRAINS, SELF, rs1_sprites_start, 
+random_switch (FEAT_TRAINS, SELF, rs1_h_sprites_start, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: rs1_food_sprites_left;
   1: rs1_food_sprites_right;
 }
 
-long_vehicle_RND(rs1, rs1_sprites_start)
-
 switch (FEAT_TRAINS, SELF, rs1_diesel_sprites, 
-[  set_offset_to(-position_in_vehid_chain-1),
+[  set_offset_to(-position_in_articulated_veh),
    (prev_vehicle_randombits() % 2)])
 {
   0: rs1_diesel_empty_sprites_left;
      rs1_diesel_empty_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, rs1_food_sprites_left_prev, 
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load() )])
-{
-     0..59: rs1_food_sprites_left1;
-   60..119: rs1_food_sprites_left2;
-  120..179: rs1_food_sprites_left3;
-            rs1_food_sprites_left0;
-} 
-
-switch (FEAT_TRAINS, SELF, rs1_food_sprites_right_prev, 
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load() )])
-{
-     0..59: rs1_food_sprites_right1;
-   60..119: rs1_food_sprites_right2;
-  120..179: rs1_food_sprites_right3;
-            rs1_food_sprites_right0;
-} 
-
 switch (FEAT_TRAINS, SELF, rs1int_prev_sprites, 
-[  set_offset_to(-position_in_vehid_chain-1),
+[  set_offset_to(-position_in_articulated_veh),
    (prev_vehicle_randombits() % 2)])
 {
-  0: rs1_food_sprites_left_prev;
-     rs1_food_sprites_right_prev;
+  0: rs1_food_sprites_left;
+     rs1_food_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, rs1int_sprites_start,
-  position_in_vehid_chain)
+switch (FEAT_TRAINS, SELF, rs1_sprites_start,
+  position_in_articulated_veh)
 {
-  1: rs1int_prev_sprites;
-  3: rs1_diesel_sprites;
-  5: rs1int_prev_sprites;
-  7: rs1int_prev_sprites;
+  0: rs1_h_sprites_start;
+  2: rs1int_prev_sprites;
+  4: rs1_diesel_sprites;
+  6: rs1int_prev_sprites;
+  8: rs1int_prev_sprites;
      dummy_sprites;
 }
 
-long_vehicle(rs1int)
+long_vehicle_RND(rs1, rs1_h_sprites_start)
 
-engine_diesel_1r_effect(rs1int, -2, 4, 11)
-
-switch (FEAT_TRAINS, SELF, rs1int_create_effect2, 
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
-{
-  0: rs1int_create_effect_sprites_left;
-     rs1int_create_effect_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, rs1int_create_effect,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load() > 0) && (position_in_vehid_chain == 3)])
-{
-  1: rs1int_create_effect2;
-     return 0;
-}
+engine_diesel_1r_effect(rs1, -2, 4, 11)
 
 // секция из 5-ти вагонов
 switch (FEAT_TRAINS, SELF, rs1_articulated_part,
   extra_callback_info1)
 {
-  1..9: return rs1int;
-        return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
-}
-
-switch (FEAT_TRAINS, SELF, rs1int_length,
-  position_in_vehid_chain)
-{
-  0: return 5;
-//  1: return 8;
-  2: return 5;
-//  3: return 8;
-  4: return 2;
-//  5: return 8;
-  6: return 5;
-//  7: return 8;
-  8: return 5;
-     return 8;
-}
-
-item (FEAT_TRAINS, rs1int, 393) {
-  property {
-    climates_available: NO_CLIMATE;
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    model_life: VEHICLE_NEVER_EXPIRES;
-    misc_flags: bitmask(TRAIN_FLAG_TILT);
-    visual_effect_and_powered: disable_visual_effect_and_powered();
-    track_type: get_normal_track_type();
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-  }
-  graphics {
-    default: rs1int_sprites;
-    length: rs1int_length;
-    create_effect: rs1int_create_effect;
-  }
+  1: return dummy5;
+  2: return rs1_part2;
+  3: return dummy5;
+  4: return rs1_part3;
+  5: return dummy2;
+  6: return rs1_part4;
+  7: return dummy5;
+  8: return rs1_part5;
+  9: return dummy5;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 switch (FEAT_TRAINS, SELF, rs1_cargo_capacity_b1973, cargo_type_in_veh)
 {
-  FOOD: return 168;
-  FISH: return 168;
-  FRUT: return 168;
-  MILK: return 168; 
-  SGBT: return 168;
-        return 168;
+  FOOD: return 168/4;
+  FISH: return 168/4;
+  FRUT: return 168/4;
+  MILK: return 168/4; 
+  SGBT: return 168/4;
+        return 168/4;
 }
 
 switch (FEAT_TRAINS, SELF, rs1_cargo_capacity_a1973, cargo_type_in_veh)
 {
-  FOOD: return 172;
-  FISH: return 172;
-  FRUT: return 172;
-  MILK: return 172; 
-  SGBT: return 172;
-        return 172;
+  FOOD: return 172/4;
+  FISH: return 172/4;
+  FRUT: return 172/4;
+  MILK: return 172/4; 
+  SGBT: return 172/4;
+        return 172/4;
 }
 
 switch (FEAT_TRAINS, SELF, rs1_cargo_capacity, 
@@ -210,8 +149,8 @@ item (FEAT_TRAINS, rs1, 394) {
     track_type: get_normal_track_type();
     power: 0 hpM;
     running_cost_base: RUNNING_COST_ROADVEH;
-    loading_speed: 60;
-    cargo_capacity: 168;
+    loading_speed: 20;
+    cargo_capacity: 168/4;
     weight: 226 ton;
     length: 8;
     visual_effect_and_powered: disable_visual_effect_and_powered();
@@ -232,3 +171,99 @@ item (FEAT_TRAINS, rs1, 394) {
 }
 
 long_name_template(rs1, STR_LONGNAME_RS1)
+
+switch (FEAT_TRAINS, SELF, rs1_create_effect2, 
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() % 2)])
+{
+  0: rs1_create_effect_sprites_left;
+     rs1_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_load() > 0])
+{
+  1: rs1_create_effect2;
+     return 0;
+}
+
+item (FEAT_TRAINS, rs1_part3, 463) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    track_type: get_normal_track_type();
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+    length: 8;
+    cargo_capacity: 0;
+  }
+  graphics {
+    default: rs1_diesel_sprites;
+    create_effect: rs1_create_effect;
+  }
+}
+
+item (FEAT_TRAINS, rs1_part2, 462) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    cargo_allow_refit: [FOOD, FISH, FRUT, FRVG];
+    default_cargo_type: FISH; 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    track_type: get_normal_track_type();
+    length: 8;
+    loading_speed: 20;
+    cargo_capacity: 168/4;
+  }
+  graphics {
+    default: rs1int_prev_sprites;
+    cargo_capacity: rs1_cargo_capacity;
+    cargo_age_period: return 9000;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+item (FEAT_TRAINS, rs1_part4, 464) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    cargo_allow_refit: [FOOD, FISH, FRUT, FRVG];
+    default_cargo_type: FRUT; 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    track_type: get_normal_track_type();
+    length: 8;
+    loading_speed: 20;
+    cargo_capacity: 168/4;
+  }
+  graphics {
+    default: rs1int_prev_sprites;
+    cargo_capacity: rs1_cargo_capacity;
+    cargo_age_period: return 9000;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+item (FEAT_TRAINS, rs1_part5, 465) {
+  property {
+    climates_available: NO_CLIMATE;
+    sprite_id: SPRITE_ID_NEW_TRAIN;
+    cargo_allow_refit: [FOOD, FISH, FRUT, FRVG];
+    default_cargo_type: FRVG; 
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT);
+    visual_effect_and_powered: disable_visual_effect_and_powered();
+    track_type: get_normal_track_type();
+    length: 8;
+    loading_speed: 20;
+    cargo_capacity: 168/4;
+  }
+  graphics {
+    default: rs1int_prev_sprites;
+    cargo_capacity: rs1_cargo_capacity;
+    cargo_age_period: return 9000;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
