@@ -21,114 +21,93 @@ switch (FEAT_TRAINS, SELF, vl23_purchase_sprites,
      vl23_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl23_sprites3, cargo_subtype)
+switch (FEAT_TRAINS, SELF, vl23_sprites_b1958, cargo_subtype)
 {
   0: vl23_v1_sprites_start;
   1: vl23_v2_sprites_start;
-
-  2: vl23_v2_sprites_start;
-  3: vl23_v6_sprites_start;
-  4: vl23_v7_sprites_start;
-  5: vl23_v6_sprites_start;
      align_10_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, vl23_sprites4, cargo_subtype)
+switch (FEAT_TRAINS, SELF, vl23_sprites_start_green, 
+ (LOAD_TEMP(2) >= LV_GREAT_CHANGE_DATE) || (build_year >= LV_GREAT_CHANGE_YEAR))
 {
   0: vl23_v3_sprites_start;
-  1: vl23_v4_sprites_start;
-
-  2: vl23_v4_sprites_start;
-  3: vl23_v6_sprites_start;
-  4: vl23_v7_sprites_start;
-  5: vl23_v6_sprites_start;
+  1: vl23_v6_sprites_start;
      align_10_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, vl23_sprites5, cargo_subtype)
+switch (FEAT_TRAINS, SELF, vl23_sprites_start_grey, 
+ (LOAD_TEMP(2) >= LV_GREAT_CHANGE_DATE) || (build_year >= LV_GREAT_CHANGE_YEAR))
 {
-  0: vl23_v5_sprites_start;
-  1: vl23_v6_sprites_start;
-  2: vl23_v7_sprites_start;
-  3: vl23_v6_sprites_start;
-  4: vl23_v7_sprites_start;
-  5: vl23_v6_sprites_start;
+  0: vl23_v4_sprites_start;
+  1: vl23_v7_sprites_start;
      align_10_sprites; 
+}
+
+switch (FEAT_TRAINS, SELF, vl23_sprites_a1958,
+  cargo_subtype)
+{
+  0: vl23_sprites_start_green;
+  1: vl23_sprites_start_grey;
+  LV_RAL6002: vl23_sprites_start_green;
+  LV_SOUTHERN_RAILWAY: vl23_v5_sprites_start;
+
+  0xE0: vl23_v6_sprites_start;
+  0xE1: vl23_v7_sprites_start;                     	
+  0xE2: vl23_v6_sprites_start;
+        align_10_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, vl23_sprites_start,
-  (build_year >= 1958) +
-  (((LOAD_TEMP(2) >= LV_GREAT_CHANGE_DATE) || (build_year >= LV_GREAT_CHANGE_YEAR)) * 2))
+  build_year >= 1958)
 {
-  0: vl23_sprites3;
-  1: vl23_sprites4;
-     vl23_sprites5;
+  0: vl23_sprites_b1958;
+     vl23_sprites_a1958;
 }
 
 long_vehicle(vl23)
 
 switch (FEAT_TRAINS, SELF, vl23_refit_cost,
-  (((extra_callback_info1 & 0xFF00) == 0x300) || ((extra_callback_info1 & 0xFF00) == 0x400) || ((extra_callback_info1 & 0xFF00) == 0x500))+
-  (((cargo_subtype == 3) || (cargo_subtype == 4) || (cargo_subtype == 5)) * 2))
+  (((extra_callback_info1 & 0xFF00) == 0xE000) || ((extra_callback_info1 & 0xFF00) == 0xE100) || ((extra_callback_info1 & 0xFF00) == 0xE200)) +
+  (((cargo_subtype == 0xE0) || (cargo_subtype == 0xE1) || (cargo_subtype == 0xE2)) * 2))
 {
   1: return 1;
      return 0; 
 }            
 
-switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text5,
+livery_template(vl23_b1958, TTD_93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl23_b1958, TTD_09)
+
+livery_template(vl23_a1958, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl23_a1958, TTD_09)
+
+livery_template(vl23_a1972, TTD_53, LV_RAL6002, LV_SOUTHERN_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl23_a1972, TTD_B5)
+
+switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text_a1987,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_09);
-     return CB_RESULT_NO_TEXT;
+  0xE0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_2VL23), string(STR_REFIT_TTD_53));
+  0xE1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_2VL23), string(STR_REFIT_TTD_B5));
+  0xE2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_3VL23), string(STR_REFIT_TTD_53));
+        vl23_a1972_cargo_subtype_text_pre;
 }
 
-switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text4,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_93);
-  1: return string(STR_REFIT_TTD_09);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text3,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_SOUTHERN_RAILWAY);
-  1: return string(STR_REFIT_TTD_53);
-  2: return string(STR_REFIT_TTD_B5);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text3m,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_SOUTHERN_RAILWAY);
-  1: return string(STR_REFIT_TTD_53);
-  2: return string(STR_REFIT_TTD_B5);
-
-  3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_2VL23), string(STR_REFIT_TTD_53));
-  4: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_2VL23), string(STR_REFIT_TTD_B5));
-  5: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_3VL23), string(STR_REFIT_TTD_53));
-
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text2,
-  (build_year >= 1958)) 
-{
-  0: vl23_cargo_subtype_text4;
-  1: vl23_cargo_subtype_text5;
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, PARENT, vl23_cargo_subtype_text,
+switch (FEAT_TRAINS, PARENT, vl23_cargo_subtype_text_a1958,
   ((date_of_last_service >= LV_GREAT_CHANGE_DATE) || (build_year >= LV_GREAT_CHANGE_YEAR)) *
   (1 + ((current_year >= 1987) || (build_year >= 1987)))) 
 {
-  0: vl23_cargo_subtype_text2;
-  1: vl23_cargo_subtype_text3;
-  2: vl23_cargo_subtype_text3m;
+  0: vl23_a1958_cargo_subtype_text_pre;
+  1: vl23_a1972_cargo_subtype_text_pre;
+  2: vl23_cargo_subtype_text_a1987;
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text,
+  (build_year >= 1958)) 
+{
+  0: vl23_b1958_cargo_subtype_text_pre;
+  1: vl23_cargo_subtype_text_a1958;
      return CB_RESULT_NO_TEXT;
 }
 
@@ -144,7 +123,7 @@ switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_m4,
 
 switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_m3,            
 [ STORE_TEMP(count_veh_id(vl23), 0),                                        
-  (vehicle_type_id == vl23) && (cargo_subtype == 5) ])                                      
+  (vehicle_type_id == vl23) && (cargo_subtype == 0xE2) ])                                      
 { 
   1: vl23_bitmask_vehicle_info_m4;                                                   
      return FLAG_PENALISE_SPEED; 
@@ -167,7 +146,7 @@ switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_m1,
 }                               
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_m,
-  cargo_subtype == 5)
+  cargo_subtype == 0xE2)
 {
   1: vl23_bitmask_vehicle_info_m1;
      vl23_bitmask_vehicle_info;

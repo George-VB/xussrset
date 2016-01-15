@@ -30,41 +30,38 @@ switch (FEAT_TRAINS, SELF, vl60_sprites_start,
 long_vehicle(vl60)
 
 switch (FEAT_TRAINS, SELF, vl60_refit_cost,
-  ((extra_callback_info1 & 0xFF00) == 0x100) +
-  ((cargo_subtype == 1) * 2))
+  ((extra_callback_info1 & 0xFF00) == 0xE000) +
+  ((cargo_subtype == 0xE0) * 2))
 {
   1: return 1;
      return 0; 
 }            
 
-switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text_b1966,
+livery_template(vl60_b1966, FACTORY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+switch (FEAT_TRAINS, SELF, vl60_a1966_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: vl60_b1966_cargo_subtype_text;
+  0xE0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60K), "");
+        return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, vl60_a1960_cargo_subtype_text_pre,
+  (build_year >= 1966) || (current_year >= 1966))
+{
+  0: vl60_b1966_cargo_subtype_text;
+     vl60_a1966_cargo_subtype_text;
+}     
+
+switch (FEAT_TRAINS, SELF, vl60_a1959_cargo_subtype_text_pre,
   build_year >= 1960)
 {
   0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_N60), "");
-     return string(STR_REFIT_FACTORY);
+     vl60_a1960_cargo_subtype_text_pre;
 }
 
-switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text_a1966,
-  cargo_subtype)
-{
-  0: vl60_cargo_subtype_text_b1966;
-  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL60K), "");
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text1,
-  (build_year >= 1966) || (current_year >= 1966))
-{
-  0: vl60_cargo_subtype_text_b1966;
-     vl60_cargo_subtype_text_a1966;
-}    
-
-switch (FEAT_TRAINS, SELF, vl60_cargo_subtype_text,
-  build_year >= 1959)
-{
-  0: return string(STR_REFIT_PREPRODUCTION);
-     vl60_cargo_subtype_text1;
-}
+livery_template_prealt(vl60, 1959)
 
 switch (FEAT_TRAINS, SELF, vl60_additional_text,
   (current_year >= 1959) +
@@ -180,7 +177,7 @@ item (FEAT_TRAINS, vl60, 319) {
     purchase_speed: vl60_purchase_speed;
     bitmask_vehicle_info: vl60_bitmask_vehicle_info_advanced;
     cargo_capacity: return 0;
-    cargo_subtype_text: vl60_cargo_subtype_text;
+    cargo_subtype_text: vl60_cargo_subtype_text_pre;
     create_effect: vl60_create_effect;
     running_cost_factor: vl60_running_cost_factor;
     refit_cost: vl60_refit_cost;
