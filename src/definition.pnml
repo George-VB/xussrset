@@ -21,9 +21,9 @@ delta_age = 1;
 #define get_car_year(year) year - delta_age
 // вычитаем delta_age из года ввода ТС, для головных вагонов и локомотивов
 #define get_loc_year(year) year - delta_age
+
 // максимальная скорость
 #define get_max_speed(life, slow, normal) (age_in_days >= (life * 365 + life / 4)) ? slow : normal
-
 // рисуем [не] на карте?
 #define is_drawn_in_viewport() ((extra_callback_info1 & 0xFF) == 0)
 #define is_not_drawn_in_viewport() ((extra_callback_info1 & 0xFF) != 0)
@@ -97,6 +97,7 @@ delta_age = 1;
 #define FLAG_DRB1_SH 2
 // обычные рельсы в зависимости от настроек
 #define get_normal_track_type() enable_our_own_tracks ? RLA1 : RAIL
+#define get_normal_track_type_steam() enable_our_own_tracks ? RLA1 : RAIL
 #define get_normal_track_type_diesel() enable_our_own_tracks ? RLA2 : RAIL
 #define get_normal_track_type_dmu() enable_our_own_tracks ? RLA3 : RAIL
 // рельсы для постоянного и переменного тока в зависимости от настроек
@@ -116,3 +117,29 @@ delta_age = 1;
 #define get_tec(tec, weight) ((tec)/(weight)/9.8)
 // ТУ для cb tractive_effort_coefficient
 #define get_tec_int(tec, weight) int((tec)/(weight)/9.8*256)
+
+// общий шаблон свойств
+#define get_all_year(year) year - delta_age
+
+#define vehicle_dates(start, finish, life, rd)      \
+introduction_date: date(get_all_year(start), 1, 1); \
+model_life: get_model_life(start, finish);          \
+retire_early: get_retire_early(start, finish);      \
+vehicle_life: life;                                 \
+reliability_decay: rd;                              \
+
+#define vehicle_diesel()                                          \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                   \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);              \
+track_type: get_normal_track_type_diesel();                       \
+running_cost_base: RUNNING_COST_DIESEL;                           \
+engine_class: ENGINE_CLASS_DIESEL;                                \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;        \
+visual_effect_and_powered: disable_visual_effect_and_powered();   \
+
+#define vehicle_cargo()                                          \
+cargo_allow_refit: [GOOD];                                       \
+default_cargo_type: GOOD;                                        \
+cargo_capacity: 1;                                               \
+ai_special_flag: AI_FLAG_CARGO;                                  \
+
