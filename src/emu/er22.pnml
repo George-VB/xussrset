@@ -109,6 +109,7 @@ switch (FEAT_TRAINS, SELF, er22_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+// Визуализируем эффекты тяги у er22, только если локомотив - er22
 switch (FEAT_TRAINS, SELF, er22_create_effect1, 
   electric_create_effect(9)) 
 { 
@@ -121,28 +122,20 @@ switch (FEAT_TRAINS, SELF, er22_create_effect2,
   return 1; 
 }    
   
-// Визуализируем эффекты тяги у er22, только если локомотив - er22
-switch (FEAT_TRAINS, PARENT, er22_create_effect_lh,
-  vehicle_type_id == er22)
-{
-  1: er22_create_effect1;
-     return disable_create_effect();
-}
-
-switch (FEAT_TRAINS, PARENT, er22_create_effect_rh,
-  vehicle_type_id == er22)
-{
-  1: er22_create_effect2;
-     return disable_create_effect();
-}
-
-switch (FEAT_TRAINS, SELF, er22_create_effect, 
+switch (FEAT_TRAINS, SELF, er22_create_effect0, 
   position_in_articulated_veh)    
 { 
-  0: er22_create_effect_lh;                                        
-  6: er22_create_effect_rh;                                        
+  0: er22_create_effect1;                                        
+  6: er22_create_effect2;                                        
      return disable_create_effect();
 }                                           
+
+switch (FEAT_TRAINS, PARENT, er22_create_effect,
+  vehicle_type_id == er22)
+{
+  1: er22_create_effect0;
+     return disable_create_effect();
+}
 
 // Даём тягу, только если локомотив - er22
 switch (FEAT_TRAINS, PARENT, er22_power,
@@ -235,11 +228,15 @@ allow_dcemu(er22)
 
 item (FEAT_TRAINS, er22_part2, 454) {
   property {
+//    model_life: VEHICLE_NEVER_EXPIRES;
+//    misc_flags: bitmask(TRAIN_FLAG_TILT);
+    track_type: get_normal_track_type();
+    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
     climates_available: NO_CLIMATE;
     sprite_id: SPRITE_ID_NEW_TRAIN;
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
     cargo_capacity: 0;
     length: 8;
+    visual_effect_and_powered: disable_visual_effect_and_powered();
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
