@@ -1,0 +1,107 @@
+﻿ // 3m62u_m
+// 170 (AAh) 
+
+#define IMAGEFILE  "src/diesel/3m62u.png"
+purchase_sprites(_3m62u_m, 150, 0)
+buster_sprites(10, _3m62u_m_v1, 32, 2050) 
+buster_sprites(10, _3m62u_m_v2, 32, 2117) 
+buster_sprites(10, _3m62u_m_v3, 32, 2184) 
+buster_sprites(10, _3m62u_m_v4, 32, 2251) 
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_sprites_left,
+  cargo_subtype)
+{
+  0: _3m62u_m_v1_sprites_left;
+  LV_RAL6020:             _3m62u_m_v1_sprites_left;
+  LV_RAL6002:             _3m62u_m_v2_sprites_left;
+  LV_MOSCOW_RAILWAY:      _3m62u_m_v3_sprites_left;
+  LV_KALININGRAD_RAILWAY: _3m62u_m_v4_sprites_left;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_sprites_right,
+  cargo_subtype)
+{
+  0: _3m62u_m_v1_sprites_right;
+  LV_RAL6020:             _3m62u_m_v1_sprites_right;
+  LV_RAL6002:             _3m62u_m_v2_sprites_right;
+  LV_MOSCOW_RAILWAY:      _3m62u_m_v3_sprites_right;
+  LV_KALININGRAD_RAILWAY: _3m62u_m_v4_sprites_right;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_sprites_start,
+[  set_offset_to(-2),
+   prev_vehicle_randombits() % 2 ])
+{ 
+  1: _3m62u_m_sprites_left;
+     _3m62u_m_sprites_right;
+}
+
+long_vehicle(_3m62u_m)
+
+engine_diesel_1r_effect(_3m62u_m, 3, -1, 11)
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_create_effect_sprites_start,
+[  set_offset_to(-2),
+   prev_vehicle_randombits() % 2 ])
+{ 
+  1: _3m62u_m_create_effect_sprites_left;
+     _3m62u_m_create_effect_sprites_right;
+}
+
+livery_template(_3m62u_m, TTD_59, LV_RAL6002, LV_RAL6020, LV_MOSCOW_RAILWAY, LV_KALININGRAD_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+switch (FEAT_TRAINS, SELF, _3m62u_m_additional_text,
+  current_year >= USSREND)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_MS, string(STR_PURCHASE_HINT_LIST2, string(STR_NAME_2M62U), string(STR_NAME_3M62U))), 	
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 1992), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_MS, string(STR_PURCHASE_HINT_LIST2, string(STR_NAME_2M62U), string(STR_NAME_3M62U))), 	
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 1992), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_AUSSR));
+}
+
+engine_speed(_3m62u_m, 100)
+engine_penalise_speed4(_3m62u_m, _2m62u, _3m62_all, _3m62u, 4)
+general_running_cost(_3m62u_m, 307) 
+
+item (FEAT_TRAINS, _3m62u_m, 170) {
+  property {
+    name: string(STR_NAME_3M62U_M);
+    climates_available: get_climates_available();
+    vehicle_dates(1986, 1992, 30, 10)
+    vehicle_cargo()
+    vehicle_diesel()
+    cost_factor: 34;
+    power: 1546 hpM;
+    weight: (378/3) ton;
+    tractive_effort_coefficient: get_tec(350.0, 378/3);
+    length: 8;
+  }
+  graphics {
+    default: _3m62u_m_sprites;
+    purchase: _3m62u_m_purchase_sprites;
+    running_cost_factor: _3m62u_m_running_cost_factor;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    additional_text: _3m62u_m_additional_text;
+    cargo_subtype_text: _3m62u_m_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: _3m62u_m_speed;
+    purchase_speed: _3m62u_m_purchase_speed; 
+    bitmask_vehicle_info: _3m62u_m_bitmask_vehicle_info;
+    create_effect: _3m62u_m_create_effect_sprites_start;
+  }
+}
+
+long_name_template(_3m62u_m, STR_LONGNAME_3M62U_M)
+models_default_cargo_template(_3m62u_m)
+allow_diesel(_3m62u_m)

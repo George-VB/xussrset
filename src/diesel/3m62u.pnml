@@ -1,0 +1,132 @@
+﻿ // 3m62u
+// 169 (A9h) 
+
+#define IMAGEFILE  "src/diesel/3m62u.png"
+purchase_sprites(_3m62u, 0, 19)
+#undef IMAGEFILE
+
+// 3m62u
+
+switch (FEAT_TRAINS, SELF, _3m62u_sprites_left,
+  cargo_subtype)
+{
+  0: _2m62u_v1_sprites_left;
+  LV_RAL6020:             _2m62u_v1_sprites_left;
+  LV_RAL6002:             _2m62u_v2_sprites_left;
+  LV_KALININGRAD_RAILWAY: _2m62u_v8_sprites_left;
+  LV_MOSCOW_RAILWAY:      _2m62u_v10_sprites_left;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_sprites_right,
+  cargo_subtype)
+{
+  0: _2m62u_v1_sprites_right;
+  LV_RAL6020:             _2m62u_v1_sprites_right;
+  LV_RAL6002:             _2m62u_v2_sprites_right;
+  LV_KALININGRAD_RAILWAY: _2m62u_v8_sprites_right;
+  LV_MOSCOW_RAILWAY:      _2m62u_v10_sprites_right;
+  align_10_sprites;
+}  
+
+engine_direction_template4m(_3m62u, _2m62u, _3m62_all, _3m62u_m, ) 
+long_vehicle(_3m62u)
+
+switch (FEAT_TRAINS, SELF, _3m62u_additional_text,
+  current_year >= USSREND)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_4_WITH_ATTACH, string(STR_NAME_2M62U)), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 1992), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
+     return string(STR_PURCHASE_HINT_ENGINE_WITH_COMMENT, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_4_WITH_ATTACH, string(STR_NAME_2M62U)), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1986, 1992), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_AUSSR),
+                   string(STR_PURCHASE_HINT_DRB1));
+}
+
+livery_template(_3m62u, TTD_59, LV_RAL6002, LV_RAL6020, LV_MOSCOW_RAILWAY, LV_KALININGRAD_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+new_3x_train_start_stop(_3m62u)
+engine_diesel_1r_effect(_3m62u, 3, -1, 11)
+engine_direction_template4m(_3m62u, _2m62u, _3m62_all, _3m62u_m, _create_effect) 
+engine_speed(_3m62u, 100)
+engine_penalise_speed4(_3m62u, _2m62u, _3m62_all, _3m62u_m, 4)
+general_running_cost(_3m62u, 341) 
+
+// отключить пенальти для ДРБ1
+switch (FEAT_TRAINS, SELF, _3m62u_bitmask_vehicle_info_drb1_2,
+  (position_in_consist_from_end == 1) && (cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB))
+{
+  1: return FLAG_DRB1_SH;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, _3m62u_bitmask_vehicle_info_drb1,
+  ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2 - count_veh_id(dr1a_n) * 2 - count_veh_id(_2m62u) * 2 - count_veh_id(_3m62u) * 2) == 0) && 
+  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1))
+{
+  1: _3m62u_bitmask_vehicle_info_drb1_2;
+     _3m62u_bitmask_vehicle_info;
+}
+
+switch (FEAT_TRAINS, PARENT, _3m62u_bitmask_vehicle_info_short_b1986,
+  (build_year < 1986) *
+  (vehicle_type_id == _3m62u))
+{
+  0: return FLAG_PENALISE_SPEED;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, _3m62u_bitmask_vehicle_info_short_a1986,
+  (build_year < 1986) && (vehicle_type_id == _3m62u))
+{
+  1: return FLAG_PENALISE_SPEED;
+     _3m62u_bitmask_vehicle_info_drb1;
+}
+
+switch (FEAT_TRAINS, SELF, _3m62u_bitmask_vehicle_info_short,
+  (build_year >= 1986) +
+  ((position_in_consist > 2) * 2))
+{
+  0: _3m62u_bitmask_vehicle_info_short_b1986;
+  2: return FLAG_PENALISE_SPEED;
+     _3m62u_bitmask_vehicle_info_short_a1986;
+}
+
+item (FEAT_TRAINS, _3m62u, 169) {
+  property {
+    name: string(STR_NAME_3M62U);
+    climates_available: get_climates_available();
+    vehicle_dates(1986, 1992, 30, 10)
+    vehicle_cargo()
+    vehicle_diesel()
+    cost_factor: 35;
+    power: 1546 hpM;
+    weight: (378/3) ton;
+    tractive_effort_coefficient: get_tec(350.0, 378/3);
+    length: 8;
+  }
+  graphics {
+    default: _3m62u_sprites;
+    purchase: _3m62u_purchase_sprites;
+    articulated_part: articulated_part_dummy2;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: _3m62u_start_stop;
+    additional_text: _3m62u_additional_text;
+    cargo_subtype_text: _3m62u_cargo_subtype_text;
+    cargo_capacity: return 0;
+    speed: _3m62u_speed;
+    purchase_speed: _3m62u_purchase_speed;
+    running_cost_factor: _3m62u_running_cost_factor;
+    bitmask_vehicle_info: _3m62u_bitmask_vehicle_info_drb1;
+    create_effect: _3m62u_create_effect_sprites_start;
+    refit_cost: _2m62u_refit_cost;
+  }
+}
+
+long_name_template(_3m62u, STR_LONGNAME_3M62U)
+models_default_cargo_template(_3m62u)
+allow_diesel(_3m62u)
