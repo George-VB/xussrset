@@ -18,7 +18,11 @@ switch (FEAT_TRAINS, SELF, vl15_sprites_left,
   2: vl15_v3_sprites_left;
   3: vl15_v4_sprites_left;
   LV_RAL6002: vl15_v1_sprites_left;
-     align_13_sprites; 
+  0xE0: vl15_v1_sprites_left;
+  0xE1: vl15_v2_sprites_left;
+  0xE2: vl15_v3_sprites_left;
+  0xE3: vl15_v4_sprites_left;
+        align_13_sprites; 
 }
 
 switch (FEAT_TRAINS, SELF, vl15_sprites_right,
@@ -29,25 +33,92 @@ switch (FEAT_TRAINS, SELF, vl15_sprites_right,
   2: vl15_v3_sprites_right;
   3: vl15_v4_sprites_right;
   LV_RAL6002: vl15_v1_sprites_right;
-     align_13_sprites; 
+  0xE0: vl15_v1_sprites_right;
+  0xE1: vl15_v2_sprites_right;
+  0xE2: vl15_v3_sprites_right;
+  0xE3: vl15_v4_sprites_right;
+        align_13_sprites; 
 }
 
 engine_direction_template(vl15, ) 
-
 long_vehicle(vl15)
 
 livery_template(vl15, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template_alt3(vl15, RZD_TCH21_VOLHOVSTROI, TTD_B4, TTD_96)
-                           
-engine_electric2_2_effect(vl15, 6, -1, 6)
-engine_direction_template(vl15, _create_effect) 
+switch (FEAT_TRAINS, SELF, vl15_cargo_subtype_text_pre1,
+  cargo_subtype)
+{
+  0xE0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL15S), string(STR_REFIT_TTD_53));
+  0xE1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL15S), string(STR_REFIT_RZD_TCH21_VOLHOVSTROI));
+  0xE2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL15S), string(STR_REFIT_TTD_B4));
+  0xE3: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL15S), string(STR_REFIT_TTD_96));
+        vl15_cargo_subtype_text_pre;
+}
+                          
 engine_speed(vl15, 100)
 engine_penalise_speed(vl15, 2)
+
+switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_advanced4a,            
+  (LOAD_TEMP(0) - count_veh_id(vl15)) == 3) 
+{ 
+  1: return 0;                                                   
+     return FLAG_PENALISE_SPEED; 
+}                   
+
+switch (FEAT_TRAINS, PARENT, vl15_bitmask_vehicle_info_advanced4,            
+[ STORE_TEMP(count_veh_id(vl15), 0),                                        
+  (vehicle_type_id == vl15) && (cargo_subtype >= 0xE0) ])                                      
+{ 
+  1: vl15_bitmask_vehicle_info_advanced4a;                                                   
+     return FLAG_PENALISE_SPEED; 
+}                   
+
+switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_advanced3a,            
+  (LOAD_TEMP(0) - count_veh_id(vl15)) == 2) 
+{ 
+  1: return 0;                                                   
+     return FLAG_PENALISE_SPEED; 
+}                   
+
+switch (FEAT_TRAINS, PARENT, vl15_bitmask_vehicle_info_advanced3,            
+[ STORE_TEMP(count_veh_id(vl15), 0),                                        
+  (vehicle_type_id == vl15) && (cargo_subtype >= 0xE0) ])                                      
+{ 
+  1: vl15_bitmask_vehicle_info_advanced3a;                                                   
+     return FLAG_PENALISE_SPEED; 
+}                   
+
+switch (FEAT_TRAINS, PARENT, vl15_bitmask_vehicle_info_advanced2,            
+  vehicle_type_id == vl15)                                      
+{ 
+  1: return 0;                                                   
+     return FLAG_PENALISE_SPEED; 
+}   
+                  
+switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_advanced1,            
+  position_in_consist * vehicle_is_powered)                                      
+{ 
+  0: return 0;    
+  2: vl15_bitmask_vehicle_info_advanced2;
+  4: vl15_bitmask_vehicle_info_advanced3;
+  6: vl15_bitmask_vehicle_info_advanced4;
+     return FLAG_PENALISE_SPEED; 
+}                               
+
+switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_advanced,
+  cargo_subtype >= 0xE0)
+{
+  1: vl15_bitmask_vehicle_info_advanced1;
+     vl15_bitmask_vehicle_info;
+}
+
 general_running_cost(vl15, 580)
+engine_electric2_2_effect(vl15, 6, -1, 6)
+engine_direction_template(vl15, _create_effect) 
 
 item (FEAT_TRAINS, vl15, 440) {
   property {
-    name: string(STR_NAME_vl15);
+    name: string(STR_NAME_VL15);
     climates_available: get_climates_available();
     introduction_date: date(get_loc_year(1984), 1, 1);
     vehicle_life: 40;
@@ -84,13 +155,13 @@ item (FEAT_TRAINS, vl15, 440) {
     cargo_capacity: return 0;
     speed: vl15_speed;
     purchase_speed: vl15_purchase_speed;
-    bitmask_vehicle_info: vl15_bitmask_vehicle_info;
+    bitmask_vehicle_info: vl15_bitmask_vehicle_info_advanced;
     create_effect: vl15_create_effect_sprites_start;
     running_cost_factor: vl15_running_cost_factor;
-    cargo_subtype_text: vl15_cargo_subtype_text_pre;
+    cargo_subtype_text: vl15_cargo_subtype_text_pre1;
   }
 }
 
-long_name_template(vl15, STR_LONGNAME_vl15)
+long_name_template(vl15, STR_LONGNAME_VL15)
 models_default_cargo_template(vl15)
 allow_dcelectric(vl15)
