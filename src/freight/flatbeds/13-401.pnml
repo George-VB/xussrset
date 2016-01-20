@@ -19,8 +19,8 @@ flatbed_layout3_template(flatbed_13_401, 9, 45, 1455, stel3)  // сталь
 flatbed_layout3_template(flatbed_13_401, 9, 45, 1680, stel4)  // сталь
 flatbed_layout1_template(flatbed_13_401, 9, 45, 1905, wood)   // лес
 
-flatbed_layout3_template(flatbed_13_401, 9, 45, 1980, vehi1)  // Трактора
-flatbed_layout3_template(flatbed_13_401, 9, 45, 2205, vehi2)  // Трактора
+flatbed_layout3_template(flatbed_13_401, 9, 45, 1980, vehi1_cc)  // Трактора
+flatbed_layout3_template(flatbed_13_401, 9, 45, 2205, vehi2_cc)  // Трактора
 flatbed_layout1_template(flatbed_13_401, 9, 45, 2430, good_c1)  // 40 футовый контейнер
 flatbed_layout2_template(flatbed_13_401, 9, 45, 2505, good_c2)  // 20 футовый контейнер
 
@@ -60,6 +60,24 @@ random_switch (FEAT_TRAINS, SELF, flatbed_13_401_stel_sprites,
   5: flatbed_13_401_stel4_sprites;
 }
 
+random_switch (FEAT_TRAINS, SELF, flatbed_13_401_vehi1_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_13_401_good_sprites;
+  7: flatbed_13_401_vehi1_cc_sprites;
+  7: flatbed_13_401_vehi1_cc_sprites;
+  2: flatbed_13_401_vehi1_cc_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_401_vehi2_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD) )
+{
+  dependent: flatbed_13_401_good_sprites;
+  7: flatbed_13_401_vehi2_cc_sprites;
+  7: flatbed_13_401_vehi2_cc_sprites;
+  2: flatbed_13_401_vehi2_cc_sprites;
+}
+
 switch (FEAT_TRAINS, SELF, flatbed_13_401_vehi_sprites,
   date_of_last_service >= date(1972,1,1))
 {
@@ -94,33 +112,52 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_sprites_start,
 
 long_vehicle_RND(flatbed_13_401, flatbed_13_401_good1_sprites)
 
-wagon_running_cost(flatbed_13_401, 13)
+#define flatbed_13_401_2cc_template(num, col)                      \
+switch (FEAT_TRAINS, SELF, flatbed_13_401_colour_mapping2_##col,   \
+  (random_bits & 0x1E) / 2)                                        \
+{ 0..6:    return ttd_cc2 + num;                                   \
+  7..13:   return ttd_cc2 + num + 8;                               \
+  14..15:  return ttd_cc2 + num + 16;                              \
+           return CB_FAILED; }                                     \
+switch (FEAT_TRAINS, SELF, flatbed_13_401_colour_mapping##col,     \
+  cargo_type_in_veh == VEHI)                                       \
+{ 1: flatbed_13_401_colour_mapping2_##col;                         \
+     return ttdall_cc + 0x##col; }                                 \
+
+flatbed_13_401_2cc_template(24, 49)
+flatbed_13_401_2cc_template(25, 4A)
+flatbed_13_401_2cc_template(26, 4B)
+flatbed_13_401_2cc_template(27, 53)
+flatbed_13_401_2cc_template(28, 5A)
+flatbed_13_401_2cc_template(29, 71)
+flatbed_13_401_2cc_template(30, 72)
+flatbed_13_401_2cc_template(31, 73)
 
 random_switch (FEAT_TRAINS, SELF, flatbed_13_401_random, 0 )
 {
   independent: flatbed_13_401_good_sprites;
-  1: return ttdall_cc + 0x49;
-  1: return ttdall_cc + 0x4A;
-  1: return ttdall_cc + 0x4B;
-  1: return ttdall_cc + 0x53;
-  1: return ttdall_cc + 0x5A;
-  1: return ttdall_cc + 0x71;
-  1: return ttdall_cc + 0x72;
-  1: return ttdall_cc + 0x73;
+  1: flatbed_13_401_colour_mapping49;
+  1: flatbed_13_401_colour_mapping4A;
+  1: flatbed_13_401_colour_mapping4B;
+  1: flatbed_13_401_colour_mapping53;
+  1: flatbed_13_401_colour_mapping5A;
+  1: flatbed_13_401_colour_mapping71;
+  1: flatbed_13_401_colour_mapping72;
+  1: flatbed_13_401_colour_mapping73;
 }                      
 
 switch (FEAT_TRAINS, SELF, flatbed_13_401_colour_mapping,
   cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
   0: flatbed_13_401_random;
-  1: return ttdall_cc + 0x49;
-  2: return ttdall_cc + 0x4A;
-  3: return ttdall_cc + 0x4B;
-  4: return ttdall_cc + 0x53;
-  5: return ttdall_cc + 0x5A;
-  6: return ttdall_cc + 0x71;
-  7: return ttdall_cc + 0x72;
-  8: return ttdall_cc + 0x73;
+  1: flatbed_13_401_colour_mapping49;
+  2: flatbed_13_401_colour_mapping4A;
+  3: flatbed_13_401_colour_mapping4B;
+  4: flatbed_13_401_colour_mapping53;
+  5: flatbed_13_401_colour_mapping5A;
+  6: flatbed_13_401_colour_mapping71;
+  7: flatbed_13_401_colour_mapping72;
+  8: flatbed_13_401_colour_mapping73;
      return CB_FAILED;
 }
 
@@ -247,6 +284,8 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_additional_text,
                    string(STR_PURCHASE_HINT_FROMTO, 1968, 1984), 
                    string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW));
 }
+
+wagon_running_cost(flatbed_13_401, 13)
 
 item (FEAT_TRAINS, flatbed_13_401, 345) {
   property {
