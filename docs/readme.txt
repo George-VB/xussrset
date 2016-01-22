@@ -1,6 +1,6 @@
 readme
 
-xUSSR Railway Set v0.4
+xUSSR Railway Set v0.4.1
 
 The xUSSR Railway Set includes locomotives, DMUs, EMUs and other rolling stock
 from the former Russian Empire, Soviet Union and several countries containing
