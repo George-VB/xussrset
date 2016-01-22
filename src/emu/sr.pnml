@@ -136,36 +136,21 @@ switch (FEAT_TRAINS, PARENT, sr_running_cost_factor,
      return RC_MU_AS_CAR * 3;
 }
 
+engine_speed(sr, 85)
+
 item (FEAT_TRAINS, sr, 442) {
   property {
     name: string(STR_NAME_SR);
-    climates_available: get_climates_available();
-    introduction_date: date(get_loc_year(1947), 1, 1);
-    vehicle_life: 20;
-    model_life: get_model_life(1947,1952);
-    retire_early: get_retire_early(1947,1952);
-    reliability_decay: 10;
-    cargo_allow_refit: [PASS];
-    default_cargo_type: PASS;
+    vehicle_dates(1947, 1952, 20, 10)
+    vehicle_dcemu(702, 139.5, 96.1, 306, 24*2*3)
     cost_factor: 8 + 7 + 7;
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    speed: 85 km/h;
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU); 
-    track_type: get_dc_track_type_emu();
-    ai_special_flag: AI_FLAG_PASSENGER;
-    power: 702 hpM;
-    running_cost_base: RUNNING_COST_ELECTRIC;
-    loading_speed: 24*2*3;
-    cargo_capacity: 255;
-    weight: 139.5 ton;
-    engine_class: ENGINE_CLASS_ELECTRIC;
-    tractive_effort_coefficient: get_tec(96.1, 139.5);
     length: 8;
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: sr_sprites;
     purchase: sr_purchase_sprites;
+    speed: sr_speed;
+    purchase_speed: sr_purchase_speed;
     cargo_age_period: return 60;
     running_cost_factor: sr_running_cost_factor;
     articulated_part: sr_articulated_part;
@@ -187,19 +172,10 @@ item (FEAT_TRAINS, sr, 442) {
 long_name_template(sr, STR_LONGNAME_SR)
 allow_dcemu(sr)
 
-switch (FEAT_TRAINS, SELF, sr_part2_cargo_capacity3,
-  cargo_type_in_veh)
-{
-  MAIL: return 20;
-  GOOD: return 10;
-//  PASS: return 15;
-        return 0;        
-}
-
 switch (FEAT_TRAINS, SELF, sr_part2_cargo_capacity2,
   position_in_articulated_veh)
 {
-  4: sr_part2_cargo_capacity3;
+  4: return 20;
      return 0;
 }
 
@@ -212,22 +188,16 @@ switch (FEAT_TRAINS, PARENT, sr_part2_cargo_capacity,
 
 item (FEAT_TRAINS, sr_part2, 461) {
   property {
-    climates_available: NO_CLIMATE;
-    cargo_allow_refit: [MAIL, GOOD];
-    default_cargo_type: MAIL;
-    sprite_id: SPRITE_ID_NEW_TRAIN;
-    misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_MU);
-    loading_speed: 10;
-    cargo_capacity: 20;
+    vehicle_no_dates(1947, 1952, 20, 10)
+    vehicle_dcemu(0, 1, 0, 20, 10)
+    cargo_allow_refit: [MAIL];
     length: 8;
-    track_type: get_normal_track_type();
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
   }
   graphics {
     default: sr_sprites;
     cargo_age_period: return 60;
     create_effect: sr_create_effect;
     cargo_capacity: sr_part2_cargo_capacity;
-    refit_cost: return 1;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
   }
 }
