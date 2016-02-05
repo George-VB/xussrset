@@ -10,7 +10,7 @@ MU_0_0_2_sprites(10, em167, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, em167_toomany_sections_sprites,
-  position_in_vehid_chain % 4)
+  position_in_articulated_veh)
 {
   0: em167_h_notpowered_sprites_left;
   2: em167_c_notpowered_sprites_left;
@@ -18,7 +18,7 @@ switch (FEAT_TRAINS, SELF, em167_toomany_sections_sprites,
 }
 
 switch (FEAT_TRAINS, SELF, em167_1sections,
-  position_in_vehid_chain % 4)
+  position_in_consist)
 {
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
@@ -26,7 +26,7 @@ switch (FEAT_TRAINS, SELF, em167_1sections,
 }
 
 switch (FEAT_TRAINS, SELF, em167_2sections,
-  position_in_vehid_chain % 8)
+  position_in_consist)
 {
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
@@ -36,7 +36,7 @@ switch (FEAT_TRAINS, SELF, em167_2sections,
 }
 
 switch (FEAT_TRAINS, SELF, em167_3sections_a,
-  position_in_vehid_chain % 12)
+  position_in_consist)
 {
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
@@ -48,7 +48,7 @@ switch (FEAT_TRAINS, SELF, em167_3sections_a,
 }
 
 switch (FEAT_TRAINS, SELF, em167_3sections_b,
-  position_in_vehid_chain % 12)
+  position_in_consist)
 {
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
@@ -59,16 +59,15 @@ switch (FEAT_TRAINS, SELF, em167_3sections_b,
      dummy_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, em167_3sections,
-[  set_offset_to(-position_in_articulated_veh),
-   prev_vehicle_randombits() % 2])
+switch (FEAT_TRAINS, PARENT, em167_3sections,
+  random_bits % 2)
 {
   1: em167_3sections_a;
      em167_3sections_b; 
 }
 
 switch (FEAT_TRAINS, SELF, em167_4sections,
-  position_in_vehid_chain % 16)
+  position_in_consist)
 {
   0: em167_h_sprites_left;
   2: em167_c_sprites_left;
@@ -81,19 +80,14 @@ switch (FEAT_TRAINS, SELF, em167_4sections,
      dummy_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, em167_sprites_start2,
-  num_vehs_in_vehid_chain +
-  ((LOAD_TEMP(4) != em167) * 100) )
+switch (FEAT_TRAINS, PARENT, em167_sprites_start2,
+  count_veh_id (em167) + ((vehicle_type_id != em167) * 100))
 {
-    1..3: align_10_sprites;
-       4: em167_1sections;
-    5..7: align_10_sprites;
-       8: em167_2sections;
-   9..11: align_10_sprites;
-      12: em167_3sections;
-  13..15: align_10_sprites;
-      16: em167_4sections;
-          em167_toomany_sections_sprites;
+  1: em167_1sections;
+  2: em167_2sections;
+  3: em167_3sections;
+  4: em167_4sections;
+     em167_toomany_sections_sprites;
 }
 
 random_switch (FEAT_TRAINS, SELF, em167_sprites_start, 
@@ -106,7 +100,7 @@ random_switch (FEAT_TRAINS, SELF, em167_sprites_start,
 long_vehicle_RND(em167, em167_sprites_start)
 
 switch (FEAT_TRAINS, PARENT, em167_can_attach_wagon1,
-  count_veh_id(em167) < 13)
+  count_veh_id(em167) < 4)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -122,9 +116,9 @@ switch (FEAT_TRAINS, SELF, em167_can_attach_wagon,
 switch (FEAT_TRAINS, SELF, em167_articulated_part,
   extra_callback_info1)
 {
-  1: return em167; // Сделано без dummy для того, чтобы проверять длину цепочки
-  2: return em167;
-  3: return em167;
+  1: return em167_part2;
+  2: return em167_part2;
+  3: return em167_part2;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
@@ -132,34 +126,36 @@ switch (FEAT_TRAINS, SELF, em167_articulated_part,
 engine_electric1_2all_effect(em167, -2, 4)
 
 switch (FEAT_TRAINS, SELF, em167_create_effect_1sections,
-  position_in_vehid_chain % 4)
+  position_in_consist)
 {
   0: em167_create_effect_sprites_start;
      return disable_create_effect();
 }
 
 switch (FEAT_TRAINS, SELF, em167_create_effect_2sections,
-  position_in_vehid_chain % 8)
+  position_in_consist)
 {
   0: em167_create_effect_sprites_start;
   6: em167_create_effect_sprites_start;
      return disable_create_effect();
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(2), em167_create_effect_sprites_start_b, 0)
+switch (FEAT_TRAINS, PARENT, em167_create_effect_sprites_start_b, 
+  random_bits % 2)
 {                                                                                    
-  1: return disable_create_effect();
-  1: em167_create_effect_sprites_start;
+  0: return disable_create_effect();
+     em167_create_effect_sprites_start;
 }
 
-random_switch (FEAT_TRAINS, SELF, em167_create_effect_sprites_start_a, 0)
+switch (FEAT_TRAINS, PARENT, em167_create_effect_sprites_start_a, 
+  random_bits % 2)
 {                                                                                    
-  1: em167_create_effect_sprites_start;
-  1: return disable_create_effect();
+  0: em167_create_effect_sprites_start;
+     return disable_create_effect();
 }
 
 switch (FEAT_TRAINS, SELF, em167_create_effect_3sections,
-  position_in_vehid_chain % 12)
+  position_in_consist)
 {
   0: em167_create_effect_sprites_start;
   4: em167_create_effect_sprites_start_a;
@@ -169,7 +165,7 @@ switch (FEAT_TRAINS, SELF, em167_create_effect_3sections,
 }
 
 switch (FEAT_TRAINS, SELF, em167_create_effect_4sections,
-  position_in_vehid_chain % 16)
+  position_in_consist)
 {
   0: em167_create_effect_sprites_start;
   6: em167_create_effect_sprites_start;
@@ -178,14 +174,14 @@ switch (FEAT_TRAINS, SELF, em167_create_effect_4sections,
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, em167_create_effect1,
-  num_vehs_in_vehid_chain)
+switch (FEAT_TRAINS, PARENT, em167_create_effect1,
+  count_veh_id(em167) + ((vehicle_type_id != em167) * 100))
 {
-   4: em167_create_effect_1sections;
-   8: em167_create_effect_2sections;
-  12: em167_create_effect_3sections;
-  16: em167_create_effect_4sections;
-      return disable_create_effect();
+  1: em167_create_effect_1sections;
+  2: em167_create_effect_2sections;
+  3: em167_create_effect_3sections;
+  4: em167_create_effect_4sections;
+     return disable_create_effect();
 }
 
 switch (FEAT_TRAINS, PARENT, em167_create_effect,
@@ -244,7 +240,7 @@ switch (FEAT_TRAINS, PARENT, em167_running_cost_factor,
 switch (FEAT_TRAINS, PARENT, em167_start_stop,
   count_veh_id(em167))
 {
-  4: return string(STR_START_STOP_DUAL_END_REQUIRED);
+  1: return string(STR_START_STOP_DUAL_END_REQUIRED);
      return CB_RESULT_NO_TEXT;
 }
 
@@ -261,7 +257,6 @@ item (FEAT_TRAINS, em167, 423) {
     purchase: em167_purchase_sprites;
     speed: em167_speed;
     purchase_speed: em167_purchase_speed;
-    purchase_cargo_capacity: return (120)/4;
     cargo_age_period: return 60;
     running_cost_factor: em167_running_cost_factor;
     articulated_part: em167_articulated_part;
@@ -283,3 +278,15 @@ item (FEAT_TRAINS, em167, 423) {
 
 long_name_template(em167, STR_LONGNAME_EM167)
 allow_dcemu(em167)
+
+item (FEAT_TRAINS, em167_part2, 474) {
+  property {
+    vehicle_no_dates(1945, 1945, 20, 20, 5, 0)
+    vehicle_dcemu_empty()
+  }
+  graphics {
+    default: em167_sprites;
+    create_effect: em167_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
