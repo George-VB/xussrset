@@ -56,43 +56,7 @@ switch (FEAT_TRAINS, SELF, vl15_cargo_subtype_text_pre1,
 }
 
 engine_speed(vl15, 100)
-
-switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_pos6,
-  (cargo_subtype >= 0xE0) && (LOAD_TEMP(2) >= 0xE0) /* && is_not_sme_changed() */ &&
-  ((LOAD_TEMP(0) - count_veh_id(vl15)) == 3))
-{ 1: return 0;
-     return bitmask(FLAG_PENALISE_SPEED); }
-
-switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_pos4,
-  (cargo_subtype >= 0xE0) && (LOAD_TEMP(2) >= 0xE0) /* && is_not_sme_changed() */ &&
-  ((LOAD_TEMP(0) - count_veh_id(vl15)) == 2))
-{ 1: return 0;
-     return bitmask(FLAG_PENALISE_SPEED); }
-
-switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info_pos2,
-  cargo_subtype >= 0xE0)
-{ 0: return FLAG_SME_CHANGE; 
-     return 0; } 
-
-switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info2,
-  position_in_consist)
-{ 2: vl15_bitmask_vehicle_info_pos2;
-  4: vl15_bitmask_vehicle_info_pos4; 
-  6: vl15_bitmask_vehicle_info_pos6; 
-     return bitmask(FLAG_PENALISE_SPEED); }
-
-switch (FEAT_TRAINS, PARENT, vl15_bitmask_vehicle_info1,
-[ STORE_TEMP(count_veh_id(vl15), 0),
-  STORE_TEMP(cargo_subtype, 2),
-  vehicle_type_id == vl15 ])
-{ 0: return bitmask(FLAG_PENALISE_SPEED);
-     vl15_bitmask_vehicle_info2; }
-
-switch (FEAT_TRAINS, SELF, vl15_bitmask_vehicle_info,
-  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))
-{ 1: return 0;
-     vl15_bitmask_vehicle_info1; }
-
+engine_penalise_speed_2up4(vl15)
 general_running_cost(vl15, 580)
 engine_electric2_2_effect(vl15, 6, -1, 6)
 engine_direction_template(vl15, _create_effect)

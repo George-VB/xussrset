@@ -844,6 +844,63 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                     \
 { 1: return 0;                                                              \
      name##_bitmask_vehicle_info2; }                                        \
 
+// Определение пенальти на скорость (схема без альтернатив в СМЕ с модернизацией СМЕ)
+
+#define engine_penalise_speed_2up3(name)                                                                   \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                               \
+  (cargo_subtype >= 0xE0) && (LOAD_TEMP(2) >= 0xE0) && ((LOAD_TEMP(0) - count_veh_id(name)) == 2))         \
+{ 1: return 0;                                                                                             \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos2,                                               \
+  (LOAD_TEMP(0) <= 2) || (cargo_subtype >= 0xE0))                                                          \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                  \
+     return 0; }                                                                                           \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info2,                                                   \
+  position_in_consist)                                                                                     \
+{ 2: name##_bitmask_vehicle_info_pos2;                                                                     \
+  4: name##_bitmask_vehicle_info_pos4;                                                                     \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info1,                                                 \
+[ STORE_TEMP(count_veh_id(name), 0),                                                                       \
+  STORE_TEMP(cargo_subtype, 2),                                                                            \
+  vehicle_type_id == name ])                                                                               \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                  \
+     name##_bitmask_vehicle_info2; }                                                                       \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                    \
+  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))             \
+{ 1: return 0;                                                                                             \
+     name##_bitmask_vehicle_info1; }                                                                       \
+
+#define engine_penalise_speed_2up4(name)                                                                   \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos6,                                               \
+  (cargo_subtype >= 0xE0) && (LOAD_TEMP(2) >= 0xE0) && ((LOAD_TEMP(0) - count_veh_id(name)) == 3))         \
+{ 1: return 0;                                                                                             \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                               \
+  (cargo_subtype >= 0xE0) && (LOAD_TEMP(2) >= 0xE0) && ((LOAD_TEMP(0) - count_veh_id(name)) == 2))         \
+{ 1: return 0;                                                                                             \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos2,                                               \
+  (LOAD_TEMP(0) <= 2) || (cargo_subtype >= 0xE0))                                                          \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                  \
+     return 0; }                                                                                           \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info2,                                                   \
+  position_in_consist)                                                                                     \
+{ 2: name##_bitmask_vehicle_info_pos2;                                                                     \
+  4: name##_bitmask_vehicle_info_pos4;                                                                     \
+  6: name##_bitmask_vehicle_info_pos6;                                                                     \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info1,                                                 \
+[ STORE_TEMP(count_veh_id(name), 0),                                                                       \
+  STORE_TEMP(cargo_subtype, 2),                                                                            \
+  vehicle_type_id == name ])                                                                               \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                  \
+     name##_bitmask_vehicle_info2; }                                                                       \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                    \
+  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))             \
+{ 1: return 0;                                                                                             \
+     name##_bitmask_vehicle_info1; }                                                                       \
+
 // Определение пенальти на скорость (схема c 1 альтернативой в СМЕ)
 
 #define engine_penalise_speed2(name, name1, num)                            \

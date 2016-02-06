@@ -111,47 +111,6 @@ switch (FEAT_TRAINS, SELF, vl23_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-engine_speed_with_reduce(vl23, 100, 90, 40)
-engine_penalise_speed(vl23, 2)
-
-switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced4,            
-  (LOAD_TEMP(0) - count_veh_id(vl23)) == 2) 
-{ 
-  1: return 0;                                                   
-     return bitmask(FLAG_PENALISE_SPEED); 
-}                   
-
-switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_advanced3,            
-[ STORE_TEMP(count_veh_id(vl23), 0),                                        
-  (vehicle_type_id == vl23) && (cargo_subtype == 0xE2) ])                                      
-{ 
-  1: vl23_bitmask_vehicle_info_advanced4;                                                   
-     return bitmask(FLAG_PENALISE_SPEED); 
-}                   
-
-switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_advanced2,            
-  vehicle_type_id == vl23)                                      
-{ 
-  1: return 0;                                                   
-     return bitmask(FLAG_PENALISE_SPEED); 
-}   
-                  
-switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced1,            
-  position_in_consist * vehicle_is_powered)                                      
-{ 
-  0: return 0;    
-  2: vl23_bitmask_vehicle_info_advanced2;
-  4: vl23_bitmask_vehicle_info_advanced3;
-     return bitmask(FLAG_PENALISE_SPEED); 
-}                               
-
-switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced,
-  cargo_subtype == 0xE2)
-{
-  1: vl23_bitmask_vehicle_info_advanced1;
-     vl23_bitmask_vehicle_info;
-}
-
 switch (FEAT_TRAINS, SELF, vl23_additional_text,
   current_year >= 1987)
 {
@@ -168,6 +127,8 @@ switch (FEAT_TRAINS, SELF, vl23_additional_text,
                    string(STR_PURCHASE_HINT_UPGRADE));
 }
 
+engine_speed_with_reduce(vl23, 100, 90, 40)
+engine_penalise_speed_2up3(vl23)
 engine_electric1_2_effect(vl23, -2, 4)
 general_running_cost(vl23, 392)
 
@@ -189,7 +150,7 @@ item (FEAT_TRAINS, vl23, 180) {
     cargo_capacity: return 0;
     speed: vl23_speed;
     purchase_speed: vl23_purchase_speed;
-    bitmask_vehicle_info: vl23_bitmask_vehicle_info_advanced;
+    bitmask_vehicle_info: vl23_bitmask_vehicle_info;
     refit_cost: vl23_refit_cost;
     create_effect: vl23_create_effect;
     running_cost_factor: vl23_running_cost_factor;
