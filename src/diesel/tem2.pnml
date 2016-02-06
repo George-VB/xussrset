@@ -65,19 +65,26 @@ long_vehicle_sp(tem2)
 engine_speed(tem2, 100)
 engine_penalise_speed(tem2, 2)
 
-switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_pre1971,  
+switch (FEAT_TRAINS, PARENT, tem2_bitmask_vehicle_info_advanced2,
+  ((vehicle_type_id == tem2) || (vehicle_type_id == tem2_all)) && (build_year < 1971))
+{
+  1: return FLAG_PENALISE_SPEED;
+     tem2_bitmask_vehicle_info;
+}    
+
+switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_advanced1,
+  build_year < 1971)
+{
+  1: return FLAG_PENALISE_SPEED;
+     tem2_bitmask_vehicle_info_advanced2;
+}    
+
+switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_advanced,
   (position_in_consist == 0) || (vehicle_is_not_powered) || 
    (position_in_articulated_veh > 0))                       
 { 
-  1: return 0;                                         
-     return FLAG_PENALISE_SPEED; 
-}                     
-
-switch (FEAT_TRAINS, SELF, tem2_bitmask_vehicle_info_year,
-  build_year >= 1971)
-{
-  0: tem2_bitmask_vehicle_info_pre1971;
-     tem2_bitmask_vehicle_info;
+  1: return 0;                                                              
+     tem2_bitmask_vehicle_info_advanced1; 
 }
 
 switch (FEAT_TRAINS, SELF, tem2_additional_text,
@@ -131,7 +138,7 @@ item (FEAT_TRAINS, tem2, 341) {
     power: tem2_power;
     running_cost_factor: tem2_running_cost_factor;
     additional_text: tem2_additional_text;
-    bitmask_vehicle_info: tem2_bitmask_vehicle_info_year;
+    bitmask_vehicle_info: tem2_bitmask_vehicle_info_advanced;
     cargo_subtype_text: tem2_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     create_effect: tem2_create_effect;
