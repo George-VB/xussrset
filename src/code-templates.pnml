@@ -678,11 +678,14 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                       
   2..3: return min(32767, 5 * rc_base);                                                               \
   4..7: return min(32767, rc_base + 2000);                                                            \
         name##_running_cost_factor2; }                                                                \
-switch (FEAT_TRAINS, SELF, name##_running_cost_factor, (age_in_days + 1) -                            \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor0, (age_in_days + 1) -                           \
           ((is_penalise_speed() == 0) && (position_in_consist > 0)))                                  \
 { 0: return rc_base * RC_SME;                                                                         \
   1: return rc_base;                                                                                  \
      name##_running_cost_factor1; }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor, position_in_articulated_veh)                   \
+{ 0: name##_running_cost_factor0;                                                                     \
+     return 0; }                                                                                      \
 
 #define wagon_running_cost(name, rc_base)                                                             \
 switch (FEAT_TRAINS, SELF, name##_running_cost_stop,                                                  \
@@ -705,9 +708,12 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                       
   2..3: return min(32767, 5 * rc_base);                                                               \
   4..7: return min(32767, rc_base+ 2000);                                                             \
         name##_running_cost_factor2; }                                                                \
-switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor0, age_in_days)                                \
 { 0: return rc_base;                                                                                  \
      name##_running_cost_factor1; }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor, position_in_articulated_veh)                   \
+{ 0: name##_running_cost_factor0;                                                                     \
+     return 0; }                                                                                      \
 
 #define emu_running_cost(name, rc_base, rc_base_notmotor)                                             \
 switch (FEAT_TRAINS, SELF, name##_running_cost_speed,                                                 \
@@ -739,9 +745,12 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor1,                       
   2..3: return min(32767, 5 * rc_base + rc_base_notmotor);                                            \
   4..7: return min(32767, rc_base + rc_base_notmotor + 2000);                                         \
         name##_running_cost_factor2; }                                                                \
-switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, age_in_days)                                 \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor0, age_in_days)                                \
 { 0: return (rc_base + rc_base_notmotor);                                                             \
      name##_running_cost_factor1; }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor, position_in_articulated_veh)                   \
+{ 0: name##_running_cost_factor0;                                                                     \
+     return 0; }                                                                                      \
 
 // Определение стоимости обслуживания с изменением по году постройки
 
