@@ -194,14 +194,63 @@ switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity_1911,
         return 16;
 }     
 
-switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity, 
-  ((build_year >= 1909) || (date_of_last_service >= date(1909, 1, 1))) +
-  ((build_year >= 1911) || (date_of_last_service >= date(1911, 1, 1))))
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity1, 
+  (build_year >= 1909) +
+  (build_year >= 1911))
 {
   0: flatbed_np30p_cargo_capacity_1892;
   1: flatbed_np30p_cargo_capacity_1909;
      flatbed_np30p_cargo_capacity_1911;
 }     
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_capacity, 
+  cargo_subtype)
+{
+  0: flatbed_np30p_cargo_capacity1;
+  1: flatbed_np30p_cargo_capacity_1909;
+     flatbed_np30p_cargo_capacity_1911;
+}     
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_subtype_text_up1909,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_subtype_text_up1911,
+  cargo_subtype)
+{
+  0..1: return string(STR_REFIT_FACTORY);
+  2: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_subtype_text_1892,
+  (current_year >= 1909) +
+  (current_year >= 1911))
+{
+  1: flatbed_np30p_cargo_subtype_text_up1909;
+  2: flatbed_np30p_cargo_subtype_text_up1911;
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_subtype_text_1909,
+  (current_year >= 1911))
+{
+  1: flatbed_np30p_cargo_subtype_text_up1911;
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_np30p_cargo_subtype_text,
+  (build_year >= 1909) +
+  (build_year >= 1911))
+{
+  0: flatbed_np30p_cargo_subtype_text_1892;
+  1: flatbed_np30p_cargo_subtype_text_1909;
+     return CB_RESULT_NO_TEXT;
+}
 
 switch (FEAT_TRAINS, SELF, flatbed_np30p_additional_text, 
   (build_year >= 1909) +
@@ -247,6 +296,7 @@ item (FEAT_TRAINS, flatbed_np30p, 294) {
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_capacity: flatbed_np30p_cargo_capacity;
     colour_mapping: any_cc_colour;
+    cargo_subtype_text: flatbed_np30p_cargo_subtype_text;
   }
 }
 
