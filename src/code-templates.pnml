@@ -1159,6 +1159,19 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                      \
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
 { return; }                                                                   \
 
+// Определение скорости с изменением в 2 заданных года
+
+#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)                  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) + (current_year >= year2))  \
+{ 1: return new_speed;                                                                               \
+  2: return new_speed2;                                                                              \
+     return speed; }                                                                                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                             \
+[ STORE_TEMP(date_of_last_service >= date(year,1,1) ?                                                \
+  (date_of_last_service >= date(year2,1,1) ? new_speed2 : new_speed) : speed , 0),                   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
+{ return; }                                                                                          \
+
 // Определение скорости с изменением по году постройки
 
 #define engine_speed_change_build_after(name, speed, new_speed, year)       \
@@ -1169,6 +1182,18 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                    \
 [ STORE_TEMP(build_year >= year ? new_speed : speed , 0),                   \
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ]) \
 { return; }                                                                 \
+
+// Определение скорости с 2-я изменениями по году постройки
+
+#define engine_speed_change_build_after2(name, speed, new_speed, year, new_speed2, year2)         \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2))   \
+{ 1: return new_speed;                                                                            \
+  2: return new_speed2;                                                                           \
+     return speed; }                                                                              \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                          \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? new_speed2 : new_speed) : speed , 0),    \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                       \
+{ return; }                                                                                       \
 
 // Определение скорости с изменением по году постройки и в заданном году
 
