@@ -11,9 +11,12 @@ electric1r_2_sprites(12, chs4_v3, 32,  710)
 electric1r_2_sprites(12, chs4_v4, 32, 1045)
 electric1r_2_sprites(12, chs4_v5, 32, 1380)
 electric1r_2_sprites(12, chs4_v6, 32, 1715)
-electric1r_2_sprites(12, chs4z_v1, 32, 2050)
-electric1r_2_sprites(12, chs4z_v2, 32, 2385)
-electric1r_2_sprites(12, chs4z_v3, 32, 2720)
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/electric/chs4z.png"
+electric1r_2_sprites(12, chs4z_v1, 32,  40)
+electric1r_2_sprites(12, chs4z_v2, 32, 375)
+electric1r_2_sprites(12, chs4z_v3, 32, 710)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, chs4_purchase_sprites,
@@ -23,141 +26,77 @@ switch (FEAT_TRAINS, SELF, chs4_purchase_sprites,
      chs4_v2_purchase_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, chs4_sprites_left_b1967, cargo_subtype)
+random_switch (FEAT_TRAINS, PARENT, chs4_sprites_left_rnd, 0)
+{
+   1: chs4_v2_sprites_left;
+   1: chs4_v3_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, chs4_sprites_left_factory,
+  build_year >= 1967)
 {
   0: chs4_v1_sprites_left;
+     chs4_sprites_left_rnd;
+}
+
+switch (FEAT_TRAINS, SELF, chs4_sprites_left, 
+  cargo_subtype)
+{
+  0: chs4_sprites_left_factory;
   1: chs4_v4_sprites_left;      
   2: chs4_v5_sprites_left;    
   3: chs4_v6_sprites_left;    
   4: chs4z_v1_sprites_left;       
   5: chs4z_v3_sprites_left;   
   6: chs4z_v2_sprites_left;   
-     align_12_sprites; 
+  0xE0: chs4z_v1_sprites_left;       
+  0xE1: chs4z_v3_sprites_left;   
+  0xE2: chs4z_v2_sprites_left;   
+        align_12_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, chs4_sprites_left_a1967, cargo_subtype)
+random_switch (FEAT_TRAINS, PARENT, chs4_sprites_right_rnd, 0)
 {
-  0: chs4_v2_sprites_left;   
-  1: chs4_v3_sprites_left;   
-  2: chs4_v4_sprites_left;   
-  3: chs4_v5_sprites_left;   
-  4: chs4_v6_sprites_left;   
-  5: chs4z_v1_sprites_left;      
-  6: chs4z_v3_sprites_left;   
-  7: chs4z_v2_sprites_left;   
-     align_12_sprites; 
+   1: chs4_v2_sprites_right;
+   1: chs4_v3_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, chs4_sprites_left,
+switch (FEAT_TRAINS, SELF, chs4_sprites_right_factory,
   build_year >= 1967)
 {
-  0: chs4_sprites_left_b1967;
-     chs4_sprites_left_a1967;
+  0: chs4_v1_sprites_right;
+     chs4_sprites_right_rnd;
 }
 
-switch (FEAT_TRAINS, SELF, chs4_sprites_right_b1967, cargo_subtype)
+switch (FEAT_TRAINS, SELF, chs4_sprites_right, 
+  cargo_subtype)
 {
-  0: chs4_v1_sprites_right;
+  0: chs4_sprites_right_factory;
   1: chs4_v4_sprites_right;      
   2: chs4_v5_sprites_right;    
   3: chs4_v6_sprites_right;    
   4: chs4z_v1_sprites_right;       
   5: chs4z_v3_sprites_right;   
   6: chs4z_v2_sprites_right;   
-     align_12_sprites; 
-}
-
-switch (FEAT_TRAINS, SELF, chs4_sprites_right_a1967, cargo_subtype)
-{
-  0: chs4_v2_sprites_right;   
-  1: chs4_v3_sprites_right;   
-  2: chs4_v4_sprites_right;   
-  3: chs4_v5_sprites_right;   
-  4: chs4_v6_sprites_right;   
-  5: chs4z_v1_sprites_right;      
-  6: chs4z_v3_sprites_right;   
-  7: chs4z_v2_sprites_right;   
-     align_12_sprites; 
-}
-
-switch (FEAT_TRAINS, SELF, chs4_sprites_right,
-  build_year >= 1967)
-{
-  0: chs4_sprites_right_b1967;
-     chs4_sprites_right_a1967;
+  0xE0: chs4z_v1_sprites_right;       
+  0xE1: chs4z_v3_sprites_right;   
+  0xE2: chs4z_v2_sprites_right;   
+        align_12_sprites; 
 }
 
 engine_RNDany_direction_template(chs4, 5, 3) 
 
 long_vehicle_sp(chs4)
 
-switch (FEAT_TRAINS, SELF, chs4_refit_cost_b1967,
-  (((extra_callback_info1 & 0xFF00) == 0x400) || ((extra_callback_info1 & 0xFF00) == 0x500) || ((extra_callback_info1 & 0xFF00) == 0x600))+
-  (((cargo_subtype == 4) || (cargo_subtype == 5) || (cargo_subtype == 6)) * 2))
-{
-  1: return 1;
-     return 0; 
-}            
-
-switch (FEAT_TRAINS, SELF, chs4_refit_cost_a1967,
-  (((extra_callback_info1 & 0xFF00) == 0x500) || ((extra_callback_info1 & 0xFF00) == 0x600) || ((extra_callback_info1 & 0xFF00) == 0x700))+
-  (((cargo_subtype == 5) || (cargo_subtype == 6) || (cargo_subtype == 7)) * 2))
-{
-  1: return 1;
-     return 0; 
-}            
-
 switch (FEAT_TRAINS, SELF, chs4_refit_cost,
-  build_year >= 1967)
+  ((extra_callback_info1 & 0xFF00) >= 0x0400)+
+  ((cargo_subtype >= 0x04) * 2))
 {
-  0: chs4_refit_cost_b1967;
-     chs4_refit_cost_a1967;
-}
+  1: return 1;
+     return 0; 
+}            
 
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_a1967_bUSSR,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_TTD_49));
-  1: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_TTD_4B));
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_a1967_aUSSR,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_TTD_49));
-  1: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_TTD_4B));
-  2: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_RZD_TCH15_BALASHOV));
-  3: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_RZD_TCH8_KIROV));
-  4: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_UKRAINIAN_RAILWAY_STANDARD_TCH1_KIEV));
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_a1967_a2002,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_TTD_49));
-  1: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_TTD_4B));
-  2: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_RZD_TCH15_BALASHOV));
-  3: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_RZD_TCH8_KIROV));
-  4: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), string(STR_REFIT_UKRAINIAN_RAILWAY_STANDARD_TCH1_KIEV));
-                                                                             
-  5: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_NAME_CHS4Z), "");
-  6: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_NAME_CHS4Z), string(STR_REFIT_UKRAINIAN_RAILWAY_STANDARD_TCH1_KIEV));
-  7: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_NAME_CHS4Z), string(STR_REFIT_UKRAINIAN_RAILWAY_ARENA_2000));
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_a1967,
-  ((current_year >= USSREND) || (build_year >= USSREND)) +
-  ((current_year >= 2002) || (build_year >= 2002)))
-{
-  0: chs4_cargo_subtype_text_a1967_bUSSR;
-  1: chs4_cargo_subtype_text_a1967_aUSSR;
-     chs4_cargo_subtype_text_a1967_a2002;
-}
-
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_b1967_aUSSR,
+switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_aUSSR,
   cargo_subtype)
 {
   0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), "");
@@ -167,7 +106,7 @@ switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_b1967_aUSSR,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_b1967_a2002,
+switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_a2002,
   cargo_subtype)
 {
   0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), "");
@@ -181,20 +120,39 @@ switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_b1967_a2002,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_b1967,
+switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_long,
   (current_year >= USSREND) +
   (current_year >= 2002))
 {
   0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_52E), "");
-  1: chs4_cargo_subtype_text_b1967_aUSSR;
-     chs4_cargo_subtype_text_b1967_a2002;
+  1: chs4_cargo_subtype_text_aUSSR;
+     chs4_cargo_subtype_text_a2002;
 }
 
-switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text,
-  build_year >= 1967)
+livery_template(chs4_b2002, FACTORY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt3(chs4_b2002, RZD_TCH15_BALASHOV, RZD_TCH8_KIROV, UKRAINIAN_RAILWAY_STANDARD_TCH1_KIEV)
+
+switch (FEAT_TRAINS, SELF, chs4_a2002_cargo_subtype_text_pre,
+  cargo_subtype)
 {
-  0: chs4_cargo_subtype_text_b1967;
-     chs4_cargo_subtype_text_a1967;
+  0xE0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_NAME_CHS4Z), "");                                                        
+  0xE1: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_NAME_CHS4Z), string(STR_REFIT_UKRAINIAN_RAILWAY_STANDARD_TCH1_KIEV));    
+  0xE2: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_NAME_CHS4Z), string(STR_REFIT_UKRAINIAN_RAILWAY_ARENA_2000));            
+        chs4_b2002_cargo_subtype_text_pre;
+}
+
+switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text_short,
+  (build_year >= 2002) || (current_year >= 2002))
+{
+  0: chs4_b2002_cargo_subtype_text_pre;
+     chs4_a2002_cargo_subtype_text_pre;
+}    
+
+switch (FEAT_TRAINS, SELF, chs4_cargo_subtype_text,
+  enable_long_names)
+{
+  1: chs4_cargo_subtype_text_long;
+     chs4_cargo_subtype_text_short;
 }
 
 switch (FEAT_TRAINS, SELF, chs4_additional_text,
