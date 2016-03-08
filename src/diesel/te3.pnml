@@ -69,13 +69,20 @@ switch (FEAT_TRAINS, SELF, te3_sprites_left_voroshilov,
      te3_v6_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, te3_sprites_left_kharkiv2, 
+switch (FEAT_TRAINS, SELF, te3_sprites_left_kharkiv2_2, 
   date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {
   0: te3_v3_sprites_left;
      te3_v6_sprites_left;
 }
     
+random_switch (FEAT_TRAINS, SELF, te3_sprites_left_kharkiv2, 0)
+{
+  6: te3_sprites_left_kharkiv2_2;
+  5: te3_sprites_left_voroshilov;
+  5: te3_sprites_left_kolomna;
+}
+
 switch (FEAT_TRAINS, SELF, te3_sprites_left_kharkiv1, 
   date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {
@@ -130,11 +137,18 @@ switch (FEAT_TRAINS, SELF, te3_sprites_right_voroshilov,
      te3_v6_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, te3_sprites_right_kharkiv2, 
+switch (FEAT_TRAINS, SELF, te3_sprites_right_kharkiv2_2, 
   date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {
   0: te3_v3_sprites_right;
      te3_v6_sprites_right;
+}
+    
+random_switch (FEAT_TRAINS, SELF, te3_sprites_right_kharkiv2, 0)
+{
+  6: te3_sprites_right_kharkiv2_2;
+  5: te3_sprites_right_voroshilov;
+  5: te3_sprites_right_kolomna;
 }
     
 switch (FEAT_TRAINS, SELF, te3_sprites_right_kharkiv1, 
@@ -145,7 +159,7 @@ switch (FEAT_TRAINS, SELF, te3_sprites_right_kharkiv1,
 }
     
 switch (FEAT_TRAINS, SELF, te3_sprites_right,
-  (((built_during_preview == 1) || (build_year < 195)) * 10 +
+  (((built_during_preview == 1) || (build_year < 1955)) * 10 +
    (build_year >= 1956) +
    (build_year >= 1957)) * 10 +
    cargo_subtype)
@@ -165,12 +179,12 @@ engine_direction_template(te3, )
 long_vehicle(te3)
 
 switch (FEAT_TRAINS, SELF, te3_cargo_subtype_text_1956,
-  cargo_subtype)
+  random_bits % 16)
 {
-  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_REFIT_FACTORY_NAME, string(STR_PURCHASE_HINT_FACTORY_KHARKIV)));
-  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_REFIT_FACTORY_NAME, string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD)));
-  2: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_REFIT_FACTORY_NAME, string(STR_PURCHASE_HINT_FACTORY_KOLOMNA)));
-     return CB_RESULT_NO_TEXT;
+  0..5: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_REFIT_FACTORY_NAME, string(STR_PURCHASE_HINT_FACTORY_KHARKIV)));
+  6..10: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_REFIT_FACTORY_NAME, string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD)));
+  11..15: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_REFIT_FACTORY_NAME, string(STR_PURCHASE_HINT_FACTORY_KOLOMNA)));
+          return CB_RESULT_NO_TEXT;
 }
 
 switch (FEAT_TRAINS, SELF, te3_cargo_subtype_text_lastochka3,
@@ -199,15 +213,45 @@ switch (FEAT_TRAINS, SELF, te3_cargo_subtype_text_lastochka,
      te3_cargo_subtype_text_lastochka3; 
 }
 
-switch (FEAT_TRAINS, SELF, te3_cargo_subtype_text,
+switch (FEAT_TRAINS, SELF, te3_cargo_subtype_text_long,
   ((built_during_preview == 1) || (build_year < 1955)) * 10 +
   (build_year >= 1956) +
   (build_year >= 1957))
 {
- 10: return string(STR_REFIT_PREPRODUCTION);
+ 10..12: return string(STR_REFIT_PREPRODUCTION);
   0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_MONGOLKA), string(STR_PURCHASE_HINT_FACTORY_KHARKIV));
   1: te3_cargo_subtype_text_1956;
      te3_cargo_subtype_text_lastochka;  
+}
+
+livery_template(te3_a1963, TTD_63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(te3_a1963, TTD_53)
+livery_template(te3_a1972, TTD_63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt2(te3_a1972, TTD_53, TTD_96)
+
+switch (FEAT_TRAINS, SELF, te3_a1957_cargo_subtype_text_pre,
+  ((current_year >= 1963) || (build_year >= 1963)) +
+  ((current_year >= 1972) || (build_year >= 1972)))
+{
+  0: return CB_RESULT_NO_TEXT;
+  1: te3_a1963_cargo_subtype_text_pre; 
+     te3_a1972_cargo_subtype_text_pre; 
+}
+
+switch (FEAT_TRAINS, SELF, te3_a1955_cargo_subtype_text_pre,
+  build_year >= 1957)
+{
+  0: return CB_RESULT_NO_TEXT;
+     te3_a1957_cargo_subtype_text_pre;  
+}
+
+livery_template_prealt(te3, 1955)
+
+switch (FEAT_TRAINS, SELF, te3_cargo_subtype_text,
+  enable_long_names)
+{
+  1: te3_cargo_subtype_text_long;
+     te3_cargo_subtype_text_pre;
 }
 
 switch (FEAT_TRAINS, SELF, te3_additional_text,
