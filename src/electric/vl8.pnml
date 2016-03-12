@@ -2,19 +2,25 @@
 // 178 (B2h) 
 
 #define IMAGEFILE  "src/electric/vl8.png"
-purchase_sprites(vl8_v1,   0, 0)
-purchase_sprites(vl8_v2, 100, 0)
-purchase_sprites(vl8_v3, 200, 0)
-purchase_sprites_select2(vl8, 1956, 1957)
-electric2_1_sprites(8, n8_v1,   32,   40)
-electric2_1_sprites(8, n8_v2,   32,  241)
-electric2_1_sprites(8, n8_v3,   32,  442)
-electric2_1_sprites(8, n8_v4,   32,  643)
-electric2_1_sprites(8, n8_v5,   32,  844)
-electric2_1_sprites(8, n8_v6,   32, 1045)
-electric2_1_sprites(8, vl8m_v1, 32, 1246)
-electric2_1_sprites(8, vl8m_v2, 32, 1447)
+purchase_sprites(vl8_v1, 0, 0)
+electric2_1_sprites(8, n8_v1,   32,  40)
+electric2_1_sprites(8, n8_v2,   32, 241)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl8-s1956.png"
+purchase_sprites(vl8_v2, 0, 0)
+electric2_1_sprites(8, n8_v3,   32,  40)
+electric2_1_sprites(8, n8_v4,   32, 241)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl8-s1957.png"
+purchase_sprites(vl8_v3, 0, 0)
+electric2_1_sprites(8, n8_v5,   32,  40)
+electric2_1_sprites(8, n8_v6,   32, 241)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl8m.png"
+electric2_1_sprites(8, vl8m_v1, 32,  40)
+electric2_1_sprites(8, vl8m_v2, 32, 241)
+#undef IMAGEFILE
+purchase_sprites_select2(vl8, 1956, 1957)
 
 switch (FEAT_TRAINS, SELF, n8_sprites_left,
   ((build_year >= 1956) * 2) +
@@ -98,9 +104,8 @@ switch (FEAT_TRAINS, SELF, vl8_refit_cost,
 switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text_a1957,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_N8), string(STR_REFIT_SOUTHERN_RAILWAY));
-  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_N8), string(STR_REFIT_TTD_53));
-     return CB_RESULT_NO_TEXT;
+  LV_RAL6002: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_N8), string(STR_REFIT_TTD_53));
+              return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_N8), string(STR_REFIT_SOUTHERN_RAILWAY));
 }
 switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text_a1956,
   cargo_subtype)
@@ -127,14 +132,14 @@ switch (FEAT_TRAINS, SELF, vl8_a1976_cargo_subtype_text,
      vl8_a1963_cargo_subtype_text;
 }
 
-switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text_a1963,
+switch (FEAT_TRAINS, SELF, vl8_a1963_cargo_subtype_text_pre,
   (current_year >= 1976) || (build_year >= 1976))
 {
   0: vl8_a1963_cargo_subtype_text;
      vl8_a1976_cargo_subtype_text;
 }
 
-switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text,
+switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text_long,
   (build_year >= 1956) +
   (build_year >= 1957) +
   (build_year >= 1963))
@@ -142,9 +147,32 @@ switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text,
   0: vl8_cargo_subtype_text_b1956;
   1: vl8_cargo_subtype_text_a1956;
   2: vl8_cargo_subtype_text_a1957;
-  3: vl8_cargo_subtype_text_a1963;
-     return CB_RESULT_NO_TEXT;
+     vl8_a1963_cargo_subtype_text_pre;    
 }
+
+livery_template(vl8_b1956, TTD_96, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl8_b1956, TTD_63)
+livery_template(vl8_a1956, TTD_09, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(vl8_a1956, TTD_93)
+livery_template(vl8_a1957, SOUTHERN_RAILWAY, LV_RAL6002, LV_SOUTHERN_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text_short,
+  (build_year >= 1956) +
+  (build_year >= 1957) +
+  (build_year >= 1963))
+{
+  0: vl8_b1956_cargo_subtype_text_pre;
+  1: vl8_a1956_cargo_subtype_text_pre;
+  2: vl8_a1957_cargo_subtype_text;
+     vl8_a1963_cargo_subtype_text_pre;    
+}
+
+switch (FEAT_TRAINS, SELF, vl8_cargo_subtype_text,
+  enable_long_names)
+{
+  1: vl8_cargo_subtype_text_long;
+     vl8_cargo_subtype_text_short;
+}       
 
 switch (FEAT_TRAINS, SELF, vl8_additional_text,
   current_year >= 1976)
