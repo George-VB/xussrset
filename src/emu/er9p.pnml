@@ -4,10 +4,9 @@
 #define IMAGEFILE  "src/emu/er9p.png"
 purchase_sprites(er9p_h_v1, 0, 0)
 purchase_sprites(er9p_h_v2, 0, 19)
-
+purchase_sprites_select(er9p_h, 1974)
 purchase_sprites(er9p_m, 120, 0)
 purchase_sprites(er9p_c, 240, 0)
-
 MU_3r_0_0_sprites(12, er9p_v1, 32, 40)
 MU_0_3_0_sprites(12, er9p_v1, 32, 40)
 MU_0_0_2_sprites(12, er9p_v1, 32, 40)
@@ -15,7 +14,6 @@ MU_3r_0_0_sprites(12, er9p_v1u, 32, 442)
 MU_0_3_0_sprites(12, er9p_v1u, 32, 442)
 MU_3r_0_0_sprites(12, er9p_v1p, 32, 844)
 #undef IMAGEFILE
-
 #define IMAGEFILE  "src/emu/er9p-gr.png"
 MU_3r_0_0_sprites(12, er9p_v2, 32, 40)
 MU_0_3_0_sprites(12, er9p_v2, 32, 40)
@@ -24,7 +22,6 @@ MU_3r_0_0_sprites(12, er9p_v2u, 32, 442)
 MU_0_3_0_sprites(12, er9p_v2u, 32, 442)
 MU_3r_0_0_sprites(12, er9p_v2p, 32, 844)
 #undef IMAGEFILE
-
 #define IMAGEFILE  "src/emu/er9p-gzhd.png"
 MU_3r_0_0_sprites(12, er9p_v3u, 32, 40)
 MU_0_3_0_sprites(12, er9p_v3, 32, 40)
@@ -32,7 +29,6 @@ MU_0_0_2_sprites(12, er9p_v3, 32, 40)
 MU_3r_0_0_sprites(12, er9p_v3p, 32, 442)
 MU_0_3_0_sprites(12, er9p_v3u, 32, 442)
 #undef IMAGEFILE
-
 #define IMAGEFILE  "src/emu/er9p-uz.png"
 MU_3r_0_0_sprites(12, er9p_v4u, 32, 40)
 MU_0_3_0_sprites(12, er9p_v4, 32, 40)
@@ -41,50 +37,90 @@ MU_3r_0_0_sprites(12, er9p_v4p, 32, 442)
 MU_0_3_0_sprites(12, er9p_v4u, 32, 442)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, er9p_h_purchase_sprites,
-  current_year >= 1974)
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_left_gr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {
-  0: er9p_h_v1_purchase_sprites;
-     er9p_h_v2_purchase_sprites;
+  0: er9p_v1_h_sprites_left;
+     er9p_v1u_h_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_left_dgr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v2_h_sprites_left;
+     er9p_v2u_h_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_left_1,
+  cargo_subtype)
+{
+  0: er9p_h_sprites_left_gr;
+  LV_RAL6002:           er9p_h_sprites_left_gr;
+  LV_RAL6020:           er9p_h_sprites_left_dgr;
+  LV_GORKOV_RAILWAY:    er9p_v3u_h_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_h_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_left_gr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v1_h_notpowered_sprites_left;
+     er9p_v1u_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_left_dgr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v2_h_notpowered_sprites_left;
+     er9p_v2u_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_left,
+  cargo_subtype)
+{
+  0: er9p_h_notpowered_sprites_left_gr;
+  LV_RAL6002:           er9p_h_notpowered_sprites_left_gr; 
+  LV_RAL6020:           er9p_h_notpowered_sprites_left_dgr; 
+  LV_GORKOV_RAILWAY:    er9p_v3u_h_notpowered_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_h_notpowered_sprites_left;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_h_sprites_l_b1974,
-  ((date_of_last_service >= LV_GREAT_CHANGE_DATE) * 200) +
-  ((LOAD_TEMP(4) != er9p_h) * 100) +
+  LOAD_TEMP(4) != er9p_h)
+{
+  0: er9p_h_sprites_left_1;
+     er9p_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_left_2,
   cargo_subtype)
 {
-    0: er9p_v1_h_sprites_left;
-    1: er9p_v2_h_sprites_left;
-    2: er9p_v3u_h_sprites_left;
-    3: er9p_v4u_h_sprites_left;
-  100: er9p_v1_h_notpowered_sprites_left;
-  101: er9p_v2_h_notpowered_sprites_left;
-  102: er9p_v3u_h_notpowered_sprites_left;
-  103: er9p_v4u_h_notpowered_sprites_left;
-  200: er9p_v1u_h_sprites_left;
-  201: er9p_v2u_h_sprites_left;
-  202: er9p_v3u_h_sprites_left;
-  203: er9p_v4u_h_sprites_left;
-  300: er9p_v1u_h_notpowered_sprites_left;
-  301: er9p_v2u_h_notpowered_sprites_left;
-  302: er9p_v3u_h_notpowered_sprites_left;
-  303: er9p_v4u_h_notpowered_sprites_left;
-       align_12_sprites;
+  0: er9p_v1p_h_sprites_left;
+  LV_RAL6002:           er9p_v1p_h_sprites_left;
+  LV_RAL6020:           er9p_v2p_h_sprites_left; 
+  LV_GORKOV_RAILWAY:    er9p_v3p_h_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4p_h_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_left_2,
+  cargo_subtype)
+{
+  0: er9p_v1p_h_notpowered_sprites_left;
+  LV_RAL6002:           er9p_v1p_h_notpowered_sprites_left;
+  LV_RAL6020:           er9p_v2p_h_notpowered_sprites_left; 
+  LV_GORKOV_RAILWAY:    er9p_v3p_h_notpowered_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4p_h_notpowered_sprites_left;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_h_sprites_l_a1974,
-  ((LOAD_TEMP(4) != er9p_h) * 100) +
-  cargo_subtype)
+  LOAD_TEMP(4) != er9p_h)
 {
-    0: er9p_v1p_h_sprites_left;
-    1: er9p_v2p_h_sprites_left;
-    2: er9p_v3p_h_sprites_left;
-    3: er9p_v4p_h_sprites_left;
-  100: er9p_v1p_h_notpowered_sprites_left;
-  101: er9p_v2p_h_notpowered_sprites_left;
-  102: er9p_v3p_h_notpowered_sprites_left;
-  103: er9p_v4p_h_notpowered_sprites_left;
-       align_12_sprites;
+  0: er9p_h_sprites_left_2;
+     er9p_h_notpowered_sprites_left_2;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_h_sprites_left,
@@ -94,43 +130,90 @@ switch (FEAT_TRAINS, SELF, er9p_h_sprites_left,
      er9p_h_sprites_l_b1974;
 }
 
-switch (FEAT_TRAINS, SELF, er9p_h_sprites_r_b1974,
-  ((date_of_last_service >= LV_GREAT_CHANGE_DATE) * 200) +
-  ((LOAD_TEMP(4) != er9p_h) * 100) +
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_right_gr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v1_h_sprites_right;
+     er9p_v1u_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_right_dgr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v2_h_sprites_right;
+     er9p_v2u_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_right_1,
   cargo_subtype)
 {
-    0: er9p_v1_h_sprites_right;
-    1: er9p_v2_h_sprites_right;
-    2: er9p_v3u_h_sprites_right;
-    3: er9p_v4u_h_sprites_right;
-  100: er9p_v1_h_notpowered_sprites_right;
-  101: er9p_v2_h_notpowered_sprites_right;
-  102: er9p_v3u_h_notpowered_sprites_right;
-  103: er9p_v4u_h_notpowered_sprites_right;
-  200: er9p_v1u_h_sprites_right;
-  201: er9p_v2u_h_sprites_right;
-  202: er9p_v3u_h_sprites_right;
-  203: er9p_v4u_h_sprites_right;
-  300: er9p_v1u_h_notpowered_sprites_right;
-  301: er9p_v2u_h_notpowered_sprites_right;
-  302: er9p_v3u_h_notpowered_sprites_right;
-  303: er9p_v4u_h_notpowered_sprites_right;
-       align_12_sprites;
+  0: er9p_h_sprites_right_gr;
+  LV_RAL6002:           er9p_h_sprites_right_gr;
+  LV_RAL6020:           er9p_h_sprites_right_dgr;
+  LV_GORKOV_RAILWAY:    er9p_v3u_h_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_h_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_right_gr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v1_h_notpowered_sprites_right;
+     er9p_v1u_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_right_dgr,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: er9p_v2_h_notpowered_sprites_right;
+     er9p_v2u_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_right,
+  cargo_subtype)
+{
+  0: er9p_h_notpowered_sprites_right_gr;
+  LV_RAL6002:           er9p_h_notpowered_sprites_right_gr; 
+  LV_RAL6020:           er9p_h_notpowered_sprites_right_dgr; 
+  LV_GORKOV_RAILWAY:    er9p_v3u_h_notpowered_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_h_notpowered_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_r_b1974,
+  LOAD_TEMP(4) != er9p_h)
+{
+  0: er9p_h_sprites_right_1;
+     er9p_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_sprites_right_2,
+  cargo_subtype)
+{
+  0: er9p_v1p_h_sprites_right;
+  LV_RAL6002:           er9p_v1p_h_sprites_right;
+  LV_RAL6020:           er9p_v2p_h_sprites_right; 
+  LV_GORKOV_RAILWAY:    er9p_v3p_h_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4p_h_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_h_notpowered_sprites_right_2,
+  cargo_subtype)
+{
+  0: er9p_v1p_h_notpowered_sprites_right;
+  LV_RAL6002:           er9p_v1p_h_notpowered_sprites_right;
+  LV_RAL6020:           er9p_v2p_h_notpowered_sprites_right; 
+  LV_GORKOV_RAILWAY:    er9p_v3p_h_notpowered_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4p_h_notpowered_sprites_right;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_h_sprites_r_a1974,
-  ((LOAD_TEMP(4) != er9p_h) * 100) +
-  cargo_subtype)
+  LOAD_TEMP(4) != er9p_h)
 {
-    0: er9p_v1p_h_sprites_right;
-    1: er9p_v2p_h_sprites_right;
-    2: er9p_v3p_h_sprites_right;
-    3: er9p_v4p_h_sprites_right;
-  100: er9p_v1p_h_notpowered_sprites_right;
-  101: er9p_v2p_h_notpowered_sprites_right;
-  102: er9p_v3p_h_notpowered_sprites_right;
-  103: er9p_v4p_h_notpowered_sprites_right;
-       align_12_sprites;
+  0: er9p_h_sprites_right_2;
+     er9p_h_notpowered_sprites_right_2;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_h_sprites_right,
@@ -144,36 +227,62 @@ engine_direction_template3m2(er9p_h, er9p_m, er9p_c, )
 
 long_vehicle(er9p_h)
 
-switch (FEAT_TRAINS, SELF, er9p_m_direction_left_b1968,
-  cargo_subtype +
-  ((LOAD_TEMP(4) != er9p_h) * 100))
+switch (FEAT_TRAINS, SELF, er9p_m_sprites_left_1,
+  cargo_subtype)
 {
-    0: er9p_v1_m_sprites_left;
-    1: er9p_v2_m_sprites_left;
-    2: er9p_v3_m_sprites_left;
-    3: er9p_v4_m_sprites_left;
+  0: er9p_v1_m_sprites_left;
+  LV_RAL6002:           er9p_v1_m_sprites_left;
+  LV_RAL6020:           er9p_v2_m_sprites_left;
+  LV_GORKOV_RAILWAY:    er9p_v3_m_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_m_sprites_left;
+  align_12_sprites;
+}
 
-  100: er9p_v1_m_notpowered_sprites_left;
-  101: er9p_v2_m_notpowered_sprites_left;
-  102: er9p_v3_m_notpowered_sprites_left;
-  103: er9p_v4_m_notpowered_sprites_left;
-       align_12_sprites;
+switch (FEAT_TRAINS, SELF, er9p_m_notpowered_sprites_left,
+  cargo_subtype)
+{
+  0: er9p_v1_m_notpowered_sprites_left;
+  LV_RAL6002:           er9p_v1_m_notpowered_sprites_left;
+  LV_RAL6020:           er9p_v2_m_notpowered_sprites_left;
+  LV_GORKOV_RAILWAY:    er9p_v3_m_notpowered_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_m_notpowered_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_m_direction_left_b1968,
+  LOAD_TEMP(4) != er9p_h)
+{
+  0: er9p_m_sprites_left_1;
+     er9p_m_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_m_sprites_left_2,
+  cargo_subtype)
+{
+  0: er9p_v1u_m_sprites_left;
+  LV_RAL6002:           er9p_v1u_m_sprites_left;
+  LV_RAL6020:           er9p_v2u_m_sprites_left;
+  LV_GORKOV_RAILWAY:    er9p_v3u_m_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_m_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_m_notpowered_sprites_left_2,
+  cargo_subtype)
+{
+  0: er9p_v1u_m_notpowered_sprites_left;
+  LV_RAL6002:           er9p_v1u_m_notpowered_sprites_left;
+  LV_RAL6020:           er9p_v2u_m_notpowered_sprites_left;
+  LV_GORKOV_RAILWAY:    er9p_v3u_m_notpowered_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_m_notpowered_sprites_left;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_m_direction_left_a1968,
-  cargo_subtype +
-  ((LOAD_TEMP(4) != er9p_h) * 100))
+  LOAD_TEMP(4) != er9p_h)
 {
-    0: er9p_v1u_m_sprites_left;
-    1: er9p_v2u_m_sprites_left;
-    2: er9p_v3u_m_sprites_left;
-    3: er9p_v4u_m_sprites_left;
-
-  100: er9p_v1u_m_notpowered_sprites_left;
-  101: er9p_v2u_m_notpowered_sprites_left;
-  102: er9p_v3u_m_notpowered_sprites_left;
-  103: er9p_v4u_m_notpowered_sprites_left;
-       align_12_sprites;
+  0: er9p_m_sprites_left_2;
+     er9p_m_notpowered_sprites_left_2;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_m_direction_left,
@@ -183,36 +292,62 @@ switch (FEAT_TRAINS, SELF, er9p_m_direction_left,
      er9p_m_direction_left_b1968;
 }
 
-switch (FEAT_TRAINS, SELF, er9p_m_direction_right_b1968,
-  cargo_subtype +
-  ((LOAD_TEMP(4) != er9p_h) * 100))
+switch (FEAT_TRAINS, SELF, er9p_m_sprites_right_1,
+  cargo_subtype)
 {
-    0: er9p_v1_m_sprites_right;
-    1: er9p_v2_m_sprites_right;
-    2: er9p_v3_m_sprites_right;
-    3: er9p_v4_m_sprites_right;
+  0: er9p_v1_m_sprites_right;
+  LV_RAL6002:           er9p_v1_m_sprites_right;
+  LV_RAL6020:           er9p_v2_m_sprites_right;
+  LV_GORKOV_RAILWAY:    er9p_v3_m_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_m_sprites_right;
+  align_12_sprites;
+}
 
-  100: er9p_v1_m_notpowered_sprites_right;
-  101: er9p_v2_m_notpowered_sprites_right;
-  102: er9p_v3_m_notpowered_sprites_right;
-  103: er9p_v4_m_notpowered_sprites_right;
-       align_12_sprites;
+switch (FEAT_TRAINS, SELF, er9p_m_notpowered_sprites_right,
+  cargo_subtype)
+{
+  0: er9p_v1_m_notpowered_sprites_right;
+  LV_RAL6002:           er9p_v1_m_notpowered_sprites_right;
+  LV_RAL6020:           er9p_v2_m_notpowered_sprites_right;
+  LV_GORKOV_RAILWAY:    er9p_v3_m_notpowered_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_m_notpowered_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_m_direction_right_b1968,
+  LOAD_TEMP(4) != er9p_h)
+{
+  0: er9p_m_sprites_right_1;
+     er9p_m_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_m_sprites_right_2,
+  cargo_subtype)
+{
+  0: er9p_v1u_m_sprites_right;
+  LV_RAL6002:           er9p_v1u_m_sprites_right;
+  LV_RAL6020:           er9p_v2u_m_sprites_right;
+  LV_GORKOV_RAILWAY:    er9p_v3u_m_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_m_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_m_notpowered_sprites_right_2,
+  cargo_subtype)
+{
+  0: er9p_v1u_m_notpowered_sprites_right;
+  LV_RAL6002:           er9p_v1u_m_notpowered_sprites_right;
+  LV_RAL6020:           er9p_v2u_m_notpowered_sprites_right;
+  LV_GORKOV_RAILWAY:    er9p_v3u_m_notpowered_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4u_m_notpowered_sprites_right;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_m_direction_right_a1968,
-  cargo_subtype +
-  ((LOAD_TEMP(4) != er9p_h) * 100))
+  LOAD_TEMP(4) != er9p_h)
 {
-    0: er9p_v1u_m_sprites_right;
-    1: er9p_v2u_m_sprites_right;
-    2: er9p_v3u_m_sprites_right;
-    3: er9p_v4u_m_sprites_right;
-
-  100: er9p_v1u_m_notpowered_sprites_right;
-  101: er9p_v2u_m_notpowered_sprites_right;
-  102: er9p_v3u_m_notpowered_sprites_right;
-  103: er9p_v4u_m_notpowered_sprites_right;
-       align_12_sprites;
+  0: er9p_m_sprites_right_2;
+     er9p_m_notpowered_sprites_right_2;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_m_direction_right,
@@ -228,34 +363,62 @@ EMU_direction_calculation_template(er9p, _m)
 
 long_vehicle_dir(er9p_m)
 
-switch (FEAT_TRAINS, SELF, er9p_c_direction_left,
-  cargo_subtype +
-  ((LOAD_TEMP(4) != er9p_h) * 100))
+switch (FEAT_TRAINS, SELF, er9p_c_sprites_left_1,
+  cargo_subtype)
 {
-    0: er9p_v1_c_sprites_left;
-    1: er9p_v2_c_sprites_left;
-    2: er9p_v3_c_sprites_left;
-    3: er9p_v4_c_sprites_left;
-  100: er9p_v1_c_notpowered_sprites_left;
-  101: er9p_v2_c_notpowered_sprites_left;
-  102: er9p_v3_c_notpowered_sprites_left;
-  103: er9p_v4_c_notpowered_sprites_left;
-       align_12_sprites;
+  0: er9p_v1_c_sprites_left;
+  LV_RAL6002:           er9p_v1_c_sprites_left;
+  LV_RAL6020:           er9p_v2_c_sprites_left;
+  LV_GORKOV_RAILWAY:    er9p_v3_c_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_c_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_c_notpowered_sprites_left,
+  cargo_subtype)
+{
+  0: er9p_v1_c_notpowered_sprites_left;
+  LV_RAL6002:           er9p_v1_c_notpowered_sprites_left;
+  LV_RAL6020:           er9p_v2_c_notpowered_sprites_left;
+  LV_GORKOV_RAILWAY:    er9p_v3_c_notpowered_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_c_notpowered_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_c_direction_left,
+  LOAD_TEMP(4) != er9p_h)
+{
+  0: er9p_c_sprites_left_1;
+     er9p_c_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_c_sprites_right_1,
+  cargo_subtype)
+{
+  0: er9p_v1_c_sprites_right;
+  LV_RAL6002:           er9p_v1_c_sprites_right;
+  LV_RAL6020:           er9p_v2_c_sprites_right;
+  LV_GORKOV_RAILWAY:    er9p_v3_c_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_c_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9p_c_notpowered_sprites_right,
+  cargo_subtype)
+{
+  0: er9p_v1_c_notpowered_sprites_right;
+  LV_RAL6002:           er9p_v1_c_notpowered_sprites_right;
+  LV_RAL6020:           er9p_v2_c_notpowered_sprites_right;
+  LV_GORKOV_RAILWAY:    er9p_v3_c_notpowered_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9p_v4_c_notpowered_sprites_right;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, er9p_c_direction_right,
-  cargo_subtype +
-  ((LOAD_TEMP(4) != er9p_h) * 100))
+  LOAD_TEMP(4) != er9p_h)
 {
-    0: er9p_v1_c_sprites_right;
-    1: er9p_v2_c_sprites_right;
-    2: er9p_v3_c_sprites_right;
-    3: er9p_v4_c_sprites_right;
-  100: er9p_v1_c_notpowered_sprites_right;
-  101: er9p_v2_c_notpowered_sprites_right;
-  102: er9p_v3_c_notpowered_sprites_right;
-  103: er9p_v4_c_notpowered_sprites_right;
-       align_12_sprites;
+  0: er9p_c_sprites_right_1;
+     er9p_c_notpowered_sprites_right;
 }
 
 EMU_46789101112_c_template(er9p)
@@ -342,31 +505,28 @@ switch (FEAT_TRAINS, PARENT, er9p_c_cargo_capacity,
 switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text4,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_53));
-  1: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_59));
-     return CB_RESULT_NO_TEXT;
+  LV_RAL6020: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_59));
+              return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_53));
 }
 
 switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text3,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_53));
-  1: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_59));
-  2: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_GORKOV_RAILWAY));
-     return CB_RESULT_NO_TEXT;
+  LV_RAL6020:        string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_59));
+  LV_GORKOV_RAILWAY: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_GORKOV_RAILWAY));
+                     return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_53));
 }
 
 switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text2,
   cargo_subtype)
 {
-  0: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_53));
-  1: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_59));
-  2: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_GORKOV_RAILWAY));
-  3: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_UKRAINIAN_RAILWAY));
-     return CB_RESULT_NO_TEXT;
+  LV_RAL6020:           return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_59));
+  LV_GORKOV_RAILWAY:    return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_GORKOV_RAILWAY));
+  LV_UKRAINIAN_RAILWAY: return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_UKRAINIAN_RAILWAY));
+                        return string(STR_REFIT_FACTORY_62101, string(STR_REFIT_TTD_53));
 }
 
-switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text,
+switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text_long,
   ((build_year >= 1972) || (current_year >= 1972)) + 
   ((build_year >= 1990) || (current_year >= 1990)))
 {
@@ -374,6 +534,15 @@ switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text,
   1: er9p_cargo_subtype_text3;
      er9p_cargo_subtype_text2;
 }
+
+livery_template(er9p_short, TTD_53, LV_RAL6002, LV_RAL6020, LV_GORKOV_RAILWAY, LV_UKRAINIAN_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+switch (FEAT_TRAINS, SELF, er9p_cargo_subtype_text,
+  enable_long_names)
+{
+  1: er9p_cargo_subtype_text_long;
+     er9p_short_cargo_subtype_text;
+}        
 
 general_running_cost(er9p_m_v1, 108)
 
