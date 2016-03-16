@@ -1,0 +1,303 @@
+﻿ // dr1b
+// 478 479 480
+
+#define IMAGEFILE  "src/dmu/dpkr2.png"
+purchase_sprites(dpkr2_h, 0, 0)
+purchase_sprites(dpkr2_c, 120, 0)
+MU_4r_0_0_sprites(14, dpkr2_v1, 32, 40)
+MU_0_0_2_sprites(14,  dpkr2_v1, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, dpkr2_h_sprites_left,
+  ((LOAD_TEMP(4) == dpkr2_h) || (LOAD_TEMP(4) == dpkr2_n)) *
+  (1 + (position_in_consist == 0)))
+{
+  0: dpkr2_v1_h_notpowered_sprites_left;
+  1: dpkr2_v1_h_notpowered_normal_sprites_left;
+  2: dpkr2_v1_h_sprites_left;
+     align_15_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, dpkr2_h_sprites_right,
+  ((LOAD_TEMP(4) == dpkr2_h) || (LOAD_TEMP(4) == dpkr2_n)) *
+  (1 + (position_in_consist_from_end == 1)))
+{
+  0: dpkr2_v1_h_notpowered_sprites_right;
+  1: dpkr2_v1_h_notpowered_normal_sprites_right;
+  2: dpkr2_v1_h_sprites_right;
+     align_15_sprites;
+}
+
+engine_direction_template3m(dpkr2_h, dpkr2_n, dpkr2_c, )
+
+long_vehicle(dpkr2_h)
+
+switch (FEAT_TRAINS, SELF, dpkr2_n_sprites_left,
+  ((LOAD_TEMP(4) == dpkr2_h) || (LOAD_TEMP(4) == dpkr2_n)) *
+  (1 + (position_in_consist == 0)))
+{
+  0: dpkr2_v1_h_notpowered_sprites_left;
+  1: dpkr2_v1_h_notpowered_normal_sprites_left;
+  2: dpkr2_v1_h_sprites_left;
+     align_15_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, dpkr2_n_sprites_right,
+  ((LOAD_TEMP(4) == dpkr2_h) || (LOAD_TEMP(4) == dpkr2_n)) *
+  (1 + (position_in_consist_from_end == 1)))
+{
+  0: dpkr2_v1_h_notpowered_sprites_right;
+  1: dpkr2_v1_h_notpowered_normal_sprites_right;
+  2: dpkr2_v1_h_sprites_right;
+     align_15_sprites;
+}
+
+engine_direction_template3m(dpkr2_n, dpkr2_h, dpkr2_c, )
+
+long_vehicle(dpkr2_n)
+
+random_switch (FEAT_TRAINS, SELF, dpkr2_c_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: dpkr2_v1_c_sprites_left;
+  1: dpkr2_v1_c_sprites_right;
+}
+
+long_vehicle_RND(dpkr2_c, dpkr2_c_sprites_start)
+
+switch (FEAT_TRAINS, PARENT, dpkr2_can_attach_wagon_length,
+  (count_veh_id(dpkr2_h) + count_veh_id(dpkr2_n)) > 1)
+{
+  0: CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon2,
+[
+  set_offset_to(num_vehs_in_consist-6),
+  prev_vehicle_type_id() ])
+{
+  dpkr2_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_5DWCM);
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon1,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  dpkr2_c: dpkr2_c_can_attach_wagon2;
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon_h,
+  (count_veh_id(dpkr2_h) + count_veh_id(dpkr2_n)) % 2)
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     dpkr2_c_can_attach_wagon1;
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon,
+[
+  set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+  dpkr2_c: dpkr2_c_can_attach_wagon1;
+  dpkr2_n: dpkr2_c_can_attach_wagon_h;
+  dpkr2_h: dpkr2_c_can_attach_wagon_h;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_n_can_attach_wagon,
+  count_veh_id(dpkr2_h) >= count_veh_id(dpkr2_n))
+{
+  1: dpkr2_can_attach_wagon_length;
+     return string(STR_CAN_ATTACH_MHEAD_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, dpkr2_can_attach_wagon,
+  vehicle_type_id)
+{
+  dpkr2_h: dpkr2_can_attach_wagon_length;
+  dpkr2_n: dpkr2_n_can_attach_wagon;
+  dpkr2_c: dpkr2_c_can_attach_wagon;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_h_start_stop,
+  (count_veh_id(dpkr2_h) + count_veh_id(dpkr2_n)) % 2)
+{
+  0: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+engine_diesel_1r_effect(dpkr2_h, -2, 7, 12)  
+
+switch (FEAT_TRAINS, SELF, dpkr2_create_effect0,
+  position_in_consist == 0)
+{
+  1: dpkr2_h_create_effect_sprites_left;
+     dpkr2_h_create_effect_sprites_right;
+}
+
+// Визуализируем эффекты тяги только если локомотив - dpkr2_h или dpkr2_n
+switch (FEAT_TRAINS, PARENT, dpkr2_create_effect,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n)) 
+{
+  1: dpkr2_create_effect0; 
+     return disable_create_effect();
+} 
+
+// Даём тягу, только если локомотив - dpkr2_h или dpkr2_n
+switch (FEAT_TRAINS, PARENT, dpkr2_power,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n)) 
+{
+  1: return get_power_in_cb(530); 
+     return 0;
+} 
+
+// Допускается эксплуатация с пассажирами только если голова - dpkr2_h или dpkr2_n
+switch (FEAT_TRAINS, PARENT, dpkr2_h_cargo_capacity,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n)) 
+{
+  1: return 82;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_n_cargo_capacity,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n)) 
+{
+  1: return 91;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, dpkr2_c_cargo_capacity,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n)) 
+{
+  1: return 116;
+     return 0;
+}
+
+general_running_cost(dpkr2_h_v1, 237)
+
+switch (FEAT_TRAINS, PARENT, dpkr2_h_running_cost_factor,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n))
+{
+  1: dpkr2_h_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+wagon_running_cost(dpkr2_c_v1, 235)
+
+switch (FEAT_TRAINS, PARENT, dpkr2_c_running_cost_factor,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n))
+{
+  1: dpkr2_c_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+wagon_running_cost(dpkr2_n_v1, 236)
+
+switch (FEAT_TRAINS, PARENT, dpkr2_n_running_cost_factor,
+  (vehicle_type_id == dpkr2_h) || (vehicle_type_id == dpkr2_n))
+{
+  1: dpkr2_n_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+item (FEAT_TRAINS, dpkr2_h, 478) {
+  property {
+    name: string(STR_NAME_DPKR2);
+    vehicle_dates(2014, 2050, 40, 10, 8, 30)
+    vehicle_dmu(530, 64, 45, 82, 54)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: dpkr2_h_sprites;
+    purchase: dpkr2_h_purchase_sprites;
+    cargo_age_period: return 90;
+    running_cost_factor: dpkr2_h_running_cost_factor;
+    articulated_part: articulated_part_dummy6;
+    can_attach_wagon: dpkr2_can_attach_wagon;
+    start_stop: dpkr2_h_start_stop;
+    create_effect: dpkr2_create_effect;
+    speed: return 140;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_7083_01)),
+                                   string(STR_SECTIONS_DMU_WCM2_5),
+                                   string(STR_PURCHASE_HINT_FROM, 2014),
+                                   string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW));
+    power: dpkr2_power;
+    cargo_capacity: dpkr2_h_cargo_capacity;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, dpkr2_n, 479) {
+  property {
+    name: string(STR_NAME_DPKR2);
+    vehicle_dates(2014, 2050, 40, 10, 8, 30)
+    vehicle_dmu(530, 63.3, 45, 91, 54)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: dpkr2_n_sprites;
+    purchase: dpkr2_h_purchase_sprites;
+    cargo_age_period: return 90;
+    running_cost_factor: dpkr2_n_running_cost_factor;
+    articulated_part: articulated_part_dummy6;
+    can_attach_wagon: dpkr2_can_attach_wagon;
+    start_stop: dpkr2_h_start_stop;
+    speed: return 140;
+    power: dpkr2_power;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_7083)),
+                                   string(STR_SECTIONS_DMU_WCM2_5),
+                                   string(STR_PURCHASE_HINT_FROM, 2014),
+                                   string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW));
+    cargo_capacity: dpkr2_n_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    create_effect: dpkr2_create_effect;
+  }
+}
+
+item (FEAT_TRAINS, dpkr2_c, 480) {
+  property {
+    name: string(STR_NAME_DPKR2);
+    vehicle_dates(2014, 2050, 40, 10, 8, 29)
+    vehicle_dmu(530, 62, 45, 116, 54)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    default: dpkr2_c_sprites;
+    purchase: dpkr2_c_purchase_sprites;
+    cargo_age_period: return 90;
+    running_cost_factor: dpkr2_c_running_cost_factor;
+    articulated_part: articulated_part_dummy6;
+    speed: return 140;
+    power: dpkr2_power;
+    can_attach_wagon: dpkr2_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_MC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_7084)),
+                                   string(STR_SECTIONS_DMU_WCM2_5),
+                                   string(STR_PURCHASE_HINT_FROM, 2014),
+                                   string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW));
+    cargo_capacity: dpkr2_c_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    create_effect: dpkr2_create_effect;
+  }
+}
+
+long_name_template(dpkr2_h, STR_LONGNAME_DPKR2_H)
+long_name_template(dpkr2_n, STR_LONGNAME_DPKR2_N)
+long_name_template(dpkr2_c, STR_LONGNAME_DPKR2_C)
+allow_dmu(dpkr2_h)
+allow_dmu(dpkr2_n)
+allow_dmu(dpkr2_c)
