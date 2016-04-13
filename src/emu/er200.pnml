@@ -195,36 +195,31 @@ switch (FEAT_TRAINS, PARENT, er200_m_power,
 
 // Допускается эксплуатация с пассажирами только если голова - er200_h
 switch (FEAT_TRAINS, PARENT, er200_h_cargo_capacity,
-  (vehicle_type_id == er200_h))
+  (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
 {
-  1: return 16;
+  1: return 24;
+  2: return 12;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_m_cargo_capacity,
-  (vehicle_type_id == er200_h))
+  (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
 {
   1: return 64;
+  2: return 36;
      return 0;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_c_cargo_capacity,
-  (vehicle_type_id == er200_h))
+  (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
 {
   1: return 64;
+  2: return 36;
      return 0;
 }
 
-general_running_cost(er200_m_v1, 313)
-
-switch (FEAT_TRAINS, PARENT, er200_m_running_cost_factor,
-  vehicle_type_id == er200_h)
-{
-  1: er200_m_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(er200_h_v1, 310)
+engine_RC_change_build_after(er200_h_v1, 285, 
+                                         275, 1988)       
 
 switch (FEAT_TRAINS, PARENT, er200_h_running_cost_factor,
   vehicle_type_id == er200_h)
@@ -233,7 +228,18 @@ switch (FEAT_TRAINS, PARENT, er200_h_running_cost_factor,
      return RC_MU_AS_CAR;
 }
 
-general_running_cost(er200_c_v1, 279)
+engine_RC_change_build_after(er200_m_v1, 320, 
+                                         309, 1988)       
+
+switch (FEAT_TRAINS, PARENT, er200_m_running_cost_factor,
+  vehicle_type_id == er200_h)
+{
+  1: er200_m_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+engine_RC_change_build_after(er200_c_v1, 317, 
+                                         306, 1988)       
 
 switch (FEAT_TRAINS, PARENT, er200_c_running_cost_factor,
   vehicle_type_id == er200_h)
@@ -242,75 +248,149 @@ switch (FEAT_TRAINS, PARENT, er200_c_running_cost_factor,
      return RC_MU_AS_CAR;
 }
 
-switch (FEAT_TRAINS, PARENT, er200_h_additional_text,
-  current_year >= USSREND)
+switch (FEAT_TRAINS, SELF, er200_refit_cost,
+  ((extra_callback_info1 & 0xFF00) == 0x100) +
+  ((cargo_subtype == 1) * 2))
 {
-  0: return string(STR_PURCHASE_HINT_ENGINE_MU,
+  1: return 2;
+  2: return -1;
+     return 0; 
+}            
+
+engine_CAP_change_build_after(er200_h_v1, 120, 
+                                          200, 1988)
+
+switch (FEAT_TRAINS, SELF, er200_h_cargo_age_period,
+  cargo_subtype == 1)
+{
+  0: er200_h_v1_cargo_age_period;
+     return 500;
+}
+
+switch (FEAT_TRAINS, SELF, er200_cargo_age_period,
+  cargo_subtype == 1)
+{
+  0: return 120;
+     return 500;
+}
+
+switch (FEAT_TRAINS, PARENT, er200_h_additional_text,
+  (current_year >= 1988) +
+  (current_year >= USSREND))
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_111)),
                    string(STR_SECTIONS_EMU_AM6_8_10_12_14),
-                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1992),
-                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
-     return string(STR_PURCHASE_HINT_ENGINE_MU,
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
+  1: return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_111)),
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_287)),
                    string(STR_SECTIONS_EMU_AM6_8_10_12_14),
-                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1992),
-                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
+     return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_287)),
+                   string(STR_SECTIONS_EMU_AM6_8_10_12_14),
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
 }
 
 switch (FEAT_TRAINS, PARENT, er200_m_additional_text,
-  current_year >= USSREND)
+  (current_year >= 1988) +
+  (current_year >= USSREND))
 {
-  0: return string(STR_PURCHASE_HINT_ENGINE_MU,
+  0: return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_112)),
                    string(STR_SECTIONS_EMU_AM6_8_10_12_14),
-                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1992),
-                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
-     return string(STR_PURCHASE_HINT_ENGINE_MU,
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
+  1: return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_112)),
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_286)),
                    string(STR_SECTIONS_EMU_AM6_8_10_12_14),
-                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1992),
-                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
+     return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_286)),
+                   string(STR_SECTIONS_EMU_AM6_8_10_12_14),
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
 }
 
 switch (FEAT_TRAINS, PARENT, er200_c_additional_text,
-  current_year >= USSREND)
+  (current_year >= 1988) +
+  (current_year >= USSREND))
 {
-  0: return string(STR_PURCHASE_HINT_ENGINE_MU,
+  0: return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_114)),
                    string(STR_SECTIONS_EMU_AM6_8_10_12_14),
-                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1992),
-                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
-     return string(STR_PURCHASE_HINT_ENGINE_MU,
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
+  1: return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_114)),
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_288)),
                    string(STR_SECTIONS_EMU_AM6_8_10_12_14),
-                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1992),
-                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
+     return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_288)),
+                   string(STR_SECTIONS_EMU_AM6_8_10_12_14),
+                   string(STR_PURCHASE_HINT_FROMTO, 1979, 1994),
+                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR),
+                   string(STR_PURCHASE_HINT_EDITION_LUX));
 }
 
+
+livery_template(er200, FACTORY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(er200, STR_REFIT_WITH_INCREASED_CP)
 engine_speed(er200, 200)
+engine_weight_change_build_after(er200_h, 48, 
+                                          50, 1988)       
+engine_weight_change_build_after(er200_m, 59, 
+                                          60, 1988)       
+engine_weight_change_build_after(er200_c, 57, 
+                                          58, 1988)       
+engine_cost_change_build_after(er200_h, 37, 
+                                        35, 1988)       
+engine_cost_change_build_after(er200_m, 40, 
+                                        39, 1988)       
+engine_cost_change_build_after(er200_c, 41, 
+                                        39, 1988)       
 
 item (FEAT_TRAINS, er200_h, 380) {
   property {
     name: string(STR_NAME_ER200);
-    vehicle_dates(1979, 1992, 30, 10, 8, 36)
+    vehicle_dates(1979, 1994, 30, 10, 8, 36)
     vehicle_dcemu_c(48.7, 16, 15)
   }
   graphics {
     default: er200_h_sprites;
     purchase: er200_h_purchase_sprites;
-    cargo_age_period: return 120;
+    cargo_age_period: er200_h_cargo_age_period;
     running_cost_factor: er200_h_running_cost_factor;
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: er200_can_attach_wagon;
@@ -321,19 +401,21 @@ item (FEAT_TRAINS, er200_h, 380) {
     power: return 0;
     cargo_capacity: er200_h_cargo_capacity;
     colour_mapping: any_cc_colour;
+    cargo_subtype_text: er200_cargo_subtype_text;
+    refit_cost: er200_refit_cost;
   }
 }
 
 item (FEAT_TRAINS, er200_m, 381) {
   property {
     name: string(STR_NAME_ER200);
-    vehicle_dates(1979, 1992, 30, 10, 8, 40)
+    vehicle_dates(1979, 1994, 30, 10, 8, 40)
     vehicle_dcemu(1146, 58.5, 35.6, 64, 15)
   }
   graphics {
     default: er200_m_sprites;
     purchase: er200_m_purchase_sprites;
-    cargo_age_period: return 120;
+    cargo_age_period: er200_cargo_age_period;
     running_cost_factor: er200_m_running_cost_factor;
     articulated_part: articulated_part_dummy7;
     can_attach_wagon: er200_can_attach_wagon;
@@ -345,19 +427,21 @@ item (FEAT_TRAINS, er200_m, 381) {
     cargo_capacity: er200_m_cargo_capacity;
     create_effect: er200_m_create_effect;
     colour_mapping: any_cc_colour;
+    cargo_subtype_text: er200_cargo_subtype_text;
+    refit_cost: er200_refit_cost;
   }
 }
 
 item (FEAT_TRAINS, er200_c, 382) {
   property {
     name: string(STR_NAME_ER200);
-    vehicle_dates(1979, 1992, 30, 10, 8, 40)
+    vehicle_dates(1979, 1994, 30, 10, 8, 40)
     vehicle_dcemu(1146, 56.5, 36.0, 64, 15)
   }
   graphics {
     default: er200_c_sprites;
     purchase: er200_c_purchase_sprites;
-    cargo_age_period: return 120;
+    cargo_age_period: er200_cargo_age_period;
     running_cost_factor: er200_c_running_cost_factor;
     articulated_part: articulated_part_dummy7;
     additional_text: er200_c_additional_text;
@@ -368,6 +452,8 @@ item (FEAT_TRAINS, er200_c, 382) {
     power: er200_m_power;
     cargo_capacity: er200_c_cargo_capacity;
     colour_mapping: any_cc_colour;
+    cargo_subtype_text: er200_cargo_subtype_text;
+    refit_cost: er200_refit_cost;
   }
 }
 
