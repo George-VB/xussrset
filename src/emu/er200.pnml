@@ -98,12 +98,22 @@ switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon,
      er200_h_can_attach_wagon2;
 }
 
+switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon_check_year, 
+[  set_offset_to(num_vehs_in_consist-2),
+  (LOAD_TEMP(1) >= 1989) +
+  ((prev_vehicle_build_year() >= 1989) * 100) ])
+{
+   1: return string(STR_CAN_ATTACH_WRONG_YEAR_MC,"...-1988","1989-...");
+ 100: return string(STR_CAN_ATTACH_WRONG_YEAR_MC,"...-1988","1989-...");
+      CB_RESULT_ATTACH_ALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, er200_m_can_attach_wagon, 
 [  set_offset_to(num_vehs_in_consist-2),
    prev_vehicle_type_id()])
 {
   er200_m: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-           return CB_RESULT_ATTACH_ALLOW;
+           er200_can_attach_wagon_check_year;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_c_can_attach_wagon, 
@@ -111,7 +121,7 @@ switch (FEAT_TRAINS, PARENT, er200_c_can_attach_wagon,
    prev_vehicle_type_id()])
 {
   er200_c: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-           return CB_RESULT_ATTACH_ALLOW;
+           er200_can_attach_wagon_check_year;
 }
 
 switch (FEAT_TRAINS, SELF, er200_can_attach_wagon3,
@@ -138,7 +148,8 @@ switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon1,
 }
 
 switch (FEAT_TRAINS, SELF, er200_can_attach_wagon,
-  STORE_TEMP(vehicle_type_id, 0))
+  [STORE_TEMP(vehicle_type_id, 0),
+   STORE_TEMP(build_year, 1) ])
 {
   er200_can_attach_wagon1;
 }
@@ -156,7 +167,6 @@ switch (FEAT_TRAINS, SELF, er200_m_start_stop,
 {
      return string(STR_START_STOP_MOTORIZED_CAR_CANNOT_LEAVE_DEPOT);
 }
-
 
 switch (FEAT_TRAINS, SELF, er200_m_create_effect3, 
   electric_create_effect(-3)) 
