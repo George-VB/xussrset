@@ -173,8 +173,8 @@ switch (FEAT_TRAINS, PARENT, evs1_create_effect,
 switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
   build_year >= 2014)
 {
-  0: return 564-75;
-     return 508-75;
+  0: return 460;
+     return 433;
 }
 
 switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
@@ -187,8 +187,8 @@ switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
 switch (FEAT_TRAINS, SELF, evs1_purchase_cargo_capacity,
   current_year >= 2014)
 {
-  0: return 564-75;
-     return 508-75;
+  0: return 460;
+     return 433;
 }
 
 switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
@@ -252,8 +252,6 @@ switch (FEAT_TRAINS, SELF, evs1_additional_text,
                    string(STR_PURCHASE_HINT_ATTACH_YEAR,"...-2013","2014-..."));
 }
 
-engine_CAP_change_build_after(evs1, 145, 
-                                    135, 2014)
 engine_speed(evs1, 250)
 
 item (FEAT_TRAINS, evs1, 400) {
@@ -267,7 +265,7 @@ item (FEAT_TRAINS, evs1, 400) {
     purchase: evs1_purchase_sprites;
     speed: evs1_speed;
     purchase_speed: evs1_purchase_speed;
-    cargo_age_period: evs1_cargo_age_period;
+    cargo_age_period: return 110;
     running_cost_factor: evs1_running_cost_factor;
     articulated_part: evs1_articulated_part;
     can_attach_wagon: evs1_can_attach_wagon;
@@ -284,12 +282,29 @@ item (FEAT_TRAINS, evs1, 400) {
 long_name_template(evs1, STR_LONGNAME_EVS1)
 allow_dcemu(evs1)
 
+switch (FEAT_TRAINS, SELF, evs1_part2_purchase_cargo_capacity,
+  current_year >= 2014)
+{
+  0: return 104;
+     return 75;
+}
+
+switch (FEAT_TRAINS, PARENT, evs1_part2_cargo_capacity2,
+  build_year >= 2014)
+{
+  0: return 104;
+     return 75;
+}
+
 switch (FEAT_TRAINS, PARENT, evs1_part2_cargo_capacity,
   vehicle_type_id == evs1)
 {
-  1: return 75;
+  1: evs1_part2_cargo_capacity2;
      return 0;
 }
+
+engine_CAP_change_build_after(evs1_part2, 200, 
+                                          300, 2014)
 
 item (FEAT_TRAINS, evs1_part2, 451) {
   property {
@@ -300,7 +315,8 @@ item (FEAT_TRAINS, evs1_part2, 451) {
   }
   graphics {
     default: evs1_sprites;
-    cargo_age_period: return 145;
+    cargo_age_period: evs1_part2_cargo_age_period;
+    purchase_cargo_capacity: evs1_part2_purchase_cargo_capacity;
     create_effect: evs1_create_effect;
     cargo_capacity: evs1_part2_cargo_capacity;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
