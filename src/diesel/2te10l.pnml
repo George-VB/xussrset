@@ -1,26 +1,19 @@
 ﻿ // 2te10l
 // 154 (9Ah)
 
-#define IMAGEFILE  "src/diesel/2te10l.png"
-purchase_sprites(_2te10l_v1,   0, 0)
-purchase_sprites(_2te10l_v2, 100, 0)
-purchase_sprites(_2te10l_v3, 200, 0)
-
-diesel2_sprites(10, _2te10l_v1, 32,  40)
-diesel2_sprites(10, _2te10l_v2, 32, 241)
-diesel2_sprites(10, _2te10l_v3, 32, 442)
-diesel2_sprites(10, _2te10l_v4, 32, 643)
-diesel2_sprites(10, _2te10l_v5, 32, 844)
+#define IMAGEFILE  "src/diesel/2te10l-pre.png"
+purchase_sprites(_2te10l_v1, 0, 0)
+diesel2_sprites(10, _2te10l_v1, 32, 40)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, _2te10l_purchase_sprites,
-  (current_year >= 1963) +
-  (current_year >= 1972))
-{
-  0: _2te10l_v1_purchase_sprites;
-  1: _2te10l_v2_purchase_sprites;
-     _2te10l_v3_purchase_sprites;
-}
+#define IMAGEFILE  "src/diesel/2te10l.png"
+purchase_sprites(_2te10l_v2,   0, 0)
+purchase_sprites(_2te10l_v3, 100, 0)
+diesel2_sprites(10, _2te10l_v2, 32,  40)
+diesel2_sprites(10, _2te10l_v3, 32, 241)
+diesel2_sprites(10, _2te10l_v4, 32, 442)
+diesel2_sprites(10, _2te10l_v5, 32, 643)
+#undef IMAGEFILE
+purchase_sprites_select2pre(_2te10l, 1963, 1972)
 
 switch (FEAT_TRAINS, SELF, _2te10l_sprites_left_a1972,
   cargo_subtype)
@@ -45,7 +38,7 @@ switch (FEAT_TRAINS, SELF, _2te10l_sprites_left_a1963_gr,
      _2te10l_v4_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, _2te10l_sprites_left_a1963,
+switch (FEAT_TRAINS, SELF, _2te10l_sprites_left_b1972,
   cargo_subtype)
 {
   0: _2te10l_sprites_left_a1963_bl;
@@ -53,14 +46,18 @@ switch (FEAT_TRAINS, SELF, _2te10l_sprites_left_a1963,
   align_10_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, _2te10l_sprites_left,
-  (build_year >= 1963) + 
-  (build_year >= 1972))
+switch (FEAT_TRAINS, SELF, _2te10l_sprites_left_a1963,
+  build_year >= 1972)
 {
-  0: _2te10l_v1_sprites_left;
-  1: _2te10l_sprites_left_a1963;
-  2: _2te10l_sprites_left_a1972;
-     align_10_sprites;
+  0: _2te10l_sprites_left_b1972;
+     _2te10l_sprites_left_a1972;
+}
+
+switch (FEAT_TRAINS, SELF, _2te10l_sprites_left,
+  (built_during_preview == 1) || (build_year < 1963))
+{
+  1: _2te10l_v1_sprites_left;
+     _2te10l_sprites_left_a1963;
 }
 
 switch (FEAT_TRAINS, SELF, _2te10l_sprites_right_a1972,
@@ -86,7 +83,7 @@ switch (FEAT_TRAINS, SELF, _2te10l_sprites_right_a1963_gr,
      _2te10l_v4_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, _2te10l_sprites_right_a1963,
+switch (FEAT_TRAINS, SELF, _2te10l_sprites_right_b1972,
   cargo_subtype)
 {
    0: _2te10l_sprites_right_a1963_bl;
@@ -94,14 +91,18 @@ switch (FEAT_TRAINS, SELF, _2te10l_sprites_right_a1963,
    align_10_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, _2te10l_sprites_right,
-  (build_year >= 1963) + 
-  (build_year >= 1972))
+switch (FEAT_TRAINS, SELF, _2te10l_sprites_right_a1963,
+  build_year >= 1972)
 {
-  0: _2te10l_v1_sprites_right;
-  1: _2te10l_sprites_right_a1963;
-  2: _2te10l_sprites_right_a1972;
-     align_10_sprites;
+  1: _2te10l_sprites_right_b1972;
+     _2te10l_sprites_right_a1972;
+}
+
+switch (FEAT_TRAINS, SELF, _2te10l_sprites_right,
+  (built_during_preview == 1) || (build_year < 1963))
+{
+  1: _2te10l_v1_sprites_right;
+     _2te10l_sprites_right_a1963;
 }
 
 engine_direction_template(_2te10l, ) 
@@ -109,42 +110,35 @@ long_vehicle(_2te10l)
 
 livery_template(_2te10l_a1963, TTD_9D, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template(_2te10l_a1972, TTD_53, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(_2te10l_a1972, TTD_93)
 
-switch (FEAT_TRAINS, SELF, _2te10l_a1972_pre_cargo_subtype_text,
-  cargo_subtype)
+switch (FEAT_TRAINS, SELF, _2te10l_a1963_cargo_subtype_text_pre,
+  build_year >= 1972)
 {
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_93);
-     _2te10l_a1972_cargo_subtype_text;
+  0: _2te10l_a1963_cargo_subtype_text;
+     _2te10l_a1972_cargo_subtype_text_pre;
 }
 
-switch (FEAT_TRAINS, SELF, _2te10l_cargo_subtype_text,
-  (build_year >= 1963) +
-  (build_year >= 1972))
-{
-  1: _2te10l_a1963_cargo_subtype_text;
-  2: _2te10l_a1972_pre_cargo_subtype_text;
-     return CB_RESULT_NO_TEXT;
-}
+livery_template_prealt(_2te10l, 1963)
 
 switch (FEAT_TRAINS, SELF, _2te10l_additional_text,
   (current_year >= 1963) +
   (current_year >= 1970))
 {
   0: return string(STR_PURCHASE_HINT_ENGINE, 
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL_PROTOTYPE), 
                    string(STR_PURCHASE_HINT_SECTIONS_1_2), 
-                   string(STR_PURCHASE_HINT_FROMTO, 1961, 1977), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1961, 1962), 
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
   1: return string(STR_PURCHASE_HINT_ENGINE, 
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
                    string(STR_PURCHASE_HINT_SECTIONS_1_2), 
-                   string(STR_PURCHASE_HINT_FROMTO, 1961, 1977), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1963, 1977), 
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK));
      return string(STR_PURCHASE_HINT_ENGINE, 
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
                    string(STR_PURCHASE_HINT_SECTIONS_1_2), 
-                   string(STR_PURCHASE_HINT_FROMTO, 1961, 1977), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1963, 1977), 
                    string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
 }
 
@@ -168,7 +162,7 @@ item (FEAT_TRAINS, _2te10l, 154) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: _2te10l_additional_text;
-    cargo_subtype_text: _2te10l_cargo_subtype_text;
+    cargo_subtype_text: _2te10l_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: _2te10l_speed;
     running_cost_factor: _2te10l_running_cost_factor;
