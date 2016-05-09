@@ -2,69 +2,59 @@
 // 152 (98h)
 
 #define IMAGEFILE  "src/diesel/2tep60.png"
-purchase_sprites(_2tep60_v1,   0,  0)
-purchase_sprites(_2tep60_v2, 110,  0)
-purchase_sprites(_2tep60_v3, 220,  0)
-
+purchase_sprites(_2tep60_v1, 0,  0)
 diesel2_sprites(11, _2tep60_v1,  32,   40)
-diesel2_sprites(11, _2tep60_v2,  32,  241)
-diesel2_sprites(11, _2tep60_v3,  32,  442)
-diesel2_sprites(11, _2tep60_v4,  32,  643)
-diesel2_sprites(11, _2tep60_v5,  32,  844)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/2tep60.png"
+purchase_sprites(_2tep60_v2, 0,  0)
+diesel2_sprites(11, _2tep60_v2,  32,   40)
+diesel2_sprites(11, _2tep60_v3,  32,  241)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/2tep60_a1970.png"
+purchase_sprites(_2tep60_v3, 0,  0)
+diesel2_sprites(11, _2tep60_v4,  32,   40)
+diesel2_sprites(11, _2tep60_v5,  32,  241)
+#undef IMAGEFILE
+purchase_sprites_select2pre(_2tep60, 1966, 1970)
 
-switch (FEAT_TRAINS, SELF, _2tep60_purchase_sprites,
-  (current_year >= 1966) +
-  (current_year >= 1970))
-{
-  0: _2tep60_v1_purchase_sprites;
-  1: _2tep60_v2_purchase_sprites;
-     _2tep60_v3_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, _2tep60_sprites_left,
-  ((build_year >= 1966)) +
-  ((build_year >= 1970) * 2) +
+switch (FEAT_TRAINS, SELF, _2tep60_a1966_b1970_sprites_left,
   cargo_subtype)
 {
-  0: _2tep60_v1_sprites_left;
-  1: _2tep60_v2_sprites_left;          
-  2: _2tep60_v3_sprites_left;
-  3: _2tep60_v4_sprites_left;        
-  4: _2tep60_v5_sprites_left;    
+  0: _2tep60_v2_sprites_left;          
+  1: _2tep60_v3_sprites_left;
      align_11_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, _2tep60_sprites_right,
-  ((build_year >= 1966)) +
-  ((build_year >= 1970) * 2) +
+switch (FEAT_TRAINS, SELF, _2tep60_a1966_a1970_sprites_left,
   cargo_subtype)
 {
-  0: _2tep60_v1_sprites_right;
-  1: _2tep60_v2_sprites_right;
-  2: _2tep60_v3_sprites_right;
-  3: _2tep60_v4_sprites_right;
-  4: _2tep60_v5_sprites_right;
+  0: _2tep60_v4_sprites_left;        
+  1: _2tep60_v5_sprites_left;    
      align_11_sprites;
 }
 
+switch (FEAT_TRAINS, SELF, _2tep60_a1966_b1970_sprites_right,
+  cargo_subtype)
+{
+  0: _2tep60_v2_sprites_right;
+  1: _2tep60_v3_sprites_right;
+     align_11_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, _2tep60_a1966_a1970_sprites_right,
+  cargo_subtype)
+{
+  0: _2tep60_v4_sprites_right;
+  1: _2tep60_v5_sprites_right;
+     align_11_sprites;
+}
+
+engine_year_template(_2tep60_a1966, 1970, left)
+engine_pre_template(_2tep60, 1966, left)
+engine_year_template(_2tep60_a1966, 1970, right)
+engine_pre_template(_2tep60, 1966, right)
 engine_direction_template(_2tep60, ) 
 long_vehicle(_2tep60)
-
-switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text2,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_B5);
-  1: return string(STR_REFIT_TTD_7C);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, _2tep60_cargo_subtype_text,
-  (build_year >= 1966))
-{
-  1: _2tep60_cargo_subtype_text2;
-     return string(STR_REFIT_PREPRODUCTION);
-}
 
 switch (FEAT_TRAINS, SELF, _2tep60_additional_text,
   current_year >= 1966)
@@ -81,6 +71,9 @@ switch (FEAT_TRAINS, SELF, _2tep60_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_KOLOMNA));
 }
 
+livery_template1(_2tep60_a1966, TTD_B5)
+livery_template_alt(_2tep60_a1966, TTD_7C)
+livery_template_prealt(_2tep60, 1966)
 engine_diesel_1r_effect(_2tep60, 2, 0, 11)
 engine_direction_template(_2tep60, _create_effect) 
 engine_speed_with_reduce(_2tep60, 160, 130, 25)
@@ -101,7 +94,7 @@ item (FEAT_TRAINS, _2tep60, 152) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: _2tep60_additional_text;
-    cargo_subtype_text: _2tep60_cargo_subtype_text;
+    cargo_subtype_text: _2tep60_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: _2tep60_speed;
     purchase_speed: _2tep60_purchase_speed;

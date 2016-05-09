@@ -3,53 +3,68 @@
 
 #define IMAGEFILE  "src/diesel/te2.png"
 purchase_sprites(te2_v1, 0, 0)
-purchase_sprites(te2_v2, 102, 0)
-
 diesel2_sprites(7, te2_v1, 32,   40)
-diesel2_sprites(7, te2_v2, 32,  241)
-diesel2_sprites(7, te2_v3, 32,  442)
-diesel2_sprites(7, te2_v4, 32,  643)
-diesel2_sprites(7, te2_v5, 32,  844)
-diesel2_sprites(7, te2_v6, 32, 1045)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/te2.png"
+purchase_sprites(te2_v2, 0, 0)
+diesel2_sprites(7, te2_v2, 32,  40)
+diesel2_sprites(7, te2_v3, 32, 241)
+diesel2_sprites(7, te2_v4, 32, 442)
+diesel2_sprites(7, te2_v5, 32, 643)
+diesel2_sprites(7, te2_v6, 32, 844)
+#undef IMAGEFILE
+purchase_sprites_selectpre(te2, 1950)
 
-switch (FEAT_TRAINS, SELF, te2_purchase_sprites,
-  current_year >= 1950)
+switch (FEAT_TRAINS, SELF, te2_sprites_left_factory,
+  (date_of_last_service >= date(1960,1,1)) +
+  (date_of_last_service >= LV_GREAT_CHANGE_DATE))
 {
-  0: te2_v1_purchase_sprites;
-     te2_v2_purchase_sprites;
+  0: te2_v2_sprites_left;
+  1: te2_v3_sprites_left;
+     te2_v5_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, te2_sprites_left,
-  (build_year >= 1950) +
-  (build_year >= 1960) +
-  ((build_year >= 1972) * 2) +
+switch (FEAT_TRAINS, SELF, te2_sprites_left_alt,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: te2_v4_sprites_left;
+     te2_v6_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, te2_a1950_sprites_left,
   cargo_subtype)
 {
-  0: te2_v1_sprites_left;
-  1: te2_v2_sprites_left;
-  2: te2_v3_sprites_left;
-  3: te2_v4_sprites_left;
-  4: te2_v5_sprites_left;
-  5: te2_v6_sprites_left;
+  0: te2_sprites_left_factory;
+  1: te2_sprites_left_alt;
      align_7_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, te2_sprites_right,
-  (build_year >= 1950) +
-  (build_year >= 1960) +
-  ((build_year >= 1972) * 2) +
+switch (FEAT_TRAINS, SELF, te2_sprites_right_factory,
+  (date_of_last_service >= date(1960,1,1)) +
+  (date_of_last_service >= LV_GREAT_CHANGE_DATE))
+{
+  0: te2_v2_sprites_right;
+  1: te2_v3_sprites_right;
+     te2_v5_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, te2_sprites_right_alt,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
+{
+  0: te2_v4_sprites_right;
+     te2_v6_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, te2_a1950_sprites_right,
   cargo_subtype)
 {
-  0: te2_v1_sprites_right;
-  1: te2_v2_sprites_right;
-  2: te2_v3_sprites_right;
-  3: te2_v4_sprites_right;
-  4: te2_v5_sprites_right;
-  5: te2_v6_sprites_right;
+  0: te2_sprites_right_factory;
+  1: te2_sprites_right_alt;
      align_7_sprites;
 }
 
+engine_pre_template(te2, 1950, left)
+engine_pre_template(te2, 1950, right)
 engine_direction_template(te2, ) 
 short_vehicle(te2)
 
@@ -69,18 +84,16 @@ switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text3,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, te2_cargo_subtype_text,
-  (build_year >= 1950) +
-  (build_year >= 1960) +
-  (build_year >= 1970))
+switch (FEAT_TRAINS, SELF, te2_a1950_cargo_subtype_text,
+  (date_of_last_service >= 1960) || (build_year >= 1960) +
+  (date_of_last_service >= LV_GREAT_CHANGE_YEAR) || (build_year >= LV_GREAT_CHANGE_YEAR))
 {
-
-  0: return string(STR_REFIT_PREPRODUCTION);
-  1: return CB_RESULT_NO_TEXT;
-  2: te2_cargo_subtype_text2;
-  3: te2_cargo_subtype_text3;
-     return CB_RESULT_NO_TEXT;
+  0: return string(STR_REFIT_FACTORY);
+  1: te2_cargo_subtype_text2;
+     te2_cargo_subtype_text3;
 }
+
+livery_template_pre(te2, 1950)
 
 switch (FEAT_TRAINS, SELF, te2_additional_text,
   current_year >= 1950)
@@ -93,7 +106,7 @@ switch (FEAT_TRAINS, SELF, te2_additional_text,
      return string(STR_PURCHASE_HINT_ENGINE, 
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL), 
                    string(STR_PURCHASE_HINT_SECTIONS_1_2), 
-                   string(STR_PURCHASE_HINT_FROMTO, 1949, 1955), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1950, 1955), 
                    string(STR_PURCHASE_HINT_FACTORY_KHARKIV));
 }
 
@@ -118,7 +131,7 @@ item (FEAT_TRAINS, te2, 146) {
     start_stop: any_start_stop;
     articulated_part: articulated_part_dummy1;
     additional_text: te2_additional_text;
-    cargo_subtype_text: te2_cargo_subtype_text;
+    cargo_subtype_text: te2_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: te2_speed;
     purchase_speed: te2_purchase_speed;

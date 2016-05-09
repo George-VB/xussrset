@@ -1,25 +1,20 @@
  // tg102
  // 148 (94h)
 
-#define IMAGEFILE  "src/diesel/tg102.png"
+#define IMAGEFILE  "src/diesel/tg102-pre.png"
 purchase_sprites(tg102_v1, 0, 0)
-purchase_sprites(tg102_v2, 102, 0)
-purchase_sprites(tg102_v3, 204, 0)
-
-diesel2_sprites(9, tg102_v1, 32,   40)
-diesel2_sprites(9, tg102_v2, 32,  241)
-diesel2_sprites(9, tg102_v3, 32,  442)
-diesel2_sprites(9, tg102_v4, 32,  643)
+diesel2_sprites(9, tg102_v1, 32, 40)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, tg102_purchase_sprites,
-  (current_year >= 1960) +
-  (current_year >= 1963))
-{
-  0: tg102_v1_purchase_sprites;
-  1: tg102_v2_purchase_sprites;
-     tg102_v3_purchase_sprites;
-}
+#define IMAGEFILE  "src/diesel/tg102.png"
+purchase_sprites(tg102_v2, 0, 0)
+diesel2_sprites(9, tg102_v2, 32,  40)
+diesel2_sprites(9, tg102_v3, 32, 241)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/tg102_a1963.png"
+purchase_sprites(tg102_v3, 0, 0)
+diesel2_sprites(9, tg102_v4, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select2pre(tg102, 1960, 1963)
 
 switch (FEAT_TRAINS, SELF, tg102_sprites_left_a1960,
   cargo_subtype)
@@ -29,14 +24,11 @@ switch (FEAT_TRAINS, SELF, tg102_sprites_left_a1960,
   align_9_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, tg102_sprites_left,
-  (build_year >= 1960) +
-  (build_year >= 1963))
+switch (FEAT_TRAINS, SELF, tg102_a1960_sprites_left,
+  build_year >= 1963)
 {
-  0: tg102_v1_sprites_left;
-  1: tg102_sprites_left_a1960;
-  2: tg102_v4_sprites_left;
-     align_9_sprites; 
+  0: tg102_sprites_left_a1960;
+     tg102_v4_sprites_left;
 }
 
 switch (FEAT_TRAINS, SELF, tg102_sprites_right_a1960,
@@ -47,29 +39,17 @@ switch (FEAT_TRAINS, SELF, tg102_sprites_right_a1960,
   align_9_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, tg102_sprites_right,
-  (build_year >= 1960) +
-  (build_year >= 1963))
+switch (FEAT_TRAINS, SELF, tg102_a1960_sprites_right,
+  build_year >= 1963)
 {
-  0: tg102_v1_sprites_right;
-  1: tg102_sprites_right_a1960;
-  2: tg102_v4_sprites_right;
-     align_9_sprites; 
+  0: tg102_sprites_right_a1960;
+     tg102_v4_sprites_right;
 }
 
+engine_pre_template(tg102, 1960, left)
+engine_pre_template(tg102, 1960, right)
 engine_direction_template(tg102, ) 
 long_vehicle(tg102)
-
-livery_template(tg102_a1960, TTD_96, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-switch (FEAT_TRAINS, SELF, tg102_cargo_subtype_text,
-  (build_year >= 1960) +
-  (build_year >= 1963))
-{
-  0: return string(STR_REFIT_PREPRODUCTION);
-  1: tg102_a1960_cargo_subtype_text;
-     return CB_RESULT_NO_TEXT;
-}
 
 switch (FEAT_TRAINS, SELF, tg102_additional_text,
   (current_year >= 1960) +
@@ -92,6 +72,10 @@ switch (FEAT_TRAINS, SELF, tg102_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_LENINGRAD));
 }
 
+livery_template(tg102_a1960_b1963, TTD_96, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template1(tg102_a1960_a1963, FACTORY)
+livery_template_year(tg102_a1960, 1963)
+livery_template_pre(tg102, 1960)
 engine_diesel_2_effect(tg102, 0, 1, 1, 2, 11)
 engine_direction_template(tg102, _create_effect) 
 engine_speed(tg102, 120)
@@ -112,7 +96,7 @@ item (FEAT_TRAINS, tg102, 148) {
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
     additional_text: tg102_additional_text;
-    cargo_subtype_text: tg102_cargo_subtype_text;
+    cargo_subtype_text: tg102_cargo_subtype_text_pre;
     cargo_capacity: return 0;
     speed: tg102_speed;
     running_cost_factor: tg102_running_cost_factor;
