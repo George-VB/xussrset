@@ -48,6 +48,50 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
+change.pl xussr.nml "\(0 == [0-9]+\)" "0"
+change.pl xussr.nml "\(1[0-9]+ == [2-9][0-9]+\)" "0"
+change.pl xussr.nml "\(2[0-9]+ == [1,3-9][0-9]+\)" "0"
+change.pl xussr.nml "\(3[0-9]+ == [1-2,4-9][0-9]+\)" "0"
+change.pl xussr.nml "\(4[0-9]+ == [1-3,5-9][0-9]+\)" "0"
+change.pl xussr.nml "\(5[0-9]+ == [1-4,6-9][0-9]+\)" "0"
+change.pl xussr.nml "\(6[0-9]+ == [1-5,7-9][0-9]+\)" "0"
+change.pl xussr.nml "\(7[0-9]+ == [1-6,8-9][0-9]+\)" "0"
+change.pl xussr.nml "\(8[0-9]+ == [1-7,9][0-9]+\)" "0"
+change.pl xussr.nml "\(9[0-9]+ == [1-8][0-9]+\)" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "0\s+\|\|\s+0" "0"
+change.pl xussr.nml "\(\(build_year \>\=\s*[0-9]+\) \|\| \(current_year \>\=\s*[0-9]+\)\) \&\& \(\s*0\)" "0"
+change.pl xussr.nml "\) \{" "\)\n\{"
+change.pl xussr.nml "\} switch" "\}\nswitch"
+change.pl xussr.nml "\; " "\;\n"
+
+del xussr.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
@@ -139,3 +183,4 @@ rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
 echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
 
+:EOF
