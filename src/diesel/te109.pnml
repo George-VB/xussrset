@@ -3,65 +3,61 @@
 
 #define IMAGEFILE  "src/diesel/te109.png"
 purchase_sprites(te109_v1, 0, 0)
-purchase_sprites(te109_v2, 118, 0)
-
 diesel1r_sprites(12, te109_v1, 32, 40)
-diesel1r_sprites(12, te109_v2, 32, 241)
-diesel1r_sprites(12, te109_v3, 32, 442)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/te109.png"
+purchase_sprites(te109_v2, 0, 0)
+diesel1r_sprites(12, te109_v2, 32, 40)
+diesel1r_sprites(12, te109_v3, 32, 241)
+#undef IMAGEFILE
+purchase_sprites_selectpre(te109, 1977)
 
-switch (FEAT_TRAINS, SELF, te109_purchase_sprites,
-  current_year >= 1977)
+switch (FEAT_TRAINS, SELF, te109_a1977_sprites_left,
+  cargo_subtype)
 {
-  0: te109_v1_purchase_sprites;
-     te109_v2_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, te109_sprites_left,
-  (build_year >= 1977) * (cargo_subtype + 1))
-{
-  0: te109_v1_sprites_left;
-  1: te109_v2_sprites_left;
-  2: te109_v3_sprites_left;
+  0: te109_v2_sprites_left;
+  1: te109_v3_sprites_left;
      align_12_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, te109_sprites_right,
-  (build_year >= 1977) * (cargo_subtype + 1))
+switch (FEAT_TRAINS, SELF, te109_a1977_sprites_right,
+  cargo_subtype)
 {
-  0: te109_v1_sprites_right;
-  1: te109_v2_sprites_right;
-  2: te109_v3_sprites_right;
+  0: te109_v2_sprites_right;
+  1: te109_v3_sprites_right;
      align_12_sprites;
 }
 
+engine_pre_template(te109, 1977, left)
+engine_pre_template(te109, 1977, right)
 engine_direction_template(te109, ) 
 engine_RND_direction_template(te109, 5, 3) 
 long_vehicle_sp(te109)
 
-switch (FEAT_TRAINS, SELF, te109_cargo_subtype_text3,
-  cargo_subtype)
+switch (FEAT_TRAINS, SELF, te109_additional_text,
+  current_year >= 1962)
 {
-
-  0: return string(STR_REFIT_TTD_B5);
-  1: return string(STR_REFIT_TTD_93);
-     return CB_RESULT_NO_TEXT;
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_IN, 1977), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_IN, 1978), 
+                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
 }
 
-switch (FEAT_TRAINS, SELF, te109_cargo_subtype_text2,
+livery_template1(te109_a1997, TTD_B5)
+livery_template_alt(te109_a1997, TTD_93)
+switch (FEAT_TRAINS, SELF, te109_a1977_cargo_subtype_text,
   check_year(1997))
 {
-
-  1: te109_cargo_subtype_text3;
-     return CB_RESULT_NO_TEXT;
+  1: te109_a1997_cargo_subtype_text_pre;
+     te109_a1997_cargo_subtype_text;
 }
-
-switch (FEAT_TRAINS, SELF, te109_cargo_subtype_text,
-  (build_year >= 1977))
-{
-  1: te109_cargo_subtype_text2;
-     return CB_RESULT_NO_TEXT;
-}
+livery_template_pre(te109, 1977)
 
 engine_diesel_1_effect(te109, 2, 11)
 engine_speed(te109, 100)
@@ -81,16 +77,12 @@ item (FEAT_TRAINS, te109, 352) {
     articulated_part: articulated_part_dummy4;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1977, 1978), 
-                                   string(STR_PURCHASE_HINT_FACTORY_LUGANSK_VOROSHILOVGRAD));
+    additional_text: te109_additional_text;
     speed: te109_speed;
     running_cost_factor: te109_running_cost_factor;
     bitmask_vehicle_info: te109_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    cargo_subtype_text: te109_cargo_subtype_text;
+    cargo_subtype_text: te109_cargo_subtype_text_pre;
     create_effect: te109_create_effect;
     colour_mapping: any_cc_colour;
   }
