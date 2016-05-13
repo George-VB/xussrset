@@ -1,40 +1,36 @@
  // ep1
 // 429 (1ADh)
 
-#define IMAGEFILE  "src/electric/ep1.png"
-purchase_sprites(ep1_v1,   0, 0)
-purchase_sprites(ep1_v2, 100, 0)
-
-electric1r_2_sprites(13, ep1_v1,  32,  40)
-electric1r_2_sprites(13, ep1_v2,  32, 375)
+#define IMAGEFILE  "src/electric/ep1-pre.png"
+purchase_sprites(ep1_v1, 0, 0)
+electric1r_2_sprites(13, ep1_v1, 32, 40)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, ep1_purchase_sprites,
-  current_year >= 2000)
-{
-  0: ep1_v1_purchase_sprites;
-     ep1_v2_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep1_sprites_left,
-  build_year >= 2000)
-{
-  0: ep1_v1_sprites_left;
-  1: ep1_v2_sprites_left;
-     align_13_sprites; 
-}
-
-switch (FEAT_TRAINS, SELF, ep1_sprites_right,
-  build_year >= 2000)
-{
-  0: ep1_v1_sprites_right;
-  1: ep1_v2_sprites_right;
-     align_13_sprites; 
-}
-
+#define IMAGEFILE  "src/electric/ep1.png"
+purchase_sprites(ep1_v2, 0, 0)
+electric1r_2_sprites(13, ep1_a2000, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_selectpre(ep1, 2000)
+engine_pre_template(ep1, 2000, left)
+engine_pre_template(ep1, 2000, right)
 engine_RNDany_direction_template(ep1, 5, 3) 
 long_vehicle_sp(ep1)
 
+switch (FEAT_TRAINS, SELF, ep1_additional_text,
+  current_year >= 2000)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_IN, 1999), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 2000, 2007), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+}
+
+livery_template_preonly(ep1, 2000)
 engine_electric1_2_effect(ep1, -1, 6)
 engine_speed_with_reduce(ep1, 140, 120, 30)
 engine_penalise_speed0(ep1)
@@ -53,11 +49,7 @@ item (FEAT_TRAINS, ep1, 429) {
     articulated_part: articulated_part_dummy5;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1999, 2007), 
-                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+    additional_text: ep1_additional_text;
     speed: ep1_speed;
     purchase_speed: ep1_purchase_speed;
     bitmask_vehicle_info: ep1_bitmask_vehicle_info;
@@ -65,7 +57,7 @@ item (FEAT_TRAINS, ep1, 429) {
     create_effect: ep1_create_effect;
     running_cost_factor: ep1_running_cost_factor;
     colour_mapping: any_cc_colour;
-    cargo_subtype_text: return string(STR_REFIT_FACTORY);
+    cargo_subtype_text: ep1_cargo_subtype_text_pre;
   }
 }
 

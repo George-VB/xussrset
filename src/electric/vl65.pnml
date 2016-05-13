@@ -1,48 +1,42 @@
  // vl65
 // 430 (1AEh)
 
-#define IMAGEFILE  "src/electric/vl65.png"
-purchase_sprites(vl65_v1,   0, 0)
-purchase_sprites(vl65_v2, 100, 0)
-purchase_sprites(vl65_v3, 200, 0)
-
-electric1r_2_sprites(13, vl65_v1, 32,   40)
-electric1r_2_sprites(13, vl65_v2, 32,  375)
-electric1r_2_sprites(13, vl65_v3, 32,  710)
+#define IMAGEFILE  "src/electric/vl65-pre.png"
+purchase_sprites(vl65_v1, 0, 0)
+electric1r_2_sprites(13, vl65_v1, 32, 40)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, vl65_purchase_sprites,
-  (current_year >= 1994) +
-  (current_year >= 1996))
-{
-  0: vl65_v1_purchase_sprites;
-  1: vl65_v2_purchase_sprites;
-     vl65_v3_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, vl65_sprites_left,
-  (build_year>= 1994) +
-  (build_year>= 1996))
-{
-  0: vl65_v1_sprites_left;
-  1: vl65_v2_sprites_left;
-  2: vl65_v3_sprites_left;
-     align_13_sprites; 
-}
-
-switch (FEAT_TRAINS, SELF, vl65_sprites_right,
-  (build_year>= 1994) +
-  (build_year>= 1996))
-{
-  0: vl65_v1_sprites_right;
-  1: vl65_v2_sprites_right;
-  2: vl65_v3_sprites_right;
-     align_13_sprites; 
-}
-
+#define IMAGEFILE  "src/electric/vl65.png"
+purchase_sprites(vl65_v2, 0, 0)
+electric1r_2_sprites(13, vl65_a1994_b1996, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl65-a1996.png"
+purchase_sprites(vl65_v3, 0, 0)
+electric1r_2_sprites(13, vl65_a1994_a1996, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select2pre(vl65, 1994, 1996)
+engine_year_template(vl65_a1994, 1996, left)
+engine_pre_template(vl65, 1994, left)
+engine_year_template(vl65_a1994, 1996, right)
+engine_pre_template(vl65, 1994, right)
 engine_RNDany_direction_template(vl65, 5, 3) 
 long_vehicle_sp(vl65)
 
+switch (FEAT_TRAINS, SELF, vl65_additional_text,
+  current_year >= 1994)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1992, 1993), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1994, 1998), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+}
+
+livery_template_preonly(vl65, 1994)
 engine_electric1_2_effect(vl65, -2, 7)
 engine_speed(vl65, 120)
 engine_penalise_speed(vl65, 2)
@@ -61,18 +55,14 @@ item (FEAT_TRAINS, vl65, 430) {
     articulated_part: articulated_part_dummy5;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_1_2), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1992, 1998), 
-                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+    additional_text: vl65_additional_text;
     speed: vl65_speed;
     bitmask_vehicle_info: vl65_bitmask_vehicle_info;
     cargo_capacity: return 0;
     create_effect: vl65_create_effect;
     running_cost_factor: vl65_running_cost_factor;
     colour_mapping: any_cc_colour;
-    cargo_subtype_text: return string(STR_REFIT_FACTORY);
+    cargo_subtype_text: vl65_cargo_subtype_text_pre;
   }
 }
 

@@ -1,24 +1,19 @@
 ﻿ // vl19
 // 312 (138h)
 
-#define IMAGEFILE  "src/electric/vl19.png"
-purchase_sprites(vl19_v1,   0, 0)
-purchase_sprites(vl19_v2, 100, 0)
-
+#define IMAGEFILE  "src/electric/vl19-pre.png"
+purchase_sprites(vl19_v1, 0, 0)
 electric1r_2_sprites(10, vl19_v1,   32,   40)
-electric1r_2_sprites(10, vl19_v2,   32,  375)
-electric1r_2_sprites(10, vl19_v3,   32,  710)
-electric1r_2_sprites(10, vl19_v4,   32, 1045)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl19.png"
+purchase_sprites(vl19_v2, 0, 0)
+electric1r_2_sprites(10, vl19_v2, 32,  40)
+electric1r_2_sprites(10, vl19_v3, 32, 375)
+electric1r_2_sprites(10, vl19_v4, 32, 710)
+#undef IMAGEFILE
+purchase_sprites_selectpre(vl19, 1933)
 
-switch (FEAT_TRAINS, SELF, vl19_purchase_sprites,
-  current_year >= 1933)
-{
-  0: vl19_v1_purchase_sprites;
-     vl19_v2_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, vl19_sprites_left_a1933,
+switch (FEAT_TRAINS, SELF, vl19_a1933_sprites_left,
   cargo_subtype)
 {
   0: vl19_v2_sprites_left;
@@ -32,14 +27,7 @@ switch (FEAT_TRAINS, SELF, vl19_sprites_left_a1933,
         align_10_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, vl19_sprites_left,
-  build_year >= 1933)
-{
-  0: vl19_v1_sprites_left;
-     vl19_sprites_left_a1933;
-}
-
-switch (FEAT_TRAINS, SELF, vl19_sprites_right_a1933,
+switch (FEAT_TRAINS, SELF, vl19_a1933_sprites_right,
   cargo_subtype)
 {
   0: vl19_v2_sprites_right;
@@ -53,24 +41,10 @@ switch (FEAT_TRAINS, SELF, vl19_sprites_right_a1933,
         align_10_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, vl19_sprites_right,
-  build_year >= 1933)
-{
-  0: vl19_v1_sprites_right;
-     vl19_sprites_right_a1933;
-}
-
+engine_pre_template(vl19, 1933, left)
+engine_pre_template(vl19, 1933, right)
 engine_RNDany_direction_template(vl19, 5, 3) 
-
 long_vehicle_sp(vl19)
-
-switch (FEAT_TRAINS, SELF, vl19_refit_cost,
-  ((extra_callback_info1 & 0xFF00) >= 0xE000) +
-  ((cargo_subtype >= 0xE0) * 2))
-{
-  1: return 2;
-     return 0; 
-}            
 
 livery_template(vl19_b1947, TTD_53, LV_RAL6002, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template_alt(vl19_b1947, TTD_96)
@@ -147,6 +121,7 @@ switch (FEAT_TRAINS, SELF, vl19_speed,
      vl19o_speed;
 }
 engine_penalise_speed(vl19, 2)
+engine_refit_cost_for_a_livery_change(vl19, 0xE0, 2)
 
 item (FEAT_TRAINS, vl19, 312) {
   property {

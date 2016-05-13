@@ -1,48 +1,43 @@
  // ep10
 // 309 (135h)
 
-#define IMAGEFILE  "src/electric/ep10.png"
-purchase_sprites(ep10_v1,   0, 0)
-purchase_sprites(ep10_v2, 100, 0)
-purchase_sprites(ep10_v3, 200, 0)
-
-electric1r_2_sprites(13, ep10_v1,  32,  40)
-electric1r_2_sprites(13, ep10_v2,  32, 375)
-electric1r_2_sprites(13, ep10_v3,  32, 710)
+#define IMAGEFILE  "src/electric/ep10-pre.png"
+purchase_sprites(ep10_v1, 0, 0)
+electric1r_2_sprites(13, ep10_v1, 32, 40)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/electric/ep10.png"
+purchase_sprites(ep10_v2, 0, 0)
+electric1r_2_sprites(13, ep10_a2004_b2006, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/ep10-a2006.png"
+purchase_sprites(ep10_v3, 0, 0)
+electric1r_2_sprites(13, ep10_a2004_a2006, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select2pre(ep10, 2004, 2006)
 
-switch (FEAT_TRAINS, SELF, ep10_purchase_sprites,
-  (current_year >= 2004) +
-  (current_year >= 2006))
-{
-  0: ep10_v1_purchase_sprites;
-  1: ep10_v2_purchase_sprites;
-     ep10_v3_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep10_sprites_left,
-  (build_year >= 2004) +
-  (build_year >= 2006))
-{
-  0: ep10_v1_sprites_left;
-  1: ep10_v2_sprites_left;
-  2: ep10_v3_sprites_left;
-     align_13_sprites; 
-}
-
-switch (FEAT_TRAINS, SELF, ep10_sprites_right,
-  (build_year >= 2004) +
-  (build_year >= 2006))
-{
-  0: ep10_v1_sprites_right;
-  1: ep10_v2_sprites_right;
-  2: ep10_v3_sprites_right;
-     align_13_sprites; 
-}
-
+engine_year_template(ep10_a2004, 2006, left)
+engine_pre_template(ep10, 2004, left)
+engine_year_template(ep10_a2004, 2006, right)
+engine_pre_template(ep10, 2004, right)
 engine_RNDany_direction_template(ep10, 5, 3) 
 long_vehicle_sp(ep10)
 
+switch (FEAT_TRAINS, SELF, ep10_additional_text,
+  current_year >= 2004)
+{
+  0: return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_ACDC_PROTOTYPE), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 1998, 2003), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+     return string(STR_PURCHASE_HINT_ENGINE, 
+                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_ACDC), 
+                   string(STR_PURCHASE_HINT_SECTIONS_1), 
+                   string(STR_PURCHASE_HINT_FROMTO, 2004, 2006), 
+                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+}
+
+livery_template_preonly(ep10, 2004)
 engine_electric1_2_effect(ep10, -1, 6)
 engine_speed_with_reduce(ep10, 160, 140, 20)
 engine_penalise_speed0(ep10)
@@ -61,11 +56,7 @@ item (FEAT_TRAINS, ep10, 309) {
     articulated_part: articulated_part_dummy5;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE, 
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_ACDC), 
-                                   string(STR_PURCHASE_HINT_SECTIONS_1), 
-                                   string(STR_PURCHASE_HINT_FROMTO, 1998, 2006), 
-                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+    additional_text: ep10_additional_text;
     speed: ep10_speed;
     purchase_speed: ep10_purchase_speed;
     bitmask_vehicle_info: ep10_bitmask_vehicle_info;
@@ -73,7 +64,7 @@ item (FEAT_TRAINS, ep10, 309) {
     create_effect: ep10_create_effect;
     running_cost_factor: ep10_running_cost_factor;
     colour_mapping: any_cc_colour;
-    cargo_subtype_text: return string(STR_REFIT_FACTORY);
+    cargo_subtype_text: ep10_cargo_subtype_text_pre;
   }
 }
 

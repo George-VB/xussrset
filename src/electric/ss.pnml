@@ -15,9 +15,9 @@ electric1r_2_sprites(10, ss_v4,  32, 710)
 electric1r_2_sprites(10, ssm_v1, 32,  40)
 electric1r_2_sprites(10, ssm_v2, 32, 375)
 #undef IMAGEFILE
-purchase_sprites_select(ss, 1933)
+purchase_sprites_selectpre(ss, 1933)
 
-switch (FEAT_TRAINS, SELF, ss_sprites_left_a1933,
+switch (FEAT_TRAINS, SELF, ss_a1933_sprites_left,
   cargo_subtype)
 {
   0: ss_v2_sprites_left;
@@ -30,14 +30,7 @@ switch (FEAT_TRAINS, SELF, ss_sprites_left_a1933,
         align_10_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, ss_sprites_left,
-  build_year >= 1933)
-{
-  0: ss_v1_sprites_left;
-     ss_sprites_left_a1933;
-}
-
-switch (FEAT_TRAINS, SELF, ss_sprites_right_a1933,
+switch (FEAT_TRAINS, SELF, ss_a1933_sprites_right,
   cargo_subtype)
 {
   0: ss_v2_sprites_right;
@@ -50,24 +43,11 @@ switch (FEAT_TRAINS, SELF, ss_sprites_right_a1933,
         align_10_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, ss_sprites_right,
-  build_year >= 1933)
-{
-  0: ss_v1_sprites_right;
-     ss_sprites_right_a1933;
-}
-
+engine_pre_template(ss, 1933, left)
+engine_pre_template(ss, 1933, right)
 engine_RNDany_direction_template(ss, 5, 3) 
 
 long_vehicle_sp(ss)
-
-switch (FEAT_TRAINS, SELF, ss_refit_cost,
-  (((extra_callback_info1 & 0xFF00) == 0xE000) || ((extra_callback_info1 & 0xFF00) == 0xE100))+
-  (((cargo_subtype == 0xE0) || (cargo_subtype == 0xE1)) * 2))
-{
-  1: return 2;
-     return 0; 
-}            
 
 switch (FEAT_TRAINS, SELF, ss_power,
   cargo_subtype)
@@ -118,6 +98,7 @@ switch (FEAT_TRAINS, SELF, ss_additional_text,
                    string(STR_PURCHASE_HINT_UPGRADE));
 }
 
+engine_refit_cost_for_a_livery_change(ss, 0xE0, 2)
 engine_electric1_2_effect(ss, -2, 4)
 engine_speed_change_after2(ss, 65, 
                                80, 1940, 
