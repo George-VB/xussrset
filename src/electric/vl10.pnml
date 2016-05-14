@@ -1,24 +1,28 @@
 ﻿ // vl10
 // 316 (13Ch)
 
-#define IMAGEFILE  "src/electric/vl10.png"
-purchase_sprites(t8, 0, 0)
-
-purchase_sprites(vl10_v1, 200, 0)
-purchase_sprites(vl10_v2, 300, 0)
-purchase_sprites(vl10_v3, 400, 0)
-purchase_sprites(vl10_v4, 500, 0)
-
+#define IMAGEFILE  "src/electric/vl10-pre.png"
+purchase_sprites(vl10_v1, 0, 0)
 electric2_1_sprites(8, t8_v1, 32,  40)
 electric2_1_sprites(8, t8_v2, 32, 241)
-
-electric2_1_sprites(9, vl10_v1, 32,  442)
-electric2_1_sprites(9, vl10_v2, 32,  643)
-electric2_1_sprites(9, vl10_v3, 32,  844)
-electric2_1_sprites(9, vl10_v4, 32, 1045)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl10.png"
+purchase_sprites(vl10_v2, 000, 0)
+purchase_sprites(vl10_v3, 100, 0)
+electric2_1_sprites(9, vl10_v2, 32,  40)
+electric2_1_sprites(9, vl10_v3, 32, 241)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl10.png"
+purchase_sprites(vl10_v4, 0, 0)
+electric2_1_sprites(9, vl10_a1964_a1973, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl10.png"
+purchase_sprites(vl10_v5, 0, 0)
+electric2_1_sprites(9, vl10_a1964_a1974, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select4pre(vl10, 1964, 1972, 1973, 1974)
 
-switch (FEAT_TRAINS, SELF, t8_sprites_left,
+switch (FEAT_TRAINS, SELF, vl10_v1_sprites_left,
   date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {
   0: t8_v1_sprites_left;
@@ -26,7 +30,7 @@ switch (FEAT_TRAINS, SELF, t8_sprites_left,
      align_8_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, t8_sprites_right,
+switch (FEAT_TRAINS, SELF, vl10_v1_sprites_right,
   date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {
   0: t8_v1_sprites_right;
@@ -34,49 +38,24 @@ switch (FEAT_TRAINS, SELF, t8_sprites_right,
      align_8_sprites; 
 }
 
-switch (FEAT_TRAINS, SELF, vl10_purchase_sprites,
-  (current_year >= 1964) +
-  (current_year >= 1972) +
-  (current_year >= 1973) +
-  (current_year >= 1974))
-{
-  0: t8_purchase_sprites;
-  1: vl10_v1_purchase_sprites;
-  2: vl10_v2_purchase_sprites;
-  3: vl10_v3_purchase_sprites;
-     vl10_v4_purchase_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, vl10_sprites_left,
-  (build_year >= 1964) +
-  ((date_of_last_service >= LV_GREAT_CHANGE_DATE) && (build_year < 1972) && (build_year >= 1964)) +
-  (build_year >= 1972) +
-  (build_year >= 1973) +
-  (build_year >= 1974))
+switch (FEAT_TRAINS, SELF, vl10_a1964_b1973_sprites_left,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
 {   
-    0: t8_sprites_left;
-    1: vl10_v1_sprites_left;
-    2: vl10_v2_sprites_left;
-    3: vl10_v3_sprites_left;
-    4: vl10_v4_sprites_left;
-       align_9_sprites; 
+  0: vl10_v2_sprites_left;
+     vl10_v3_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, vl10_sprites_right,
-  (build_year >= 1964) +
-  ((date_of_last_service >= LV_GREAT_CHANGE_DATE) && (build_year < 1972) && (build_year >= 1964)) +
-  (build_year >= 1972) +
-  (build_year >= 1973) +
-  (build_year >= 1974))
+switch (FEAT_TRAINS, SELF, vl10_a1964_b1973_sprites_right,
+  date_of_last_service >= LV_GREAT_CHANGE_DATE)
 { 
-    0: t8_sprites_right;
-    1: vl10_v1_sprites_right;
-    2: vl10_v2_sprites_right;
-    3: vl10_v3_sprites_right;
-    4: vl10_v4_sprites_right;
-       align_9_sprites; 
+  0: vl10_v2_sprites_right;
+     vl10_v3_sprites_right;
 }
 
+engine_year2_template(vl10_a1964, 1973, 1974, left)
+engine_pre_template(vl10, 1964, left)
+engine_year2_template(vl10_a1964, 1973, 1974, right)
+engine_pre_template(vl10, 1964, right)
 engine_direction_template(vl10, ) 
 long_vehicle(vl10)
 
@@ -92,14 +71,14 @@ switch (FEAT_TRAINS, SELF, vl10_create_effect_sprites,
      vl10_v2_create_effect_sprites_start;
 }
 
+livery_template_preonly(vl10, 1964)
+
 switch (FEAT_TRAINS, SELF, vl10_cargo_subtype_text_long,
-  build_year >= 1964)
+  (built_during_preview == 1) || (build_year < 1964))
 {
-  0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_T8), "");
+  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_T8), "");
      return CB_RESULT_NO_TEXT;
 }
-
-livery_template_preonly(vl10, 1964)
 
 switch (FEAT_TRAINS, SELF, vl10_cargo_subtype_text,
   enable_long_names)
