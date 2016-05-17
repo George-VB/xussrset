@@ -15,22 +15,57 @@ MU_0_3r_0_sprites(12, sr3_v2, 32, 40)
 MU_4r_0_0_sprites(12, sr3_v2u, 32, 576)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_check,
-  (position_in_consist == 0) +
-  ((date_of_last_service >= LV_GREAT_CHANGE_DATE) * 2) +
-  (cargo_subtype * 4))
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_gr,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v1_h_sprites_left;
+     sr3_v1u_h_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_gr2,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v2_h_sprites_left;
+     sr3_v2u_h_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_1,
+  cargo_subtype)
+{
+  0: sr3_h_sprites_left_gr;
+  1: sr3_h_sprites_left_gr2;
+  LV_RAL6002: sr3_h_sprites_left_gr;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_notpowered_normal_sprites_left_gr,
+  check_year(LV_GREAT_CHANGE_YEAR))
 {
   0: sr3_v1_h_notpowered_normal_sprites_left;
-  1: sr3_v1_h_sprites_left;
-  2: sr3_v1u_h_notpowered_normal_sprites_left;
-  3: sr3_v1u_h_sprites_left;
+     sr3_v1u_h_notpowered_normal_sprites_left;
+}
 
-  4: sr3_v2_h_notpowered_normal_sprites_left;
-  5: sr3_v2_h_sprites_left;
-  6: sr3_v2u_h_notpowered_normal_sprites_left;
-  7: sr3_v2u_h_sprites_left;
+switch (FEAT_TRAINS, SELF, sr3_h_notpowered_normal_sprites_left_gr2,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v2_h_notpowered_normal_sprites_left;
+     sr3_v2u_h_notpowered_normal_sprites_left;
+}
 
-     align_12_sprites;
+switch (FEAT_TRAINS, SELF, sr3_h_notpowered_normal_sprites_left,
+  cargo_subtype)
+{
+  0: sr3_h_notpowered_normal_sprites_left_gr;
+  1: sr3_h_notpowered_normal_sprites_left_gr2;
+  LV_RAL6002: sr3_h_notpowered_normal_sprites_left_gr;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  0: sr3_h_notpowered_normal_sprites_left;
+     sr3_h_sprites_left_1;
 }
 
 random_switch (FEAT_TRAINS, SELF, sr3_a_sprites_start,
@@ -40,41 +75,121 @@ random_switch (FEAT_TRAINS, SELF, sr3_a_sprites_start,
   1: sr3_h_sprites_left_check;
 }
 
+switch (FEAT_TRAINS, SELF, sr3_b_sprites_left_1,
+[ set_offset_to(-4),
+  prev_vehicle_cargo_subtype() ])
+{
+  0: sr3_v1_m_sprites_left;
+  1: sr3_v2_m_sprites_left;
+  LV_RAL6002: sr3_v1_m_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_b_notpowered_normal_sprites_left,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype() ])
+{
+  0: sr3_v1_m_notpowered_sprites_left;
+  1: sr3_v2_m_notpowered_sprites_left;
+  LV_RAL6002: sr3_v1_m_notpowered_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_b_sprites_left,
+  LOAD_TEMP(4) != sr3)
+{
+  0: sr3_b_notpowered_normal_sprites_left;
+     sr3_b_sprites_left_1;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_b_sprites_right_1,
+[ set_offset_to(-4),
+  prev_vehicle_cargo_subtype() ])
+{
+  0: sr3_v1_m_sprites_right;
+  1: sr3_v2_m_sprites_right;
+  LV_RAL6002: sr3_v1_m_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_b_notpowered_normal_sprites_right,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype() ])
+{
+  0: sr3_v1_m_notpowered_sprites_right;
+  1: sr3_v2_m_notpowered_sprites_right;
+  LV_RAL6002: sr3_v1_m_notpowered_sprites_right;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_b_sprites_right,
+  LOAD_TEMP(4) != sr3)
+{
+  0: sr3_b_notpowered_normal_sprites_right;
+     sr3_b_sprites_right_1;
+}
+
 switch (FEAT_TRAINS, SELF, sr3_b_sprites_start,
 [  set_offset_to(-2),
-   ((LOAD_TEMP(4) != sr3) * 100) +
-   (prev_vehicle_randombits() % 2) +
-   (prev_vehicle_cargo_subtype() * 2) ])
+   (prev_vehicle_randombits() % 2) ])
 {
-    0: sr3_v1_m_sprites_left;
-    1: sr3_v1_m_sprites_right;
-    2: sr3_v2_m_sprites_left;
-    3: sr3_v2_m_sprites_right;
+  0: sr3_b_sprites_left;
+     sr3_b_sprites_right;
+}                        
 
-  100: sr3_v1_m_notpowered_sprites_left;
-  101: sr3_v1_m_notpowered_sprites_right;
-  102: sr3_v2_m_notpowered_sprites_left;
-  103: sr3_v2_m_notpowered_sprites_right;
-       align_12_sprites;
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_right_gr,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v1_h_sprites_right;
+     sr3_v1u_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_right_gr2,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v2_h_sprites_right;
+     sr3_v2u_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_sprites_right_1,
+[ set_offset_to(-4),
+  prev_vehicle_cargo_subtype() ])
+{
+  0: sr3_h_sprites_right_gr;
+  1: sr3_h_sprites_right_gr2;
+  LV_RAL6002: sr3_h_sprites_right_gr;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_notpowered_normal_sprites_right_gr,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v1_h_notpowered_normal_sprites_right;
+     sr3_v1u_h_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_notpowered_normal_sprites_right_gr2,
+  check_year(LV_GREAT_CHANGE_YEAR))
+{
+  0: sr3_v2_h_notpowered_normal_sprites_right;
+     sr3_v2u_h_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_h_notpowered_normal_sprites_right,
+[ set_offset_to(-4),
+  prev_vehicle_cargo_subtype() ])
+{
+  0: sr3_h_notpowered_normal_sprites_right_gr;
+  1: sr3_h_notpowered_normal_sprites_right_gr2;
+  LV_RAL6002: sr3_h_notpowered_normal_sprites_right_gr;
+  align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, sr3_c_sprites_start,
-[ set_offset_to(-4),
-  (position_in_consist_from_end == 1) +
-  ((date_of_last_service >= LV_GREAT_CHANGE_DATE) * 2) +
-  (prev_vehicle_cargo_subtype() * 4) ])
+  position_in_consist_from_end == 1)
 {
-  0: sr3_v1_h_notpowered_normal_sprites_right;
-  1: sr3_v1_h_sprites_right;
-  2: sr3_v1u_h_notpowered_normal_sprites_right;
-  3: sr3_v1u_h_sprites_right;
-
-  4: sr3_v2_h_notpowered_normal_sprites_right;
-  5: sr3_v2_h_sprites_right;
-  6: sr3_v2u_h_notpowered_normal_sprites_right;
-  7: sr3_v2u_h_sprites_right;
-
-     align_12_sprites;
+  0: sr3_h_notpowered_normal_sprites_right;
+     sr3_h_sprites_right_1;
 }
 
 switch (FEAT_TRAINS, SELF, sr3_sprites_start,
@@ -151,14 +266,6 @@ switch (FEAT_TRAINS, PARENT, sr3_cargo_capacity,
      return 0;
 }
 
-switch (FEAT_TRAINS, SELF, sr3_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_TTD_53);
-  1: return string(STR_REFIT_TTD_63);
-     return CB_RESULT_NO_TEXT;
-}
-
 emu_running_cost(sr3_v1, 63, 52 + 52)
 
 switch (FEAT_TRAINS, PARENT, sr3_running_cost_factor,
@@ -167,6 +274,9 @@ switch (FEAT_TRAINS, PARENT, sr3_running_cost_factor,
   1: sr3_v1_running_cost_factor;
      return RC_MU_AS_CAR * 3;
 }
+
+livery_template1(sr3_alt, TTD_53)
+livery_template_alt(sr3, TTD_63)
 
 engine_speed(sr3, 85)
 
