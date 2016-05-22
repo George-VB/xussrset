@@ -300,10 +300,20 @@ switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)        \
 { 0..0xDF: name##_cargo_subtype_text_0;                                     \
   return CB_RESULT_NO_TEXT; }                                               \
 
-#define livery_template0(name)                                              \
-switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)        \
-{ 0..0xDF: return string(STR_REFIT_FACTORY);                                \
-  return CB_RESULT_NO_TEXT; }                                               \
+#define livery_template0(name)                                        \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)  \
+{ 0..0xDF: return string(STR_REFIT_FACTORY);                          \
+  return CB_RESULT_NO_TEXT; }                                         \
+
+#define livery_template_FP(name)                                      \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text_##LV_RZD_PID,    \
+  (build_year >= 2009) || (current_year >= 2009))                     \
+{ 1: return string(STR_REFIT_RZD_PID);                                \
+     return string(STR_REFIT_FACTORY); }                              \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)  \
+{ LV_RZD_PID: name##_cargo_subtype_text_##LV_RZD_PID;                 \
+  0..0xDF: return string(STR_REFIT_FACTORY);                          \
+  return CB_RESULT_NO_TEXT; }                                         \
 
 // Выбор ливреи c длинными именми
 
