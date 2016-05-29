@@ -49,33 +49,6 @@ engine_RNDany_direction_template(ss, 5, 3)
 
 long_vehicle_sp(ss)
 
-switch (FEAT_TRAINS, SELF, ss_power,
-  cargo_subtype)
-{
-  0xE0..0xE1: return get_power_in_cb(2450);
-              return get_power_in_cb(2430);
-}
-
-livery_template(ss_b1952_alt, TTD_53, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-livery_template_alt(ss_b1952, TTD_96)
-
-switch (FEAT_TRAINS, SELF, ss_a1952_cargo_subtype_text,
-  cargo_subtype)
-{
-  0xE0: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_SSM), string(STR_REFIT_TTD_53));
-  0xE1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_SSM), string(STR_REFIT_TTD_96));
-        ss_b1952_cargo_subtype_text;
-}
-
-switch (FEAT_TRAINS, SELF, ss_a1933_cargo_subtype_text,
-  check_year(1952))
-{
-  0: ss_b1952_cargo_subtype_text;
-     ss_a1952_cargo_subtype_text;
-}
-
-livery_template_prealt(ss, 1933)
-
 switch (FEAT_TRAINS, SELF, ss_additional_text,
   (vehicle_is_testing == 0) *
   ((current_year >= 1933) +
@@ -98,6 +71,20 @@ switch (FEAT_TRAINS, SELF, ss_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
                    string(STR_PURCHASE_HINT_UPGRADE));
 }
+
+switch (FEAT_TRAINS, SELF, ss_power,
+  cargo_subtype >= 0xE0)
+{
+  1: return get_power_in_cb(2450);
+     return get_power_in_cb(2430);
+}
+
+  livery_template(ss_a1933_b1952_alt, TTD_53, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  livery_template_alt(ss_a1933_b1952, TTD_96)
+  
+  livery_template_refit2(ss_a1933_a1952, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_SSM, STR_REFIT_TTD_53, STR_REFIT_TTD_96, ss_a1933_b1952)
+livery_template_service_year(ss_a1933, 1952)
+livery_template_prealt(ss, 1933)
 
 engine_refit_cost_for_a_livery_change(ss, 0xE0, 2)
 engine_electric1_2_effect(ss, -2, 4)

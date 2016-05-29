@@ -327,7 +327,7 @@ switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, enable_long_names)  \
 { 1: name##_long_cargo_subtype_text;                                      \
      return string(STR_REFIT_FACTORY); }                                  \
 
-// Выбор ливреи по году
+// Выбор ливреи по году постройки
         	
 #define livery_template_build_year(name, year)         \
 switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text,  \
@@ -378,6 +378,22 @@ switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text,                        \
   3: name##_a##year3##_cargo_subtype_text;                                   \
   4: name##_a##year4##_cargo_subtype_text;                                   \
      name##_a##year5##_cargo_subtype_text; }                                 \
+
+// Выбор ливреи по году обслуживания
+        	
+#define livery_template_service_year(name, year)       \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text,  \
+  check_year(year))                                    \
+{ 0: name##_b##year##_cargo_subtype_text;              \
+     name##_a##year##_cargo_subtype_text; }            \
+
+#define livery_template_service_year2(name, year, year2)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text,     \
+  check_year(year) +                                      \
+  check_year(year2))                                      \
+{ 0: name##_b##year##_cargo_subtype_text;                 \
+  1: name##_a##year##_cargo_subtype_text;                 \
+     name##_a##year2##_cargo_subtype_text; }              \
 
 // Выбор ливреи с прототипом
 
@@ -456,6 +472,44 @@ switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)          \
   6: return string(STR_REFIT_##str6);                                         \
   7: return string(STR_REFIT_##str7);                                         \
      name##_alt_cargo_subtype_text; }                                         \
+
+// Выбор ливреи с 1 рефитом
+
+#define livery_template_refit(name, str0, str1, str2_1, basename)     \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)  \
+{ 0xE0: return string(str0, string(str1), string(str2_1));            \
+        basename##_cargo_subtype_text; }                              \
+
+#define livery_template_refit2(name, str0, str1, str2_1, str2_2, basename)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)        \
+{ 0xE0: return string(str0, string(str1), string(str2_1));                  \
+  0xE1: return string(str0, string(str1), string(str2_2));                  \
+        basename##_cargo_subtype_text; }                                    \
+
+#define livery_template_refit3(name, str0, str1, str2_1, str2_2, str2_3, basename)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)                \
+{ 0xE0: return string(str0, string(str1), string(str2_1));                          \
+  0xE1: return string(str0, string(str1), string(str2_2));                          \
+  0xE2: return string(str0, string(str1), string(str2_3));                          \
+        basename##_cargo_subtype_text; }                                            \
+
+#define livery_template_refit4(name, str0, str1, str2_1, str2_2, str2_3, str2_4, basename)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)                        \
+{ 0xE0: return string(str0, string(str1), string(str2_1));                                  \
+  0xE1: return string(str0, string(str1), string(str2_2));                                  \
+  0xE2: return string(str0, string(str1), string(str2_3));                                  \
+  0xE3: return string(str0, string(str1), string(str2_4));                                  \
+        basename##_cargo_subtype_text; }                                                    \
+
+// Выбор ливреи с несколькими рефитами
+
+#define livery_template_refit3_diff(name, str0, str1_1, str2_1, str1_2, str2_2, str1_3, str2_3, basename)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)                                       \
+{ 0xE0: return string(str0, string(str1_1), string(str2_1));                                               \
+  0xE1: return string(str0, string(str1_2), string(str2_2));                                               \
+  0xE2: return string(str0, string(str1_3), string(str2_3));                                               \
+        basename##_cargo_subtype_text; }                                                                   \
+
 
 /* All strings
 STR_REFIT_2CAPITALS
