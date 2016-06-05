@@ -3,23 +3,111 @@
 
 #define IMAGEFILE  "src/dmu/as1a.png"
 purchase_sprites(as1a, 0, 0)
-
-MU_3r_0_0_sprites(5, as1a_v1, 32, 40)
+MU_head_single_sprites(5, as1a_v1, 32, 40)
+MU_head_single_sprites(5, as1a_v2, 32, 40 + 268)
 #undef IMAGEFILE
 
-#define IMAGEFILE  "src/dmu/as1a-bl.png"
-MU_3r_0_0_sprites(5, as1a_v2, 32, 40)
-#undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, as1a_sprites_start,
-  ((LOAD_TEMP(0) - count_veh_id(as1a)) % 2) +
-  (cargo_subtype * 2))
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_left_red, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  0: as1a_v1_h_sprites_left;
-  1: as1a_v1_h_sprites_right;
-  2: as1a_v2_h_sprites_left;
-  3: as1a_v2_h_sprites_right;
+  1: as1a_v1_sprites_1left;
+  1: as1a_v1_sprites_2left;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_left_blue, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v2_sprites_1left;
+  1: as1a_v2_sprites_2left;
+}
+
+switch (FEAT_TRAINS, SELF, as1a_sprites_left,
+  cargo_subtype)
+{
+  0: as1a_sprites_left_red;
+  1: as1a_sprites_left_blue;
      align_5_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_right_red, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v1_sprites_1right;
+  1: as1a_v1_sprites_2right;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_right_blue, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v2_sprites_1right;
+  1: as1a_v2_sprites_2right;
+}
+
+switch (FEAT_TRAINS, SELF, as1a_sprites_right,
+  cargo_subtype)
+{
+  0: as1a_sprites_right_red;
+  1: as1a_sprites_right_blue;
+     align_5_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, as1a_sprites_start2,
+  position_in_consist)
+{
+  0: as1a_sprites_left;
+     as1a_sprites_right;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_start1_red, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v1_sprites_3left;
+  1: as1a_v1_sprites_3right;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_start1_blue, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v2_sprites_3left;
+  1: as1a_v2_sprites_3right;
+}
+
+switch (FEAT_TRAINS, SELF, as1a_sprites_start1,
+  cargo_subtype)
+{
+  0: as1a_sprites_start1_red;
+  1: as1a_sprites_start1_blue;
+     align_5_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_start0_red, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v1_notpowered_sprites_left;
+  1: as1a_v1_notpowered_sprites_right;
+}
+
+random_switch (FEAT_TRAINS, SELF, as1a_sprites_start0_blue, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: as1a_v2_notpowered_sprites_left;
+  1: as1a_v2_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, as1a_sprites_start0,
+  cargo_subtype)
+{
+  0: as1a_sprites_start0_red;
+  1: as1a_sprites_start0_blue;
+     align_5_sprites;
+}
+
+switch (FEAT_TRAINS, PARENT, as1a_sprites_start,
+  (vehicle_type_id == as1a) * (count_veh_id(as1a)))
+{
+  1: as1a_sprites_start1;
+  2: as1a_sprites_start2;
+     as1a_sprites_start0;
 }
 
 short_vehicle(as1a)
@@ -38,10 +126,10 @@ switch (FEAT_TRAINS, PARENT, as1a_can_attach_wagon,
   as1a_can_attach_wagon1;
 }
 
-engine_diesel_1r_effect(as1a, -3, 0, 10)
+engine_diesel_1r_effect(as1a, -3, 0, 10) // TODO учитывать рэндом
 
 switch (FEAT_TRAINS, SELF, as1a_create_effect1,
-  (LOAD_TEMP(0) - count_veh_id(as1a)) % 2)
+  random_bits % 2)
 {
   0: as1a_create_effect_sprites_left;
      as1a_create_effect_sprites_right;
@@ -104,7 +192,6 @@ item (FEAT_TRAINS, as1a, 207) {
     running_cost_factor: as1a_running_cost_factor;
     can_attach_wagon: as1a_can_attach_wagon;
     cargo_subtype_text: as1a_cargo_subtype_text;
-
     power: as1a_power;
     create_effect: as1a_create_effect;
     cargo_capacity: as1a_cargo_capacity;
