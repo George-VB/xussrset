@@ -110,7 +110,7 @@ switch (FEAT_TRAINS, PARENT, as1a_sprites_start,
      as1a_sprites_start0;
 }
 
-short_vehicle(as1a)
+short_vehicle_RND(as1a, as1a_sprites_start0_red)
 
 // Присоединяем не более одной
 switch (FEAT_TRAINS, SELF, as1a_can_attach_wagon1,
@@ -135,17 +135,25 @@ switch (FEAT_TRAINS, SELF, as1a_create_effect1,
      as1a_create_effect_sprites_right;
 }
 
-switch (FEAT_TRAINS, PARENT, as1a_create_effect0,
-  STORE_TEMP(count_veh_id(as1a), 0))
+switch (FEAT_TRAINS, SELF, as1a_create_effect3,
+  random_bits % 2)
 {
-  as1a_create_effect1;
+  0: as1a_create_effect_sprites_right;
+     as1a_create_effect_sprites_left;
 }
 
-// Визуализируем эффекты тяги только если локомотив - as1a
-switch (FEAT_TRAINS, PARENT, as1a_create_effect,
-  vehicle_type_id == as1a)
+switch (FEAT_TRAINS, SELF, as1a_create_effect2,
+  position_in_consist)
 {
-  1: as1a_create_effect0;
+  0: as1a_create_effect1;
+     as1a_create_effect3;
+}                        
+
+switch (FEAT_TRAINS, PARENT, as1a_create_effect,
+  (vehicle_type_id == as1a) * (count_veh_id(as1a)))
+{
+  1: as1a_create_effect1;
+  2: as1a_create_effect2;
      return disable_create_effect();
 }
 
