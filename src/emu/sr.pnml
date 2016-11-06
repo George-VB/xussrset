@@ -2,19 +2,30 @@
 // 442, 461
 
 #define IMAGEFILE  "src/emu/sr_h.png"
-purchase_sprites(sr, 0, 0)
+purchase_sprites(sr_v1, 0, 0)
 MU_head_middle_sprites(12, sr_h_v1, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/sr_m.png"
 EMU_motor2_sprites(12, sr_m_v1, 32, 40)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/emu/sr_h-a1951.png"
+purchase_sprites(sr_v2, 0, 0)
+MU_head_middle_sprites(12, sr_h_v2, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/sr_m-a1951.png"
+EMU_motor2_sprites(12, sr_m_v2, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(sr, 1951)
 
 switch (FEAT_TRAINS, SELF, sr_h_sprites_left_check,
-  position_in_consist == 0)
+  (position_in_consist == 0) + 
+  ((build_year >= 1951) * 100))
 {
-  0: sr_h_v1_notpowered_normal_sprites_left;
-  1: sr_h_v1_sprites_left;
-     align_12_sprites;
+    0: sr_h_v1_notpowered_normal_sprites_left;
+    1: sr_h_v1_sprites_left;
+  100: sr_h_v2_notpowered_normal_sprites_left;
+  101: sr_h_v2_sprites_left;
+       align_12_sprites;
 }
 
 random_switch (FEAT_TRAINS, SELF, sr_a_sprites_start,
@@ -26,24 +37,31 @@ random_switch (FEAT_TRAINS, SELF, sr_a_sprites_start,
 
 switch (FEAT_TRAINS, SELF, sr_b_sprites_start,
 [  set_offset_to(-2),
-   ((LOAD_TEMP(4) != sr) * 100) +
+   ((LOAD_TEMP(4) != sr) * 10) + 
+   ((build_year >= 1951) * 100) +
    (prev_vehicle_randombits() % 2) ])
 {
     0: sr_m_v1_sprites_left;
     1: sr_m_v1_sprites_right;
-
-  100: sr_m_v1_notpowered_sprites_left;
-  101: sr_m_v1_notpowered_sprites_right;
+   10: sr_m_v1_notpowered_sprites_left;
+   11: sr_m_v1_notpowered_sprites_right;
+  100: sr_m_v2_sprites_left;
+  101: sr_m_v2_sprites_right;
+  110: sr_m_v2_notpowered_sprites_left;
+  111: sr_m_v2_notpowered_sprites_right;
        align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, sr_c_sprites_start,
 [ set_offset_to(-4),
-  (position_in_consist_from_end == 1) ])
+  (position_in_consist_from_end == 1) + 
+  ((build_year >= 1951) * 100)])
 {
-  0: sr_h_v1_notpowered_normal_sprites_right;
-  1: sr_h_v1_sprites_right;
-     align_12_sprites;
+    0: sr_h_v1_notpowered_normal_sprites_right;
+    1: sr_h_v1_sprites_right;
+  100: sr_h_v2_notpowered_normal_sprites_right;
+  101: sr_h_v2_sprites_right;
+       align_12_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, sr_sprites_start,
