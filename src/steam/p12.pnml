@@ -1,45 +1,42 @@
- // l
-// 142 (8Eh)
+ // p12
 
 #define IMAGEFILE  "src/steam/p12.png"
 purchase_sprites(p12, 0, 0)
-steam_sprites(9, p12_engine, 32,  40)
-tender_sprites(6, p12_tender, 447,  40)
+steam_sprites(9, p12_v1_engine, 32,  40)
+tender_sprites(6, p12_v1_tender, 447,  40)
+tender_sprites(6, p12_v2_tender, 447,  40+67)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/steam/p12-part2.png"
+steam_sprites(9, p12_v2_engine, 32,  40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, p12_engine_sprites_start,
+  check_year(1946))
+{
+  0: p12_v1_engine_sprites_start;
+     p12_v2_engine_sprites_start;
+}
+switch (FEAT_TRAINS, SELF, p12_tender_sprites_start,
+  check_year(1946))
+{
+  0: p12_v1_tender_sprites_start;
+     p12_v2_tender_sprites_start;
+}                 
 
 steamer_direction_template(p12, _sprites_start)
 long_vehicle(p12)
 
-switch (FEAT_TRAINS, SELF, p12_engine_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
-{
-  0: return ttdall_cc + 0x53;
-  LV_RAL6002: return ttdall_cc + 0x53;
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, p12_tender_colour_mapping,
-[ set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
-{
-  0: return ttdall_cc + 0x53;
-  LV_RAL6002: return ttdall_cc + 0x53;
-     return CB_FAILED;
-}
-
-steamer_direction_template(p12, _colour_mapping)
 engine_steam_1_effect(p12, -3, 13)
 engine_speed(p12, 150)
 engine_penalise_speed0(p12)
 general_running_cost(p12, 785)
 engine_tender(p12)
 engine_tender_length(p12, 8, 1, 5, 1)
-livery_template1(p12, TTD_53)
 
 item (FEAT_TRAINS, p12, 491) {
   property {
     name: string(STR_NAME_P12);
-    vehicle_dates(1937, 1938, 5, 10, 8, 41)
+    vehicle_dates(1937, 1938, 25, 10, 8, 41)
     vehicle_pass()
     vehicle_steam(3070, 124+127, 138.0)
   }
@@ -56,8 +53,8 @@ item (FEAT_TRAINS, p12, 491) {
     cargo_capacity: return 0;
     create_effect: p12_create_effect;
     running_cost_factor: p12_running_cost_factor;
-    colour_mapping: p12_colour_mapping;
-    cargo_subtype_text: p12_cargo_subtype_text;
+    colour_mapping: is20_colour_mapping;
+    cargo_subtype_text: is20_cargo_subtype_text;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE,
                                    string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM),
                                    string(STR_PURCHASE_HINT_SECTIONS_1),
