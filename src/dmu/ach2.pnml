@@ -71,10 +71,46 @@ long_vehicle_RND(ach2, ach2_sprites_left)
 MU_car_direction_template(apch2)
 long_vehicle_RND(apch2, apch2_sprites_start)
 
+switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon3,
+[
+  set_offset_to(num_vehs_in_consist-8),
+  prev_vehicle_type_id() ])
+{
+  apch2: return string(STR_WRONG_STRUCTURE_OF_TRAIN_ACH2);
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon2,
+[
+  set_offset_to(num_vehs_in_consist-6),
+  prev_vehicle_type_id() ])
+{
+  apch2: apch2_can_attach_wagon3;
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon1,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  apch2: apch2_can_attach_wagon2;
+         return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon0,
+[
+  set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+  apch2: apch2_can_attach_wagon1;
+         return CB_RESULT_ATTACH_ALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, ach2_can_attach_wagon_length2,
   count_veh_id(apch2) > 5)
 {
-  0: CB_RESULT_ATTACH_ALLOW;
+  0: apch2_can_attach_wagon0;
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
@@ -91,6 +127,13 @@ switch (FEAT_TRAINS, SELF, ach2_can_attach_wagon,
   ach2:  ach2_can_attach_wagon_length;
   apch2: ach2_can_attach_wagon_length;
          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, ach2_start_stop,
+  (2 * count_veh_id(ach2) - count_veh_id(apch2)) >= 0)
+{
+  0: return CB_RESULT_NO_TEXT;
+     return string(STR_WRONG_STRUCTURE_OF_TRAIN_ACH2);
 }
 
 engine_diesel_1r_effect(ach2, -3, 8, 13) 
@@ -182,11 +225,12 @@ item (FEAT_TRAINS, ach2, 501) {
     cargo_capacity: ach2_cargo_capacity;
     colour_mapping: ach2_colour_mapping;
     purchase_speed: return 120;
+    start_stop: ach2_start_stop;
     additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
                                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_M),
-                                   string(STR_SECTIONS_DMU_1_3),
+                                   string(STR_SECTIONS_ACH2),
                                    string(STR_PURCHASE_HINT_FROMTO, 1984, 1992),
                                    string(STR_PURCHASE_HINT_FACTORY_SKODA));
   }
@@ -216,7 +260,7 @@ item (FEAT_TRAINS, apch2, 502) {
                                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C),
-                                   string(STR_SECTIONS_DMU_1_3),
+                                   string(STR_SECTIONS_ACH2),
                                    string(STR_PURCHASE_HINT_FROMTO, 1984, 1989),
                                    string(STR_PURCHASE_HINT_FACTORY_SKODA));
   }
