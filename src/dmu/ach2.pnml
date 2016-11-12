@@ -1,0 +1,228 @@
+﻿ // ach2
+
+#define IMAGEFILE  "src/dmu/ach2.png"
+purchase_sprites(ach2, 0, 0)
+MU_head_single_middle_sprites(15ach2, ach2, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/dmu/apch2.png"
+purchase_sprites(apch2, 0, 0)
+MU_car_sprites(15, apch2_mu, 32, 40)
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, ach2_sprites_left, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ach2_sprites_1left;
+  1: ach2_sprites_2left;
+}
+
+random_switch (FEAT_TRAINS, SELF, ach2_sprites_right, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ach2_sprites_2right;
+  1: ach2_sprites_1right;
+}
+
+random_switch (FEAT_TRAINS, SELF, ach2_sprites_middle, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ach2_notpowered_normal_sprites_left;
+  1: ach2_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ach2_2b_sprites_start,
+  position_in_consist_from_end)
+{
+  1: ach2_sprites_right;
+     ach2_sprites_middle;
+}
+
+switch (FEAT_TRAINS, SELF, ach2_2_sprites_start,
+  position_in_consist)
+{
+  0: ach2_sprites_left;
+     ach2_2b_sprites_start;
+}
+
+random_switch (FEAT_TRAINS, SELF, ach2_1_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ach2_sprites_3left;
+  1: ach2_sprites_3right;
+}
+
+random_switch (FEAT_TRAINS, SELF, ach2_0_sprites_start, 
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ach2_notpowered_sprites_left;
+  1: ach2_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ach2_sprites_start,
+  (vehicle_type_id == ach2) * (1 + (count_veh_id(ach2) > 1)))
+{
+  1: ach2_1_sprites_start;
+  2: ach2_2_sprites_start;
+     ach2_0_sprites_start;
+}
+
+long_vehicle_RND(ach2, ach2_sprites_left)
+
+MU_car_direction_template(apch2)
+long_vehicle_RND(apch2, apch2_sprites_start)
+
+switch (FEAT_TRAINS, PARENT, ach2_can_attach_wagon_length2,
+  count_veh_id(apch2) > 5)
+{
+  0: CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, ach2_can_attach_wagon_length,
+  count_veh_id(ach2) > 2)
+{
+  0: ach2_can_attach_wagon_length2;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, ach2_can_attach_wagon,
+  vehicle_type_id)
+{
+  ach2:  ach2_can_attach_wagon_length;
+  apch2: ach2_can_attach_wagon_length;
+         return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+engine_diesel_1r_effect(ach2, -3, 8, 13) 
+
+switch (FEAT_TRAINS, SELF, ach2_create_effect1,
+  random_bits % 2)
+{
+  0: ach2_create_effect_sprites_left;
+     ach2_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ach2_create_effect,
+  vehicle_type_id == ach2)
+{
+  1: ach2_create_effect1;
+     return disable_create_effect();
+}
+
+// Даём тягу, только если локомотив - ach2
+
+switch (FEAT_TRAINS, PARENT, ach2_power,
+  vehicle_type_id == ach2)
+{
+  1: return get_power_in_cb(850);
+     return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - ach2
+switch (FEAT_TRAINS, PARENT, ach2_cargo_capacity,
+  vehicle_type_id == ach2)
+{
+  1: return 67;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, apch2_cargo_capacity,
+  vehicle_type_id == ach2)
+{
+  1: return 123;
+     return 0;
+}
+
+general_running_cost(ach2_v1, 230)
+
+switch (FEAT_TRAINS, PARENT, ach2_running_cost_factor,
+  vehicle_type_id == ach2)
+{
+  1: ach2_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+wagon_running_cost(apch2_v1, 51)
+
+switch (FEAT_TRAINS, PARENT, apch2_running_cost_factor,
+  vehicle_type_id == ach2)
+{
+  1: apch2_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+livery_template1(ach2_alt, TTD_5B)
+livery_template_alt(ach2, TTD_95)
+
+switch (FEAT_TRAINS, SELF, ach2_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: return ttdall_cc + 0x5B;
+  1: return ttdall_cc + 0x95;
+     return CB_FAILED;
+}
+
+item (FEAT_TRAINS, ach2, 501) {
+  property {
+    name: string(STR_NAME_ACH2);
+    vehicle_dates(1984, 1992, 25, 10, 8, 32)
+    vehicle_dmu(850, 59, 90.0, 67, 48)
+  }
+  graphics {
+    default: ach2_sprites;
+    purchase: ach2_purchase_sprites;
+    speed: speed_after25_120to100;
+    articulated_part: articulated_part_dummy7;
+    cargo_age_period: return 60;
+    running_cost_factor: ach2_running_cost_factor;
+    can_attach_wagon: ach2_can_attach_wagon;
+    cargo_subtype_text: ach2_cargo_subtype_text;
+    power: ach2_power;
+    create_effect: ach2_create_effect;
+    cargo_capacity: ach2_cargo_capacity;
+    colour_mapping: ach2_colour_mapping;
+    purchase_speed: return 120;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_M),
+                                   string(STR_SECTIONS_DMU_1_3),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1984, 1992),
+                                   string(STR_PURCHASE_HINT_FACTORY_SKODA));
+  }
+}
+
+item (FEAT_TRAINS, apch2, 502) {
+  property {
+    name: string(STR_NAME_APCH2);
+    vehicle_dates(1984, 1989, 25, 10, 8, 7)
+    vehicle_dmu_c(37, 123, 48)
+  }
+  graphics {
+    default: apch2_sprites;
+    purchase: apch2_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: apch2_running_cost_factor;
+    articulated_part: articulated_part_dummy7;
+    speed: speed_after25_120to100;
+    purchase_speed: return 120;
+    power: return 0;
+    can_attach_wagon: ach2_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    cargo_capacity: apch2_cargo_capacity;
+    colour_mapping: ach2_colour_mapping;
+    cargo_subtype_text: ach2_cargo_subtype_text;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C),
+                                   string(STR_SECTIONS_DMU_1_3),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1984, 1989),
+                                   string(STR_PURCHASE_HINT_FACTORY_SKODA));
+  }
+}
+
+long_name_template(ach2, STR_LONGNAME_ACH2)
+long_name_template(apch2, STR_LONGNAME_APCH2)
+allow_dmu(ach2)
+allow_dmu(apch2)
