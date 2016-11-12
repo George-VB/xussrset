@@ -6,13 +6,13 @@ MU_head_single_middle_sprites(15ach2, ach2, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/dmu/apch2.png"
 purchase_sprites(apch2, 0, 0)
-MU_car_sprites(15, apch2_mu, 32, 40)
+pass_wagon_sprites(15, apch2, 32, 40)
 #undef IMAGEFILE
 
 random_switch (FEAT_TRAINS, SELF, ach2_sprites_left, 
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  1: ach2_sprites_1left;
+  7: ach2_sprites_1left;
   1: ach2_sprites_2left;
 }
 
@@ -20,7 +20,7 @@ random_switch (FEAT_TRAINS, SELF, ach2_sprites_right,
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
   1: ach2_sprites_2right;
-  1: ach2_sprites_1right;
+  7: ach2_sprites_1right;
 }
 
 random_switch (FEAT_TRAINS, SELF, ach2_sprites_middle, 
@@ -59,7 +59,7 @@ random_switch (FEAT_TRAINS, SELF, ach2_0_sprites_start,
 }
 
 switch (FEAT_TRAINS, PARENT, ach2_sprites_start,
-  (vehicle_type_id == ach2) * (1 + (count_veh_id(ach2) > 1)))
+  (vehicle_type_id == ach2) * (1 + (num_vehs_in_consist > 2)))
 {
   1: ach2_1_sprites_start;
   2: ach2_2_sprites_start;
@@ -68,7 +68,6 @@ switch (FEAT_TRAINS, PARENT, ach2_sprites_start,
 
 long_vehicle_RND(ach2, ach2_sprites_left)
 
-MU_car_direction_template(apch2)
 long_vehicle_RND(apch2, apch2_sprites_start)
 
 switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon3,
@@ -146,16 +145,45 @@ switch (FEAT_TRAINS, PARENT, ach2_start_stop,
 engine_diesel_1r_effect(ach2, -3, 8, 13) 
 
 switch (FEAT_TRAINS, SELF, ach2_create_effect1,
+  random_bits % 8)
+{
+  0: ach2_create_effect_sprites_right;
+     ach2_create_effect_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, ach2_create_effect2,
+  random_bits % 8)
+{
+  0: ach2_create_effect_sprites_left;
+     ach2_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ach2_create_effect3,
   random_bits % 2)
 {
   0: ach2_create_effect_sprites_left;
      ach2_create_effect_sprites_right;
 }
 
-switch (FEAT_TRAINS, PARENT, ach2_create_effect,
-  vehicle_type_id == ach2)
+switch (FEAT_TRAINS, SELF, ach2_create_effect00,
+  position_in_consist_from_end)
 {
-  1: ach2_create_effect1;
+  1: ach2_create_effect2;
+     ach2_create_effect3;
+}
+
+switch (FEAT_TRAINS, SELF, ach2_create_effect0,
+  position_in_consist)
+{
+  0: ach2_create_effect1;
+     ach2_create_effect00;
+}
+
+switch (FEAT_TRAINS, PARENT, ach2_create_effect,
+  (vehicle_type_id == ach2) * (1 + (num_vehs_in_consist > 2)))
+{
+  1: ach2_create_effect3;
+  2: ach2_create_effect0;
      return disable_create_effect();
 }
 
