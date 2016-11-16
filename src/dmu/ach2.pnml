@@ -70,13 +70,20 @@ long_vehicle_RND(ach2, ach2_sprites_left)
 
 long_vehicle_RND(apch2, apch2_sprites_start)
 
+switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon4,
+  count_veh_id(ach2) == 3)
+{
+  1: return string(STR_WRONG_STRUCTURE_OF_TRAIN_ACH2);
+     return CB_RESULT_ATTACH_ALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon3,
 [
   set_offset_to(num_vehs_in_consist-8),
   prev_vehicle_type_id() ])
 {
   apch2: return string(STR_WRONG_STRUCTURE_OF_TRAIN_ACH2);
-          return CB_RESULT_ATTACH_ALLOW;
+         apch2_can_attach_wagon4;
 }
 
 switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon2,
@@ -85,7 +92,7 @@ switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon2,
   prev_vehicle_type_id() ])
 {
   apch2: apch2_can_attach_wagon3;
-          return CB_RESULT_ATTACH_ALLOW;
+         apch2_can_attach_wagon4;
 }
 
 switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon1,
@@ -136,9 +143,15 @@ switch (FEAT_TRAINS, SELF, ach2_can_attach_wagon,
 }
 
 switch (FEAT_TRAINS, PARENT, ach2_start_stop,
-  (2 * count_veh_id(ach2)) >= (count_veh_id(apch2)))
+[
+  set_offset_to(num_vehs_in_consist-2),
+  STORE_TEMP(prev_vehicle_type_id() == apch2, 0),
+  set_offset_to(num_vehs_in_consist-4),
+  STORE_TEMP((prev_vehicle_type_id() == apch2) && LOAD_TEMP(0), 0),
+  set_offset_to(num_vehs_in_consist-6),
+  STORE_TEMP((prev_vehicle_type_id() == apch2) && LOAD_TEMP(0), 0) ])
 {
-  1: return CB_RESULT_NO_TEXT;
+  0: return CB_RESULT_NO_TEXT;
      return string(STR_WRONG_STRUCTURE_OF_TRAIN_ACH2);
 }
 
