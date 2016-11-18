@@ -9,65 +9,8 @@ purchase_sprites(apch2, 0, 0)
 pass_wagon_sprites(15, apch2, 32, 40)
 #undef IMAGEFILE
 
-random_switch (FEAT_TRAINS, SELF, ach2_sprites_left, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: ach2_sprites_2left;
-  7: ach2_sprites_1left;
-}
-
-random_switch (FEAT_TRAINS, SELF, ach2_sprites_right, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: ach2_sprites_2right;
-  7: ach2_sprites_1right;
-}
-
-random_switch (FEAT_TRAINS, SELF, ach2_sprites_middle, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: ach2_notpowered_normal_sprites_left;
-  1: ach2_notpowered_normal_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, ach2_2b_sprites_start,
-  position_in_consist_from_end)
-{
-  1: ach2_sprites_right;
-     ach2_sprites_middle;
-}
-
-switch (FEAT_TRAINS, SELF, ach2_2_sprites_start,
-  position_in_consist)
-{
-  0: ach2_sprites_left;
-     ach2_2b_sprites_start;
-}
-
-random_switch (FEAT_TRAINS, SELF, ach2_1_sprites_start, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: ach2_sprites_3left;
-  1: ach2_sprites_3right;
-}
-
-random_switch (FEAT_TRAINS, SELF, ach2_0_sprites_start, 
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: ach2_notpowered_sprites_left;
-  1: ach2_notpowered_sprites_right;
-}
-
-switch (FEAT_TRAINS, PARENT, ach2_sprites_start,
-  (vehicle_type_id == ach2) * (1 + (num_vehs_in_consist > 2)))
-{
-  1: ach2_1_sprites_start;
-  2: ach2_2_sprites_start;
-     ach2_0_sprites_start;
-}
-
+railcar_RND_mideq_direction_template(ach2, ach2, 1, 7)
 long_vehicle_RND(ach2, ach2_sprites_left)
-
 long_vehicle_RND(apch2, apch2_sprites_start)
 
 switch (FEAT_TRAINS, PARENT, apch2_can_attach_wagon4,
@@ -162,53 +105,7 @@ switch (FEAT_TRAINS, PARENT, ach2_start_stop,
      return string(STR_WRONG_STRUCTURE_OF_TRAIN_ACH2);
 }
 
-engine_diesel_1r_effect(ach2, -2, 9, 11) 
-
-switch (FEAT_TRAINS, SELF, ach2_create_effect1,
-  random_bits % 8)
-{
-  0: ach2_create_effect_sprites_right;
-     ach2_create_effect_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, ach2_create_effect2,
-  random_bits % 8)
-{
-  0: ach2_create_effect_sprites_left;
-     ach2_create_effect_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, ach2_create_effect3,
-  random_bits % 2)
-{
-  0: ach2_create_effect_sprites_left;
-     ach2_create_effect_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, ach2_create_effect00,
-  position_in_consist_from_end)
-{
-  1: ach2_create_effect2;
-     ach2_create_effect3;
-}
-
-switch (FEAT_TRAINS, SELF, ach2_create_effect0,
-  position_in_consist)
-{
-  0: ach2_create_effect1;
-     ach2_create_effect00;
-}
-
-switch (FEAT_TRAINS, PARENT, ach2_create_effect,
-  (vehicle_type_id == ach2) * (1 + (num_vehs_in_consist > 2)))
-{
-  1: ach2_create_effect3;
-  2: ach2_create_effect0;
-     return disable_create_effect();
-}
-
 // Даём тягу, только если локомотив - ach2
-
 switch (FEAT_TRAINS, PARENT, ach2_power,
   vehicle_type_id == ach2)
 {
@@ -259,6 +156,9 @@ switch (FEAT_TRAINS, SELF, ach2_colour_mapping,
   1: return ttdall_cc + 0x95;
      return CB_FAILED;
 }
+
+engine_diesel_1r_effect(ach2, -2, 9, 11) 
+railcar_RND_mideq_effect_direction_template(ach2, ach2, 1, 7)
 
 item (FEAT_TRAINS, ach2, 501) {
   property {
