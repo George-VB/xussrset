@@ -1,0 +1,90 @@
+ // te
+
+#define IMAGEFILE  "src/steam/te.png"
+purchase_sprites(te, 0, 0)
+steam_sprites(8, te_engine, 32,  40)
+tender_sprites(5, te_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(te, _sprites_start)
+short_vehicle(te)
+
+switch (FEAT_TRAINS, SELF, te_engine_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x02;
+  2: return ttdall_cc + 0x03;
+  3: return ttdall_cc + 0x04;
+  4: return ttdall_cc + 0x05;
+  5: return ttdall_cc + 0x93;
+  LV_RAL6020: return ttdall_cc + 0x59;
+  LV_RAL6002: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, te_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+{
+  0: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x02;
+  2: return ttdall_cc + 0x03;
+  3: return ttdall_cc + 0x04;
+  4: return ttdall_cc + 0x05;
+  5: return ttdall_cc + 0x93;
+  LV_RAL6020: return ttdall_cc + 0x59;
+  LV_RAL6002: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
+steamer_direction_template(te, _colour_mapping)
+livery_template(te_alt, TTD_53, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt5(te, TTD_02, TTD_03, TTD_04, TTD_05, TTD_93)
+
+engine_tender(te)
+engine_tender_length(te, 7, 1, 4, 1)
+
+engine_speed(te, 80)
+engine_steam_1_effect(te, -3, 13)
+engine_penalise_speed0(te)
+general_running_cost(te, 378)
+
+item (FEAT_TRAINS, te, 512) {
+  property {
+    name: string(STR_NAME_TE);
+    vehicle_dates(1943, 1947, 30, 10, 7, 16)
+    vehicle_cargo()
+    vehicle_steam(1516, 86+65, 208.0)
+  }
+  graphics {
+    default: te_sprites;
+    purchase: te_purchase_sprites;
+    articulated_part: te_articulated_part;
+    length: te_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: te_speed;
+    purchase_speed: return 80;
+    bitmask_vehicle_info: te_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: te_create_effect;
+    running_cost_factor: te_running_cost_factor;
+    colour_mapping: te_colour_mapping;
+    cargo_subtype_text: te_cargo_subtype_text;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM),
+                                   string(STR_PURCHASE_HINT_SECTIONS_1),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1943, 1947),
+                                   string(STR_PURCHASE_HINT_LIST6, string(STR_PURCHASE_HINT_FACTORY_LOFAG),
+                                                                   string(STR_PURCHASE_HINT_FACTORY_HENSCHEL),
+                                                                   string(STR_PURCHASE_HINT_FACTORY_SCHWARTZKOPFF),
+                                                                   string(STR_PURCHASE_HINT_FACTORY_KRAUSS_MAFFEI),
+                                                                   string(STR_PURCHASE_HINT_FACTORY_RHEINMETAL_BORSIG),
+                                                                   string(STR_PURCHASE_HINT_FACTORY_SCHICHAU)));
+  }
+}
+
+long_name_template(te, STR_LONGNAME_TE)
+models_default_cargo_template(te)
+allow_steamer(te)
