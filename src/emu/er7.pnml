@@ -1,0 +1,325 @@
+﻿ // er7
+
+#define IMAGEFILE  "src/emu/er7_h.png"
+purchase_sprites(er7_h_v1, 0, 0)
+purchase_sprites(er7_h_v2, 100, 0)
+MU_head_sprites(12, er7_h_v1,  32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/er7_m.png"
+purchase_sprites(er7_m_v1, 0, 0)
+EMU_motor1_sprites(12, er7_m_v1, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/er7_m-a1960.png"
+purchase_sprites(er7_m_v2, 0, 0)
+EMU_motor1_sprites(12, er7_m_v2, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/er7_c.png"
+purchase_sprites(er7_c_v1, 0, 0)
+purchase_sprites(er7_c_v2, 100, 0)
+MU_car_sprites(12, er7_c_v1, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(er7_h, 1960)
+purchase_sprites_select(er7_m, 1960)
+purchase_sprites_select(er7_c, 1960)
+
+switch (FEAT_TRAINS, SELF, er7_h_sprites_left,
+  LOAD_TEMP(4) != er7_h)
+{
+  0: er7_h_v1_sprites_left;
+     er7_h_v1_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er7_h_sprites_right,
+  LOAD_TEMP(4) != er7_h)
+{
+  0: er7_h_v1_sprites_right;
+     er7_h_v1_notpowered_sprites_right;
+}
+
+engine_direction_template3m2(er7_h, er7_m, er7_c, )
+
+long_vehicle(er7_h)
+
+switch (FEAT_TRAINS, SELF, er7_m_direction_left,
+  (LOAD_TEMP(4) != er7_h) + 
+  ((build_year >= 1960) * 10))
+{
+  0: er7_m_v1_sprites_left;
+  1: er7_m_v1_notpowered_sprites_left;
+ 10: er7_m_v2_sprites_left;
+ 11: er7_m_v2_notpowered_sprites_left;
+     align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er7_m_direction_right,
+  (LOAD_TEMP(4) != er7_h) + 
+  ((build_year >= 1960) * 10))
+{
+  0: er7_m_v1_sprites_right;
+  1: er7_m_v1_notpowered_sprites_right;
+ 10: er7_m_v2_sprites_right;
+ 11: er7_m_v2_notpowered_sprites_right;
+     align_12_sprites;
+}
+
+EMU_46789101112_m_template(er7)
+
+EMU_direction_calculation_template(er7, _m)
+
+long_vehicle_dir(er7_m)
+
+switch (FEAT_TRAINS, SELF, er7_c_direction_left,
+  LOAD_TEMP(4) != er7_h)
+{
+  0: er7_c_v1_sprites_left;
+     er7_c_v1_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er7_c_direction_right,
+  LOAD_TEMP(4) != er7_h)
+{
+  0: er7_c_v1_sprites_right;
+     er7_c_v1_notpowered_sprites_right;
+}
+
+EMU_46789101112_c_template(er7)
+
+EMU_direction_calculation_template(er7, _c)
+
+long_vehicle_dir(er7_c)
+
+EMU_46810_can_attach_wagon_template(er7)
+
+EMU_attach_calculation_template(er7)
+
+switch (FEAT_TRAINS, SELF, er7_can_attach_wagon1, vehicle_type_id)
+{
+  er7_h: er7_can_attach_wagon_template;
+  er7_m: er7_can_attach_wagon_template;
+  er7_c: er7_can_attach_wagon_template;
+         return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er7_can_attach_wagon, count_veh_id(er7_h))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: er7_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, er7_h_start_stop,
+  count_veh_id(er7_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+// Моторный самостоятельно выпускать из депо нельзя
+switch (FEAT_TRAINS, SELF, er7_m_start_stop,
+  0)
+{
+     return string(STR_START_STOP_MOTORIZED_CAR_CANNOT_LEAVE_DEPOT);
+}
+
+// Визуализируем эффекты тяги у er7_m, только если локомотив - er7_h
+
+EMU_46789101112_m_create_effect_template(er7, -1, 5)
+
+EMU_direction_calculation_template(er7, _m_create_effect)
+
+switch (FEAT_TRAINS, PARENT, er7_m_create_effect,
+  vehicle_type_id == er7_h)
+{
+  1: er7_m_create_effect_direction_template;
+     return disable_create_effect();
+}
+
+// Даём тягу, только если локомотив - er7_h
+switch (FEAT_TRAINS, PARENT, er7_m_power,
+  vehicle_type_id == er7_h)
+{
+  1: return get_power_in_cb(800);
+     return 0;
+}
+
+// Допускается эксплуатация с пассажирами только если голова - er7_h
+
+switch (FEAT_TRAINS, SELF, er7_h_cargo_capacity2,
+  build_year >= 1960)
+{
+  0: return 83;
+     return 88;
+}
+
+switch (FEAT_TRAINS, PARENT, er7_h_cargo_capacity,
+  (vehicle_type_id == er7_h))
+{
+  1: er7_h_cargo_capacity2;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, er7_m_cargo_capacity2,
+  build_year >= 1960)
+{
+  0: return 83;
+     return 98;
+}
+
+switch (FEAT_TRAINS, PARENT, er7_m_cargo_capacity,
+  (vehicle_type_id == er7_h))
+{
+  1: er7_m_cargo_capacity2;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, er7_c_cargo_capacity,
+  (vehicle_type_id == er7_h))
+{
+  1: return 110;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, er7_long_cargo_subtype_text,
+  cargo_subtype)
+{
+   return string(STR_REFIT_FACTORY_6231, string(STR_REFIT_TTD_53));
+}
+
+livery_template1(er7_short, TTD_53)
+
+switch (FEAT_TRAINS, SELF, er7_cargo_subtype_text,
+  enable_long_names)
+{
+  1: er7_long_cargo_subtype_text;
+     er7_short_cargo_subtype_text;
+}
+
+engine_RC_change_build_after(er7_m_v1, 120,
+                                       121, 1960)
+
+switch (FEAT_TRAINS, PARENT, er7_m_running_cost_factor,
+  vehicle_type_id == er7_h)
+{
+  1: er7_m_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+general_running_cost(er7_h_v1, 73)
+
+switch (FEAT_TRAINS, PARENT, er7_h_running_cost_factor,
+  vehicle_type_id == er7_h)
+{
+  1: er7_h_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+general_running_cost(er7_c_v1, 49)
+
+switch (FEAT_TRAINS, PARENT, er7_c_running_cost_factor,
+  vehicle_type_id == er7_h)
+{
+  1: er7_c_v1_running_cost_factor;
+     return RC_MU_AS_CAR;
+}
+
+engine_weight_change_build_after(er7_m, 60, 
+                                        61, 1960)
+
+item (FEAT_TRAINS, er7_h, 514) {
+  property {
+    name: string(STR_NAME_ER7);
+    vehicle_dates(1959, 1962, 15, 10, 8, 10)
+    vehicle_dcemu_c(37.9, 83, 48)
+  }
+  graphics {
+    default: er7_h_sprites;
+    purchase: er7_h_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: er7_h_running_cost_factor;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: er7_can_attach_wagon;
+    start_stop: er7_h_start_stop;
+    speed: speed_after30_130to100;
+    purchase_speed: return 130;
+    cargo_subtype_text: er7_cargo_subtype_text;
+    power: return 0;
+    cargo_capacity: er7_h_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_33)),
+                                   string(STR_SECTIONS_EMU_4_6_8_10),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1959, 1962),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+  }
+}
+
+item (FEAT_TRAINS, er7_m, 515) {
+  property {
+    name: string(STR_NAME_ER7);
+    vehicle_dates(1959, 1962, 15, 10, 8, 16)
+    vehicle_dcemu(800, 93.4, 60.75, 88, 48)
+  }
+  graphics {
+    default: er7_m_sprites;
+    purchase: er7_m_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: er7_m_running_cost_factor;
+    articulated_part: articulated_part_dummy4;
+    can_attach_wagon: er7_can_attach_wagon;
+    start_stop: er7_m_start_stop;
+    speed: speed_after30_130to100;
+    purchase_speed: return 130;
+    cargo_subtype_text: er7_cargo_subtype_text;
+    weight: er7_m_weight;
+    power: er7_m_power;
+    cargo_capacity: er7_m_cargo_capacity;
+    create_effect: er7_m_create_effect;
+    colour_mapping: any_cc_colour;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_32)),
+                                   string(STR_SECTIONS_EMU_4_6_8_10),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1959, 1962),
+                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+  }
+}
+
+item (FEAT_TRAINS, er7_c, 516) {
+  property {
+    name: string(STR_NAME_ER7);
+    vehicle_dates(1959, 1962, 15, 10, 8, 7)
+    vehicle_dcemu_c(36.5, 110, 48)
+  }
+  graphics {
+    default: er7_c_sprites;
+    purchase: er7_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: er7_c_running_cost_factor;
+    articulated_part: articulated_part_dummy4;
+    cargo_subtype_text: er7_cargo_subtype_text;
+    speed: speed_after30_130to100;
+    purchase_speed: return 130;
+    power: return 0;
+    can_attach_wagon: er7_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    cargo_capacity: er7_c_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_34)),
+                                   string(STR_SECTIONS_EMU_4_6_8_10),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1959, 1962),
+                                   string(STR_PURCHASE_HINT_FACTORY_TVER_KALININ_CW));
+  }
+}
+
+long_name_template(er7_h, STR_LONGNAME_ER7_H)
+long_name_template(er7_m, STR_LONGNAME_ER7_M)
+long_name_template(er7_c, STR_LONGNAME_ER7_C)
+allow_dcemu(er7_h)
+allow_dcemu(er7_m)
+allow_dcemu(er7_c)
