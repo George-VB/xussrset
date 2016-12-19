@@ -1,0 +1,72 @@
+﻿ // boxcar_wbam
+
+#define IMAGEFILE  "src/freight/boxcars/woodenboxam.png"
+purchase_sprites(boxcar_wbam, 0, 0)
+box_empty_layout_template(boxcar_wbam, 5, 32, 40)
+box_layout_template(boxcar_wbam, 5, 32, 40+67*2, goods)
+box_layout_template(boxcar_wbam, 5, 32, 40+67*4, ficr)
+box_layout_template(boxcar_wbam, 5, 32, 40+67*6, cere)
+box_layout_template(boxcar_wbam, 5, 32, 40+67*8, lvst)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_wbam_sprites_start,
+  cargo_type_in_veh)
+{
+  FICR: boxcar_wbam_ficr_sprites;
+  WOOL: boxcar_wbam_ficr_sprites;
+  OLSD: boxcar_wbam_ficr_sprites;
+  CMNT: boxcar_wbam_ficr_sprites;
+  BDMT: boxcar_wbam_ficr_sprites;
+  JAVA: boxcar_wbam_ficr_sprites;
+  LVST: boxcar_wbam_lvst_sprites;
+  GRAI: boxcar_wbam_cere_sprites;
+  WHEA: boxcar_wbam_cere_sprites;
+  MAIZ: boxcar_wbam_cere_sprites;
+  CERE: boxcar_wbam_cere_sprites;
+        boxcar_wbam_goods_sprites;
+}
+
+short_vehicle_RND(boxcar_wbam, boxcar_wbam_goods_sprites)
+
+wagon_running_cost(boxcar_wbam, 1)
+
+switch (FEAT_TRAINS, SELF, boxcar_wbam_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 17;
+  WOOL: return 33;
+  GLAS: return 22;
+  LVST: return 6;
+  ENSP: return 13;
+  FMSP: return 14;
+  MNSP: return 26;
+  VPTS: return 26;
+        return 8;
+}
+
+item (FEAT_TRAINS, boxcar_wbam, 519) {
+  property {
+    name: string(STR_NAME_BOXCAR_WBAM);
+    vehicle_dates(1846, 1875, 20, 10, 5, 1)
+    vehicle_wagon(7, 120)
+    vehicle_wagon_cargo(12, 8)
+    cargo_allow_refit: [GOOD, WOOL, GLAS, LVST, ENSP, FMSP, MNSP, VPTS, SGCN, PAPR, GRAI, WHEA, MAIZ, CERE, OLSD, FICR, CMNT, BDMT, CERA, SGBT, RCYC, WDPR, BEER, JAVA, COPR];
+  }
+  graphics {
+    default: boxcar_wbam_sprites;
+    purchase: boxcar_wbam_purchase_sprites;
+    running_cost_factor: boxcar_wbam_running_cost_factor;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+    cargo_capacity: boxcar_wbam_cargo_capacity;
+    additional_text: return string(STR_PURCHASE_HINT_WAGON,
+                                   8, 12,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                                   string(STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR_4AXLE),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1846, 1875),
+                                   string(STR_PURCHASE_HINT_FACTORY_PROLETARSKII_ZAVOD_B1922));
+  }
+}
+
+long_name_template(boxcar_wbam, STR_LONGNAME_BOXCAR_WBAM)
