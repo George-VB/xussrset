@@ -1607,6 +1607,58 @@ switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)           
 { 1: return new_capacity;                                                       \
      return capacity; }                                                         \
 
+// Определение скорости погрузки бункерной засыпкой. технологически незначительный рост ввиду ограничений по разбрасыванию
+
+#define wagon_loading_speed_unlim_bulk(name)                                 \
+switch (FEAT_TRAINS, SELF, name##_CLAY_loading_speed,                        \
+(current_year >= 1910) +                                                     \
+(current_year >= 1930) +                                                     \
+(current_year >= 1950) +                                                     \
+(current_year >= 1990))                                                      \
+{ 0: return 5;                                                               \
+  1: return 7;                                                               \
+  2: return 9;                                                               \
+  3: return 11;                                                              \
+     return 13; }                                                            \
+switch (FEAT_TRAINS, SELF, name##_LIME_loading_speed,                        \
+(current_year >= 1910) +                                                     \
+(current_year >= 1930) +                                                     \
+(current_year >= 1950) +                                                     \
+(current_year >= 1990))                                                      \
+{ 0: return 7;                                                               \
+  1: return 10;                                                              \
+  2: return 13;                                                              \
+  3: return 16;                                                              \
+     return 19; }                                                            \
+switch (FEAT_TRAINS, SELF, name##_SCMT_loading_speed,                        \
+(current_year >= 1910) +                                                     \
+(current_year >= 1930) +                                                     \
+(current_year >= 1950) +                                                     \
+(current_year >= 1990))                                                      \
+{ 0: return 9;                                                               \
+  1: return 14;                                                              \
+  2: return 19;                                                              \
+  3: return 24;                                                              \
+     return 29; }                                                            \
+switch (FEAT_TRAINS, SELF, name##_all_bulk_loading_speed,                    \
+(current_year >= 1910) +                                                     \
+(current_year >= 1930) +                                                     \
+(current_year >= 1950) +                                                     \
+(current_year >= 1990))                                                      \
+{ 0: return 10;                                                              \
+  1: return 20;                                                              \
+  2: return 25;                                                              \
+  3: return 30;                                                              \
+     return 35; }                                                            \
+switch (FEAT_TRAINS, SELF, name##_bulk_loading_speed2, cargo_type_in_veh)    \
+{ CLAY: name##_CLAY_loading_speed;                                           \
+  LIME: name##_LIME_loading_speed;                                           \
+  SCMT: name##_SCMT_loading_speed;                                           \
+        name##_all_bulk_loading_speed; }                                     \
+switch (FEAT_TRAINS, SELF, name##_bulk_loading_speed, vehicle_is_unloading)  \
+{ 1: return 255;                                                             \
+     name##_bulk_loading_speed2; }                                           \
+
 // не выпускать новые четвёрки без средней секции
 
 #define  new_4x_train_start_stop(name)                                                                \
