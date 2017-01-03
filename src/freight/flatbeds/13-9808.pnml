@@ -74,8 +74,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_9808_sprites_start,
 
 long_vehicle_RND(flatbed_13_9808, flatbed_13_9808_good1_sprites)
 
-wagon_running_cost(flatbed_13_9808, 15)
-
 random_switch (FEAT_TRAINS, SELF, flatbed_13_9808_random, 0 )
 {
   independent: flatbed_13_9808_good_sprites;
@@ -120,8 +118,35 @@ switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_capacity,
   cargo_type_in_veh)
 {
   GOOD: return 108;
+  WOOD: return 64;
+  WDPR: return 68;
+  BRCK: return 61;
         return 72;
 }
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_stel_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..5: return (cargo_capacity / 2 + 1);   // фермы
+        return (cargo_capacity / 3 + 1);   // трубы
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_good_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..10: return (cargo_capacity / 2 + 1);    // товары 2
+         return 255;                         // товары 1
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_loading_speed, 
+  cargo_type_in_veh)
+{ 
+  STEL: flatbed_13_9808_stel_loading_speed;
+  GOOD: flatbed_13_9808_good_loading_speed;
+        all_wagons_bulk_loading_speed; 
+}
+
+wagon_running_cost(flatbed_13_9808, 15)
 
 item (FEAT_TRAINS, flatbed_13_9808, 417) {
   property {
@@ -140,9 +165,10 @@ item (FEAT_TRAINS, flatbed_13_9808, 417) {
     cargo_subtype_text: flatbed_13_9808_cargo_subtype_text;
     colour_mapping: flatbed_13_9808_colour_mapping;
     cargo_capacity: flatbed_13_9808_cargo_capacity;
+    loading_speed: flatbed_13_9808_loading_speed;
     additional_text: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                                    72, 38,
-                                   string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                                    string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                                    string(STR_PURCHASE_HINT_FROM, 2008),

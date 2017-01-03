@@ -2,9 +2,9 @@
 #define IMAGEFILE  "src/freight/flatbeds/13-401-part1.png"
 purchase_sprites(flatbed_13_401, 0, 0)
 flatbed_empty_layout_template(flatbed_13_401, 9, 32, 40)
-flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*1,  good1) // товары
-flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*3,  good2) // товары
-flatbed_layout1_template_fixed(flatbed_13_401, 9, 32, 40+67*5,  good3) // товары
+flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*1,  good1) // товары 2
+flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*3,  good2) // товары 2
+flatbed_layout1_template_fixed(flatbed_13_401, 9, 32, 40+67*5,  good3) // товары 1
 flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*6,  wdpr1) // лесоматериалы
 flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*8,  wdpr2) // лесоматериалы
 flatbed_layout2_template_fixed(flatbed_13_401, 9, 32, 40+67*10, wdpr3) // лесоматериалы
@@ -178,20 +178,12 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1968,
   ENSP: return 32;
   MNSP: return 64;
   VPTS: return 64;
-  WOOD: return 63;
-  WDPR: return 63;
   AORE: return 47;
-  CORE: return 63;
-  IORE: return 63;
   BDMT: return 59;
   BRCK: return 59;
-  CLAY: return 63;
   GRVL: return 59;
   LIME: return 52;
-  POTA: return 63;
   SAND: return 59;
-  SCMT: return 63;
-  STEL: return 63;
   SULP: return 48;
         return 63;
 
@@ -208,8 +200,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1979,
   WOOD: return 64;
   WDPR: return 68;
   AORE: return 47;
-  CORE: return 66;
-  IORE: return 66;
   BDMT: return 59;
   BRCK: return 59;
   CLAY: return 63;
@@ -217,8 +207,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1979,
   LIME: return 52;
   POTA: return 66;
   SAND: return 59;
-  SCMT: return 66;
-  STEL: return 66;
   SULP: return 48;
         return 66;
 }
@@ -234,8 +222,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1981,
   WOOD: return 64;
   WDPR: return 68;
   AORE: return 47;
-  CORE: return 70;
-  IORE: return 70;
   BDMT: return 59;
   BRCK: return 59;
   CLAY: return 63;
@@ -243,8 +229,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1981,
   LIME: return 52;
   POTA: return 70;
   SAND: return 59;
-  SCMT: return 70;
-  STEL: return 70;
   SULP: return 48;
         return 70;
 }
@@ -264,25 +248,52 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_additional_text,
 {
   0: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                    63, 37,
-                   string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                    string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                    string(STR_PURCHASE_HINT_FROMTO, 1968, 1984),
                    string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW));
   1: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                    66, 37,
-                   string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                    string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                    string(STR_PURCHASE_HINT_FROMTO, 1968, 1984),
                    string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW));
      return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                    70, 37,
-                   string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                    string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                    string(STR_PURCHASE_HINT_FROMTO, 1968, 1984),
                    string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW));
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_401_stel_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..5: return (cargo_capacity / 2 + 1);   // фермы
+        return (cargo_capacity / 3 + 1);   // трубы
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_401_good_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..5: return (cargo_capacity / 2 + 1);   // товары 2
+  6..8: return (cargo_capacity / 2 + 1);   // товары 2
+  9..13: return 255;                       // товары 1
+  14: return 255;                          // 40 футовый контейнер
+      return (cargo_capacity / 2 + 1);     // 20 футовый контейнер
+}
+
+wagon_loading_speed_sym(flatbed_13_401, 1, vehi)
+switch (FEAT_TRAINS, SELF, flatbed_13_401_loading_speed, 
+  cargo_type_in_veh)
+{ 
+  VEHI: flatbed_13_401_vehi_loading_speed;
+  STEL: flatbed_13_401_stel_loading_speed;
+  GOOD: flatbed_13_401_good_loading_speed;
+        all_wagons_bulk_loading_speed; 
 }
 
 wagon_running_cost(flatbed_13_401, 13)
@@ -302,6 +313,7 @@ item (FEAT_TRAINS, flatbed_13_401, 345) {
     articulated_part: articulated_part_dummy1;
     additional_text: flatbed_13_401_additional_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    loading_speed: flatbed_13_401_loading_speed;
     cargo_subtype_text: flatbed_13_401_cargo_subtype_text;
     colour_mapping: flatbed_13_401_colour_mapping;
     cargo_capacity: flatbed_13_401_cargo_capacity;

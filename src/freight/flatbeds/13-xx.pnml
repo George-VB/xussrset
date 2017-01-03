@@ -72,8 +72,29 @@ switch (FEAT_TRAINS, SELF, flatbed_13_xx_cargo_subtype_text,
 switch (FEAT_TRAINS, SELF, flatbed_13_xx_cargo_capacity,
   cargo_type_in_veh)
 {
-  GOOD: return 75;
+  GOOD: return 67;
+  VEHI: return  3;
+  ENSP: return 32;
+  MNSP: return 64;
+  VPTS: return 64;
+  AORE: return 47;
+  SULP: return 48;
         return 50;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_stel_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..5: return (cargo_capacity / 2 + 1);   // фермы
+        return (cargo_capacity / 3 + 1);   // трубы
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_loading_speed, 
+  cargo_type_in_veh)
+{ 
+  STEL: flatbed_13_xx_stel_loading_speed;
+  GOOD: return (cargo_capacity / 2 + 1);
+        all_wagons_bulk_loading_speed; 
 }
 
 wagon_running_cost(flatbed_13_xx, 18)
@@ -94,6 +115,7 @@ item (FEAT_TRAINS, flatbed_13_xx, 270) {
     cargo_subtype_text: flatbed_13_xx_cargo_subtype_text;
     colour_mapping: flatbed_13_xx_colour_mapping;
     cargo_capacity: flatbed_13_xx_cargo_capacity;
+    loading_speed: flatbed_13_xx_loading_speed;
     additional_text: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                                    50, 37,
                                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),

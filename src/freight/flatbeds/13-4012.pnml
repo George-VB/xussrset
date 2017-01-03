@@ -220,25 +220,53 @@ switch (FEAT_TRAINS, SELF, flatbed_13_4012_additional_text,
 {
   0: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                     71, 37,
-                    string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                     string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                     string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                     string(STR_PURCHASE_HINT_FROMTO, 1985, 1992),
                     string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW));
   1: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                     71, 37,
-                    string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                     string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
                     string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                     string(STR_PURCHASE_HINT_FROMTO, 1985, 1992),
                     string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW_AUSSR));
      return string(STR_PURCHASE_HINT_WAGON_FLATBED,
                     72, 37,
-                    string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                     string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                     string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
                     string(STR_PURCHASE_HINT_FROM, 1992),
                     string(STR_PURCHASE_HINT_FACTORY_DNEPRODZERZHINSKY_CW_AUSSR));
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_stel_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..5: return (cargo_capacity / 2 + 1);   // фермы
+        return (cargo_capacity / 3 + 1);   // трубы
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_good_loading_speed,
+  (random_bits / 2) % 16)
+{
+  0..5: return (cargo_capacity / 2 + 1);   // товары 2
+  6..8: return (cargo_capacity / 2 + 1);   // товары 2
+  9..13: return 255;                       // товары 1
+  14: return 255;                          // 40 футовый контейнер
+      return (cargo_capacity / 2 + 1);     // 20 футовый контейнер
+}
+
+wagon_loading_speed_sym(flatbed_13_4012, 1, vehi)
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_loading_speed, 
+  cargo_type_in_veh)
+{ 
+  VEHI: flatbed_13_4012_vehi_loading_speed;
+  STEL: flatbed_13_4012_stel_loading_speed;
+  GOOD: flatbed_13_4012_good_loading_speed;
+        all_wagons_bulk_loading_speed; 
 }
 
 wagon_running_cost(flatbed_13_4012, 15)
@@ -261,6 +289,7 @@ item (FEAT_TRAINS, flatbed_13_4012, 378) {
     additional_text: flatbed_13_4012_additional_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_subtype_text: flatbed_13_4012_cargo_subtype_text;
+    loading_speed: flatbed_13_4012_loading_speed;
     colour_mapping: flatbed_13_4012_colour_mapping;
     cargo_capacity: flatbed_13_4012_cargo_capacity;
     weight: flatbed_13_4012_weight;
