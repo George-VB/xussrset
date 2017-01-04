@@ -892,22 +892,29 @@ switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)           
 
 // Определение неограниченной скорости погрузки
 
-#define wagon_loading_speed_unlim(name, cargo)                 \
-switch (FEAT_TRAINS, SELF, name##_##cargo##_loading_speed, 0)  \
-{ return 255; }                                                \
+#define wagon_loading_speed_unlim(name)              \
+switch (FEAT_TRAINS, SELF, name##_loading_speed, 0)  \
+{ return 255; }                                      \
 
 // Определение симметричной скорости погрузки с ограничением по вагону. скорость погрузки станции не ограничена
 
-#define wagon_loading_speed_sym(name, amount, cargo)           \
-switch (FEAT_TRAINS, SELF, name##_##cargo##_loading_speed, 0)  \
-{ return amount; }                                             \
+#define wagon_loading_speed_sym(name, amount)        \
+switch (FEAT_TRAINS, SELF, name##_loading_speed, 0)  \
+{ return amount; }                                   \
 
 // Определение несимметричной скорости погрузки с ограничением по вагону. скорость погрузки станции не ограничена
 
-#define wagon_loading_speed(name, amount_l, amount_u, cargo)                      \
-switch (FEAT_TRAINS, SELF, name##_##cargo##_loading_speed, vehicle_is_unloading)  \
-{ 1: return amount_u;                                                             \
-     return amount_l; }                                                           \
+#define wagon_loading_speed(name, amount_l, amount_u)                   \
+switch (FEAT_TRAINS, SELF, name##_loading_speed, vehicle_is_unloading)  \
+{ 1: return amount_u;                                                   \
+     return amount_l; }                                                 \
+
+// Определение несимметричной скорости погрузки с ограничением по вагону c выгрузкой за 2 tic'а. скорость погрузки станции не ограничена
+
+#define wagon_loading_speed_auu(name, amount_l)                         \
+switch (FEAT_TRAINS, SELF, name##_loading_speed, vehicle_is_unloading)  \
+{ 1: return (cargo_capacity / 2 + 1);                                   \
+     return amount_l; }                                                 \
 
 // Определение скорости погрузки бункерной засыпкой. Скорость выгрузки не ограничена
 // сюда же относятся штучный груз, погрузка которого не ограничена вагоном
