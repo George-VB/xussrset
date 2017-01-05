@@ -1,0 +1,89 @@
+﻿ // 19_923_hopper
+
+#define IMAGEFILE  "src/freight/hoppers/19-923.png"
+purchase_sprites(hopper_19_923, 0, 0)
+tanker_layout_template(hopper_19_923_v1, 8, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_sprites_start, 0)
+{
+  hopper_19_923_v1_sprites;
+}
+
+short_vehicle_RND(hopper_19_923, hopper_19_923_v1_sprites)
+
+random_switch (FEAT_TRAINS, SELF, hopper_19_923_random, 0 )
+{
+  independent: hopper_19_923_v1_sprites;
+  1: return ttdall_cc + 0x62;
+  1: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x59;
+  1: return ttdall_cc + 0x95;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: hopper_19_923_random;
+  1: return ttdall_cc + 0x62;
+  2: return ttdall_cc + 0x53;
+  3: return ttdall_cc + 0x59;
+  4: return ttdall_cc + 0x95;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_62);
+  2: return string(STR_REFIT_TTD_53);
+  3: return string(STR_REFIT_TTD_59);
+  4: return string(STR_REFIT_TTD_95);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_additional_text,
+  current_year >= USSREND)
+{
+  0: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED,
+                   70, 81,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_WAGON_TYPE_HOPPER_4AXLE_TSMW),
+                   string(STR_PURCHASE_HINT_FROM, 1988),
+                   string(STR_PURCHASE_HINT_FACTORY_STAKHANOV_CBW));
+     return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED,
+                   70, 81,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_WAGON_TYPE_HOPPER_4AXLE_TSMW),
+                   string(STR_PURCHASE_HINT_FROM, 1988),
+                   string(STR_PURCHASE_HINT_FACTORY_STAKHANOV_CBW_AUSSR));
+}
+
+wagon_running_cost(hopper_19_923, 36)
+
+item (FEAT_TRAINS, hopper_19_923, 427) {
+  property {
+    name: string(STR_NAME_HOPPER_19_923);
+    vehicle_dates(1988, 2050, 26, 10, 8, 6)
+    vehicle_wagon(23, 120)
+    vehicle_wagon_cargo(70, 20)
+    cargo_allow_refit: [FERT, PHOS];
+  }
+  graphics {
+    default: hopper_19_923_sprites;
+    purchase: hopper_19_923_purchase_sprites;
+    running_cost_factor: hopper_19_923_running_cost_factor;
+    colour_mapping: hopper_19_923_colour_mapping;
+    cargo_subtype_text: hopper_19_923_cargo_subtype_text;
+    loading_speed: all_wagons_bulk_auu_loading_speed;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    additional_text: hopper_19_923_additional_text;
+  }
+}
+
+long_name_template(hopper_19_923, STR_LONGNAME_HOPPER_19_923)
