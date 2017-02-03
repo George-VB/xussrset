@@ -24,12 +24,31 @@ switch (FEAT_TRAINS, PARENT, dr1p_can_attach_wagon_length,
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
+switch (FEAT_TRAINS, PARENT, dr1p_h_can_attach_wagon_3_7,
+[ set_offset_to(num_vehs_in_consist-2),
+  STORE_TEMP(prev_vehicle_type_id() == dr1p_c, 0),
+  set_offset_to(num_vehs_in_consist-4),
+  LOAD_TEMP(0) || (prev_vehicle_type_id() == dr1p_c) ])
+{
+  1: dr1p_can_attach_wagon_length;
+     return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7D);
+}
+
+switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon4,
+[
+  set_offset_to(num_vehs_in_consist-10),
+  prev_vehicle_type_id() ])
+{
+  dr1p_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7D);
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon3,
 [
   set_offset_to(num_vehs_in_consist-8),
   prev_vehicle_type_id() ])
 {
-  dr1p_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_6D);
+  dr1p_c: dr1p_c_can_attach_wagon4;
           return CB_RESULT_ATTACH_ALLOW;
 }
 
@@ -71,7 +90,7 @@ switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon,
 switch (FEAT_TRAINS, SELF, dr1p_can_attach_wagon,
   vehicle_type_id)
 {
-  dr1p_h: dr1p_can_attach_wagon_length;
+  dr1p_h: dr1p_h_can_attach_wagon_3_7;
   dr1p_c: dr1p_c_can_attach_wagon;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
@@ -179,7 +198,7 @@ item (FEAT_TRAINS, dr1p_h, 210) {
                                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_320)),
-                                   string(STR_SECTIONS_DMU_2_6_M2),
+                                   string(STR_SECTIONS_DMU_3_7_M2),
                                    string(STR_PURCHASE_HINT_FROMTO, 1970, 1976),
                                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   }
@@ -209,7 +228,7 @@ item (FEAT_TRAINS, dr1p_c, 211) {
                                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_321)),
-                                   string(STR_SECTIONS_DMU_2_6_M2),
+                                   string(STR_SECTIONS_DMU_3_7_M2),
                                    string(STR_PURCHASE_HINT_FROMTO, 1970, 1976),
                                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   }

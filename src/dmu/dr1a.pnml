@@ -187,12 +187,31 @@ switch (FEAT_TRAINS, PARENT, dr1a_can_attach_wagon_length,
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
+switch (FEAT_TRAINS, PARENT, dr1a_nh_can_attach_wagon,
+[ set_offset_to(num_vehs_in_consist-2),
+  STORE_TEMP(prev_vehicle_type_id() == dr1a_c, 0),
+  set_offset_to(num_vehs_in_consist-4),
+  LOAD_TEMP(0) || (prev_vehicle_type_id() == dr1a_c) ])
+{
+  1: dr1a_can_attach_wagon_length;
+     return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7DN);
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_c_can_attach_wagon4,
+[
+  set_offset_to(num_vehs_in_consist-10),
+  prev_vehicle_type_id() ])
+{
+  dr1a_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7DN);
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, dr1a_c_can_attach_wagon3,
 [
   set_offset_to(num_vehs_in_consist-8),
   prev_vehicle_type_id() ])
 {
-  dr1a_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_6DN);
+  dr1a_c: dr1a_c_can_attach_wagon4;
           return CB_RESULT_ATTACH_ALLOW;
 }
 
@@ -236,7 +255,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_c_can_attach_wagon,
 switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon_count2,
   count_veh_id(dr1a_h) >= count_veh_id(dr1a_n))
 {
-  1: dr1a_can_attach_wagon_length;
+  1: dr1a_nh_can_attach_wagon;
      return string(STR_CAN_ATTACH_MHEAD_ONLY);
 }
 
@@ -248,10 +267,19 @@ switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon_count1,
           dr1a_n_can_attach_wagon_count2;
 }
 
+switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon6,
+[ set_offset_to(num_vehs_in_consist-12),
+  prev_vehicle_type_id() ])
+{
+  dr1a_n: return string(STR_CAN_ATTACH_MHEAD_ONLY);
+          return CB_RESULT_ATTACH_ALLOW;
+}
+
 switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon5,
 [ set_offset_to(num_vehs_in_consist-10),
   prev_vehicle_type_id() ])
 {
+  dr1a_c: dr1a_n_can_attach_wagon6;
   dr1a_n: return string(STR_CAN_ATTACH_MHEAD_ONLY);
           return CB_RESULT_ATTACH_ALLOW;
 }
@@ -289,7 +317,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon1,
 {
   dr1a_c: dr1a_n_can_attach_wagon2;
   dr1a_n: dr1a_n_can_attach_wagon_count1;
-          return CB_RESULT_ATTACH_ALLOW;
+          dr1a_nh_can_attach_wagon;
 }
 
 switch (FEAT_TRAINS, PARENT, drb1_can_attach_wagon1,
@@ -310,7 +338,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_n_can_attach_wagon,
 switch (FEAT_TRAINS, PARENT, dr1a_h_can_attach_wagon,
   count_veh_id(_2m62u) + count_veh_id(_3m62_all))
 {
-  0: dr1a_can_attach_wagon_length;
+  0: dr1a_nh_can_attach_wagon;
      return string(STR_CAN_ATTACH_WRONG_DRB1);
 }
 
@@ -573,35 +601,35 @@ switch (FEAT_TRAINS, SELF, dr1a_h_additional_text,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_324)),
-                   string(STR_SECTIONS_DMU_2_6_M2),
+                   string(STR_SECTIONS_DMU_3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1976,1977),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   1: return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_642)),
-                   string(STR_SECTIONS_DMU_2_6_M2),
+                   string(STR_SECTIONS_DMU_3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1978,1984),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   2: return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_350)),
-                   string(STR_SECTIONS_DMU_2_6_M2),
+                   string(STR_SECTIONS_DMU_3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1978,1998),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   3: return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_350)),
-                   string(STR_SECTIONS_DMU_N2_6_M2),
+                   string(STR_SECTIONS_DMU_N3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1978,1998),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
      return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_350)),
-                   string(STR_SECTIONS_DMU_N2_6_M2),
+                   string(STR_SECTIONS_DMU_N3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1978,1998),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
 }
@@ -616,35 +644,35 @@ switch (FEAT_TRAINS, SELF, dr1a_c_additional_text,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_325)),
-                   string(STR_SECTIONS_DMU_2_6_M2),
+                   string(STR_SECTIONS_DMU_3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1976,1977),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   1: return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_643)),
-                   string(STR_SECTIONS_DMU_2_6_M2),
+                   string(STR_SECTIONS_DMU_3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1978,1984),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   2: return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_351)),
-                   string(STR_SECTIONS_DMU_2_6_M2),
+                   string(STR_SECTIONS_DMU_3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1985,2008),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
   3: return string(STR_PURCHASE_HINT_ENGINE_MU,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_351)),
-                   string(STR_SECTIONS_DMU_N2_6_M2),
+                   string(STR_SECTIONS_DMU_N3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1985,2008),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
      return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_351)),
-                   string(STR_SECTIONS_DMU_N2_6_M2),
+                   string(STR_SECTIONS_DMU_N3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1985,2008),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR),
                    string(STR_PURCHASE_HINT_DRB1));
@@ -657,14 +685,14 @@ switch (FEAT_TRAINS, SELF, dr1a_n_additional_text,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_N_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_352)),
-                   string(STR_SECTIONS_DMU_N2_6_M2),
+                   string(STR_SECTIONS_DMU_N3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1991, 2008),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR));
      return string(STR_PURCHASE_HINT_ENGINE_MU_WITH_COMMENT,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
                    string(STR_PURCHASE_HINT_ENGINE_TYPE_DMU_N_WITH_SUBTYPE, string(STR_PURCHASE_HINT_63_352)),
-                   string(STR_SECTIONS_DMU_N2_6_M2),
+                   string(STR_SECTIONS_DMU_N3_7_M2),
                    string(STR_PURCHASE_HINT_FROMTO, 1991, 2008),
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW_AUSSR),
                    string(STR_PURCHASE_HINT_DRB1));
