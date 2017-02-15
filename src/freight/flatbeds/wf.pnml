@@ -1,0 +1,127 @@
+﻿ // flatbed_wf
+
+#define IMAGEFILE  "src/freight/flatbeds/wf-part1.png"
+purchase_sprites(flatbed_wf, 0, 0)
+flatbed_empty_layout_template(flatbed_wf, 5, 32, 40)
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, coal) // уголь      
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, iore) // жел. руда  
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*3, core) // медн. руда 
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*4, aore) // бокситы    
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/wf-part2.png"
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, clay) // глина    
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, fert) // удобрения
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, grvl) // гравий   
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*3, lime) // известняк
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/wf-part3.png"        
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, pota) // поташ  
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, sand) // песок  
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, sulp) // сера   
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*3, bdmt) // кирпичи
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/wf-part4.png"
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, stel) // сталь
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/wf-part5.png"
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, wdpr) // лесоматериалы
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, wood) // Древесина
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/wf-part6.png"
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, scmt) // металолом
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, mno2) // марганец
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, pore) // пирит
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/wf-part7.png"
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, good1) // товары
+flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, good2) // товары
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, flatbed_wf_good_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD))
+{
+  independent: flatbed_wf_good1_sprites;
+  1: flatbed_wf_good1_sprites;
+  1: flatbed_wf_good2_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_wf_sprites_start,
+  cargo_type_in_veh)
+{
+  COAL: flatbed_wf_coal_sprites;
+  IORE: flatbed_wf_iore_sprites;
+  PHOS: flatbed_wf_iore_sprites;
+  CORE: flatbed_wf_core_sprites;
+  AORE: flatbed_wf_aore_sprites;
+  CLAY: flatbed_wf_clay_sprites;
+  FERT: flatbed_wf_fert_sprites;
+  GRVL: flatbed_wf_grvl_sprites;
+  LIME: flatbed_wf_lime_sprites;
+  POTA: flatbed_wf_pota_sprites;
+  SAND: flatbed_wf_sand_sprites;
+  SULP: flatbed_wf_sulp_sprites;
+  BDMT: flatbed_wf_bdmt_sprites;
+  STEL: flatbed_wf_stel_sprites;
+  GOOD: flatbed_wf_good_sprites;
+  WOOD: flatbed_wf_wood_sprites;
+  WDPR: flatbed_wf_wdpr_sprites;
+  SCMT: flatbed_wf_scmt_sprites;
+  ENSP: flatbed_wf_good_sprites;
+  MNSP: flatbed_wf_good_sprites;
+  VPTS: flatbed_wf_good_sprites;
+  MNO2: flatbed_wf_mno2_sprites;
+  PORE: flatbed_wf_pore_sprites;
+  NITR: flatbed_wf_clay_sprites;
+  COPR: flatbed_wf_stel_sprites;
+        align_5_sprites;
+}
+
+short_vehicle_RND(flatbed_wf, flatbed_wf_good1_sprites)
+
+switch (FEAT_TRAINS, SELF, flatbed_wf_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 20;
+  VEHI: return 1;
+  ENSP: return 16;
+  MNSP: return 32;
+  VPTS: return 32;
+        return 10;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_wf_loading_speed, 
+  cargo_type_in_veh)
+{ 
+  GOOD: return (cargo_capacity / 2 + 1);
+        all_wagons_bulk_loading_speed; 
+}
+
+wagon_running_cost(flatbed_wf, 2)
+
+item (FEAT_TRAINS, flatbed_wf, 533) {
+  property {
+    name: string(STR_NAME_FLATBED_WF);
+    vehicle_dates(1846, 1878, 30, 10, 4, 1)
+    vehicle_wagon(6, 120)
+    vehicle_wagon_cargo(10, 5)
+    cargo_allow_refit: [WOOD, COAL, IORE, PHOS, CORE, AORE, CLAY, FERT, GRVL, LIME, POTA, SAND, SULP, BDMT, STEL, GOOD, WDPR, SCMT, ENSP, MNSP, VPTS, MNO2, PORE, NITR, COPR];
+  }
+  graphics {
+    default: flatbed_wf_sprites;
+    purchase: flatbed_wf_purchase_sprites;
+    running_cost_factor: flatbed_wf_running_cost_factor;
+    articulated_part: articulated_part_dummy1;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: flatbed_wf_cargo_capacity;
+    loading_speed: flatbed_wf_loading_speed;
+    additional_text: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
+                                   10, 23,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                                   string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
+                                   string(STR_PURCHASE_HINT_FROMTO, 1846, 1878),
+                                   string(STR_PURCHASE_HINT_RWFACTORY_PM_RW));
+  }
+}
+
+long_name_template(flatbed_wf, STR_LONGNAME_FLATBED_WF)
