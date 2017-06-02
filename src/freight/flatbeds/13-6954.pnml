@@ -1,0 +1,126 @@
+﻿ // flatbed_13_6954
+
+#define IMAGEFILE  "src/freight/flatbeds/13-6954.png"
+purchase_sprites(flatbed_13_6954, 0, 0)
+flatbed_empty_layout_template(flatbed_13_6954, 9, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/flatbeds/cargo-1.png"
+flatbed_empty_layout_template(cargo_1, 9, 32, 40)
+#undef IMAGEFILE
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_back,
+  bitmask(TRIGGER_VEHICLE_SERVICE))                        
+{ 
+  1: flatbed_13_6954_empty_sprites_left;                        
+  1: flatbed_13_6954_empty_sprites_right; 
+}                     
+
+switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back_CC,
+  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100))
+{  
+  flatbed_13_6954_sprites_back;  
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back_NCC,
+  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100))
+{  
+  flatbed_13_6954_sprites_back;  
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back,
+  enable_cc_default)
+{  
+  1: flatbed_13_6954_sprites_asm_back_CC;  
+     flatbed_13_6954_sprites_asm_back_NCC;
+}
+
+random_switch (FEAT_TRAINS, SELF, cargo_1_empty_sprites,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD))                        
+{ 
+  independent: flatbed_13_6954_sprites_back;
+  1: cargo_1_empty_sprites_left;                        
+  1: cargo_1_empty_sprites_right; 
+}                     
+
+switch (FEAT_TRAINS, SELF, cargo_1_1_sprites,
+  [STORE_TEMP(ttdall_cc + 0x3F, 0x100), cargo_count > 0])
+{  
+  1: cargo_1_empty_sprites;  
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, cargo_1_2_sprites,
+  [STORE_TEMP(ttdall_cc + 0xB5, 0x100), cargo_count > 0])
+{  
+  1: cargo_1_empty_sprites;  
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, cargo_1_3_sprites,
+  [STORE_TEMP(ttdall_cc + 0x53, 0x100), cargo_count > 0])
+{  
+  1: cargo_1_empty_sprites;  
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, cargo_1_4_sprites,
+  [STORE_TEMP(ttdall_cc + 0x83, 0x100), cargo_count > 0])
+{  
+  1: cargo_1_empty_sprites;  
+     return CB_FAILED;
+}
+
+random_switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_cargo,
+  bitmask(TRIGGER_VEHICLE_NEW_LOAD))                        
+{
+  independent: cargo_1_empty_sprites;
+  independent: flatbed_13_6954_sprites_back;
+  1: cargo_1_1_sprites;
+  1: cargo_1_2_sprites;
+  1: cargo_1_3_sprites;
+  1: cargo_1_4_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_6954_sprites_asm_back;
+  1: flatbed_13_6954_sprites_asm_cargo;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(flatbed_13_6954, flatbed_13_6954_sprites_asm_cargo)
+wagon_running_cost(flatbed_13_6954, 17)
+
+switch (FEAT_TRAINS, SELF, flatbed_13_6954_weight,
+  cargo_count > 0)
+{
+  1: return 24+4;
+     return 24;
+}
+
+item (FEAT_TRAINS, flatbed_13_6954, 540) {
+  property {
+    name: string(STR_NAME_FLATBED_13_6954);
+    vehicle_dates(2016, 2050, 32, 10, 8, 3)
+    vehicle_wagon(24, 160)
+    vehicle_wagon_cargo(64, 100)
+    cargo_allow_refit: [GOOD];
+  }
+  graphics {
+    default: flatbed_13_6954_sprites;
+    purchase: flatbed_13_6954_purchase_sprites;
+    running_cost_factor: flatbed_13_6954_running_cost_factor;
+    articulated_part: articulated_part_dummy1;
+    weight: flatbed_13_6954_weight;
+    additional_text: return string(STR_PURCHASE_HINT_WAGON_FLATBED,
+                                   36, 34,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                                   string(STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_4AXLE),
+                                   string(STR_PURCHASE_HINT_FROM, 2016),
+                                   string(STR_PURCHASE_HINT_FACTORY_ENGELS_TM));
+  }
+}
+
+long_name_template(flatbed_13_6954, STR_LONGNAME_FLATBED_13_6954)
