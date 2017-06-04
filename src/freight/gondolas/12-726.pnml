@@ -1,0 +1,138 @@
+﻿ // gondola_12_726
+
+#define IMAGEFILE  "src/freight/gondolas/12-726.png"
+purchase_sprites(gondola_12_726, 0, 0)
+combo_layout_template(gondola_12_726, 8, 32, 40, 16, 8)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: gondola_12_726_sprites_back;
+  1: cargo8_sprites;
+  2: gondola_12_726_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(gondola_12_726, gondola_12_726_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_random, 
+  (random_bits / 2) & 0x0F)
+{
+    0..2: return ttdall_cc + 0x7C;
+    3..5: return ttdall_cc + 0x4B;
+    6..8: return ttdall_cc + 0x7B;
+   9..10: return ttdall_cc + 0x73;
+  11..12: return ttdall_cc + 0x74;
+      13: return ttdall_cc + 0x72;
+      14: return ttdall_cc + 0x53; 
+      15: return ttdall_cc + 0x5A;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: gondola_12_726_random;
+  1: return ttdall_cc + 0x7C;
+  2: return ttdall_cc + 0x4B;
+  3: return ttdall_cc + 0x7B;
+  4: return ttdall_cc + 0x73;
+  5: return ttdall_cc + 0x74;
+  6: return ttdall_cc + 0x72;
+  7: return ttdall_cc + 0x53;
+  8: return ttdall_cc + 0x5A;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_7C);
+  2: return string(STR_REFIT_TTD_4B);
+  3: return string(STR_REFIT_TTD_7B);
+  4: return string(STR_REFIT_TTD_73);
+  5: return string(STR_REFIT_TTD_74);
+  6: return string(STR_REFIT_TTD_72);
+  7: return string(STR_REFIT_TTD_53);
+  8: return string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_additional_text,
+  current_year>=1974)
+{
+  0: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED,
+                   65, 73,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_4AXLE_TSMW),
+                   string(STR_PURCHASE_HINT_FROMTO, 1968, 1973),
+                   string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW));
+     return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED,
+                   69, 73,
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_1),
+                   string(STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_4AXLE_TSMW),
+                   string(STR_PURCHASE_HINT_FROMTO, 1974, 1977),
+                   string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW));
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_b1974_cargo_capacity,
+  cargo_type_in_veh)
+{
+  COAL: return 58;
+  GOOD: return 73;
+  RCYC: return 37;
+  FERT: return 58;
+  WOOD: return 60;
+  WDPR: return 63;
+        return 65;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_a1974_cargo_capacity,
+  cargo_type_in_veh)
+{
+  COAL: return 58;
+  GOOD: return 73;
+  RCYC: return 37;
+  FERT: return 58;
+  WOOD: return 60;
+  WDPR: return 63;
+        return 69;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_cargo_capacity,
+  build_year>=1974)
+{
+  0: gondola_12_726_b1974_cargo_capacity;
+     gondola_12_726_a1974_cargo_capacity;
+}
+
+wagon_running_cost(gondola_12_726, 12)
+
+item (FEAT_TRAINS, gondola_12_726, 541) {
+  property {
+    name: string(STR_NAME_GONDOLA_12_726);
+    vehicle_dates(1968, 1977, 22, 10, 8, 2)
+    vehicle_wagon(22, 120)
+    vehicle_wagon_cargo(65, 10)
+//    cargo_allow_refit: [COAL, FERT, WDPR, AORE, CORE, IORE, PHOS, BDMT, BRCK, CLAY, GRVL, LIME, POTA, SAND, STEL, SULP, WOOD, SCMT, MNO2, PORE, COPR, NITR]; // GOOD, RCYC, WOOD,
+    cargo_allow_refit: [COAL, SAND];
+  }
+  graphics {
+    default: gondola_12_726_sprites;
+    purchase: gondola_12_726_purchase_sprites;
+    running_cost_factor: gondola_12_726_running_cost_factor;
+    cargo_subtype_text: gondola_12_726_cargo_subtype_text;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: gondola_12_726_cargo_capacity;
+    loading_speed: all_wagons_bulk_auu_loading_speed;
+    colour_mapping: gondola_12_726_colour_mapping;
+    additional_text: gondola_12_726_additional_text;
+  }
+}
+
+long_name_template(gondola_12_726, STR_LONGNAME_GONDOLA_12_726)
