@@ -1,0 +1,28 @@
+﻿ /// code definition
+
+// шаблон выбора по году
+
+#define hint_change_after(name, year)                   \
+switch (FEAT_TRAINS, SELF, name, current_year >= year)  \
+{ 0: name##_b##year;                                    \
+     name##_a##year; }                                  \
+
+#define hint_change_after2(name, year, year2)  \
+switch (FEAT_TRAINS, SELF, name,               \
+  (current_year >= year) +                     \
+  (current_year >= year2))                     \
+{ 0: name##_b##year;                           \
+  1: name##_a##year;                           \
+     name##_a##year2; }                        \
+
+// Описание вагона с отличающейся скоростью разгрузки
+
+#define hint_wagon_with_uspeed(name, cap, vol, strlspeed, strulspeed, straging, strwagtype, from, to, strfactory)  \
+switch (FEAT_TRAINS, SELF, name,                                                                                   \
+[ STORE_TEMP(cap | vol << 16, 0x100),                                                                              \
+  STORE_TEMP(string(strlspeed) | string(strulspeed) << 16, 0x101),                                                 \
+  STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x102),                                                  \
+  STORE_TEMP(from | to << 16, 0x103),                                                                              \
+  STORE_TEMP(string(strfactory), 0x104)])                                                                          \
+{ default: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                   \
+
