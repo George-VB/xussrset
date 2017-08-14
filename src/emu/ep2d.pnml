@@ -1,0 +1,247 @@
+﻿ // ep2d
+
+#define IMAGEFILE  "src/emu/ep2d_h.png"
+purchase_sprites(ep2d_h, 0, 0)
+MU_head_middle_sprites(13, ep2d_h_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ep2d_hm.png"
+purchase_sprites(ep2d_hm, 0, 0)
+MU_head_middle_sp_sprites(13, ep2d_hm_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ep2d_m.png"
+purchase_sprites(ep2d_m, 0, 0)
+EMU_motor1_sprites(13, ep2d_m_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ep2d_c.png"
+purchase_sprites(ep2d_c, 0, 0)
+MU_car_sprites(13, ep2d_c_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_head_middle_direction_template2(ep2d_h, ep2d_h, ep2d_hm)
+engine_direction_template4m2(ep2d_h, ep2d_hm, ep2d_m, ep2d_c, )
+long_vehicle(ep2d_h)
+
+EMU_motor_direction_template2(ep2d_m, ep2d_h, ep2d_hm)
+EMU_4_12_m_template(ep2d)
+EMU_direction_calculation_template2(ep2d, _m)
+long_vehicle_dir(ep2d_m)
+
+EMU_motor_direction_template2(ep2d_c, ep2d_h, ep2d_hm)
+EMU_4_12_c_template(ep2d)
+EMU_direction_calculation_template2(ep2d, _c)
+long_vehicle_dir(ep2d_c)
+
+MU_head_middle_sp_direction_template2(ep2d_hm, ep2d_h, ep2d_hm)
+engine_direction_template4m2(ep2d_hm, ep2d_h, ep2d_m, ep2d_c, )
+long_vehicle(ep2d_hm)
+
+EMU_4_12_MH_can_attach_wagon_template(ep2d)
+EMU_attach_calculation_template2(ep2d)
+
+switch (FEAT_TRAINS, SELF, ep2d_can_attach_wagon1, vehicle_type_id)
+{
+  ep2d_h: ep2d_can_attach_wagon_template;
+  ep2d_hm: ep2d_can_attach_wagon_template;
+  ep2d_m: ep2d_can_attach_wagon_template;
+  ep2d_c: ep2d_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, ep2d_can_attach_wagon, 
+  count_veh_id(ep2d_h) + count_veh_id(ep2d_hm))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: ep2d_can_attach_wagon1;
+  2: ep2d_can_attach_wagon_anyhead;
+  3: ep2d_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, ep2d_h_start_stop,
+  (count_veh_id(ep2d_hm) * 10) + 
+   count_veh_id(ep2d_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+  4: return CB_RESULT_NO_TEXT;
+ 11: return CB_RESULT_NO_TEXT;
+ 13: return CB_RESULT_NO_TEXT;
+ 22: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+switch (FEAT_TRAINS, SELF, ep2d_cargo_subtype_text,
+  enable_long_names)
+{
+  1: return string(STR_REFIT_FACTORY_MODEL_NUMBER2, 62, 377, string(STR_REFIT_RZD_PID));
+     return string(STR_REFIT_FACTORY);
+}
+
+// Визуализируем эффекты тяги у ep2d_m, только если локомотив - ep2d_h или ep2d_hm
+
+engine_electric2_1_effect(ep2d_hm, 6, -1)
+engine_direction_template4m2(ep2d_hm, ep2d_h, ep2d_m, ep2d_c, _create_effect)
+
+switch (FEAT_TRAINS, PARENT, ep2d_hm_create_effect,
+  (vehicle_type_id == ep2d_h) || (vehicle_type_id == ep2d_hm))
+{
+  1: ep2d_hm_create_effect_sprites_start;
+     return disable_create_effect();
+}
+
+EMU_4_12_m_create_effect_template(ep2d, -1, 6)
+EMU_direction_calculation_template2(ep2d, _m_create_effect)
+
+switch (FEAT_TRAINS, PARENT, ep2d_m_create_effect,
+  (vehicle_type_id == ep2d_h) || (vehicle_type_id == ep2d_hm))
+{
+  1: ep2d_m_create_effect_direction_template;
+     return disable_create_effect();
+}
+
+// Даём тягу, только если локомотив - ep2d_h или ep2d_hm
+engine_power_MU2(ep2d_hm, 1105, ep2d_h, ep2d_hm)
+engine_power_MU2(ep2d_m, 1105, ep2d_h, ep2d_hm)
+
+// Допускается эксплуатация с пассажирами только если голова - ep2d_h или ep2d_hm
+engine_capacity_MU2(ep2d_h, 61, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_hm, 68, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_m, 116, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_c, 116, ep2d_h, ep2d_hm)
+
+engine_RC_MU2(ep2d_h, 215, ep2d_h, ep2d_hm)
+engine_RC_MU2(ep2d_hm, 230, ep2d_h, ep2d_hm)
+engine_RC_MU2(ep2d_m, 230, ep2d_h, ep2d_hm)
+engine_RC_MU2(ep2d_c, 136, ep2d_h, ep2d_hm)
+
+engine_speed(ep2d, 120)
+
+item (FEAT_TRAINS, ep2d_h, 544) {
+  property {
+    name: string(STR_NAME_EP2D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 28)
+    vehicle_dcemu_c(99.9, 61, 60)
+  }
+  graphics {
+    default: ep2d_h_sprites;
+    purchase: ep2d_h_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep2d_h_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep2d_can_attach_wagon;
+    start_stop: ep2d_h_start_stop;
+    power: return 0;
+    speed: ep2d_speed;
+    cargo_capacity: ep2d_h_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: ep2d_cargo_subtype_text;
+    purchase_speed: return 120;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 379)),
+                                   string(STR_SECTIONS_EMU_4_5_6_7_8_9_10_11_12_M2_MHEAD),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2016, 2050),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+item (FEAT_TRAINS, ep2d_m, 545) {
+  property {
+    name: string(STR_NAME_EP2D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 29)
+    vehicle_dcemu(1105, 99.9, 55.0, 116, 60)
+  }
+  graphics {
+    default: ep2d_m_sprites;
+    purchase: ep2d_m_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep2d_m_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep2d_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    power: ep2d_m_power;
+    speed: ep2d_speed;
+    cargo_capacity: ep2d_m_cargo_capacity;
+    create_effect: ep2d_m_create_effect;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: ep2d_cargo_subtype_text;
+    purchase_speed: return 120;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_DC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 380)),
+                                   string(STR_SECTIONS_EMU_4_5_6_7_8_9_10_11_12_M2_MHEAD),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2016, 2050),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+item (FEAT_TRAINS, ep2d_c, 546) {
+  property {
+    name: string(STR_NAME_EP2D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 17)
+    vehicle_dcemu_c(99.9, 116, 60)
+  }
+  graphics {
+    default: ep2d_c_sprites;
+    purchase: ep2d_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep2d_c_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep2d_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    power: return 0;
+    speed: ep2d_speed;
+    cargo_capacity: ep2d_c_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: ep2d_cargo_subtype_text;
+    purchase_speed: return 120;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 381)),
+                                   string(STR_SECTIONS_EMU_4_5_6_7_8_9_10_11_12_M2_MHEAD),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2016, 2050),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+item (FEAT_TRAINS, ep2d_hm, 547) {
+  property {
+    name: string(STR_NAME_EP2D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 40)
+    vehicle_dcemu(1105, 99.9, 55.0, 68, 60)
+  }
+  graphics {
+    default: ep2d_hm_sprites;
+    purchase: ep2d_hm_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep2d_hm_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep2d_can_attach_wagon;
+    start_stop: ep2d_h_start_stop;
+    power: ep2d_hm_power;
+    speed: ep2d_speed;
+    cargo_capacity: ep2d_hm_cargo_capacity;
+    create_effect: ep2d_hm_create_effect;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: ep2d_cargo_subtype_text;
+    purchase_speed: return 120;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_HM_DC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 381)),
+                                   string(STR_SECTIONS_EMU_4_5_6_7_8_9_10_11_12_M2_MHEAD),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2016, 2050),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+long_name_template(ep2d_h, STR_LONGNAME_EP2D_H)
+long_name_template(ep2d_hm, STR_LONGNAME_EP2D_HM)
+long_name_template(ep2d_m, STR_LONGNAME_EP2D_M)
+long_name_template(ep2d_c, STR_LONGNAME_EP2D_C)
+allow_dcemu(ep2d_h)
+allow_dcemu(ep2d_hm)
+allow_dcemu(ep2d_m)
+allow_dcemu(ep2d_c)
