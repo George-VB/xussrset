@@ -217,6 +217,19 @@ switch (FEAT_TRAINS, PARENT, name##_running_cost_factor,      \
 { 1: name##_MU_running_cost_factor;                           \
      return RC_MU_AS_CAR; }                                   \
 
+#define wagon_RC_MU(name, Rcost, vehid)                                             \
+wagon_running_cost(name##_MU, Rcost)                                                \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor, vehicle_type_id == vehid)  \
+{ 1: name##_MU_running_cost_factor;                                                 \
+     return RC_MU_AS_CAR; }                                                         \
+
+#define wagon_RC_MU2(name, Rcost, vehid, vehid2)              \
+wagon_running_cost(name##_MU, Rcost)                          \
+switch (FEAT_TRAINS, PARENT, name##_running_cost_factor,      \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
+{ 1: name##_MU_running_cost_factor;                           \
+     return RC_MU_AS_CAR; }                                   \
+
 // Определение пенальти на скорость (схема без СМЕ)
 #define engine_penalise_speed0(name)                                        \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                     \
@@ -872,6 +885,18 @@ switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,           \
   (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
 { 1: return capacity;                                         \
      return 0; }                                              \
+
+// Определение эффектов МВПС
+#define engine_effects_MU(name, effects, vehid)                               \
+switch (FEAT_TRAINS, PARENT, name##_create_effect, vehicle_type_id == vehid)  \
+{ 1: name##effects;                                                           \
+     return disable_create_effect(); }                                        \
+
+#define engine_effects_MU2(name, effects, vehid, vehid2)      \
+switch (FEAT_TRAINS, PARENT, name##_create_effect,            \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
+{ 1: name##effects;                                           \
+     return disable_create_effect(); }                        \
 
 // Определение неограниченной скорости погрузки
 #define wagon_loading_speed_unlim(name)              \

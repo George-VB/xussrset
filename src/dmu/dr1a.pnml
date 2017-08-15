@@ -386,28 +386,10 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_create_effect0,
 }
 
 // Визуализируем эффекты тяги только если локомотив - dr1a_h или dr1a_n
-switch (FEAT_TRAINS, PARENT, dr1a_h_create_effect,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n))
-{
-  1: dr1a_h_create_effect0;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - dr1a_h или dr1a_n
-switch (FEAT_TRAINS, PARENT, dr1a_h_power,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n))
-{
-  1: return get_power_in_cb(800);
-     return 0;
-}
+engine_effects_MU(dr1a_h, _create_effect0, dr1a_h)
 
 // Допускается эксплуатация с пассажирами только если голова - dr1a_h или dr1a_n или 2[3]m62u
-switch (FEAT_TRAINS, PARENT, dr1a_h_cargo_capacity,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n))
-{
-  1: return 68;
-     return 0;
-}
+engine_capacity_MU2(dr1a_h, 68, dr1a_h, dr1a_n)
 
 switch (FEAT_TRAINS, SELF, dr1a_n_cargo_capacity_drb1,
   (cargo_subtype == 4) || (cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB))
@@ -564,30 +546,11 @@ livery_template_longnames(dr1a_c)
 
 general_running_cost(dr1a_h_v1, 179)
 general_running_cost(dr1a_h_v2, 177)
-
 switch (FEAT_TRAINS, PARENT, dr1a_h_running_cost_factor,
   ((vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n)) * (1 + (build_year >= 1985)))
 {
   1: dr1a_h_v1_running_cost_factor;
   2: dr1a_h_v2_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-wagon_running_cost(dr1a_c_v1, 48)
-
-switch (FEAT_TRAINS, PARENT, dr1a_c_running_cost_factor,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n))
-{
-  1: dr1a_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-wagon_running_cost(dr1a_n_v1, 113)
-
-switch (FEAT_TRAINS, PARENT, dr1a_n_running_cost_factor,
-  (vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n))
-{
-  1: dr1a_n_v1_running_cost_factor;
      return RC_MU_AS_CAR;
 }
 
@@ -702,6 +665,11 @@ engine_weight_change_build_after(dr1a_h, 60,
                                          58, 1985)
 engine_weight_change_build_after(dr1a_c, 38,
                                          37, 1977)
+// Даём тягу, только если локомотив - dr1a_h или dr1a_n
+engine_power_MU(dr1a_h, 800, dr1a_h)
+
+wagon_RC_MU2(dr1a_c, 48, dr1a_h, dr1a_n)
+wagon_RC_MU2(dr1a_n, 113, dr1a_h, dr1a_n)
 
 item (FEAT_TRAINS, dr1a_h, 212) {
   property {

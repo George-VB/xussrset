@@ -118,53 +118,7 @@ switch (FEAT_TRAINS, PARENT, dr1p_h_create_effect0,
 }
 
 // Визуализируем эффекты тяги только если локомотив - dr1p_h
-switch (FEAT_TRAINS, PARENT, dr1p_h_create_effect,
-  (vehicle_type_id == dr1p_h))
-{
-  1: dr1p_h_create_effect0;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - dr1p_h
-switch (FEAT_TRAINS, PARENT, dr1p_h_power,
-  (vehicle_type_id == dr1p_h))
-{
-  1: return get_power_in_cb(800);
-     return 0;
-}
-
-// Допускается эксплуатация с пассажирами только если голова - dr1p_h
-switch (FEAT_TRAINS, PARENT, dr1p_h_cargo_capacity,
-  vehicle_type_id == dr1p_h)
-{
-  1: return 68;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_cargo_capacity,
-  vehicle_type_id == dr1p_h)
-{
-  1: return 124;
-     return 0;
-}
-
-general_running_cost(dr1p_h_v1, 176)
-
-switch (FEAT_TRAINS, PARENT, dr1p_h_running_cost_factor,
-  vehicle_type_id == dr1p_h)
-{
-  1: dr1p_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-wagon_running_cost(dr1p_c_v1, 48)
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_running_cost_factor,
-  vehicle_type_id == dr1p_h)
-{
-  1: dr1p_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
+engine_effects_MU(dr1p_h, _create_effect0, dr1p_h)
 
 switch (FEAT_TRAINS, SELF, dr1p_cargo_subtype_text,
   enable_long_names)
@@ -172,6 +126,16 @@ switch (FEAT_TRAINS, SELF, dr1p_cargo_subtype_text,
   1: return string(STR_REFIT_FACTORY_63319);
      return string(STR_REFIT_FACTORY);
 }
+
+// Даём тягу, только если локомотив - dr1p_h
+engine_power_MU(dr1p_h, 800, dr1p_h)
+
+// Допускается эксплуатация с пассажирами только если голова - dr1p_h
+engine_capacity_MU(dr1p_h, 68, dr1p_h)
+engine_capacity_MU(dr1p_c, 124, dr1p_h)
+
+engine_RC_MU(dr1p_h, 176, dr1p_h)
+wagon_RC_MU(dr1p_c, 48, dr1p_h)
 
 item (FEAT_TRAINS, dr1p_h, 210) {
   property {

@@ -170,35 +170,7 @@ switch (FEAT_TRAINS, PARENT, dr1_h_create_effect0,
 }
 
 // Визуализируем эффекты тяги только если локомотив - dr1_h
-switch (FEAT_TRAINS, PARENT, dr1_h_create_effect,
-  vehicle_type_id == dr1_h)
-{
-  1: dr1_h_create_effect0;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - dr1_h
-switch (FEAT_TRAINS, PARENT, dr1_h_power,
-  vehicle_type_id == dr1_h )
-{
-  1: return get_power_in_cb(750);
-     return 0;
-}
-
-// Допускается эксплуатация с пассажирами только если голова - dr1_h
-switch (FEAT_TRAINS, PARENT, dr1_h_cargo_capacity,
-  vehicle_type_id == dr1_h )
-{
-  1: return 80;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1_c_cargo_capacity,
-  vehicle_type_id == dr1_h )
-{
-  1: return 128;
-     return 0;
-}
+engine_effects_MU(dr1_h, _create_effect0, dr1_h)
 
 switch (FEAT_TRAINS, SELF, dr1_long_cargo_subtype_text,
   build_year >= 1966)
@@ -208,24 +180,6 @@ switch (FEAT_TRAINS, SELF, dr1_long_cargo_subtype_text,
 }
 
 livery_template_longnames_only(dr1)
-
-general_running_cost(dr1_h_v1, 168)
-
-switch (FEAT_TRAINS, PARENT, dr1_h_running_cost_factor,
-  vehicle_type_id == dr1_h)
-{
-  1: dr1_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-wagon_running_cost(dr1_c_v1, 45)
-
-switch (FEAT_TRAINS, PARENT, dr1_c_running_cost_factor,
-  vehicle_type_id == dr1_h)
-{
-  1: dr1_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
 
 switch (FEAT_TRAINS, SELF, dr1_h_additional_text,
   (current_year >= 1966) +
@@ -284,6 +238,16 @@ switch (FEAT_TRAINS, SELF, dr1_c_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_RIGA_CW),
                    string(STR_PURCHASE_HINT_ATTACH_YEAR,"...-1967","1968-..."));
 }
+
+// Даём тягу, только если локомотив - dr1_h
+engine_power_MU(dr1_h, 750, dr1_h)
+
+// Допускается эксплуатация с пассажирами только если голова - dr1_h
+engine_capacity_MU(dr1_h, 80, dr1_h)
+engine_capacity_MU(dr1_c, 128, dr1_h)
+
+engine_RC_MU(dr1_h, 168, dr1_h)
+wagon_RC_MU(dr1_c, 45, dr1_h)
 
 item (FEAT_TRAINS, dr1_h, 208) {
   property {
