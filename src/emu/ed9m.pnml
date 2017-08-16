@@ -1,0 +1,178 @@
+﻿ // ed4m
+
+#define IMAGEFILE  "src/emu/ed9m_h.png"
+purchase_sprites(ed9m_h, 0, 0)
+MU_head_middle_sprites(13anim, ed9m_h_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed9m_m.png"
+purchase_sprites(ed9m_m, 0, 0)
+EMU_motor1_sprites(13, ed9m_m_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed9m_c.png"
+purchase_sprites(ed9m_c, 0, 0)
+MU_car_sprites(13, ed9m_c_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_head_middle_direction_template(ed9m_h, ed9m_h)
+engine_direction_template3m2(ed9m_h, ed9m_m, ed9m_c, )
+long_vehicle(ed9m_h)
+
+EMU_motor_direction_template(ed9m_m, ed9m_h)
+EMU_4_12_m_template(ed9m)
+EMU_direction_calculation_template(ed9m, _m)
+long_vehicle_dir(ed9m_m)
+
+EMU_motor_direction_template(ed9m_c, ed9m_h)
+EMU_4_12_c_template(ed9m)
+EMU_direction_calculation_template(ed9m, _c)
+long_vehicle_dir(ed9m_c)
+
+EMU_46789101112_can_attach_wagon_template(ed9m)
+EMU_attach_calculation_template(ed9m)
+
+switch (FEAT_TRAINS, SELF, ed9m_can_attach_wagon1, vehicle_type_id)
+{
+  ed9m_h: ed9m_can_attach_wagon_template;
+  ed9m_m: ed9m_can_attach_wagon_template;
+  ed9m_c: ed9m_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, ed9m_can_attach_wagon, count_veh_id(ed9m_h))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: ed9m_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, ed9m_h_start_stop,
+  count_veh_id(ed9m_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+switch (FEAT_TRAINS, SELF, ed9m_cargo_subtype_text,
+  enable_long_names)
+{
+  1: return string(STR_REFIT_FACTORY_MODEL_NUMBER2, 62, 305, string(STR_REFIT_TTD_94));
+     return string(STR_REFIT_FACTORY);
+}
+
+// Визуализируем эффекты тяги у ed9m_m, только если локомотив - ed9m_h
+EMU_4_12_m_create_effect_template(ed9m, -1, 6)
+EMU_direction_calculation_template(ed9m, _m_create_effect)
+engine_effects_MU(ed9m_m, _create_effect_direction_template, ed9m_h)
+
+// Даём тягу, только если локомотив - ed9m_h
+engine_power_MU(ed9m_m, 1066, ed9m_h)
+
+// Допускается эксплуатация с пассажирами только если голова - ed9m_h
+engine_capacity_MU(ed9m_h, 80, ed9m_h)
+engine_capacity_MU(ed9m_m, 112, ed9m_h)
+engine_capacity_MU(ed9m_c, 116, ed9m_h)
+
+general_running_cost(ed9m_m_MU, 131)
+RC_head_check(ed9m_m, ed9m_h)
+general_running_cost(ed9m_h_MU, 81)
+RC_head_check(ed9m_h, ed9m_h)
+general_running_cost(ed9m_c_MU, 54)
+RC_head_check(ed9m_c, ed9m_h)
+
+item (FEAT_TRAINS, ed9m_h, 449) {
+  property {
+    name: string(STR_NAME_ED9M);
+    vehicle_dates(2000, 2012, 30, 10, 8, 11)
+    vehicle_acemu_c(43.5, 80, 60)
+  }
+  graphics {
+    default: ed9m_h_sprites;
+    purchase: ed9m_h_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ed9m_h_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ed9m_can_attach_wagon;
+    start_stop: ed9m_h_start_stop;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    power: return 0;
+    cargo_capacity: ed9m_h_cargo_capacity;
+    cargo_subtype_text: ed9m_cargo_subtype_text;
+    colour_mapping: any_cc_colour;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_AC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 307)),
+                                   string(STR_SECTIONS_EMU_4_6_7_8_9_10_11_12),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2000, 2012),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+item (FEAT_TRAINS, ed9m_m, 450) {
+  property {
+    name: string(STR_NAME_ED9M);
+    vehicle_dates(2000, 2012, 30, 10, 8, 18)
+    vehicle_acemu(1066, 64.4, 102.0, 112, 60)
+  }
+  graphics {
+    default: ed9m_m_sprites;
+    purchase: ed9m_m_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ed9m_m_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ed9m_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    power: ed9m_m_power;
+    cargo_capacity: ed9m_m_cargo_capacity;
+    cargo_subtype_text: ed9m_cargo_subtype_text;
+    create_effect: ed9m_m_create_effect;
+    colour_mapping: any_cc_colour;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_AC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 306)),
+                                   string(STR_SECTIONS_EMU_4_6_7_8_9_10_11_12),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2000, 2012),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+item (FEAT_TRAINS, ed9m_c, 451) {
+  property {
+    name: string(STR_NAME_ED9M);
+    vehicle_dates(2000, 2012, 30, 10, 8, 7)
+    vehicle_acemu_c(39.7, 116, 60)
+  }
+  graphics {
+    default: ed9m_c_sprites;
+    purchase: ed9m_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ed9m_c_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    can_attach_wagon: ed9m_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    power: return 0;
+    cargo_capacity: ed9m_c_cargo_capacity;
+    cargo_subtype_text: ed9m_cargo_subtype_text;
+    colour_mapping: any_cc_colour;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
+                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 308)),
+                                   string(STR_SECTIONS_EMU_4_6_7_8_9_10_11_12),
+                                   string(STR_PURCHASE_HINT_FROMTO, 2000, 2012),
+                                   string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII));
+  }
+}
+
+long_name_template(ed9m_h, STR_LONGNAME_ED9M_H)
+long_name_template(ed9m_m, STR_LONGNAME_ED9M_M)
+long_name_template(ed9m_c, STR_LONGNAME_ED9M_C)
+allow_acemu(ed9m_h)
+allow_acemu(ed9m_m)
+allow_acemu(ed9m_c)
