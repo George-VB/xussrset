@@ -191,14 +191,6 @@ switch (FEAT_TRAINS, PARENT, er200_m_create_effect,
      return disable_create_effect();
 }
 
-// Даём тягу, только если локомотив - er200_h
-switch (FEAT_TRAINS, PARENT, er200_m_power,
-  vehicle_type_id == er200_h)
-{
-  1: return get_power_in_cb(1146);
-     return 0;
-}
-
 // Допускается эксплуатация с пассажирами только если голова - er200_h
 switch (FEAT_TRAINS, PARENT, er200_h_cargo_capacity,
   (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
@@ -224,38 +216,9 @@ switch (FEAT_TRAINS, PARENT, er200_c_cargo_capacity,
      return 0;
 }
 
-engine_RC_change_build_after(er200_h_v1, 285,
-                                         275, 1988)
-
-switch (FEAT_TRAINS, PARENT, er200_h_running_cost_factor,
-  vehicle_type_id == er200_h)
-{
-  1: er200_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-engine_RC_change_build_after(er200_m_v1, 320,
-                                         309, 1988)
-
-switch (FEAT_TRAINS, PARENT, er200_m_running_cost_factor,
-  vehicle_type_id == er200_h)
-{
-  1: er200_m_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-engine_RC_change_build_after(er200_c_v1, 317,
-                                         306, 1988)
-
-switch (FEAT_TRAINS, PARENT, er200_c_running_cost_factor,
-  vehicle_type_id == er200_h)
-{
-  1: er200_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
 engine_CAP_change_build_after(er200_h_v1, 120,
                                           200, 1988)
+
 switch (FEAT_TRAINS, SELF, er200_h_cargo_age_period,
   cargo_subtype == 1)
 {
@@ -445,6 +408,18 @@ engine_cost_change_build_after(er200_m, 40,
                                         39, 1988)
 engine_cost_change_build_after(er200_c, 41,
                                         39, 1988)
+// Даём тягу, только если локомотив - er200_h
+engine_power_MU(er200_m, 1146, er200_h)
+
+engine_RC_change_build_after(er200_h_MU, 285,
+                                         275, 1988)
+RC_head_check(er200_h, er200_h)
+engine_RC_change_build_after(er200_m_MU, 320,
+                                         309, 1988)
+RC_head_check(er200_m, er200_h)
+engine_RC_change_build_after(er200_c_MU, 317,
+                                         306, 1988)
+RC_head_check(er200_c, er200_h)
 
 item (FEAT_TRAINS, er200_h, 380) {
   property {

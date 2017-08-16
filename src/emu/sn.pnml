@@ -183,22 +183,6 @@ switch (FEAT_TRAINS, SELF, sn_create_effect,
      return disable_create_effect();
 }
 
-// Даём тягу, только если локомотив - sn
-switch (FEAT_TRAINS, PARENT, sn_power,
-  vehicle_type_id == sn)
-{
-  1: return get_power_in_cb(921);
-     return 0;
-}
-
-// Допускается эксплуатация с пассажирами только если голова - sn
-switch (FEAT_TRAINS, PARENT, sn_cargo_capacity,
-  vehicle_type_id == sn)
-{
-  1: return 296;
-     return 0;
-}
-
 switch (FEAT_TRAINS, SELF, sn_long_cargo_subtype_text,
   cargo_subtype)
 {
@@ -210,21 +194,16 @@ switch (FEAT_TRAINS, SELF, sn_long_cargo_subtype_text,
 livery_template(sn_short_alt, TTD_7C, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template_alt(sn_short, TTD_6C)
 
-switch (FEAT_TRAINS, SELF, sn_cargo_subtype_text,
-  enable_long_names)
-{
-  1: sn_long_cargo_subtype_text;
-     sn_short_cargo_subtype_text;
-}
+livery_template_longnames(sn)
 
-emu_running_cost(sn_v1, 93, 80 + 80)
+// Даём тягу, только если локомотив - sn
+engine_power_MU(sn, 921, sn)
 
-switch (FEAT_TRAINS, PARENT, sn_running_cost_factor,
-  vehicle_type_id == sn)
-{
-  1: sn_v1_running_cost_factor;
-     return RC_MU_AS_CAR * 3;
-}
+// Допускается эксплуатация с пассажирами только если голова - sn
+engine_capacity_MU(sn, 296, sn)
+
+emu_running_cost(sn_MU, 93, 80 + 80)
+RC_head_check_m(sn, sn, 3)
 
 engine_speed(sn, 120)
 

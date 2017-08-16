@@ -111,27 +111,7 @@ switch (FEAT_TRAINS, PARENT, er7_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-// Визуализируем эффекты тяги у er7_m, только если локомотив - er7_h
-EMU_4_12_m_create_effect_template(er7, -1, 5)
-EMU_direction_calculation_template(er7, _m_create_effect)
-
-switch (FEAT_TRAINS, PARENT, er7_m_create_effect,
-  vehicle_type_id == er7_h)
-{
-  1: er7_m_create_effect_direction_template;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - er7_h
-switch (FEAT_TRAINS, PARENT, er7_m_power,
-  vehicle_type_id == er7_h)
-{
-  1: return get_power_in_cb(800);
-     return 0;
-}
-
 // Допускается эксплуатация с пассажирами только если голова - er7_h
-
 switch (FEAT_TRAINS, SELF, er7_h_cargo_capacity2,
   build_year >= 1960)
 {
@@ -160,13 +140,6 @@ switch (FEAT_TRAINS, PARENT, er7_m_cargo_capacity,
      return 0;
 }
 
-switch (FEAT_TRAINS, PARENT, er7_c_cargo_capacity,
-  (vehicle_type_id == er7_h))
-{
-  1: return 110;
-     return 0;
-}
-
 switch (FEAT_TRAINS, SELF, er7_long_cargo_subtype_text,
   cargo_subtype)
 {
@@ -174,41 +147,7 @@ switch (FEAT_TRAINS, SELF, er7_long_cargo_subtype_text,
 }
 
 livery_template1(er7_short, TTD_53)
-
-switch (FEAT_TRAINS, SELF, er7_cargo_subtype_text,
-  enable_long_names)
-{
-  1: er7_long_cargo_subtype_text;
-     er7_short_cargo_subtype_text;
-}
-
-engine_RC_change_build_after(er7_m_v1, 120,
-                                       121, 1960)
-
-switch (FEAT_TRAINS, PARENT, er7_m_running_cost_factor,
-  vehicle_type_id == er7_h)
-{
-  1: er7_m_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(er7_h_v1, 73)
-
-switch (FEAT_TRAINS, PARENT, er7_h_running_cost_factor,
-  vehicle_type_id == er7_h)
-{
-  1: er7_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(er7_c_v1, 49)
-
-switch (FEAT_TRAINS, PARENT, er7_c_running_cost_factor,
-  vehicle_type_id == er7_h)
-{
-  1: er7_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
+livery_template_longnames(er7)
 
 switch (FEAT_TRAINS, PARENT, er7_h_additional_text,
   current_year >= 1960)
@@ -250,6 +189,23 @@ switch (FEAT_TRAINS, PARENT, er7_m_additional_text,
 
 engine_weight_change_build_after(er7_m, 60, 
                                         61, 1960)
+engine_capacity_MU(er7_c, 110, er7_h)
+engine_RC_change_build_after(er7_m_MU, 120,
+                                       121, 1960)
+
+// Визуализируем эффекты тяги у er7_m, только если локомотив - er7_h
+EMU_4_12_m_create_effect_template(er7, -1, 5)
+EMU_direction_calculation_template(er7, _m_create_effect)
+engine_effects_MU(er7_m, _create_effect_direction_template, er7_h)
+
+// Даём тягу, только если локомотив - er7_h
+engine_power_MU(er7_m, 800, er7_h)
+
+RC_head_check(er7_m, er7_h)
+general_running_cost(er7_h_MU, 73)
+RC_head_check(er7_h, er7_h)
+general_running_cost(er7_c_MU, 49)
+RC_head_check(er7_c, er7_h)
 
 item (FEAT_TRAINS, er7_h, 514) {
   property {

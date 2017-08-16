@@ -122,14 +122,6 @@ switch (FEAT_TRAINS, SELF, epr_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-// даём тягу, если локомотив epr
-switch (FEAT_TRAINS, PARENT, epr_power,
-  (vehicle_type_id == epr) || (vehicle_type_id == epg))
-{
-  1: return get_power_in_cb(2719);
-     return 0;
-}
-
 // показываем визуальные эффекты, если локомотив epr
 switch (FEAT_TRAINS, SELF, epr_c_create_effect1,
   electric_create_effect(4))
@@ -151,23 +143,12 @@ switch (FEAT_TRAINS, SELF, epr_create_effect,
      return disable_create_effect();
 }
 
+// даём тягу, если локомотив epr
+engine_power_MU2(epr, 2719, epr, epg)
 // Допускается эксплуатация с пассажирами только если голова - epr
-switch (FEAT_TRAINS, PARENT, epr_cargo_capacity,
-  (vehicle_type_id == epr) || (vehicle_type_id == epg))
-{
-  1: return 217;
-     return 0;
-}
-
-emu_running_cost(epr_v1, 436 * 2, 186 * 2)
-
-switch (FEAT_TRAINS, PARENT, epr_running_cost_factor,
-  (vehicle_type_id == epr) || (vehicle_type_id == epg))
-{
-  1: epr_v1_running_cost_factor;
-     return RC_MU_AS_CAR * 4;
-}
-
+engine_capacity_MU2(epr, 217, epr, epg)
+emu_running_cost(epr_MU, 436 * 2, 186 * 2)
+RC_head_check2_m(epr, epr, epg, 4)
 engine_speed(epr, 160)
 
 item (FEAT_TRAINS, epr, 226) {

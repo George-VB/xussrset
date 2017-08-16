@@ -248,74 +248,6 @@ switch (FEAT_TRAINS, PARENT, er2t_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-// Визуализируем эффекты тяги у er2t_m, только если локомотив - er2t_h
-EMU_4_12_m_create_effect_template(er2t, -1, 5)
-EMU_direction_calculation_template(er2t, _m_create_effect)
-
-switch (FEAT_TRAINS, PARENT, er2t_m_create_effect,
-  vehicle_type_id == er2t_h)
-{
-  1: er2t_m_create_effect_direction_template;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - er2t_h
-switch (FEAT_TRAINS, PARENT, er2t_m_power,
-  vehicle_type_id == er2t_h)
-{
-  1: return get_power_in_cb(1039);
-     return 0;
-}
-
-// Допускается эксплуатация с пассажирами только если голова - er2t_h
-switch (FEAT_TRAINS, PARENT, er2t_h_cargo_capacity,
-  (vehicle_type_id == er2t_h))
-{
-  1: return 85;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, er2t_m_cargo_capacity,
-  (vehicle_type_id == er2t_h))
-{
-  1: return 111;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, er2t_c_cargo_capacity,
-  (vehicle_type_id == er2t_h))
-{
-  1: return 108;
-     return 0;
-}
-
-general_running_cost(er2t_m_v1, 123)
-
-switch (FEAT_TRAINS, PARENT, er2t_m_running_cost_factor,
-  vehicle_type_id == er2t_h)
-{
-  1: er2t_m_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(er2t_h_v1, 106)
-
-switch (FEAT_TRAINS, PARENT, er2t_h_running_cost_factor,
-  vehicle_type_id == er2t_h)
-{
-  1: er2t_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(er2t_c_v1, 66)
-
-switch (FEAT_TRAINS, PARENT, er2t_c_running_cost_factor,
-  vehicle_type_id == er2t_h)
-{
-  1: er2t_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
 switch (FEAT_TRAINS, SELF, er2t_long_bGREAT_CHANGE_YEAR_cargo_subtype_text,
   cargo_subtype)
 {
@@ -351,6 +283,26 @@ switch (FEAT_TRAINS, SELF, er2t_long_a1990_cargo_subtype_text,
   livery_template_service_year2(er2t_long, GREAT_CHANGE_YEAR, 1990)
   livery_template(er2t_short, TTD_53, LV_RAL6020, LV_MOSCOW_RAILWAY, LV_OCTOBER_RAILWAY, LV_WEST_SIBERIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LDZ, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template_longnames(er2t)
+
+// Визуализируем эффекты тяги у er2t_m, только если локомотив - er2t_h
+EMU_4_12_m_create_effect_template(er2t, -1, 5)
+EMU_direction_calculation_template(er2t, _m_create_effect)
+engine_effects_MU(er2t_m, _create_effect_direction_template, er2t_h)
+
+// Даём тягу, только если локомотив - er2t_h
+engine_power_MU(er2t_m, 1039, er2t_h)
+
+// Допускается эксплуатация с пассажирами только если голова - er2t_h
+engine_capacity_MU(er2t_h, 85, er2t_h)
+engine_capacity_MU(er2t_m, 111, er2t_h)
+engine_capacity_MU(er2t_c, 108, er2t_h)
+
+general_running_cost(er2t_m_MU, 123)
+RC_head_check(er2t_m, er2t_h)
+general_running_cost(er2t_h_MU, 106)
+RC_head_check(er2t_h, er2t_h)
+general_running_cost(er2t_c_MU, 66)
+RC_head_check(er2t_c, er2t_h)
 
 item (FEAT_TRAINS, er2t_h, 498) {
   property {

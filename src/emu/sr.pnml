@@ -139,14 +139,6 @@ switch (FEAT_TRAINS, SELF, sr_create_effect,
      return disable_create_effect();
 }
 
-// Даём тягу, только если локомотив - sr
-switch (FEAT_TRAINS, PARENT, sr_power,
-  vehicle_type_id == sr)
-{
-  1: return get_power_in_cb(702);
-     return 0;
-}
-
 // Допускается эксплуатация с пассажирами только если голова - sr
 switch (FEAT_TRAINS, SELF, sr_cargo_capacity2,
   position_in_articulated_veh)
@@ -162,14 +154,11 @@ switch (FEAT_TRAINS, PARENT, sr_cargo_capacity,
      return 0;
 }
 
-emu_running_cost(sr_v1, 63, 53 + 53)
+// Даём тягу, только если локомотив - sr
+engine_power_MU(sr, 702, sr)
 
-switch (FEAT_TRAINS, PARENT, sr_running_cost_factor,
-  vehicle_type_id == sr)
-{
-  1: sr_v1_running_cost_factor;
-     return RC_MU_AS_CAR * 3;
-}
+emu_running_cost(sr_MU, 63, 53 + 53)
+RC_head_check_m(sr, sr, 3)
 
 engine_speed(sr, 85)
 

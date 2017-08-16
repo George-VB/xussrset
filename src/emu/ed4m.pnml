@@ -56,47 +56,6 @@ switch (FEAT_TRAINS, PARENT, ed4m_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-// Визуализируем эффекты тяги у ed4m_m, только если локомотив - ed4m_h
-EMU_4_12_m_create_effect_template(ed4m, -1, 6)
-EMU_direction_calculation_template(ed4m, _m_create_effect)
-
-switch (FEAT_TRAINS, PARENT, ed4m_m_create_effect,
-  vehicle_type_id == ed4m_h)
-{
-  1: ed4m_m_create_effect_direction_template;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - ed4m_h
-switch (FEAT_TRAINS, PARENT, ed4m_m_power,
-  vehicle_type_id == ed4m_h)
-{
-  1: return get_power_in_cb(1039);
-     return 0;
-}
-
-// Допускается эксплуатация с пассажирами только если голова - ed4m_h
-switch (FEAT_TRAINS, PARENT, ed4m_h_cargo_capacity,
-  (vehicle_type_id == ed4m_h))
-{
-  1: return 80;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, ed4m_m_cargo_capacity,
-  (vehicle_type_id == ed4m_h))
-{
-  1: return 116;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, ed4m_c_cargo_capacity,
-  (vehicle_type_id == ed4m_h))
-{
-  1: return 116;
-     return 0;
-}
-
 switch (FEAT_TRAINS, SELF, ed4m_cargo_subtype_text,
   enable_long_names)
 {
@@ -104,32 +63,25 @@ switch (FEAT_TRAINS, SELF, ed4m_cargo_subtype_text,
      return string(STR_REFIT_FACTORY);
 }
 
-general_running_cost(ed4m_m_v1, 115)
+// Визуализируем эффекты тяги у ed4m_m, только если локомотив - ed4m_h
+EMU_4_12_m_create_effect_template(ed4m, -1, 6)
+EMU_direction_calculation_template(ed4m, _m_create_effect)
+engine_effects_MU(ed4m_m, _create_effect_direction_template, ed4m_h)
 
-switch (FEAT_TRAINS, PARENT, ed4m_m_running_cost_factor,
-  vehicle_type_id == ed4m_h)
-{
-  1: ed4m_m_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
+// Даём тягу, только если локомотив - ed4m_h
+engine_power_MU(ed4m_m, 1039, ed4m_h)
 
-general_running_cost(ed4m_h_v1, 101)
+// Допускается эксплуатация с пассажирами только если голова - ed4m_h
+engine_capacity_MU(ed4m_h, 80, ed4m_h)
+engine_capacity_MU(ed4m_m, 116, ed4m_h)
+engine_capacity_MU(ed4m_c, 116, ed4m_h)
 
-switch (FEAT_TRAINS, PARENT, ed4m_h_running_cost_factor,
-  vehicle_type_id == ed4m_h)
-{
-  1: ed4m_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(ed4m_c_v1, 62)
-
-switch (FEAT_TRAINS, PARENT, ed4m_c_running_cost_factor,
-  vehicle_type_id == ed4m_h)
-{
-  1: ed4m_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
+general_running_cost(ed4m_m_MU, 115)
+RC_head_check(ed4m_m, ed4m_h)
+general_running_cost(ed4m_h_MU, 101)
+RC_head_check(ed4m_h, ed4m_h)
+general_running_cost(ed4m_c_MU, 62)
+RC_head_check(ed4m_c, ed4m_h)
 
 item (FEAT_TRAINS, ed4m_h, 409) {
   property {

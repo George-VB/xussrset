@@ -260,47 +260,6 @@ switch (FEAT_TRAINS, PARENT, ed9t_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-// Визуализируем эффекты тяги у ed9t_m, только если локомотив - ed9t_h
-EMU_4_12_m_create_effect_template(ed9t, -1, 6)
-EMU_direction_calculation_template(ed9t, _m_create_effect)
-
-switch (FEAT_TRAINS, PARENT, ed9t_m_create_effect,
-  vehicle_type_id == ed9t_h)
-{
-  1: ed9t_m_create_effect_direction_template;
-     return disable_create_effect();
-}
-
-// Даём тягу, только если локомотив - ed9t_h
-switch (FEAT_TRAINS, PARENT, ed9t_m_power,
-  vehicle_type_id == ed9t_h)
-{
-  1: return get_power_in_cb(1066);
-     return 0;
-}
-
-// Допускается эксплуатация с пассажирами только если голова - ed9t_h
-switch (FEAT_TRAINS, PARENT, ed9t_h_cargo_capacity,
-  (vehicle_type_id == ed9t_h))
-{
-  1: return 80;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, ed9t_m_cargo_capacity,
-  (vehicle_type_id == ed9t_h))
-{
-  1: return 112;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, ed9t_c_cargo_capacity,
-  (vehicle_type_id == ed9t_h))
-{
-  1: return 116;
-     return 0;
-}
-
 switch (FEAT_TRAINS, SELF, ed9t_long_cargo_subtype_text,
   cargo_subtype)
 {
@@ -311,40 +270,27 @@ switch (FEAT_TRAINS, SELF, ed9t_long_cargo_subtype_text,
 }
 
 livery_template(ed9t_short, FACTORY, LV_RAL6002, LV_RAL6020, LV_UKRAINIAN_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_longnames(ed9t)
 
-switch (FEAT_TRAINS, SELF, ed9t_cargo_subtype_text,
-  enable_long_names)
-{
-  1: ed9t_long_cargo_subtype_text;
-     ed9t_short_cargo_subtype_text;
-}
+// Визуализируем эффекты тяги у ed9t_m, только если локомотив - ed9t_h
+EMU_4_12_m_create_effect_template(ed9t, -1, 6)
+EMU_direction_calculation_template(ed9t, _m_create_effect)
+engine_effects_MU(ed9t_m, _create_effect_direction_template, ed9t_h)
 
-general_running_cost(ed9t_m_v1, 131)
+// Даём тягу, только если локомотив - ed9t_h
+engine_power_MU(ed9t_m, 1066, ed9t_h)
 
-switch (FEAT_TRAINS, PARENT, ed9t_m_running_cost_factor,
-  vehicle_type_id == ed9t_h)
-{
-  1: ed9t_m_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
+// Допускается эксплуатация с пассажирами только если голова - ed9t_h
+engine_capacity_MU(ed9t_h, 80, ed9t_h)
+engine_capacity_MU(ed9t_m, 112, ed9t_h)
+engine_capacity_MU(ed9t_c, 116, ed9t_h)
 
-general_running_cost(ed9t_h_v1, 81)
-
-switch (FEAT_TRAINS, PARENT, ed9t_h_running_cost_factor,
-  vehicle_type_id == ed9t_h)
-{
-  1: ed9t_h_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
-
-general_running_cost(ed9t_c_v1, 54)
-
-switch (FEAT_TRAINS, PARENT, ed9t_c_running_cost_factor,
-  vehicle_type_id == ed9t_h)
-{
-  1: ed9t_c_v1_running_cost_factor;
-     return RC_MU_AS_CAR;
-}
+general_running_cost(ed9t_m_MU, 131)
+RC_head_check(ed9t_m, ed9t_h)
+general_running_cost(ed9t_h_MU, 81)
+RC_head_check(ed9t_h, ed9t_h)
+general_running_cost(ed9t_c_MU, 54)
+RC_head_check(ed9t_c, ed9t_h)
 
 item (FEAT_TRAINS, ed9t_h, 299) {
   property {
