@@ -2,33 +2,32 @@
 
 // шаблон выбора по году
 
-#define hint_change_after(name, year)                   \
-switch (FEAT_TRAINS, SELF, name, current_year >= year)  \
-{ 0: name##_b##year;                                    \
-     name##_a##year; }                                  \
+#define hint_change_after(name, year)                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year >= year)  \
+{ 0: name##_b##year##_additional_text;                                    \
+     name##_a##year##_additional_text; }                                  \
 
-#define hint_change_after2(name, year, year2)  \
-switch (FEAT_TRAINS, SELF, name,               \
-  (current_year >= year) +                     \
-  (current_year >= year2))                     \
-{ 0: name##_b##year;                           \
-  1: name##_a##year;                           \
-     name##_a##year2; }                        \
+#define hint_change_after2(name, year, year2)       \
+switch (FEAT_TRAINS, SELF, name##_additional_text,  \
+  (current_year >= year) +                          \
+  (current_year >= year2))                          \
+{ 0: name##_b##year##_additional_text;              \
+  1: name##_a##year##_additional_text;              \
+     name##_a##year2##_additional_text; }           \
 
 #define hint_change_after3(name, year, year2, year3)  \
-switch (FEAT_TRAINS, SELF, name,                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text,    \
   (current_year >= year) +                            \
   (current_year >= year2) +                           \
   (current_year >= year3))                            \
-{ 0: name##_b##year;                                  \
-  1: name##_a##year;                                  \
-  2: name##_a##year2;                                 \
-     name##_a##year3; }                               \
+{ 0: name##_b##year##_additional_text;                \
+  1: name##_a##year##_additional_text;                \
+  2: name##_a##year2##_additional_text;               \
+     name##_a##year3##_additional_text; }             \
 
 // Описание вагона
-
 #define hint_wagon(name, cap, vol, strlspeed, straging, strwagtype, from, to, strfactory)  \
-switch (FEAT_TRAINS, SELF, name,                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                         \
 [ STORE_TEMP(cap | vol << 16, 0x100),                                                      \
   STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                           \
   STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x102),          \
@@ -37,9 +36,8 @@ switch (FEAT_TRAINS, SELF, name,                                                
 { default: return string(STR_PURCHASE_HINT_WAGON); }                                       \
 
 // Описание вагона без окончания срока доступности
-
 #define hint_wagon_noto(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory)  \
-switch (FEAT_TRAINS, SELF, name,                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                          \
 [ STORE_TEMP(cap | vol << 16, 0x100),                                                       \
   STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                            \
   STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),             \
@@ -47,9 +45,8 @@ switch (FEAT_TRAINS, SELF, name,                                                
 { default: return string(STR_PURCHASE_HINT_WAGON); }                                        \
 
 // Описание вагона c 2 производителями
-
 #define hint_wagon_2fact(name, cap, vol, strlspeed, straging, strwagtype, from, to, strfactory, strfactory2)  \
-switch (FEAT_TRAINS, SELF, name,                                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                            \
 [ STORE_TEMP(cap | vol << 16, 0x100),                                                                         \
   STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                              \
   STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x102),                             \
@@ -59,9 +56,8 @@ switch (FEAT_TRAINS, SELF, name,                                                
 { default: return string(STR_PURCHASE_HINT_WAGON); }                                                          \
 
 // Описание вагона с отличающейся скоростью разгрузки
-
 #define hint_wagon_with_uspeed(name, cap, vol, strlspeed, strulspeed, straging, strwagtype, from, to, strfactory)  \
-switch (FEAT_TRAINS, SELF, name,                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                 \
 [ STORE_TEMP(cap | vol << 16, 0x100),                                                                              \
   STORE_TEMP(string(strlspeed) | string(strulspeed) << 16, 0x101),                                                 \
   STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x102),                                                  \
@@ -70,9 +66,8 @@ switch (FEAT_TRAINS, SELF, name,                                                
 { default: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                   \
 
 // Описание вагона с отличающейся скоростью разгрузки и 2 производителями
-
 #define hint_wagon_with_uspeed_2fact(name, cap, vol, strlspeed, strulspeed, straging, strwagtype, from, to, strfactory, strfactory2)  \
-switch (FEAT_TRAINS, SELF, name,                                                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                    \
 [ STORE_TEMP(cap | vol << 16, 0x100),                                                                                                 \
   STORE_TEMP(string(strlspeed) | string(strulspeed) << 16, 0x101),                                                                    \
   STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x102),                                                                     \
@@ -82,12 +77,141 @@ switch (FEAT_TRAINS, SELF, name,                                                
 { default: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                                      \
 
 // Описание вагона с отличающейся скоростью разгрузки без окончания срока доступности
-
 #define hint_wagon_with_uspeed_noto(name, cap, vol, strlspeed, strulspeed, straging, strwagtype, from, strfactory)  \
-switch (FEAT_TRAINS, SELF, name,                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                  \
 [ STORE_TEMP(cap | vol << 16, 0x100),                                                                               \
   STORE_TEMP(string(strlspeed) | string(strulspeed) << 16, 0x101),                                                  \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | from << 16, 0x103),                                                   \
   STORE_TEMP(string(strfactory), 0x104)])                                                                           \
 { default: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                    \
+
+// Описание локомотива
+#define hint_engine(name, strengtype, strengsmetype, from, to, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                          \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),      \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x101),         \
+  STORE_TEMP(to | string(strfactory) << 16, 0x102)])                        \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                       \
+
+// Описание локомотива с производством в течение года
+#define hint_engine_in(name, strengtype, strengsmetype, from, strfactory)   \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                          \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),      \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN) | from << 16, 0x101),             \
+  STORE_TEMP(string(strfactory), 0x102)])                                   \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                       \
+
+// Описание локомотива c подтипом
+#define hint_engine_with_subtype(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                      \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                  \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                    \
+  STORE_TEMP(from | to << 16, 0x102),                                                                   \
+  STORE_TEMP(string(strfactory), 0x103)])                                                               \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                   \
+
+// Описание локомотива c подтипом и с 2 производителями
+#define hint_engine_with_subtype_2fact(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory, strfactory2)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                         \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                                     \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                                       \
+  STORE_TEMP(from | to << 16, 0x102),                                                                                      \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strfactory) << 16, 0x103),                                           \
+  STORE_TEMP(string(strfactory2), 0x104)])                                                                                 \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                      \
+
+// Описание локомотива c подтипом и с 3 производителями
+#define hint_engine_with_subtype_3fact(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                      \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                                                  \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                                                    \
+  STORE_TEMP(from | to << 16, 0x102),                                                                                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strfactory) << 16, 0x103),                                                        \
+  STORE_TEMP(string(strfactory2) | string(strfactory3) << 16, 0x104)])                                                                  \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                   \
+
+// Описание локомотива c подтипом и с 4 производителями
+#define hint_engine_with_subtype_4fact(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3, strfactory4)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                   \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                                                               \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                                                                 \
+  STORE_TEMP(from | to << 16, 0x102),                                                                                                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strfactory) << 16, 0x103),                                                                     \
+  STORE_TEMP(string(strfactory2) | string(strfactory3) << 16, 0x104),                                                                                \
+  STORE_TEMP(string(strfactory4), 0x105)])                                                                                                           \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                \
+
+// Описание локомотива c подтипом и с 5 производителями
+#define hint_engine_with_subtype_5fact(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3, strfactory4, strfactory5)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                                \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                                                                            \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                                                                              \
+  STORE_TEMP(from | to << 16, 0x102),                                                                                                                             \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strfactory) << 16, 0x103),                                                                                  \
+  STORE_TEMP(string(strfactory2) | string(strfactory3) << 16, 0x104),                                                                                             \
+  STORE_TEMP(string(strfactory4) | string(strfactory5) << 16, 0x105)])                                                                                            \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                             \
+
+// Описание локомотива c подтипом и с 6 производителями
+#define hint_engine_with_subtype_6fact(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3, strfactory4, strfactory5, strfactory6)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                                             \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                                                                                         \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                                                                                           \
+  STORE_TEMP(from | to << 16, 0x102),                                                                                                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strfactory) << 16, 0x103),                                                                                               \
+  STORE_TEMP(string(strfactory2) | string(strfactory3) << 16, 0x104),                                                                                                          \
+  STORE_TEMP(string(strfactory4) | string(strfactory5) << 16, 0x105),                                                                                                          \
+  STORE_TEMP(string(strfactory6), 0x106)])                                                                                                                                     \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                                          \
+
+// Описание локомотива с 2 производителями
+#define hint_engine_2fact(name, strengtype, strengsmetype, from, to, strfactory, strfactory2)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                             \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x101),                            \
+  STORE_TEMP(to | string(STR_PURCHASE_HINT_LIST2) << 16, 0x102),                               \
+  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x103)])                          \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                          \
+
+// Описание локомотива с 3 производителями
+#define hint_engine_3fact(name, strengtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                          \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                      \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x101),                                         \
+  STORE_TEMP(to | string(STR_PURCHASE_HINT_LIST3) << 16, 0x102),                                            \
+  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x103),                                        \
+  STORE_TEMP(string(strfactory3), 0x104)])                                                                  \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                       \
+
+// Описание локомотива с 4 производителями
+#define hint_engine_4fact(name, strengtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3, strfactory4)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                       \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x101),                                                      \
+  STORE_TEMP(to | string(STR_PURCHASE_HINT_LIST4) << 16, 0x102),                                                         \
+  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x103),                                                     \
+  STORE_TEMP(string(strfactory3) | string(strfactory4) << 16, 0x104)])                                                   \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                    \
+
+// Описание локомотива с 5 производителями
+#define hint_engine_5fact(name, strengtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3, strfactory4, strfactory5)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                    \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x101),                                                                   \
+  STORE_TEMP(to | string(STR_PURCHASE_HINT_LIST5) << 16, 0x102),                                                                      \
+  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x103),                                                                  \
+  STORE_TEMP(string(strfactory3) | string(strfactory4) << 16, 0x104),                                                                 \
+  STORE_TEMP(string(strfactory5), 0x105)])                                                                                            \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                 \
+
+// Описание локомотива с 6 производителями
+#define hint_engine_6fact(name, strengtype, strengsmetype, from, to, strfactory, strfactory2, strfactory3, strfactory4, strfactory5, strfactory6)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                 \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                                             \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x101),                                                                                \
+  STORE_TEMP(to | string(STR_PURCHASE_HINT_LIST6) << 16, 0x102),                                                                                   \
+  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x103),                                                                               \
+  STORE_TEMP(string(strfactory3) | string(strfactory4) << 16, 0x104),                                                                              \
+  STORE_TEMP(string(strfactory5) | string(strfactory6) << 16, 0x105)])                                                                             \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                              \
 
