@@ -1,0 +1,94 @@
+ // ep1m
+
+#define IMAGEFILE  "src/electric/ep1m.png"
+purchase_sprites(ep1m_v1, 0, 0)
+electric1r_2_sprites(13, ep1m_v1, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/ep1m-a2009.png"
+purchase_sprites(ep1m_v2, 0, 0)
+electric1r_2_sprites(13, ep1m_v2, 32, 40)
+electric1r_2_sprites(13, ep1m_v3, 32, 375)
+#undef IMAGEFILE
+purchase_sprites_select(ep1m, 2009)
+
+switch (FEAT_TRAINS, SELF, ep1m_sprites_l2,
+  cargo_subtype)
+{
+  0: ep1m_v2_sprites_left;
+  LV_RZD_PID: ep1m_v3_sprites_left;
+  align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ep1m_sprites_left,
+  (build_year>= 2009) +
+  (build_year>= 2011))
+{
+  0: ep1m_v1_sprites_left;
+  1: ep1m_sprites_l2;
+  2: ep1m_v3_sprites_left;
+     align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ep1m_sprites_r2,
+  cargo_subtype)
+{
+  0: ep1m_v2_sprites_right;
+  LV_RZD_PID: ep1m_v3_sprites_right;
+  align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ep1m_sprites_right,
+  (build_year>= 2009) +
+  (build_year>= 2011))
+{
+  0: ep1m_v1_sprites_right;
+  1: ep1m_sprites_r2;
+  2: ep1m_v3_sprites_right;
+     align_13_sprites;
+}
+
+engine_RNDany_direction_template(ep1m, 5, 3)
+long_vehicle_sp(ep1m)
+
+    livery_template0(ep1m_b2009)
+    livery_template_FP(ep1m_a2009)
+    livery_template1(ep1m_a2011, RZD_PID)
+livery_template_build_year2(ep1m, 2009, 2011)
+
+engine_electric1_2_effect(ep1m, -1, 6)
+engine_speed_with_reduce(ep1m, 140, 120, 30)
+engine_penalise_speed0(ep1m)
+general_running_cost(ep1m, 573)
+
+item (FEAT_TRAINS, ep1m, 556) {
+  property {
+    name: string(STR_NAME_EP1M);
+    vehicle_dates(2006, 2050, 30, 10, 8, 82)
+    vehicle_pass()
+    vehicle_acelectric(5707, 132, 380.0)
+  }
+  graphics {
+    default: ep1m_sprites;
+    purchase: ep1m_purchase_sprites;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: ep1m_speed;
+    purchase_speed: ep1m_purchase_speed;
+    bitmask_vehicle_info: ep1m_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: ep1m_create_effect;
+    running_cost_factor: ep1m_running_cost_factor;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: ep1m_cargo_subtype_text;
+    additional_text: return string(STR_PURCHASE_HINT_ENGINE,
+                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC),
+                                   string(STR_PURCHASE_HINT_SECTIONS_1),
+                                   string(STR_PURCHASE_HINT_FROM, 2006),
+                                   string(STR_PURCHASE_HINT_FACTORY_NOVOCHERKASSK));
+  }
+}
+
+long_name_template(ep1m, STR_LONGNAME_EP1M)
+models_default_cargo_template(ep1m)
+allow_acelectric(ep1m)
