@@ -1,5 +1,10 @@
 ﻿ /// code definition
 
+#define hint_change_longnames(name)                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, enable_long_names)  \
+{ 1: name##_long_additional_text;                                      \
+     name##_short_additional_text; }                                   \
+
 // шаблон выбора по году
 
 #define hint_change_after(name, year)                                     \
@@ -35,25 +40,6 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(strfactory), 0x104)])                                                  \
 { default: return string(STR_PURCHASE_HINT_WAGON); }                                       \
 
-// Описание почтового-вагона
-#define hint_wagon_mail(name, cap, strlspeed, straging, strwagtype, from, to, strfactory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                         \
-[ STORE_TEMP(cap | string(strlspeed) << 16, 0x100),                                        \
-  STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x101),                          \
-  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x102),                        \
-  STORE_TEMP(to | string(strfactory) << 16, 0x103)])                                       \
-{ default: return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                  \
-
-// Описание вагона-платформы
-#define hint_wagon_flat(name, cap, vol, strlspeed, straging, strwagtype, from, to, strfactory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                              \
-[ STORE_TEMP(cap | vol << 16, 0x100),                                                           \
-  STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                \
-  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x102),               \
-  STORE_TEMP(from | to << 16, 0x103),                                                           \
-  STORE_TEMP(string(strfactory), 0x104)])                                                       \
-{ default: return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                    \
-
 // Описание вагона без окончания срока доступности
 #define hint_wagon_noto(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text,                                          \
@@ -62,24 +48,6 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),             \
   STORE_TEMP(from | string(strfactory) << 16, 0x103)])                                      \
 { default: return string(STR_PURCHASE_HINT_WAGON); }                                        \
-
-// Описание вагона-платформы без окончания срока доступности
-#define hint_wagon_flat_noto(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                               \
-[ STORE_TEMP(cap | vol << 16, 0x100),                                                            \
-  STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                 \
-  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),                  \
-  STORE_TEMP(from | string(strfactory) << 16, 0x103)])                                           \
-{ default: return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                     \
-
-// Описание почтового-вагона без окончания срока доступности
-#define hint_wagon_mail_noto(name, cap, strlspeed, straging, strwagtype, from, strfactory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                          \
-[ STORE_TEMP(cap | string(strlspeed) << 16, 0x100),                                         \
-  STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x101),                           \
-  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | from << 16, 0x102),                           \
-  STORE_TEMP(string(strfactory), 0x103)])                                                   \
-{ default: return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                   \
 
 // Описание вагона без окончания срока доступности c 2 производителями
 #define hint_wagon_noto2(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory, strfactory2)  \
@@ -90,16 +58,6 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | string(STR_PURCHASE_HINT_LIST2) << 16, 0x103),                                        \
   STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x104)])                                     \
 { default: return string(STR_PURCHASE_HINT_WAGON); }                                                      \
-
-// Описание вагона-платформы без окончания срока доступности c 2 производителями
-#define hint_wagon_flat_noto2(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory, strfactory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                             \
-[ STORE_TEMP(cap | vol << 16, 0x100),                                                                          \
-  STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                               \
-  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),                                \
-  STORE_TEMP(from | string(STR_PURCHASE_HINT_LIST2) << 16, 0x103),                                             \
-  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x104)])                                          \
-{ default: return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                   \
 
 // Описание вагона c 2 производителями
 #define hint_wagon_2fact(name, cap, vol, strlspeed, straging, strwagtype, from, to, strfactory, strfactory2)  \
@@ -153,6 +111,79 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | from << 16, 0x103),                                                   \
   STORE_TEMP(string(strfactory), 0x104)])                                                                           \
 { default: return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                    \
+
+// Описание вагона-платформы
+#define hint_wagon_flat(name, cap, vol, strlspeed, straging, strwagtype, from, to, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                              \
+[ STORE_TEMP(cap | vol << 16, 0x100),                                                           \
+  STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                \
+  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x102),               \
+  STORE_TEMP(from | to << 16, 0x103),                                                           \
+  STORE_TEMP(string(strfactory), 0x104)])                                                       \
+{ default: return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                    \
+
+// Описание вагона-платформы без окончания срока доступности
+#define hint_wagon_flat_noto(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                               \
+[ STORE_TEMP(cap | vol << 16, 0x100),                                                            \
+  STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                 \
+  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),                  \
+  STORE_TEMP(from | string(strfactory) << 16, 0x103)])                                           \
+{ default: return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                     \
+
+// Описание вагона-платформы без окончания срока доступности c 2 производителями
+#define hint_wagon_flat_noto2(name, cap, vol, strlspeed, straging, strwagtype, from, strfactory, strfactory2)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                             \
+[ STORE_TEMP(cap | vol << 16, 0x100),                                                                          \
+  STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x101),                                               \
+  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),                                \
+  STORE_TEMP(from | string(STR_PURCHASE_HINT_LIST2) << 16, 0x103),                                             \
+  STORE_TEMP(string(strfactory) | string(strfactory2) << 16, 0x104)])                                          \
+{ default: return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                   \
+
+// Описание почтового-вагона
+#define hint_wagon_mail(name, cap, strlspeed, straging, strwagtype, from, to, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                         \
+[ STORE_TEMP(cap | string(strlspeed) << 16, 0x100),                                        \
+  STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x101),                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x102),                        \
+  STORE_TEMP(to | string(strfactory) << 16, 0x103)])                                       \
+{ default: return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                  \
+
+// Описание почтового-вагона без окончания срока доступности
+#define hint_wagon_mail_noto(name, cap, strlspeed, straging, strwagtype, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                          \
+[ STORE_TEMP(cap | string(strlspeed) << 16, 0x100),                                         \
+  STORE_TEMP(string(straging) | string(strwagtype) << 16, 0x101),                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | from << 16, 0x102),                           \
+  STORE_TEMP(string(strfactory), 0x103)])                                                   \
+{ default: return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                   \
+
+// Описание пассажирского вагона
+#define hint_wagon_coach(name, strlspeed, straging, strwagtype, from, to, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                     \
+[ STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x100),                       \
+  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),      \
+  STORE_TEMP(from | to << 16, 0x102),                                                  \
+  STORE_TEMP(string(strfactory), 0x103)])                                              \
+{ default: return string(STR_PURCHASE_HINT_COACH); }                                   \
+
+// Описание пассажирского вагона без окончания срока доступности
+#define hint_wagon_coach_noto(name, strlspeed, straging, strwagtype, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                      \
+[ STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x100),                        \
+  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROM) << 16, 0x101),         \
+  STORE_TEMP(from | string(strfactory) << 16, 0x102)])                                  \
+{ default: return string(STR_PURCHASE_HINT_COACH); }                                    \
+
+// Описание пассажирского вагона c примечанием
+#define hint_wagon_coach_comment(name, strlspeed, straging, strwagtype, from, to, strfactory, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                      \
+[ STORE_TEMP(string(strlspeed) | string(straging) << 16, 0x100),                                        \
+  STORE_TEMP(string(strwagtype) | string(STR_PURCHASE_HINT_FROMTO) << 16, 0x101),                       \
+  STORE_TEMP(from | to << 16, 0x102),                                                                   \
+  STORE_TEMP(string(strfactory) | string(comment) << 16, 0x103)])                                       \
+{ default: return string(STR_PURCHASE_HINT_COACH_WITH_COMMENT); }                                       \
 
 // Описание локомотива
 #define hint_engine(name, strengtype, strengsmetype, from, to, strfactory)  \
