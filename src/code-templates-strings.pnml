@@ -29,6 +29,48 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,    \
   2: name##_a##year2##_additional_text;               \
      name##_a##year3##_additional_text; }             \
 
+#define hint_change_after4(name, year, year2, year3, year4)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,           \
+  (current_year >= year) +                                   \
+  (current_year >= year2) +                                  \
+  (current_year >= year3) +                                  \
+  (current_year >= year4))                                   \
+{ 0: name##_b##year##_additional_text;                       \
+  1: name##_a##year##_additional_text;                       \
+  2: name##_a##year2##_additional_text;                      \
+  3: name##_a##year3##_additional_text;                      \
+     name##_a##year4##_additional_text; }                    \
+
+#define hint_change_after5(name, year, year2, year3, year4, year5)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                  \
+  (current_year >= year) +                                          \
+  (current_year >= year2) +                                         \
+  (current_year >= year3) +                                         \
+  (current_year >= year4) +                                         \
+  (current_year >= year5))                                          \
+{ 0: name##_b##year##_additional_text;                              \
+  1: name##_a##year##_additional_text;                              \
+  2: name##_a##year2##_additional_text;                             \
+  3: name##_a##year3##_additional_text;                             \
+  4: name##_a##year4##_additional_text;                             \
+     name##_a##year5##_additional_text; }                           \
+
+#define hint_change_after6(name, year, year2, year3, year4, year5, year6)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                         \
+  (current_year >= year) +                                                 \
+  (current_year >= year2) +                                                \
+  (current_year >= year3) +                                                \
+  (current_year >= year4) +                                                \
+  (current_year >= year5) +                                                \
+  (current_year >= year6))                                                 \
+{ 0: name##_b##year##_additional_text;                                     \
+  1: name##_a##year##_additional_text;                                     \
+  2: name##_a##year2##_additional_text;                                    \
+  3: name##_a##year3##_additional_text;                                    \
+  4: name##_a##year4##_additional_text;                                    \
+  5: name##_a##year5##_additional_text;                                    \
+     name##_a##year6##_additional_text; }                                  \
+
 // шаблон выбора по году с предсерийным
 #define hint_change_pre_after(name, year)              \
 switch (FEAT_TRAINS, SELF, name##_additional_text,     \
@@ -241,6 +283,14 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | string(strfactory) << 16, 0x102)])                                                   \
 { default: return string(STR_PURCHASE_HINT_ENGINE); }                                                    \
 
+// Описание локомотива c подтипом и производством в течение года
+#define hint_engine_with_subtype_in(name, strengtype, strengsubtype, strengsmetype, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                     \
+[ STORE_TEMP(string(strengtype) | string(strengsubtype) << 16, 0x100),                                 \
+  STORE_TEMP(string(strengsmetype) | string(STR_PURCHASE_HINT_IN) << 16, 0x101),                       \
+  STORE_TEMP(from | string(strfactory) << 16, 0x102)])                                                 \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                  \
+
 // Описание локомотива c подтипом и с 2 производителями
 #define hint_engine_with_subtype_2fact(name, strengtype, strengsubtype, strengsmetype, from, to, strfactory, strfactory2)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                         \
@@ -374,6 +424,80 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(strfactory), 0x105)])                                                                                                        \
 { default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                            \
 
+// Описание локомотива c вариантом в СМЕ без окончания срока доступности
+#define hint_engine_with_sme_noto(name, strengtype, strengsmetype, strengsmevar, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                  \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                              \
+  STORE_TEMP(string(strengsmevar) | string(STR_PURCHASE_HINT_FROM) << 16, 0x101),                   \
+  STORE_TEMP(from | string(strfactory) << 16, 0x102)])                                              \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                               \
+
+// Описание локомотива c 2 вариантами в СМЕ без окончания срока доступности
+#define hint_engine_with_sme2_noto(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                  \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                              \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strengsmevar) << 16, 0x101),                                  \
+  STORE_TEMP(string(strengsmevar2) | string(STR_PURCHASE_HINT_FROM) << 16, 0x102),                                  \
+  STORE_TEMP(from | string(strfactory) << 16, 0x103)])                                                              \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                               \
+
+// Описание локомотива c 3 вариантами в СМЕ без окончания срока доступности
+#define hint_engine_with_sme3_noto(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                 \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                             \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | string(strengsmevar) << 16, 0x101),                                                 \
+  STORE_TEMP(string(strengsmevar2) | string(strengsmevar3) << 16, 0x102),                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | from << 16, 0x103),                                                                  \
+  STORE_TEMP(string(strfactory), 0x104)])                                                                                          \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                              \
+
+// Описание локомотива c 4 вариантами в СМЕ без окончания срока доступности
+#define hint_engine_with_sme4_noto(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                                            \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strengsmevar) << 16, 0x101),                                                                \
+  STORE_TEMP(string(strengsmevar2) | string(strengsmevar3) << 16, 0x102),                                                                         \
+  STORE_TEMP(string(strengsmevar4) | string(STR_PURCHASE_HINT_FROM) << 16, 0x103),                                                                \
+  STORE_TEMP(from | string(strfactory) << 16, 0x104)])                                                                                            \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                             \
+
+// Описание локомотива c вариантом в СМЕ с производством в течение года
+#define hint_engine_with_sme_in(name, strengtype, strengsmetype, strengsmevar, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                            \
+  STORE_TEMP(string(strengsmevar) | string(STR_PURCHASE_HINT_IN) << 16, 0x101),                   \
+  STORE_TEMP(from | string(strfactory) << 16, 0x102)])                                            \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                             \
+
+// Описание локомотива c 2 вариантами в СМЕ с производством в течение года
+#define hint_engine_with_sme2_in(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                            \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strengsmevar) << 16, 0x101),                                \
+  STORE_TEMP(string(strengsmevar2) | string(STR_PURCHASE_HINT_IN) << 16, 0x102),                                  \
+  STORE_TEMP(from | string(strfactory) << 16, 0x103)])                                                            \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                             \
+
+// Описание локомотива c 3 вариантами в СМЕ с производством в течение года
+#define hint_engine_with_sme3_in(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                               \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | string(strengsmevar) << 16, 0x101),                                               \
+  STORE_TEMP(string(strengsmevar2) | string(strengsmevar3) << 16, 0x102),                                                        \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN) | from << 16, 0x103),                                                                  \
+  STORE_TEMP(string(strfactory), 0x104)])                                                                                        \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                            \
+
+// Описание локомотива c 4 вариантами в СМЕ с производством в течение года
+#define hint_engine_with_sme4_in(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, from, strfactory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                              \
+[ STORE_TEMP(string(strengtype) | string(strengsmetype) << 16, 0x100),                                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | string(strengsmevar) << 16, 0x101),                                                              \
+  STORE_TEMP(string(strengsmevar2) | string(strengsmevar3) << 16, 0x102),                                                                       \
+  STORE_TEMP(string(strengsmevar4) | string(STR_PURCHASE_HINT_IN) << 16, 0x103),                                                                \
+  STORE_TEMP(from | string(strfactory) << 16, 0x104)])                                                                                          \
+{ default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                           \
+
 // Описание локомотива c подтипом и вариантом в СМЕ
 #define hint_engine_with_subtype_sme(name, strengtype, strengsubtype, strengsmetype, strengsmevar, from, to, strfactory)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                        \
@@ -414,4 +538,27 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | from << 16, 0x104),                                                                                                     \
   STORE_TEMP(to | string(strfactory) << 16, 0x105)])                                                                                                                    \
 { default: return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                                   \
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
