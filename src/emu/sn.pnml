@@ -135,8 +135,6 @@ switch (FEAT_TRAINS, SELF, sn_sprites_start,
 
 long_vehicle_RND(sn, sn_a_sprites_start)
 
-// считаем уже имеющиеся вагоны
-
 switch (FEAT_TRAINS, PARENT, sn_can_attach_wagon1,
   count_veh_id(sn) < 3)
 {
@@ -162,7 +160,6 @@ switch (FEAT_TRAINS, SELF, sn_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-// Визуализируем эффекты тяги у sn, только если локомотив - sn
 switch (FEAT_TRAINS, SELF, sn_create_effect2,
   electric_create_effect(4))
 {
@@ -193,19 +190,18 @@ switch (FEAT_TRAINS, SELF, sn_long_cargo_subtype_text,
 
 livery_template(sn_short_alt, TTD_7C, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template_alt(sn_short, TTD_6C)
-
 livery_template_longnames(sn)
-
-// Даём тягу, только если локомотив - sn
 engine_power_MU(sn, 921, sn)
-
-// Допускается эксплуатация с пассажирами только если голова - sn
 engine_capacity_MU(sn, 296, sn)
-
 emu_running_cost(sn_MU, 93, 80 + 80)
 RC_head_check_m(sn, sn, 3)
-
 engine_speed(sn, 120)
+hint_MU_with_subtype(sn,
+                     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+                     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_62_08,
+                     STR_SECTIONS_MU_S1_3of3,
+                     1954, 1956, STR_PURCHASE_HINT_FACTORY_RIGA_CW)
 
 item (FEAT_TRAINS, sn, 218) {
   property {
@@ -227,13 +223,7 @@ item (FEAT_TRAINS, sn, 218) {
     create_effect: sn_create_effect;
     colour_mapping: any_cc_colour;
     purchase_speed: return 120;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
-                                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_62_08)),
-                                   string(STR_SECTIONS_MU_S1_3of3),
-                                   string(STR_PURCHASE_HINT_FROMTO, 1954,1956),
-                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+    additional_text: sn_additional_text;
   }
 }
 

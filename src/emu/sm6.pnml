@@ -157,7 +157,6 @@ switch (FEAT_TRAINS, SELF, sm6_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-// даём тягу, если локомотив sm6
 engine_power_MU(sm6, 7478, sm6)
 
 switch (FEAT_TRAINS, SELF, sm6_create_effect7,
@@ -242,20 +241,11 @@ switch (FEAT_TRAINS, SELF, sm6_create_effect0,
       return disable_create_effect();
 }
 
-// показываем визуальные эффекты, если локомотив sm6
 switch (FEAT_TRAINS, PARENT, sm6_create_effect,
   vehicle_type_id == sm6)
 {
   1: sm6_create_effect0;
      return disable_create_effect();
-}
-
-// Допускается эксплуатация с пассажирами только если голова - sm6
-switch (FEAT_TRAINS, PARENT, sm6_cargo_capacity,
-  vehicle_type_id == sm6)
-{
-  1: return 341-48;
-     return 0;
 }
 
 switch (FEAT_TRAINS, SELF, sm6_can_attach_wagon2,
@@ -278,16 +268,22 @@ switch (FEAT_TRAINS, SELF, sm6_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
+engine_capacity_MU(sm6, 293, sm6)
 emu_running_cost(sm6_MU, 1921, 817)
 RC_head_check_m(sm6, sm6, 7)
-
 engine_speed(sm6, 220)
+hint_MU_with_subtype_noto(sm6,
+                          STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+                          STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+                          STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_PENDOLINO,
+                          STR_SECTIONS_MU_S1_2of7,
+                          2010, STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS)
 
 item (FEAT_TRAINS, sm6, 412) {
   property {
     name: string(STR_NAME_SM6);
     vehicle_dates(2010, 2050, 30, 10, 8, 255)
-    vehicle_acdcemu(7478, 423, 226.0, 341-48, 15*5)
+    vehicle_acdcemu(7478, 423, 226.0, 293, 15*5)
   }
   graphics {
     default: sm6_sprites;
@@ -304,13 +300,7 @@ item (FEAT_TRAINS, sm6, 412) {
     create_effect: sm6_create_effect;
     cargo_subtype_text: return string(STR_REFIT_FACTORY);
     purchase_speed: return 220;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
-                                   string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-                                   string(STR_PURCHASE_HINT_AGING_PERIOD_3_2),
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, string(STR_PURCHASE_HINT_PENDOLINO)),
-                                   string(STR_SECTIONS_MU_S1_2of7),
-                                   string(STR_PURCHASE_HINT_FROM, 2010),
-                                   string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS));
+    additional_text: sm6_additional_text;
   }
 }
 

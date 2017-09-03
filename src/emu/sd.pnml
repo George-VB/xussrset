@@ -65,8 +65,6 @@ switch (FEAT_TRAINS, SELF, sd_sprites_start,
 
 long_vehicle_RND(sd, sd_a_sprites_start)
 
-// считаем уже имеющиеся вагоны
-
 switch (FEAT_TRAINS, PARENT, sd_can_attach_wagon1,
   count_veh_id(sd) < (2 * (2 + (current_year >= 1939))))
 {
@@ -92,7 +90,6 @@ switch (FEAT_TRAINS, SELF, sd_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-// Визуализируем эффекты тяги у sd, только если локомотив - sd
 switch (FEAT_TRAINS, SELF, sd_create_effect2,
   electric_create_effect(4))
 {
@@ -113,10 +110,6 @@ switch (FEAT_TRAINS, SELF, sd_create_effect,
      return disable_create_effect();
 }
 
-// Даём тягу, только если локомотив - sd
-engine_power_MU(sd, 680, sd)
-
-// Допускается эксплуатация с пассажирами только если голова - sd
 switch (FEAT_TRAINS, SELF, sd_cargo_capacity2,
   position_in_articulated_veh)
 {
@@ -131,29 +124,23 @@ switch (FEAT_TRAINS, PARENT, sd_cargo_capacity,
      return 0;
 }
 
-switch (FEAT_TRAINS, PARENT, sd_additional_text,
-  current_year >= 1939)
-{
-  0: return string(STR_PURCHASE_HINT_ENGINE_MU,
-                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC),
-                   string(STR_SECTIONS_MU_S1_2of3),
-                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941),
-                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_MYTISHCHI), string(STR_PURCHASE_HINT_FACTORY_DINAMO)));
-     return string(STR_PURCHASE_HINT_ENGINE_MU,
-                   string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC),
-                   string(STR_SECTIONS_MU_S1_3of3),
-                   string(STR_PURCHASE_HINT_FROMTO, 1932, 1941),
-                   string(STR_PURCHASE_HINT_LIST2, string(STR_PURCHASE_HINT_FACTORY_MYTISHCHI), string(STR_PURCHASE_HINT_FACTORY_DINAMO)));
-}
-
 emu_running_cost(sd_MU, 59, 50 + 50)
 RC_head_check_m(sd, sd, 3)
-
 engine_speed(sd, 85)
+engine_power_MU(sd, 680, sd)
+hint_MU_2fact(sd_b1939,
+              STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+              STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+              STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC,
+              STR_SECTIONS_MU_S1_2of3,
+              1932, 1938, STR_PURCHASE_HINT_FACTORY_MYTISHCHI, STR_PURCHASE_HINT_FACTORY_DINAMO)
+hint_MU_2fact(sd_a1939,
+              STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+              STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+              STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC,
+              STR_SECTIONS_MU_S1_3of3,
+              1939, 1941, STR_PURCHASE_HINT_FACTORY_MYTISHCHI, STR_PURCHASE_HINT_FACTORY_DINAMO)
+hint_change_after(sd, 1939)
 
 item (FEAT_TRAINS, sd, 443) {
   property {

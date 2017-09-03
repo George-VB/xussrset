@@ -189,8 +189,6 @@ switch (FEAT_TRAINS, SELF, er22_sprites_start,
 
 long_vehicle(er22)
 
-// считаем уже имеющиеся вагоны
-
 switch (FEAT_TRAINS, PARENT, er22_can_attach_wagon1,
   count_veh_id(er22) < 2)
 {
@@ -218,7 +216,6 @@ switch (FEAT_TRAINS, SELF, er22_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-// Визуализируем эффекты тяги у er22, только если локомотив - er22
 switch (FEAT_TRAINS, SELF, er22_create_effect1,
   electric_create_effect(9))
 {
@@ -246,7 +243,6 @@ switch (FEAT_TRAINS, PARENT, er22_create_effect,
      return disable_create_effect();
 }
 
-// Даём тягу, только если локомотив - er22
 switch (FEAT_TRAINS, PARENT, er22_power,
   (vehicle_type_id == er22) *
   (1 + (build_year >= 1967)))
@@ -256,15 +252,18 @@ switch (FEAT_TRAINS, PARENT, er22_power,
      return 0;
 }
 
-// Допускается эксплуатация с пассажирами только если голова - er22
-engine_capacity_MU(er22, 494, er22)
-
-emu_running_cost(er22_MU, 114 + 114, 64 + 64)
-RC_head_check_m(er22, er22, 3)
-
   livery_template(er22_b1968, FACTORY, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   livery_template1(er22_a1968, TTD_53)
 livery_template_build_year(er22, 1968)
+engine_capacity_MU(er22, 494, er22)
+emu_running_cost(er22_MU, 114 + 114, 64 + 64)
+RC_head_check_m(er22, er22, 3)
+hint_MU_with_model2(er22,
+                    STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                    STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                    STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, 62, 105,
+                    STR_SECTIONS_MU_S1_2of4,
+                    1964, 1968, STR_PURCHASE_HINT_FACTORY_RIGA_CW)
 
 item (FEAT_TRAINS, er22, 426) {
   property {
@@ -287,13 +286,7 @@ item (FEAT_TRAINS, er22, 426) {
     power: er22_power;
     create_effect: er22_create_effect;
     colour_mapping: any_cc_colour;
-    additional_text: return string(STR_PURCHASE_HINT_ENGINE_MU,
-                                   string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-                                   string(STR_PURCHASE_HINT_AGING_PERIOD_1_1),
-                                   string(STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, string(STR_MODEL_NUMBER2, 62, 105)),
-                                   string(STR_SECTIONS_MU_S1_2of4),
-                                   string(STR_PURCHASE_HINT_FROMTO, 1964, 1968),
-                                   string(STR_PURCHASE_HINT_FACTORY_RIGA_CW));
+    additional_text: er22_additional_text;
   }
 }
 
