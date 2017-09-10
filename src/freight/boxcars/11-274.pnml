@@ -2,8 +2,28 @@
 
 #define IMAGEFILE  "src/freight/boxcars/11-274.png"
 purchase_sprites(boxcar_11_274, 0, 0)
-combo_layout_boxcar_template(boxcar_11_274, 9, 32, 40, 16, 8)
+combo_layout_boxcartop_template(boxcar_11_274, 9, 32, 40, 16, 8)
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_top_cc1,
+  STORE_TEMP(ttdall_cc + 0x71, 0x100))
+{ boxcar_11_274_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_top_cc2,
+  STORE_TEMP(ttdall_cc + 0x73, 0x100))
+{ boxcar_11_274_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_top_cc3,
+  STORE_TEMP(PALETTE_USE_DEFAULT, 0x100))
+{ boxcar_11_274_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_top_cc,
+  (random_bits >> 3) & 0x03)
+{
+  0: boxcar_11_274_sprites_top_cc1;
+  1: boxcar_11_274_sprites_top_cc2;
+     boxcar_11_274_sprites_top_cc3;
+}
 
 switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_start,
   getbits(extra_callback_info1, 8, 8))
@@ -11,34 +31,29 @@ switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_start,
   0: boxcar_11_274_sprites_back;
   1: cargo9_good1_sprites;
   2: boxcar_11_274_sprites_front;
+  3: boxcar_11_274_sprites_top_cc;
      return CB_FAILED;
 }
 
 long_vehicle_RND(boxcar_11_274, boxcar_11_274_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, boxcar_11_274_random,
-  (random_bits / 2) & 0x0F)
+  (random_bits >> 1) & 0x03)
 {
-  0..1:  return ttd_cc2 + 0x05;
-  2..3:  return ttd_cc2 + 0x06;
-  4..5:  return ttd_cc2 + 0x30;
-  6..7:  return ttd_cc2 + 0x31;
-  8..9:  return ttd_cc2 + 0x32;
-  10..11: return ttd_cc2 + 0x33;
-  12:    return ttd_cc2 + 0x34;
-  13:    return ttd_cc2 + 0x35;
-  14:    return ttd_cc2 + 0x36;
-         return ttd_cc2 + 0x37;
+  0: return ttdall_cc + 0x62;
+  2: return ttdall_cc + 0x63;
+  4: return ttdall_cc + 0xC3;
+     return ttdall_cc + 0x41;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_274_colour_mapping,
   cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
 {
   0: boxcar_11_274_random;
-  1: return ttd_cc2 + 0x05;
-  2: return ttd_cc2 + 0x06;
-  3: return ttd_cc2 + 0x30;
-  4: return ttd_cc2 + 0x31;
+  1: return ttdall_cc + 0x62;
+  2: return ttdall_cc + 0x63;
+  3: return ttdall_cc + 0xC3;
+  4: return ttdall_cc + 0x41;
      return CB_FAILED;
 }
 
@@ -48,8 +63,8 @@ switch (FEAT_TRAINS, SELF, boxcar_11_274_cargo_subtype_text,
   0: return string(STR_REFIT_FACTORY);
   1: return string(STR_REFIT_TTD_62);
   2: return string(STR_REFIT_TTD_63);
-  3: return string(STR_REFIT_TTD_41);
-  4: return string(STR_REFIT_TTD_93);
+  3: return string(STR_REFIT_TTD_C3);
+  4: return string(STR_REFIT_TTD_41);
      return CB_RESULT_NO_TEXT;
 }
 
