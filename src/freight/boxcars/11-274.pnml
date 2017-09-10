@@ -1,0 +1,96 @@
+﻿ // boxcar_11_274
+
+#define IMAGEFILE  "src/freight/boxcars/11-274.png"
+purchase_sprites(boxcar_11_274, 0, 0)
+combo_layout_boxcar_template(boxcar_11_274, 9, 32, 40, 16, 8)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_274_sprites_back;
+  1: cargo9_good1_sprites;
+  2: boxcar_11_274_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(boxcar_11_274, boxcar_11_274_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_random,
+  (random_bits / 2) & 0x0F)
+{
+  0..1:  return ttd_cc2 + 0x05;
+  2..3:  return ttd_cc2 + 0x06;
+  4..5:  return ttd_cc2 + 0x30;
+  6..7:  return ttd_cc2 + 0x31;
+  8..9:  return ttd_cc2 + 0x32;
+  10..11: return ttd_cc2 + 0x33;
+  12:    return ttd_cc2 + 0x34;
+  13:    return ttd_cc2 + 0x35;
+  14:    return ttd_cc2 + 0x36;
+         return ttd_cc2 + 0x37;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: boxcar_11_274_random;
+  1: return ttd_cc2 + 0x05;
+  2: return ttd_cc2 + 0x06;
+  3: return ttd_cc2 + 0x30;
+  4: return ttd_cc2 + 0x31;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_62);
+  2: return string(STR_REFIT_TTD_63);
+  3: return string(STR_REFIT_TTD_41);
+  4: return string(STR_REFIT_TTD_93);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_274_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 118;
+  ENSP: return 58;
+  FMSP: return 53;
+  MNSP: return 115;
+  VPTS: return 115;
+        return 59;
+}
+
+hint_wagon_noto(boxcar_11_274,
+                77, 92,
+                STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+                STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR_4AXLE_TSMW,
+                1989, STR_PURCHASE_HINT_FACTORY_ALTAI_CW)
+wagon_running_cost(boxcar_11_274, 17)
+
+item (FEAT_TRAINS, boxcar_11_274, 565) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 11, 274);
+    vehicle_dates(1989, 2050, 32, 10, 8, 3)
+    vehicle_wagon(35, 120)
+    vehicle_wagon_cargo(59, 45)
+    cargo_allow_refit: [GOOD, ENSP, FMSP, MNSP, VPTS, RCYC, DYES, PLAS, PLST, CMNT, BDMT, BEER, JAVA];  
+  }
+  graphics {
+    default: boxcar_11_274_sprites;
+    purchase: boxcar_11_274_purchase_sprites;
+    running_cost_factor: boxcar_11_274_running_cost_factor;
+    cargo_subtype_text: boxcar_11_274_cargo_subtype_text;
+    articulated_part: articulated_part_dummy1;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: boxcar_11_274_cargo_capacity;
+    colour_mapping: boxcar_11_274_colour_mapping;
+    additional_text: boxcar_11_274_additional_text;
+  }
+}
+
+long_name_template(boxcar_11_274, STR_LONGNAME_BOXCAR_11_274)
