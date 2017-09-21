@@ -266,6 +266,18 @@ switch (FEAT_TRAINS, SELF, cargo8_scmt_all_sprites,
 }
 
 // piece cargo
+#define IMAGEFILE  "src/freight/cargoes8/goods-1.png"
+cargo_layout_template(cargo8_good1_1, 8, 32, 40 + 0 * 67)
+cargo_layout_template(cargo8_good1_2, 8, 32, 40 + 1 * 67)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, cargo8_good_all_sprites,
+ cargo_count)
+{
+  0: dummy_sprites; 
+  1..39: cargo8_good1_1_sprites;
+         cargo8_good1_2_sprites;
+}
+
 #define IMAGEFILE  "src/freight/cargoes8/stel-1.png"
 cargo_layout_template(cargo8_stel1_1, 8, 32, 40 + 0 * 67)
 cargo_layout_template(cargo8_stel1_2, 8, 32, 40 + 1 * 67)
@@ -400,6 +412,29 @@ switch (FEAT_TRAINS, SELF, cargo8_wood_all_sprites,
           cargo8_wood1_3_sprites;
 }
 
+// loading speed
+switch (FEAT_TRAINS, SELF, cargo8_piece_stel_loading_speed,
+  (random_bits >> 5) & 0x03)
+{
+  0..1: return (cargo_capacity / 3 + 1);   // Rolls
+        return (cargo_capacity / 2 + 1);   // Pipes
+}
+
+switch (FEAT_TRAINS, SELF, cargo8_piece_good_loading_speed,
+  (random_bits >> 4) & 0x0F)
+{
+  return (cargo_capacity / 2 + 1);
+}
+
+switch (FEAT_TRAINS, SELF, cargo8_piece_loading_speed, 
+  cargo_type_in_veh)
+{ 
+  VEHI: return 1;
+  STEL: cargo8_piece_stel_loading_speed;
+  GOOD: cargo8_piece_good_loading_speed;
+        all_wagons_bulk_loading_speed; 
+}
+
 #define cargo8bulklist()                                    \
 AORE, CLAY, COAL, COKE, CORE, FERT, GRVL, IORE, KAOL, LIME, \
 MNO2, NITR, PEAT, PHOS, PORE, POTA, QLME, RCYC, SAND, SCMT, \
@@ -408,6 +443,12 @@ SLAG, SULP                                                  \
 #define cargo8piecelist()                                   \
 BDMT, BRCK, COPR, IRON, METL, PIPE, STEL, WDPR, WOOD, ZINC  \
 
+#define cargo8widepiecelist()                               \
+BDMT, BRCK, COPR, ENSP, GOOD, IRON, METL, MNSP, PIPE, STEL, \
+VPTS, WDPR, WOOD, ZINC                                      \
+
+// VEHI, 
+
 #define cargo8gondolalist() \
 cargo8bulklist(), cargo8piecelist()
 
@@ -415,38 +456,45 @@ switch (FEAT_TRAINS, SELF, cargo8all_sprites,
   [STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100), 
   cargo_type_in_veh])
 {  
-  AORE: cargo8_aore_all_sprites;
-  BDMT: cargo8_brck_all_sprites;
-  BRCK: cargo8_brck_all_sprites;
-  CLAY: cargo8_clay_all_sprites;
-  COAL: cargo8_coal_all_sprites;
-  COKE: cargo8_coal_all_sprites;
-  COPR: cargo8_stel3_sprites;
-  CORE: cargo8_core_all_sprites;
-  FERT: cargo8_fert_all_sprites;
-  GRVL: cargo8_grvl_all_sprites;
-  IORE: cargo8_iore_all_sprites;
-  IRON: cargo8_stel1_sprites;
-  KAOL: cargo8_lime_all_sprites;
-  LIME: cargo8_lime_all_sprites;
-  METL: cargo8_stel_all_sprites;
-  MNO2: cargo8_mno2_all_sprites;
-  NITR: cargo8_clay_all_sprites;
-  PEAT: cargo8_fert_all_sprites;
-  PHOS: cargo8_iore_all_sprites;
-  PIPE: cargo8_pipe_all_sprites;
-  PORE: cargo8_pore_all_sprites;
-  POTA: cargo8_pota_all_sprites;
-  QLME: cargo8_lime_all_sprites;
-  RCYC: cargo8_scmt_all_sprites;
-  SAND: cargo8_sand_all_sprites;
-  SCMT: cargo8_scmt_all_sprites;
-  STEL: cargo8_stel_all_sprites;
-  SLAG: cargo8_grvl_all_sprites;
+  AORE: cargo8_aore_all_sprites;                                 
+  BDMT: cargo8_brck_all_sprites;                                 
+  BRCK: cargo8_brck_all_sprites;                                 
+  CLAY: cargo8_clay_all_sprites;                                 
+  COAL: cargo8_coal_all_sprites;                                 
+  COKE: cargo8_coal_all_sprites;                                 
+  COPR: cargo8_stel3_sprites;                                    
+  CORE: cargo8_core_all_sprites;                                 
+  FERT: cargo8_fert_all_sprites;            
+  ENSP: cargo8_good_all_sprites;
+  GOOD: cargo8_good_all_sprites;                      
+  GRVL: cargo8_grvl_all_sprites;            
+  IORE: cargo8_iore_all_sprites;            
+  IRON: cargo8_stel1_sprites;               
+  KAOL: cargo8_lime_all_sprites;            
+  LIME: cargo8_lime_all_sprites;            
+  METL: cargo8_stel_all_sprites;            
+  MNO2: cargo8_mno2_all_sprites;            
+  MNSP: cargo8_good_all_sprites;                       
+  NITR: cargo8_clay_all_sprites;            
+  PEAT: cargo8_fert_all_sprites;            
+  PHOS: cargo8_iore_all_sprites;            
+  PIPE: cargo8_pipe_all_sprites;            
+  PORE: cargo8_pore_all_sprites;            
+  POTA: cargo8_pota_all_sprites;            
+  QLME: cargo8_lime_all_sprites;            
+  RCYC: cargo8_scmt_all_sprites;            
+  SAND: cargo8_sand_all_sprites;            
+  SCMT: cargo8_scmt_all_sprites;            
+  STEL: cargo8_stel_all_sprites;     
+  SLAG: cargo8_grvl_all_sprites;     
   SULP: cargo8_sulp_all_sprites;
-  WDPR: cargo8_wdpr_all_sprites;
-  WOOD: cargo8_wood_all_sprites;
-  ZINC: cargo8_stel1_sprites;
-        align_8_sprites;
-}
-
+//  VEHI: cargo8_vehi_all_sprites;                              
+  VPTS: cargo8_good_all_sprites;                              
+  WDPR: cargo8_wdpr_all_sprites;     
+  WOOD: cargo8_wood_all_sprites;     
+  ZINC: cargo8_stel1_sprites;        
+        align_8_sprites;             
+}                                    
+                                            
+                                            
+                                            

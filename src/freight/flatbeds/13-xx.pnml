@@ -1,48 +1,29 @@
 ﻿ // flatbed_13_xx
-/// Платформа
 
-
-#define IMAGEFILE  "src/freight/flatbeds/13-xx-part1.png"
+#define IMAGEFILE  "src/freight/flatbeds/13-xx.png"
 purchase_sprites(flatbed_13_xx, 0, 0)
-flatbed_empty_layout_template(flatbed_13_xx, 8, 32, 40)
-flatbed_layout2_template_fixed(flatbed_13_xx, 8, 32, 40+67*1,  good) // товары
-flatbed_layout2_template_fixed(flatbed_13_xx, 8, 32, 40+67*3,  wdpr) // лесоматериалы
-flatbed_layout3_template_fixed(flatbed_13_xx, 8, 32, 40+67*5,  wood)  // лес
+combo_layout_template(flatbed_13_xx, 8, 32, 40, 8, 16)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/13-xx-part2.png"
-flatbed_layout2_template_fixed(flatbed_13_xx, 8, 32, 40,       stel1) // сталь
-flatbed_layout3_template_fixed(flatbed_13_xx, 8, 32, 40+67*2,  stel2) // сталь
-flatbed_layout3_template_fixed(flatbed_13_xx, 8, 32, 40+67*5,  stel3) // сталь
-#undef IMAGEFILE
-
-random_switch (FEAT_TRAINS, SELF, flatbed_13_xx_stel_sprites,
-  bitmask(TRIGGER_VEHICLE_NEW_LOAD))
-{
-  6: flatbed_13_xx_stel1_sprites;
-  5: flatbed_13_xx_stel2_sprites;
-  5: flatbed_13_xx_stel3_sprites;
-}
 
 switch (FEAT_TRAINS, SELF, flatbed_13_xx_sprites_start,
-  cargo_type_in_veh)
+  getbits(extra_callback_info1, 8, 8))
 {
-  GOOD: flatbed_13_xx_good_sprites;
-  WDPR: flatbed_13_xx_wdpr_sprites;
-  WOOD: flatbed_13_xx_wood_sprites;
-  STEL: flatbed_13_xx_stel_sprites;
-        align_8_sprites;
+  0: flatbed_13_xx_sprites_back;
+  1: cargo8all_sprites;
+  2: flatbed_13_xx_sprites_front;
+     return CB_FAILED;
 }
 
-short_vehicle_RND(flatbed_13_xx, flatbed_13_xx_stel1_sprites)
+short_vehicle_RND(flatbed_13_xx, flatbed_13_xx_sprites_asm_back)
 
-random_switch (FEAT_TRAINS, SELF, flatbed_13_xx_random, 0 )
+switch (FEAT_TRAINS, SELF, flatbed_13_xx_random,
+  (random_bits >> 1) & 0x07)
 {
-  independent: flatbed_13_xx_stel_sprites;
-  1: return ttdall_cc + 0x19;
-  1: return ttdall_cc + 0x1A;
-  1: return ttdall_cc + 0x6B;
-  1: return ttdall_cc + 0x6C;
-  1: return ttdall_cc + 0x7B;
+     0: return ttdall_cc + 0x19;
+     1: return ttdall_cc + 0x1A;
+  2..3: return ttdall_cc + 0x6B;
+  4..5: return ttdall_cc + 0x6C;
+        return ttdall_cc + 0x7B;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_xx_colour_mapping,
@@ -82,21 +63,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_xx_cargo_capacity,
         return 50;
 }
 
-switch (FEAT_TRAINS, SELF, flatbed_13_xx_stel_loading_speed,
-  (random_bits / 2) % 16)
-{
-  0..5: return (cargo_capacity / 2 + 1);   // фермы
-        return (cargo_capacity / 3 + 1);   // трубы
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_xx_loading_speed, 
-  cargo_type_in_veh)
-{ 
-  STEL: flatbed_13_xx_stel_loading_speed;
-  GOOD: return (cargo_capacity / 2 + 1);
-        all_wagons_bulk_loading_speed; 
-}
-
 wagon_running_cost(flatbed_13_xx, 18)
 hint_wagon_flat(flatbed_13_xx,
                 50, 37,
@@ -112,7 +78,7 @@ item (FEAT_TRAINS, flatbed_13_xx, 270) {
     vehicle_dates(1930, 1938, 32, 10, 8, 3)
     vehicle_wagon(18, 120)
     vehicle_wagon_cargo(50, 10)
-    cargo_allow_refit: [STEL, GOOD, WDPR, WOOD];
+    cargo_allow_refit: [cargo8widepiecelist()];
   }
   graphics {
     default: flatbed_13_xx_sprites;
@@ -122,7 +88,7 @@ item (FEAT_TRAINS, flatbed_13_xx, 270) {
     cargo_subtype_text: flatbed_13_xx_cargo_subtype_text;
     colour_mapping: flatbed_13_xx_colour_mapping;
     cargo_capacity: flatbed_13_xx_cargo_capacity;
-    loading_speed: flatbed_13_xx_loading_speed;
+    loading_speed: cargo8_piece_loading_speed;
     additional_text: flatbed_13_xx_additional_text;
   }
 }

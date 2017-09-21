@@ -1,16 +1,15 @@
 ﻿ // flatbed_13_36
 
 switch (FEAT_TRAINS, SELF, flatbed_13_36_sprites_start,
-  cargo_type_in_veh)
+  getbits(extra_callback_info1, 8, 8))
 {
-  GOOD: flatbed_13_xx_good_sprites;
-  WDPR: flatbed_13_xx_wdpr_sprites;
-  WOOD: flatbed_13_xx_wood_sprites;
-  STEL: flatbed_13_xx_stel_sprites;
-        align_8_sprites;
+  0: flatbed_13_xx_sprites_back;
+  1: cargo8all_sprites;
+  2: flatbed_13_xx_sprites_front;
+     return CB_FAILED;
 }
 
-short_vehicle_RND(flatbed_13_36, flatbed_13_xx_stel1_sprites)
+short_vehicle_RND(flatbed_13_36, flatbed_13_xx_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, flatbed_13_36_cargo_capacity,
   cargo_type_in_veh)
@@ -30,21 +29,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_36_cargo_capacity,
         return 60;
 }
 
-switch (FEAT_TRAINS, SELF, flatbed_13_36_stel_loading_speed,
-  (random_bits / 2) % 16)
-{
-  0..5: return (cargo_capacity / 2 + 1);   // фермы
-        return (cargo_capacity / 3 + 1);   // трубы
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_36_loading_speed, 
-  cargo_type_in_veh)
-{ 
-  STEL: flatbed_13_36_stel_loading_speed;
-  GOOD: return (cargo_capacity / 2 + 1);
-        all_wagons_bulk_loading_speed; 
-}
-
 wagon_running_cost(flatbed_13_36, 21)
 hint_wagon_flat(flatbed_13_36,
                 60, 36,
@@ -60,7 +44,7 @@ item (FEAT_TRAINS, flatbed_13_36, 508) {
     vehicle_dates(1936, 1948, 32, 10, 8, 3)
     vehicle_wagon(22, 120)
     vehicle_wagon_cargo(60, 10)
-    cargo_allow_refit: [STEL, GOOD, WDPR, WOOD];
+    cargo_allow_refit: [cargo8widepiecelist()];
   }
   graphics {
     default: flatbed_13_36_sprites;
@@ -68,7 +52,7 @@ item (FEAT_TRAINS, flatbed_13_36, 508) {
     running_cost_factor: flatbed_13_36_running_cost_factor;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_subtype_text: flatbed_13_xx_cargo_subtype_text;
-    loading_speed: flatbed_13_36_loading_speed;
+    loading_speed: cargo8_piece_loading_speed;
     colour_mapping: flatbed_13_xx_colour_mapping;
     cargo_capacity: flatbed_13_36_cargo_capacity;
     additional_text: flatbed_13_36_additional_text;
