@@ -1,0 +1,75 @@
+﻿ // 11_740_hopper
+
+#define IMAGEFILE  "src/freight/hoppers/11-740.png"
+purchase_sprites(hopper_11_740, 0, 0)
+tanker_layout_template(hopper_11_740, 8, 32, 40)
+#undef IMAGEFILE
+short_vehicle_RND(hopper_11_740, hopper_11_740_sprites_start)
+
+random_switch (FEAT_TRAINS, SELF, hopper_11_740_random, 0 )
+{
+  independent: hopper_11_740_sprites_start;
+  2: return ttdall_cc + 0x62;
+  1: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x59;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_11_740_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: hopper_11_740_random;
+  1: return ttdall_cc + 0x62;
+  2: return ttdall_cc + 0x53;
+  3: return ttdall_cc + 0x59;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_11_740_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_62);
+  2: return string(STR_REFIT_TTD_53);
+  3: return string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_11_740_cargo_capacity,
+  cargo_type_in_veh)
+{
+  FERT: return 58;
+        return 64;
+}
+
+wagon_running_cost(hopper_11_740, 30)
+hint_wagon_with_uspeed(hopper_11_740,
+                       64, 73,
+                       STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+                       STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                       STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                       STR_PURCHASE_HINT_WAGON_TYPE_HOPPER_4AXLE_TSMW,
+                       1976, 1990,
+                       STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW)
+
+item (FEAT_TRAINS, hopper_11_740, 568) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 11, 740);
+    vehicle_dates(1976, 1990, 26, 10, 8, 5)
+    vehicle_wagon(22, 120)
+    vehicle_wagon_cargo(64, 20)
+    cargo_allow_refit: [FERT];
+  }
+  graphics {
+    default: hopper_11_740_sprites;
+    purchase: hopper_11_740_purchase_sprites;
+    running_cost_factor: hopper_11_740_running_cost_factor;
+    colour_mapping: hopper_11_740_colour_mapping;
+    cargo_subtype_text: hopper_11_740_cargo_subtype_text;
+    cargo_capacity: hopper_11_740_cargo_capacity;
+    loading_speed: all_wagons_bulk_auu_loading_speed;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    additional_text: hopper_11_740_additional_text;
+  }
+}
+
+long_name_template(hopper_11_740, STR_LONGNAME_HOPPER_11_740)
