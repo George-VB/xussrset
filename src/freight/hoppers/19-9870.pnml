@@ -6,69 +6,6 @@ tanker_layout_template(hopper_19_9870, 9, 0, 18)
 #undef IMAGEFILE
 long_vehicle_RND(hopper_19_9870, hopper_19_9870_sprites_start)
 
-random_switch (FEAT_TRAINS, SELF, hopper_19_9870_random, 0 )
-{
-  independent: hopper_19_9870_sprites_start;
-  6: return ttdall_cc + 0x71;
-  5: return ttdall_cc + 0x7B;
-  5: return ttdall_cc + 0x4B;
-// 0x06 и 0x62 случайным образом не выбираются
-}
-
-switch (FEAT_TRAINS, SELF, hopper_19_9870_colour_mapping2,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
-{
-  0: hopper_19_9870_random;
-  1: return ttdall_cc + 0x71;
-  2: return ttdall_cc + 0x7B;
-  3: return ttdall_cc + 0x4B;
-  4: return ttdall_cc + 0x06;
-  5: return ttdall_cc + 0x62;
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, hopper_19_9870_colour_mapping,
-  cargo_type_in_veh)
-{
-  FERT: return ttdall_cc + 0x62;
-        hopper_19_9870_colour_mapping2;
-}
-
-switch (FEAT_TRAINS, SELF, hopper_19_9870_cargo_subtype_text2,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_TTD_71);
-  2: return string(STR_REFIT_TTD_7B);
-  3: return string(STR_REFIT_TTD_4B);
-  4: return string(STR_REFIT_TTD_06);
-  5: return string(STR_REFIT_TTD_62);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, hopper_19_9870_cargo_subtype_text,
-  cargo_type_in_veh)
-{
-  FERT: return CB_RESULT_NO_TEXT;
-        hopper_19_9870_cargo_subtype_text2;
-}
-
-switch (FEAT_TRAINS, SELF, hopper_19_9870_refit_cost,
-  ((getbits(extra_callback_info1, 0, 8) == FERT) || (getbits(extra_callback_info1, 0, 8) == PHOS)) +
-  (((cargo_type_in_veh == FERT) || (cargo_type_in_veh == PHOS)) * 2))
-{
-  1: return 1;
-  2: return 3;
-     return 0 | CB_RESULT_AUTOREFIT;
-}
-
-switch (FEAT_TRAINS, SELF, hopper_19_9870_cargo_capacity,
-  cargo_type_in_veh)
-{
-  WHEA: return 71;
-        return 77;
-}
-
 wagon_running_cost(hopper_19_9870, 47)
 hint_wagon_with_uspeed_noto(hopper_19_9870,
                             77, 101,
@@ -85,19 +22,16 @@ item (FEAT_TRAINS, hopper_19_9870, 427) {
     vehicle_dates(2012, 2050, 26, 10, 8, 7)
     vehicle_wagon(23.5, 120)
     vehicle_wagon_cargo(77, 20)
-    default_cargo_type: FERT;
-    cargo_allow_refit: [cargo_all_hopperlist()];
+    cargo_allow_refit: [cargo_all_fert_hopperlist()];
   }
   graphics {
     default: hopper_19_9870_sprites;
     purchase: hopper_19_9870_purchase_sprites;
     running_cost_factor: hopper_19_9870_running_cost_factor;
     articulated_part: articulated_part_dummy1;
-    colour_mapping: hopper_19_9870_colour_mapping;
-    cargo_subtype_text: hopper_19_9870_cargo_subtype_text;
-    cargo_capacity: hopper_19_9870_cargo_capacity;
+    colour_mapping: return ttdall_cc + 0x62;
     loading_speed: all_wagons_bulk_auu_loading_speed;
-    refit_cost: hopper_19_9870_refit_cost;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     additional_text: hopper_19_9870_additional_text;
   }
 }
