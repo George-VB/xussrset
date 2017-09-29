@@ -12,7 +12,49 @@ BDMT, BEAN, BEER, BOOM, CERA, CASS, CMNT, DYES, GLAS, ENSP, \
 FICR, FMSP, GOOD, JAVA, MNSP, NUTS, PAPR, PLAS, PLST, RCYC, \
 SGCN, SGBT, VPTS, WOOL, WATR                                \
 
+#define cargo_all_petr_tanker()  \
+PETR                             \
 
+#define cargo_all_oil_tanker()  \
+RFPR, OIL_                      \
 
+#define cargo_all_oil_products_tanker()          \
+cargo_all_oil_tanker(), cargo_all_petr_tanker()  \
 
+#define cargo_all_food_tanker()  \
+WATR, COLA, EOIL                 \
 
+#define cargo_all_cement_tanker()  \
+CMNT, BDMT, MNO2, LIME, SASH       \
+
+#define cargo_all_other_tanker()  \
+RUBR, DYES, PLAS, PLST            \
+
+#define cargo_all_wine_tanker()  \
+BEER, cargo_all_food_tanker()    \
+
+#define cargo_all_milk_tanker()  \
+MILK, cargo_all_food_tanker()    \
+
+#define cargo_all_nonfood_tanker()                        \
+cargo_all_oil_products_tanker(), cargo_all_other_tanker() \
+
+#define cargo_all_tanker()                                                         \
+cargo_all_oil_products_tanker(), cargo_all_food_tanker(), cargo_all_other_tanker() \
+
+switch (FEAT_TRAINS, SELF, tanker_refit_cost,
+  (5 * ((cargo_type_in_veh == PETR) && (getbits(extra_callback_info1, 0, 8) != PETR))) +
+  (4 * (((cargo_type_in_veh == RFPR) || (cargo_type_in_veh == OIL_)) && 
+       (getbits(extra_callback_info1, 0, 8) != RFPR) && (getbits(extra_callback_info1, 0, 8) != OIL_))) +
+  (1 * (((cargo_type_in_veh == WATR) || (cargo_type_in_veh == COLA) || (cargo_type_in_veh == EOIL) || (cargo_type_in_veh == MILK) || (cargo_type_in_veh == BEER)) && 
+       (getbits(extra_callback_info1, 0, 8) != WATR) && (getbits(extra_callback_info1, 0, 8) != COLA) && (getbits(extra_callback_info1, 0, 8) != EOIL) && (getbits(extra_callback_info1, 0, 8) != MILK) && (getbits(extra_callback_info1, 0, 8) != BEER))) +
+  (2 * (((cargo_type_in_veh == RUBR) || (cargo_type_in_veh == DYES) || (cargo_type_in_veh == PLAS) || (cargo_type_in_veh == PLST)) && 
+       (getbits(extra_callback_info1, 0, 8) != RUBR) && (getbits(extra_callback_info1, 0, 8) != DYES) && (getbits(extra_callback_info1, 0, 8) != PLAS) && (getbits(extra_callback_info1, 0, 8) != PLST))) )
+{
+  1: return 1;
+  2: return 2;
+  3: return 3;
+  4: return 4;
+  5: return 5;
+     return 0 | CB_RESULT_AUTOREFIT;
+}
