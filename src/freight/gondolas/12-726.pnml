@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/freight/gondolas/12-726.png"
 purchase_sprites(gondola_12_726, 0, 0)
-combo_layout_template(gondola_12_726, 8, 32, 40, 16, 8)
+combo_layout_template(gondola_12_726, 8, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, gondola_12_726_sprites_start,
@@ -14,10 +14,11 @@ switch (FEAT_TRAINS, SELF, gondola_12_726_sprites_start,
      return CB_FAILED;
 }
 
-short_vehicle_RND(gondola_12_726, gondola_12_726_sprites_asm_back)
+long_vehicle_RND(gondola_12_726, gondola_12_726_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, gondola_12_726_random,
-  (random_bits >> 1) & 0x0F)
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
 {
     0..2: return ttdall_cc + 0x7C;
     3..5: return ttdall_cc + 0x4B;
@@ -106,7 +107,7 @@ hint_change_after(gondola_12_726, 1974)
 item (FEAT_TRAINS, gondola_12_726, 541) {
   property {
     name: string(STR_MODEL_NUMBER2, 12, 726);
-    vehicle_dates(1968, 1977, 22, 10, 8, 2)
+    vehicle_dates(1968, 1977, 22, 10, 7, 2)
     vehicle_wagon(22, 120)
     vehicle_wagon_cargo(65, 10)
     cargo_allow_refit: [cargo8gondolalist()];  
@@ -114,6 +115,7 @@ item (FEAT_TRAINS, gondola_12_726, 541) {
   graphics {
     default: gondola_12_726_sprites;
     purchase: gondola_12_726_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
     running_cost_factor: gondola_12_726_running_cost_factor;
     cargo_subtype_text: gondola_12_726_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;

@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/freight/gondolas/12-9869.png"
 purchase_sprites(gondola_12_9869, 0, 0)
-combo_layout_template(gondola_12_9869, 8, 32, 40, 16, 8)
+combo_layout_template(gondola_12_9869, 8, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, gondola_12_9869_sprites_start,
@@ -14,10 +14,11 @@ switch (FEAT_TRAINS, SELF, gondola_12_9869_sprites_start,
      return CB_FAILED;
 }
 
-short_vehicle_RND(gondola_12_9869, gondola_12_9869_sprites_asm_back)
+long_vehicle_RND(gondola_12_9869, gondola_12_9869_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, gondola_12_9869_random,
-  (random_bits >> 1) & 0x0F)
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
 {
   0..2: return ttdall_cc + 0x07;
   3..6: return ttdall_cc + 0x0A;
@@ -59,6 +60,7 @@ switch (FEAT_TRAINS, SELF, gondola_12_9869_cargo_capacity,
         return 77;
 }
 
+wagon_running_cost(gondola_12_9869, 17)
 hint_wagon_with_uspeed_noto(gondola_12_9869,
                             77, 92,
                             STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
@@ -66,12 +68,11 @@ hint_wagon_with_uspeed_noto(gondola_12_9869,
                             STR_PURCHASE_HINT_AGING_PERIOD_3_1,
                             STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_4AXLE_TSMW,
                             2013, STR_PURCHASE_HINT_FACTORY_TIKHVIN_CBP)
-wagon_running_cost(gondola_12_9869, 17)
 
 item (FEAT_TRAINS, gondola_12_9869, 564) {
   property {
     name: string(STR_MODEL_NUMBER2, 12, 9869);
-    vehicle_dates(2013, 2050, 32, 10, 8, 3)
+    vehicle_dates(2013, 2050, 32, 10, 7, 3)
     vehicle_wagon(23, 120)
     vehicle_wagon_cargo(77, 10)
     cargo_allow_refit: [cargo8gondolalist()];  
@@ -79,6 +80,7 @@ item (FEAT_TRAINS, gondola_12_9869, 564) {
   graphics {
     default: gondola_12_9869_sprites;
     purchase: gondola_12_9869_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
     running_cost_factor: gondola_12_9869_running_cost_factor;
     cargo_subtype_text: gondola_12_9869_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;

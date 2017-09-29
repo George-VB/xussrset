@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/freight/gondolas/12-515.png"
 purchase_sprites(gondola_12_515, 0, 0)
-combo_layout_template(gondola_12_515, 8, 32, 40, 16, 8)
+combo_layout_template(gondola_12_515, 8, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, gondola_12_515_sprites_start,
@@ -14,10 +14,11 @@ switch (FEAT_TRAINS, SELF, gondola_12_515_sprites_start,
      return CB_FAILED;
 }
 
-short_vehicle_RND(gondola_12_515, gondola_12_515_sprites_asm_back)
+long_vehicle_RND(gondola_12_515, gondola_12_515_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, gondola_12_515_random_b1975,
-  (random_bits >> 1) & 0x0F)
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
 {
     0..5: return ttdall_cc + 0x6C;
    6..11: return ttdall_cc + 0x71;
@@ -109,6 +110,8 @@ switch (FEAT_TRAINS, SELF, gondola_12_515_cargo_capacity,
         return 65;
 }
 
+livery_template_service_year(gondola_12_515, 1975)
+wagon_running_cost(gondola_12_515, 11)
 hint_wagon_with_uspeed(gondola_12_515,
                        65, 71,
                        STR_PURCHASE_HINT_LOADING_SPEED_5TIC,
@@ -117,13 +120,11 @@ hint_wagon_with_uspeed(gondola_12_515,
                        STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_4AXLE_WITH_DOORS_TSMW,
                        1964, 1979,
                        STR_PURCHASE_HINT_FACTORY_URALVAGONZAVOD)
-livery_template_service_year(gondola_12_515, 1975)
-wagon_running_cost(gondola_12_515, 11)
 
 item (FEAT_TRAINS, gondola_12_515, 285) {
   property {
     name: string(STR_MODEL_NUMBER2, 12, 515);
-    vehicle_dates(1964, 1979, 22, 10, 8, 2)
+    vehicle_dates(1964, 1979, 22, 10, 7, 2)
     vehicle_wagon(22, 120)
     vehicle_wagon_cargo(65, 10)
     cargo_allow_refit: [cargo8gondolalist()];  
@@ -131,6 +132,7 @@ item (FEAT_TRAINS, gondola_12_515, 285) {
   graphics {
     default: gondola_12_515_sprites;
     purchase: gondola_12_515_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
     running_cost_factor: gondola_12_515_running_cost_factor;
     cargo_subtype_text: gondola_12_515_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;

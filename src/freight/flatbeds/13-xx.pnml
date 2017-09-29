@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/freight/flatbeds/13-xx.png"
 purchase_sprites(flatbed_13_xx, 0, 0)
-combo_layout_template(flatbed_13_xx, 8, 32, 40, 8, 16)
+combo_layout_template(flatbed_13_xx, 8, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, flatbed_13_xx_sprites_start,
@@ -14,10 +14,11 @@ switch (FEAT_TRAINS, SELF, flatbed_13_xx_sprites_start,
      return CB_FAILED;
 }
 
-short_vehicle_RND(flatbed_13_xx, flatbed_13_xx_sprites_asm_back)
+long_vehicle_RND(flatbed_13_xx, flatbed_13_xx_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, flatbed_13_xx_random,
-  (random_bits >> 1) & 0x07)
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
 {
      0: return ttdall_cc + 0x19;
      1: return ttdall_cc + 0x1A;
@@ -75,7 +76,7 @@ hint_wagon_flat(flatbed_13_xx,
 item (FEAT_TRAINS, flatbed_13_xx, 270) {
   property {
     name: string(STR_NAME_FLATBED_13_XX);
-    vehicle_dates(1930, 1938, 32, 10, 8, 3)
+    vehicle_dates(1930, 1938, 32, 10, 7, 3)
     vehicle_wagon(18, 120)
     vehicle_wagon_cargo(50, 10)
     cargo_allow_refit: [cargo8widepiecelist()];
@@ -83,6 +84,7 @@ item (FEAT_TRAINS, flatbed_13_xx, 270) {
   graphics {
     default: flatbed_13_xx_sprites;
     purchase: flatbed_13_xx_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
     running_cost_factor: flatbed_13_xx_running_cost_factor;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_subtype_text: flatbed_13_xx_cargo_subtype_text;

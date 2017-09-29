@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/freight/gondolas/12-xx.png"
 purchase_sprites(gondola_12_xx, 0, 0)
-combo_layout_template(gondola_12_xx, 8, 32, 40, 16, 8)
+combo_layout_template(gondola_12_xx, 8, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites_start,
@@ -14,10 +14,11 @@ switch (FEAT_TRAINS, SELF, gondola_12_xx_sprites_start,
      return CB_FAILED;
 }
 
-short_vehicle_RND(gondola_12_xx, gondola_12_xx_sprites_asm_back)
+long_vehicle_RND(gondola_12_xx, gondola_12_xx_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, gondola_12_xx_random,
-  (random_bits >> 1) & 0x03)
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x03])
 {
   0: return ttdall_cc + 0x1A;
   1: return ttdall_cc + 0x6C;
@@ -59,6 +60,7 @@ switch (FEAT_TRAINS, SELF, gondola_12_xx_cargo_capacity,
         return 60;
 }
 
+wagon_running_cost(gondola_12_xx, 10)
 hint_wagon_with_uspeed(gondola_12_xx,
                        60, 67,
                        STR_PURCHASE_HINT_LOADING_SPEED_5TIC,
@@ -67,12 +69,11 @@ hint_wagon_with_uspeed(gondola_12_xx,
                        STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_4AXLE,
                        1935, 1941,
                        STR_PURCHASE_HINT_FACTORY_URALVAGONZAVOD)
-wagon_running_cost(gondola_12_xx, 10)
 
 item (FEAT_TRAINS, gondola_12_xx, 295) {
   property {
     name: string(STR_NAME_GONDOLA_12_XX);
-    vehicle_dates(1935, 1941, 22, 10, 8, 2)
+    vehicle_dates(1935, 1941, 22, 10, 7, 2)
     vehicle_wagon(23, 120)
     vehicle_wagon_cargo(60, 10)
     cargo_allow_refit: [cargo8gondolalist()];  
@@ -80,6 +81,7 @@ item (FEAT_TRAINS, gondola_12_xx, 295) {
   graphics {
     default: gondola_12_xx_sprites;
     purchase: gondola_12_xx_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
     running_cost_factor: gondola_12_xx_running_cost_factor;
     cargo_subtype_text: gondola_12_xx_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
