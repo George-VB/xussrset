@@ -2,29 +2,28 @@
 
 #define IMAGEFILE  "src/freight/boxcars/11-259.png"
 purchase_sprites(boxcar_11_259, 0, 0)
-box_empty_layout_template(boxcar_11_259_v1, 9, 0, 38)
-box_layout_template(boxcar_11_259_v1, 9, 0, 188, goods1)
+combo_layout_boxcar_template(boxcar_11_259, 9, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, boxcar_11_259_sprites_start,
-  cargo_subtype)
+  getbits(extra_callback_info1, 8, 8))
 {
-  0..4: boxcar_11_259_v1_goods1_sprites;
-        align_9_sprites;
+  0: boxcar_11_259_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_259_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(boxcar_11_259, boxcar_11_259_v1_goods1_sprites)
+long_vehicle_RND(boxcar_11_259, boxcar_11_259_sprites_asm_back)
 
-wagon_running_cost(boxcar_11_259, 17)
-
-// cb colour_mapping
-random_switch (FEAT_TRAINS, SELF, boxcar_11_259_random, 0 )
+switch (FEAT_TRAINS, SELF, boxcar_11_259_random, 
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
 {
-  independent: boxcar_11_259_v1_goods1_sprites;
-  1: return ttdall_cc + 0x4C;
-  7: return ttdall_cc + 0x53;
-  5: return ttdall_cc + 0x62;
-  1: return ttdall_cc + 0x72;
+   0..7: return ttdall_cc + 0x4C;
+  8..13: return ttdall_cc + 0x53;
+     14: return ttdall_cc + 0x62;
+         return ttdall_cc + 0x72;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_259_colour_mapping,
@@ -38,7 +37,6 @@ switch (FEAT_TRAINS, SELF, boxcar_11_259_colour_mapping,
      return CB_FAILED;
 }
 
-// cb cargo_subtype_text
 switch (FEAT_TRAINS, SELF, boxcar_11_259_cargo_subtype_text,
   cargo_subtype)
 {
@@ -57,6 +55,7 @@ switch (FEAT_TRAINS, SELF, boxcar_11_259_cargo_capacity,
         return 68;
 }
 
+wagon_running_cost(boxcar_11_259, 17)
 hint_wagon_noto(boxcar_11_259,
                 68, 120,
                 STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
@@ -71,7 +70,7 @@ item (FEAT_TRAINS, boxcar_11_259, 321) {
     vehicle_dates(1984, 2050, 32, 10, 8, 3)
     vehicle_wagon(24, 120)
     vehicle_wagon_cargo(68, 17)
-    cargo_allow_refit: [PAPR, GOOD];
+    cargo_allow_refit: [PAPR];
   }
   graphics {
     default: boxcar_11_259_sprites;
