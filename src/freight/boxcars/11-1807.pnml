@@ -1,0 +1,121 @@
+﻿ // boxcar_11_1807
+
+#define IMAGEFILE  "src/freight/boxcars/11-1807.png"
+purchase_sprites(boxcar_11_1807, 0, 0)
+combo_layout_boxcartop_template(boxcar_11_1807, 10, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_sprites_top_cc1,
+  STORE_TEMP(ttdall_cc + 0x71, 0x100))
+{ boxcar_11_1807_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_sprites_top_cc2,
+  STORE_TEMP(ttdall_cc + 0x72, 0x100))
+{ boxcar_11_1807_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_sprites_top_cc3,
+  STORE_TEMP(ttdall_cc + 0x73, 0x100))
+{ boxcar_11_1807_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_sprites_top_cc4,
+  STORE_TEMP(PALETTE_USE_DEFAULT, 0x100))
+{ boxcar_11_1807_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_sprites_top_cc,
+[  set_offset_to(1),
+   prev_vehicle_randombits() >> 4 & 0x0F])
+{
+  0: boxcar_11_1807_sprites_top_cc1;
+  1: boxcar_11_1807_sprites_top_cc2;
+  2: boxcar_11_1807_sprites_top_cc3;
+     boxcar_11_1807_sprites_top_cc4;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_1807_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_1807_sprites_front;
+  3: boxcar_11_1807_sprites_top_cc;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(boxcar_11_1807, boxcar_11_1807_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+    0..5: return ttdall_cc + 0x62;
+   6..11: return ttdall_cc + 0x63;
+      12: return ttdall_cc + 0xC0;
+          return ttdall_cc + 0x41;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: boxcar_11_1807_random;
+  1: return ttdall_cc + 0x62;
+  2: return ttdall_cc + 0x63;
+  3: return ttdall_cc + 0xC0;
+  4: return ttdall_cc + 0x41;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_62);
+  2: return string(STR_REFIT_TTD_63);
+  3: return string(STR_REFIT_TTD_C0);
+  4: return string(STR_REFIT_TTD_41);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1807_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 134;
+  WOOL: return 190;
+  GLAS: return 179;
+  SGCN: return 43;
+  ENSP: return 76;
+  FMSP: return 70;
+  MNSP: return 152;
+  VPTS: return 152;
+        return 59;
+}
+
+wagon_running_cost(boxcar_11_1807, 20)
+hint_wagon_noto(boxcar_11_1807,
+                67, 158,
+                STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+                STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR_4AXLE_TSMW,
+                2005, STR_PURCHASE_HINT_FACTORY_AZTM)
+
+item (FEAT_TRAINS, boxcar_11_1807, 573) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 11, 1807);
+    vehicle_dates(2005, 2050, 32, 10, 8, 3)
+    vehicle_wagon(27, 120)
+    vehicle_wagon_cargo(67, 45)
+    cargo_allow_refit: [cargo_all_boxcarlist()];  
+  }
+  graphics {
+    default: boxcar_11_1807_sprites;
+    purchase: boxcar_11_1807_purchase_sprites;
+    running_cost_factor: boxcar_11_1807_running_cost_factor;
+    cargo_subtype_text: boxcar_11_1807_cargo_subtype_text;
+    articulated_part: articulated_part_dummy2;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: boxcar_11_1807_cargo_capacity;
+    colour_mapping: boxcar_11_1807_colour_mapping;
+    additional_text: boxcar_11_1807_additional_text;
+  }
+}
+
+long_name_template(boxcar_11_1807, STR_LONGNAME_BOXCAR_11_1807)
