@@ -2,29 +2,31 @@
 
 #define IMAGEFILE  "src/freight/boxcars/11-270.png"
 purchase_sprites(boxcar_11_270, 0, 0)
-box_empty_layout_template(boxcar_11_270_v1, 9, 0, 38)
-box_layout_template(boxcar_11_270_v1, 9, 0, 188, goods1)
+combo_layout_boxcar_template(boxcar_11_270, 9, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, boxcar_11_270_sprites_start,
-  cargo_subtype)
+  getbits(extra_callback_info1, 8, 8))
 {
-  0..7: boxcar_11_270_v1_goods1_sprites;
-        align_9_sprites;
+  0: boxcar_11_270_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_270_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(boxcar_11_270, boxcar_11_270_v1_goods1_sprites)
+long_vehicle_RND(boxcar_11_270, boxcar_11_270_sprites_asm_back)
 
-random_switch (FEAT_TRAINS, SELF, boxcar_11_270_random, 0 )
+switch (FEAT_TRAINS, SELF, boxcar_11_270_random, 
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x1F])
 {
-  independent: boxcar_11_270_v1_goods1_sprites;
-  5: return ttdall_cc + 0x4B;
-  3: return ttdall_cc + 0x53;
-  3: return ttdall_cc + 0x5B;
-  3: return ttdall_cc + 0x62;
-  5: return ttdall_cc + 0x71;
-  5: return ttdall_cc + 0x73;
-  1: return ttdall_cc + 0x9C;
+    0..5: return ttdall_cc + 0x4B;
+   6..10: return ttdall_cc + 0x53;
+  11..14: return ttdall_cc + 0x5B;
+  15..18: return ttdall_cc + 0x62;
+  19..24: return ttdall_cc + 0x71;
+  25..30: return ttdall_cc + 0x73;
+          return ttdall_cc + 0x9C;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_270_colour_mapping,
@@ -89,7 +91,7 @@ item (FEAT_TRAINS, boxcar_11_270, 322) {
     vehicle_dates(1986, 1991, 32, 10, 8, 3)
     vehicle_wagon(35, 120)
     vehicle_wagon_cargo(69, 35)
-    cargo_allow_refit: [GOOD, WOOL, GLAS, ENSP, FMSP, MNSP, VPTS, SGCN, FICR, RCYC, WDPR, CMNT, BDMT, CERA, SGBT, BEER, JAVA, BEAN, CASS, NUTS, WATR];
+    cargo_allow_refit: [cargo_all_boxcarlist()];
   }
   graphics {
     default: boxcar_11_270_sprites;
