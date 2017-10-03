@@ -2,41 +2,60 @@
 
 #define IMAGEFILE  "src/freight/boxcars/11-280.png"
 purchase_sprites(boxcar_11_280, 0, 0)
-box_empty_layout_template(boxcar_11_280_v1, 10, 0, 38)
-box_layout_template(boxcar_11_280_v1, 10, 0, 188, goods1)
+combo_layout_boxcar_template(boxcar_11_280_v1, 10, 32, 40)
+combo_layout_boxcar_template(boxcar_11_280_v2, 10, 32, 40+67*3)
+combo_layout_boxcar_template(boxcar_11_280_v3, 10, 32, 40+67*6)
 #undef IMAGEFILE
 
-#define IMAGEFILE  "src/freight/boxcars/11-280-baltic.png"
-box_empty_layout_template(boxcar_11_280_v2, 10, 0, 38)
-box_layout_template(boxcar_11_280_v2, 10, 0, 188, goods1)
-#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, boxcar_11_280_v1_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_280_v1_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_280_v1_sprites_front;
+     return CB_FAILED;
+}
 
-#define IMAGEFILE  "src/freight/boxcars/11-280-pid.png"
-box_empty_layout_template(boxcar_11_280_v3, 10, 0, 38)
-box_layout_template(boxcar_11_280_v3, 10, 0, 188, goods1)
-#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, boxcar_11_280_v2_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_280_v2_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_280_v2_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_280_v3_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_280_v3_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_280_v3_sprites_front;
+     return CB_FAILED;
+}
 
 switch (FEAT_TRAINS, SELF, boxcar_11_280_sprites_start,
   cargo_subtype)
 {
-  0..7: boxcar_11_280_v1_goods1_sprites;
-     8: boxcar_11_280_v2_goods1_sprites;
-     9: boxcar_11_280_v3_goods1_sprites;
+  0..7: boxcar_11_280_v1_sprites_start;
+     8: boxcar_11_280_v2_sprites_start;
+     9: boxcar_11_280_v3_sprites_start;
         align_10_sprites;
 }
 
-long_vehicle_RND(boxcar_11_280, boxcar_11_280_v1_goods1_sprites)
+long_vehicle_RND(boxcar_11_280, boxcar_11_280_v1_sprites_asm_back)
 
-random_switch (FEAT_TRAINS, SELF, boxcar_11_280_random, 0)
+switch (FEAT_TRAINS, SELF, boxcar_11_280_random, 
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x1F])
 {
-  independent: boxcar_11_280_v1_goods1_sprites;
-  2: return ttdall_cc + 0x5C;
-  2: return ttdall_cc + 0x62;
-  2: return ttdall_cc + 0x63;
-  5: return ttdall_cc + 0x73;
-  1: return ttdall_cc + 0x83;
-  1: return ttdall_cc + 0x9C;
-  1: return ttdall_cc + 0xCE;
+    0..4: return ttdall_cc + 0x5C;
+    5..9: return ttdall_cc + 0x62;
+  10..14: return ttdall_cc + 0x63;
+  15..25: return ttdall_cc + 0x73;
+  26..27: return ttdall_cc + 0x83;
+  28..29: return ttdall_cc + 0x9C;
+          return ttdall_cc + 0xCE;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_280_colour_mapping,
