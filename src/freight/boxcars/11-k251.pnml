@@ -2,28 +2,35 @@
 
 #define IMAGEFILE  "src/freight/boxcars/11-k251.png"
 purchase_sprites(boxcar_11_k251_v1, 0, 0)
-box_empty_layout_template(boxcar_11_k251_v1, 9, 0, 38)
-box_layout_template(boxcar_11_k251_v1, 9, 0, 188, goods1)
+combo_layout_boxcar_template(boxcar_11_k251_v1, 9, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/freight/boxcars/11-k251-a1957.png"
 purchase_sprites(boxcar_11_k251_v2, 0, 0)
-box_empty_layout_template(boxcar_11_k251_v2, 9, 0, 38)
-box_layout_template(boxcar_11_k251_v2, 9, 0, 188, goods1)
+combo_layout_boxcar_template(boxcar_11_k251_v2, 9, 32, 40)
 #undef IMAGEFILE
 purchase_sprites_select(boxcar_11_k251, 1957)
 
-switch (FEAT_TRAINS, SELF, boxcar_11_k251_sprites_start,
-  build_year >= 1957)
+switch (FEAT_TRAINS, SELF, boxcar_11_k251_b1957_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
 {
-  0: boxcar_11_k251_v1_goods1_sprites;
-     boxcar_11_k251_v2_goods1_sprites;
+  0: boxcar_11_k251_v1_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_k251_v1_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(boxcar_11_k251, boxcar_11_k251_v1_goods1_sprites)
+switch (FEAT_TRAINS, SELF, boxcar_11_k251_a1957_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_k251_v2_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_k251_v2_sprites_front;
+     return CB_FAILED;
+}
 
-wagon_running_cost(boxcar_11_k251, 14)
+engine_build_year_template(boxcar_11_k251, 1957, start, ) 
+long_vehicle_RND(boxcar_11_k251, boxcar_11_k251_v1_sprites_asm_back)
 
-// < 1957
 switch (FEAT_TRAINS, SELF, boxcar_11_k251_cargo_capacity_b1957,
   cargo_type_in_veh)
 {
@@ -43,7 +50,6 @@ switch (FEAT_TRAINS, SELF, boxcar_11_k251_cargo_capacity_b1957,
         return 60;
 }
 
-// >= 1957
 switch (FEAT_TRAINS, SELF, boxcar_11_k251_cargo_capacity_a1957,
   cargo_type_in_veh)
 {
@@ -71,6 +77,7 @@ switch (FEAT_TRAINS, SELF, boxcar_11_k251_cargo_capacity,
      boxcar_11_k251_cargo_capacity_b1957;
 }
 
+wagon_running_cost(boxcar_11_k251, 14)
 hint_wagon(boxcar_11_k251_b1957,
            60, 106,
            STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
@@ -93,7 +100,7 @@ item (FEAT_TRAINS, boxcar_11_k251, 255) {
     vehicle_dates(1948, 1960, 32, 10, 8, 2)
     vehicle_wagon(24, 120)
     vehicle_wagon_cargo(60, 16)
-    cargo_allow_refit: [GOOD, WOOL, GLAS, ENSP, FMSP, MNSP, VPTS, SGCN, FICR, RCYC, WDPR, PAPR, GRAI, WHEA, MAIZ, CERE, OLSD, CMNT, BDMT, CERA, SGBT, BEER, JAVA, BEAN, CASS, NUTS, WATR];
+    cargo_allow_refit: [cargo_all_boxcarlist()];
   }
   graphics {
     default: boxcar_11_k251_sprites;

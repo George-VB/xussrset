@@ -2,18 +2,19 @@
 
 #define IMAGEFILE  "src/freight/boxcars/11-38.png"
 purchase_sprites(boxcar_11_38, 0, 0)
-box_empty_layout_template(boxcar_11_38_v1, 9, 0, 38)
-box_layout_template(boxcar_11_38_v1, 9, 0, 188, goods1)
+combo_layout_boxcar_template(boxcar_11_38, 9, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, boxcar_11_38_sprites_start, 0)
+switch (FEAT_TRAINS, SELF, boxcar_11_38_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
 {
-  boxcar_11_38_v1_goods1_sprites;
+  0: boxcar_11_38_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_38_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(boxcar_11_38, boxcar_11_38_v1_goods1_sprites)
-
-wagon_running_cost(boxcar_11_38, 11)
+long_vehicle_RND(boxcar_11_38, boxcar_11_38_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, boxcar_11_38_cargo_capacity,
   cargo_type_in_veh)
@@ -34,6 +35,7 @@ switch (FEAT_TRAINS, SELF, boxcar_11_38_cargo_capacity,
         return 52;
 }
 
+wagon_running_cost(boxcar_11_38, 11)
 hint_wagon(boxcar_11_38,
            52, 89,
            STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
@@ -48,7 +50,7 @@ item (FEAT_TRAINS, boxcar_11_38, 254) {
     vehicle_dates(1936, 1954, 32, 10, 8, 2)
     vehicle_wagon(23, 120)
     vehicle_wagon_cargo(52, 13)
-    cargo_allow_refit: [GOOD, WOOL, GLAS, ENSP, FMSP, MNSP, VPTS, SGCN, FICR, RCYC, WDPR, PAPR, GRAI, WHEA, MAIZ, CERE, OLSD, CMNT, BDMT, CERA, SGBT, BEER, JAVA, BEAN, CASS, NUTS, WATR];
+    cargo_allow_refit: [cargo_all_boxcarlist()];
   }
   graphics {
     default: boxcar_11_38_sprites;

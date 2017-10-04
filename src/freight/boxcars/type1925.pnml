@@ -2,16 +2,19 @@
 
 #define IMAGEFILE  "src/freight/boxcars/type1925.png"
 purchase_sprites(boxcar_of_1925, 0, 0)
-box_empty_layout_template(boxcar_of_1925_v1, 8, 2, 22)
-box_layout_template(boxcar_of_1925_v1, 8, 2, 172, goods1)
+combo_layout_boxcar_template(boxcar_of_1925, 8, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, boxcar_of_1925_sprites_start, 0)
+switch (FEAT_TRAINS, SELF, boxcar_of_1925_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
 {
-  boxcar_of_1925_v1_goods1_sprites;
+  0: boxcar_of_1925_sprites_back;
+  1: cargo8_good_bc_sprites;
+  2: boxcar_of_1925_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(boxcar_of_1925, boxcar_of_1925_v1_goods1_sprites)
+long_vehicle_RND(boxcar_of_1925, boxcar_of_1925_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, boxcar_of_1925_cargo_capacity,
   cargo_type_in_veh)
@@ -47,7 +50,7 @@ item (FEAT_TRAINS, boxcar_of_1925, 336) {
     vehicle_dates(1925, 1936, 32, 10, 7, 2)
     vehicle_wagon(23, 120)
     vehicle_wagon_cargo(50, 13)
-    cargo_allow_refit: [GOOD, WOOL, GLAS, LVST, ENSP, FMSP, MNSP, VPTS, SGCN, FICR, RCYC, WDPR, PAPR, GRAI, WHEA, MAIZ, CERE, OLSD, CMNT, BDMT, CERA, SGBT, BEER, JAVA, BEAN, CASS, NUTS, WATR];
+    cargo_allow_refit: [cargo_all_boxcarlist()];
   }
   graphics {
     default: boxcar_of_1925_sprites;
