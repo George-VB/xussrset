@@ -2,81 +2,44 @@
 
 #define IMAGEFILE  "src/freight/refrigerators/rs5.png"
 purchase_sprites(rs5, 0, 0)
-refsection_layout_template(rs5, 13, 113, 65, food)
-flatbed_empty_layout_template(rs5_diesel, 10, 113, 333)
+combo_layout_refsection_template(rs5, 13, 32, 40)
+ref_diesel_layout_template(rs5_diesel, 10, 32, 40 + 67*3)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, rs5_food_sprites_left,
-  cargo_count)
+switch (FEAT_TRAINS, SELF, rs5_sprites_left,
+  getbits(extra_callback_info1, 8, 8))
 {
-     0..59: rs5_food_sprites_left1;
-   60..119: rs5_food_sprites_left2;
-  120..179: rs5_food_sprites_left3;
-            rs5_food_sprites_left0;
+  0: rs5_sprites_left_back;
+  1: cargo13_frut_bc_sprites;
+  2: rs5_sprites_left_front;
+     return CB_FAILED;
 }
 
-switch (FEAT_TRAINS, SELF, rs5_food_sprites_right,
-  cargo_count)
+switch (FEAT_TRAINS, SELF, rs5_sprites_right,
+  getbits(extra_callback_info1, 8, 8))
 {
-     0..59: rs5_food_sprites_right1;
-   60..119: rs5_food_sprites_right2;
-  120..179: rs5_food_sprites_right3;
-            rs5_food_sprites_right0;
+  0: rs5_sprites_right_back;
+  1: cargo13_frut_bc_sprites;
+  2: rs5_sprites_right_front;
+     return CB_FAILED;
 }
 
-random_switch (FEAT_TRAINS, SELF, rs5_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
+switch (FEAT_TRAINS, SELF, rs5_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01)])
 {
-  1: rs5_food_sprites_left;
-  1: rs5_food_sprites_right;
+  0: rs5_sprites_left;
+     rs5_sprites_right;
 }
 
-long_vehicle_RND(rs5, rs5_sprites_start)
-
-switch (FEAT_TRAINS, SELF, rs5_diesel_sprites,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
-{
-  0: rs5_diesel_empty_sprites_left;
-     rs5_diesel_empty_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, rs5_food_sprites_left_prev,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load())])
-{
-     0..59: rs5_food_sprites_left1;
-   60..119: rs5_food_sprites_left2;
-  120..179: rs5_food_sprites_left3;
-            rs5_food_sprites_left0;
-}
-
-switch (FEAT_TRAINS, SELF, rs5_food_sprites_right_prev,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load())])
-{
-     0..59: rs5_food_sprites_right1;
-   60..119: rs5_food_sprites_right2;
-  120..179: rs5_food_sprites_right3;
-            rs5_food_sprites_right0;
-}
-
-switch (FEAT_TRAINS, SELF, rs5int_prev_sprites,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
-{
-  0: rs5_food_sprites_left_prev;
-     rs5_food_sprites_right_prev;
-}
+long_vehicle_RND(rs5, rs5_sprites_asm_left_back)
 
 switch (FEAT_TRAINS, SELF, rs5int_sprites_start,
-  position_in_vehid_chain)
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01)])
 {
-  1: rs5int_prev_sprites;
-  3: rs5_diesel_sprites;
-  5: rs5int_prev_sprites;
-  7: rs5int_prev_sprites;
-     dummy_sprites;
+  0: rs5_diesel_sprites_left;
+     rs5_diesel_sprites_right;
 }
 
 long_vehicle(rs5int)
@@ -84,42 +47,19 @@ long_vehicle(rs5int)
 engine_diesel_1r_effect(rs5int, -2, 4, 11)
 
 switch (FEAT_TRAINS, SELF, rs5int_create_effect2,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01)])
 {
   0: rs5int_create_effect_sprites_left;
      rs5int_create_effect_sprites_right;
 }
 
 switch (FEAT_TRAINS, SELF, rs5int_create_effect,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load() > 0) && (position_in_vehid_chain == 3)])
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_cargo_load() > 0)])
 {
   1: rs5int_create_effect2;
      return 0;
-}
-
-// секция из 5-ти вагонов
-switch (FEAT_TRAINS, SELF, rs5_articulated_part,
-  extra_callback_info1)
-{
-  1..9: return rs5int;
-        return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
-}
-
-switch (FEAT_TRAINS, SELF, rs5int_length,
-  position_in_vehid_chain)
-{
-  0: return 5;
-//  1: return 8;
-  2: return 5;
-//  3: return 8;
-  4: return 2;
-//  5: return 8;
-  6: return 5;
-//  7: return 8;
-  8: return 5;
-     return 8;
 }
 
 item (FEAT_TRAINS, rs5int, 265) {
@@ -131,7 +71,6 @@ item (FEAT_TRAINS, rs5int, 265) {
   }
   graphics {
     default: rs5int_sprites;
-    length: rs5int_length;
     create_effect: rs5int_create_effect;
     colour_mapping: any_cc_colour;
   }
@@ -140,19 +79,31 @@ item (FEAT_TRAINS, rs5int, 265) {
 switch (FEAT_TRAINS, SELF, rs5_cargo_capacity,
   cargo_type_in_veh)
 {
-  FOOD: return 180;
-  FISH: return 188;
-  FRUT: return 180;
-  MILK: return 188;
-  SGBT: return 188;
-        return 188;
+  FOOD: return 45;
+  FRUT: return 45;
+        return 47;
+}
+
+switch (FEAT_TRAINS, SELF, rs5_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;	
+  2: return rs5;	
+  3: return dummy5;	
+  4: return rs5int;	
+  5: return dummy2;	
+  6: return rs5;	
+  7: return dummy5;	
+  8: return rs5;	
+  9: return dummy5;	
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
 // не переведено на шаблон, так как 17 параметров
 switch (FEAT_TRAINS, SELF, rs5_additional_text, 0)
 {
   return string(STR_PURCHASE_HINT_WAGON_WITH_COMMENT,
-                188, 447,
+                47*4, 112*4,
                 string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
                 string(STR_PURCHASE_HINT_AGING_PERIOD_8_1),
                 string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 3000), string(STR_MODEL_NUMBER2, 16, 3001)),
@@ -168,7 +119,7 @@ item (FEAT_TRAINS, rs5, 266) {
     name: string(STR_NAME_RS5);
     vehicle_dates(1986, 2000, 25, 10, 8, 117)
     vehicle_wagon(232.9, 140)
-    vehicle_wagon_cargo(188, 60)
+    vehicle_wagon_cargo(47, 15)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {

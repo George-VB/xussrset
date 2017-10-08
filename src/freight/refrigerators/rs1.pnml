@@ -2,81 +2,44 @@
 
 #define IMAGEFILE  "src/freight/refrigerators/rs1.png"
 purchase_sprites(rs1, 0, 0)
-refsection_layout_template(rs1, 13, 113, 65, food)
-flatbed_empty_layout_template(rs1_diesel, 10, 113, 333)
+combo_layout_refsection_template(rs1, 13, 32, 40)
+ref_diesel_layout_template(rs1_diesel, 10, 32, 40 + 67*3)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, rs1_food_sprites_left,
-  cargo_count)
+switch (FEAT_TRAINS, SELF, rs1_sprites_left,
+  getbits(extra_callback_info1, 8, 8))
 {
-     0..59: rs1_food_sprites_left1;
-   60..119: rs1_food_sprites_left2;
-  120..179: rs1_food_sprites_left3;
-            rs1_food_sprites_left0;
+  0: rs1_sprites_left_back;
+  1: cargo13_frut_bc_sprites;
+  2: rs1_sprites_left_front;
+     return CB_FAILED;
 }
 
-switch (FEAT_TRAINS, SELF, rs1_food_sprites_right,
-  cargo_count)
+switch (FEAT_TRAINS, SELF, rs1_sprites_right,
+  getbits(extra_callback_info1, 8, 8))
 {
-     0..59: rs1_food_sprites_right1;
-   60..119: rs1_food_sprites_right2;
-  120..179: rs1_food_sprites_right3;
-            rs1_food_sprites_right0;
+  0: rs1_sprites_right_back;
+  1: cargo13_frut_bc_sprites;
+  2: rs1_sprites_right_front;
+     return CB_FAILED;
 }
 
-random_switch (FEAT_TRAINS, SELF, rs1_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
+switch (FEAT_TRAINS, SELF, rs1_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01)])
 {
-  1: rs1_food_sprites_left;
-  1: rs1_food_sprites_right;
+  0: rs1_sprites_left;
+     rs1_sprites_right;
 }
 
-long_vehicle_RND(rs1, rs1_sprites_start)
-
-switch (FEAT_TRAINS, SELF, rs1_diesel_sprites,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
-{
-  0: rs1_diesel_empty_sprites_left;
-     rs1_diesel_empty_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, rs1_food_sprites_left_prev,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load())])
-{
-     0..59: rs1_food_sprites_left1;
-   60..119: rs1_food_sprites_left2;
-  120..179: rs1_food_sprites_left3;
-            rs1_food_sprites_left0;
-}
-
-switch (FEAT_TRAINS, SELF, rs1_food_sprites_right_prev,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load())])
-{
-     0..59: rs1_food_sprites_right1;
-   60..119: rs1_food_sprites_right2;
-  120..179: rs1_food_sprites_right3;
-            rs1_food_sprites_right0;
-}
-
-switch (FEAT_TRAINS, SELF, rs1int_prev_sprites,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
-{
-  0: rs1_food_sprites_left_prev;
-     rs1_food_sprites_right_prev;
-}
+long_vehicle_RND(rs1, rs1_sprites_asm_left_back)
 
 switch (FEAT_TRAINS, SELF, rs1int_sprites_start,
-  position_in_vehid_chain)
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01)])
 {
-  1: rs1int_prev_sprites;
-  3: rs1_diesel_sprites;
-  5: rs1int_prev_sprites;
-  7: rs1int_prev_sprites;
-     dummy_sprites;
+  0: rs1_diesel_sprites_left;
+     rs1_diesel_sprites_right;
 }
 
 long_vehicle(rs1int)
@@ -84,42 +47,19 @@ long_vehicle(rs1int)
 engine_diesel_1r_effect(rs1int, -2, 4, 11)
 
 switch (FEAT_TRAINS, SELF, rs1int_create_effect2,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_randombits() % 2)])
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01)])
 {
   0: rs1int_create_effect_sprites_left;
      rs1int_create_effect_sprites_right;
 }
 
 switch (FEAT_TRAINS, SELF, rs1int_create_effect,
-[  set_offset_to(-position_in_vehid_chain-1),
-   (prev_vehicle_cargo_load() > 0) && (position_in_vehid_chain == 3)])
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_cargo_load() > 0)])
 {
   1: rs1int_create_effect2;
      return 0;
-}
-
-// секция из 5-ти вагонов
-switch (FEAT_TRAINS, SELF, rs1_articulated_part,
-  extra_callback_info1)
-{
-  1..9: return rs1int;
-        return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
-}
-
-switch (FEAT_TRAINS, SELF, rs1int_length,
-  position_in_vehid_chain)
-{
-  0: return 5;
-//  1: return 8;
-  2: return 5;
-//  3: return 8;
-  4: return 2;
-//  5: return 8;
-  6: return 5;
-//  7: return 8;
-  8: return 5;
-     return 8;
 }
 
 item (FEAT_TRAINS, rs1int, 393) {
@@ -131,32 +71,36 @@ item (FEAT_TRAINS, rs1int, 393) {
   }
   graphics {
     default: rs1int_sprites;
-    length: rs1int_length;
     create_effect: rs1int_create_effect;
     colour_mapping: any_cc_colour;
   }
 }
 
+switch (FEAT_TRAINS, SELF, rs1_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;	
+  2: return rs1;	
+  3: return dummy5;	
+  4: return rs1int;	
+  5: return dummy2;	
+  6: return rs1;	
+  7: return dummy5;	
+  8: return rs1;	
+  9: return dummy5;	
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
 switch (FEAT_TRAINS, SELF, rs1_cargo_capacity_b1973,
   cargo_type_in_veh)
 {
-  FOOD: return 168;
-  FISH: return 168;
-  FRUT: return 168;
-  MILK: return 168;
-  SGBT: return 168;
-        return 168;
+        return 42;
 }
 
 switch (FEAT_TRAINS, SELF, rs1_cargo_capacity_a1973,
   cargo_type_in_veh)
 {
-  FOOD: return 172;
-  FISH: return 172;
-  FRUT: return 172;
-  MILK: return 172;
-  SGBT: return 172;
-        return 172;
+        return 43;
 }
 
 switch (FEAT_TRAINS, SELF, rs1_cargo_capacity,
@@ -171,7 +115,7 @@ switch (FEAT_TRAINS, SELF, rs1_additional_text,
   current_year >= 1973)
 {
   0: return string(STR_PURCHASE_HINT_WAGON_WITH_COMMENT,
-                   168, 432,
+                   42*4, 108*4,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_8_1),
                    string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 340), string(STR_MODEL_NUMBER2, 16, 341)),
@@ -179,7 +123,7 @@ switch (FEAT_TRAINS, SELF, rs1_additional_text,
                    string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
                    string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD, 120, 144));
      return string(STR_PURCHASE_HINT_WAGON_WITH_COMMENT,
-                   172, 432,
+                   43*4, 108*4,
                    string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
                    string(STR_PURCHASE_HINT_AGING_PERIOD_8_1),
                    string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 340), string(STR_MODEL_NUMBER2, 16, 341)),
@@ -196,7 +140,7 @@ item (FEAT_TRAINS, rs1, 394) {
     name: string(STR_NAME_RS1);
     vehicle_dates(1965, 1978, 25, 10, 8, 81)
     vehicle_wagon(226, 140)
-    vehicle_wagon_cargo(168, 60)
+    vehicle_wagon_cargo(42, 15)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
