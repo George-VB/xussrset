@@ -2,26 +2,19 @@
 
 #define IMAGEFILE  "src/freight/flatbeds/13-6954.png"
 purchase_sprites(flatbed_13_6954, 0, 0)
-tanker_layout_template(flatbed_13_6954_back, 9, 32, 40)
+container_platform_layout_template(flatbed_13_6954_back, 9, 32, 40)
 #undef IMAGEFILE
-
-random_switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_back,
-  bitmask(TRIGGER_VEHICLE_NEW_LOAD))                        
-{ 
-  independent: flatbed_13_6954_back_sprites_start;
-  128: flatbed_13_6954_back_sprites_start;                        
-}                     
 
 switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back_CC,
   STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100))
 {  
-  flatbed_13_6954_sprites_back;  
+  flatbed_13_6954_back_sprites_start;  
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back_NCC,
   STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100))
 {  
-  flatbed_13_6954_sprites_back;  
+  flatbed_13_6954_back_sprites_start;  
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back,
@@ -31,111 +24,15 @@ switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_back,
      flatbed_13_6954_sprites_asm_back_NCC;
 }
 
-switch (FEAT_TRAINS, SELF, cargo_goods1_1_sprites,
-  [STORE_TEMP(ttdall_cc + 0x3F, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_goods1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_goods1_2_sprites,
-  [STORE_TEMP(ttdall_cc + 0xB5, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_goods1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_goods1_3_sprites,
-  [STORE_TEMP(ttdall_cc + 0x53, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_goods1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_goods1_4_sprites,
-  [STORE_TEMP(ttdall_cc + 0x93, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_goods1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_goods1,
-  (random_bits / 8) & 0x03)                        
-{
-  0: cargo_goods1_1_sprites;
-  1: cargo_goods1_2_sprites;
-  2: cargo_goods1_3_sprites;
-     cargo_goods1_4_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_goods2,
-  [STORE_TEMP(PALETTE_IDENTITY, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_goods2_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_goods,
-  (random_bits / 4) & 0x01)                        
-{
-  0: flatbed_13_6954_sprites_goods1;
-     flatbed_13_6954_sprites_goods2;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_water1_1_sprites,
-  [STORE_TEMP(ttdall_cc + 0x32, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_water1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_water1_2_sprites,
-  [STORE_TEMP(ttdall_cc + 0x38, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_water1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_water1_3_sprites,
-  [STORE_TEMP(ttdall_cc + 0x63, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_water1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, cargo_water1_4_sprites,
-  [STORE_TEMP(ttdall_cc + 0x83, 0x100), cargo_count > 0])
-{  
-  1: cargo9_container40_water1_sprites;  
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_water,
-  (random_bits / 8) & 0x03)                        
-{
-  0: cargo_water1_1_sprites;
-  1: cargo_water1_2_sprites;
-  2: cargo_water1_3_sprites;
-     cargo_water1_4_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_asm_cargo,
-  cargo_type_in_veh)
-{
-  GOOD: flatbed_13_6954_sprites_goods;
-  WATR: flatbed_13_6954_sprites_water;
-        return CB_FAILED;
-}
-
 switch (FEAT_TRAINS, SELF, flatbed_13_6954_sprites_start,
   getbits(extra_callback_info1, 8, 8))
 {
   0: flatbed_13_6954_sprites_asm_back;
-  1: flatbed_13_6954_sprites_asm_cargo;
+  1: cargo9_container40new_sprites;
      return CB_FAILED;
 }
 
-long_vehicle_RND(flatbed_13_6954, flatbed_13_6954_back_sprites_start)
+long_vehicle_RND(flatbed_13_6954, flatbed_13_6954_back_sprites_start_RND)
 
 switch (FEAT_TRAINS, SELF, flatbed_13_6954_purchase_colour_mapping,
   enable_cc_default)
