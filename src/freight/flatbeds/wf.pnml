@@ -1,82 +1,20 @@
 ﻿ // flatbed_wf
 
-#define IMAGEFILE  "src/freight/flatbeds/wf-part1.png"
+#define IMAGEFILE  "src/freight/flatbeds/wf.png"
 purchase_sprites(flatbed_wf, 0, 0)
-flatbed_empty_layout_template(flatbed_wf, 5, 32, 40)
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, coal) // уголь      
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, iore) // жел. руда  
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*3, core) // медн. руда 
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*4, aore) // бокситы    
+combo_layout_template(flatbed_wf, 5, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/wf-part2.png"
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, clay) // глина    
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, fert) // удобрения
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, grvl) // гравий   
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*3, lime) // известняк
-#undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/wf-part3.png"        
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, pota) // поташ  
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, sand) // песок  
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, sulp) // сера   
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*3, bdmt) // кирпичи
-#undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/wf-part4.png"
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, stel) // сталь
-#undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/wf-part5.png"
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, wdpr) // лесоматериалы
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, wood) // Древесина
-#undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/wf-part6.png"
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, scmt) // металолом
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, mno2) // марганец
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*2, pore) // пирит
-#undef IMAGEFILE
-#define IMAGEFILE  "src/freight/flatbeds/wf-part7.png"
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*0, good1) // товары
-flatbed_layout1_template_fixed(flatbed_wf, 5, 32, 40+67*1, good2) // товары
-#undef IMAGEFILE
-
-random_switch (FEAT_TRAINS, SELF, flatbed_wf_good_sprites,
-  bitmask(TRIGGER_VEHICLE_NEW_LOAD))
-{
-  independent: flatbed_wf_good1_sprites;
-  1: flatbed_wf_good1_sprites;
-  1: flatbed_wf_good2_sprites;
-}
 
 switch (FEAT_TRAINS, SELF, flatbed_wf_sprites_start,
-  cargo_type_in_veh)
+  getbits(extra_callback_info1, 8, 8))
 {
-  COAL: flatbed_wf_coal_sprites;
-  IORE: flatbed_wf_iore_sprites;
-  PHOS: flatbed_wf_iore_sprites;
-  CORE: flatbed_wf_core_sprites;
-  AORE: flatbed_wf_aore_sprites;
-  CLAY: flatbed_wf_clay_sprites;
-  FERT: flatbed_wf_fert_sprites;
-  GRVL: flatbed_wf_grvl_sprites;
-  LIME: flatbed_wf_lime_sprites;
-  POTA: flatbed_wf_pota_sprites;
-  SAND: flatbed_wf_sand_sprites;
-  SULP: flatbed_wf_sulp_sprites;
-  BDMT: flatbed_wf_bdmt_sprites;
-  STEL: flatbed_wf_stel_sprites;
-  GOOD: flatbed_wf_good_sprites;
-  WOOD: flatbed_wf_wood_sprites;
-  WDPR: flatbed_wf_wdpr_sprites;
-  SCMT: flatbed_wf_scmt_sprites;
-  ENSP: flatbed_wf_good_sprites;
-  MNSP: flatbed_wf_good_sprites;
-  VPTS: flatbed_wf_good_sprites;
-  MNO2: flatbed_wf_mno2_sprites;
-  PORE: flatbed_wf_pore_sprites;
-  NITR: flatbed_wf_clay_sprites;
-  COPR: flatbed_wf_stel_sprites;
-        align_5_sprites;
+  0: flatbed_wf_sprites_back;
+  1: cargo5all_sprites;
+  2: flatbed_wf_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(flatbed_wf, flatbed_wf_good1_sprites)
+long_vehicle_RND(flatbed_wf, flatbed_wf_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, flatbed_wf_cargo_capacity,
   cargo_type_in_veh)
@@ -87,13 +25,6 @@ switch (FEAT_TRAINS, SELF, flatbed_wf_cargo_capacity,
   MNSP: return 32;
   VPTS: return 32;
         return 10;
-}
-
-switch (FEAT_TRAINS, SELF, flatbed_wf_loading_speed, 
-  cargo_type_in_veh)
-{ 
-  GOOD: return (cargo_capacity / 2 + 1);
-        all_wagons_bulk_loading_speed; 
 }
 
 wagon_running_cost(flatbed_wf, 2)
@@ -120,7 +51,7 @@ item (FEAT_TRAINS, flatbed_wf, 533) {
     running_cost_factor: flatbed_wf_running_cost_factor;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     cargo_capacity: flatbed_wf_cargo_capacity;
-    loading_speed: flatbed_wf_loading_speed;
+    loading_speed: cargo5_piece_loading_speed;
     additional_text: flatbed_wf_additional_text;
   }
 }
