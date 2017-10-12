@@ -2,124 +2,100 @@
 
 #define IMAGEFILE  "src/freight/boxcars/ntv.png"
 purchase_sprites(ntv_v1, 0, 0)
-purchase_sprites(ntv_v2, 104, 0)
-
-box_empty_layout_template(ntv_v1a, 5, 112,  73)
-box_layout_template(ntv_v1a,       5, 112, 184, goods)
-box_layout_template(ntv_v1a,       5, 112, 295, ficr)
-box_layout_template(ntv_v1a,       5, 112, 628, lvst)
-box_empty_layout_template(ntv_v1a_line, 5, 112, 406)
-box_layout_template(ntv_v1a_line,       5, 112, 517, cere)
-
-box_empty_layout_template(ntv_v1b, 5, 364,  73)
-box_layout_template(ntv_v1b,       5, 364, 184, goods)
-box_layout_template(ntv_v1b,       5, 364, 295, ficr)
-box_layout_template(ntv_v1b,       5, 364, 628, lvst)
-box_empty_layout_template(ntv_v1b_line, 5, 364, 406)
-box_layout_template(ntv_v1b_line,       5, 364, 517, cere)
-
-box_empty_layout_template(ntv_v2a, 5, 616,  73)
-box_layout_template(ntv_v2a,       5, 616, 184, goods)
-box_layout_template(ntv_v2a,       5, 616, 295, ficr)
-box_layout_template(ntv_v2a,       5, 616, 628, lvst)
-box_empty_layout_template(ntv_v2a_line, 5, 616, 406)
-box_layout_template(ntv_v2a_line,       5, 616, 517, cere)
-
-box_empty_layout_template(ntv_v2b, 5, 868,  73)
-box_layout_template(ntv_v2b,       5, 868, 184, goods)
-box_layout_template(ntv_v2b,       5, 868, 295, ficr)
-box_layout_template(ntv_v2b,       5, 868, 628, lvst)
-box_empty_layout_template(ntv_v2b_line, 5, 868, 406)
-box_layout_template(ntv_v2b_line,       5, 868, 517, cere)
+purchase_sprites(ntv_v2, 100, 0)
+combo_layout_boxcartop_template(ntv_v1, 5, 32, 40)
+combo_layout_boxcar_template(ntv_v1_grain, 5, 32, 40 + 67 * 4)
+combo_layout_boxcartop_template(ntv_v2, 5, 32, 40 + 67 * 7)
+combo_layout_boxcar_template(ntv_v2_grain, 5, 32, 40 + 67 * 11)
 #undef IMAGEFILE
 purchase_sprites_select(ntv, 1918)
 
-switch (FEAT_TRAINS, SELF, ntv_v1a_sprites,
+switch (FEAT_TRAINS, SELF, ntv_sprites_top1,
+  STORE_TEMP(PALETTE_USE_DEFAULT, 0x100))
+{ ntv_v1_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, ntv_sprites_top2,
+  STORE_TEMP(PALETTE_USE_DEFAULT, 0x100))
+{ ntv_v2_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, ntv_sprites_top,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: ntv_sprites_top1;
+     ntv_sprites_top2;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_v1_base_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: ntv_v1_sprites_back;
+  1: cargo5all_sprites;
+  2: ntv_v1_sprites_front;
+  3: ntv_sprites_top;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_v1_grain_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: ntv_v1_grain_sprites_back;
+  1: cargo5all_sprites;
+  2: ntv_v1_grain_sprites_front;
+  3: ntv_sprites_top;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_v1_sprites_start,
   cargo_type_in_veh)
 {
-  FICR: ntv_v1a_ficr_sprites;
-  WOOL: ntv_v1a_ficr_sprites;
-  OLSD: ntv_v1a_ficr_sprites;
-  CMNT: ntv_v1a_ficr_sprites;
-  BDMT: ntv_v1a_ficr_sprites;
-  LVST: ntv_v1a_lvst_sprites;
-  GRAI: ntv_v1a_line_cere_sprites;
-  WHEA: ntv_v1a_line_cere_sprites;
-  MAIZ: ntv_v1a_line_cere_sprites;
-  CERE: ntv_v1a_line_cere_sprites;
-        ntv_v1a_goods_sprites;
+  CERE: ntv_v1_grain_sprites_start;
+  GRAI: ntv_v1_grain_sprites_start;
+  MAIZ: ntv_v1_grain_sprites_start;
+  OLSD: ntv_v1_grain_sprites_start;
+  WHEA: ntv_v1_grain_sprites_start;
+        ntv_v1_base_sprites_start;
 }
 
-switch (FEAT_TRAINS, SELF, ntv_v1b_sprites,
+switch (FEAT_TRAINS, SELF, ntv_v2_base_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: ntv_v2_sprites_back;
+  1: cargo5all_sprites;
+  2: ntv_v2_sprites_front;
+  3: ntv_sprites_top;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_v2_grain_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: ntv_v2_grain_sprites_back;
+  1: cargo5all_sprites;
+  2: ntv_v2_grain_sprites_front;
+  3: ntv_sprites_top;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, ntv_v2_sprites_start,
   cargo_type_in_veh)
 {
-  FICR: ntv_v1b_ficr_sprites;
-  WOOL: ntv_v1b_ficr_sprites;
-  OLSD: ntv_v1b_ficr_sprites;
-  CMNT: ntv_v1b_ficr_sprites;
-  BDMT: ntv_v1b_ficr_sprites;
-  LVST: ntv_v1b_lvst_sprites;
-  GRAI: ntv_v1b_line_cere_sprites;
-  WHEA: ntv_v1b_line_cere_sprites;
-  MAIZ: ntv_v1b_line_cere_sprites;
-  CERE: ntv_v1b_line_cere_sprites;
-        ntv_v1b_goods_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ntv_v2a_sprites,
-  cargo_type_in_veh)
-{
-  FICR: ntv_v2a_ficr_sprites;
-  WOOL: ntv_v2a_ficr_sprites;
-  OLSD: ntv_v2a_ficr_sprites;
-  CMNT: ntv_v2a_ficr_sprites;
-  BDMT: ntv_v2a_ficr_sprites;
-  LVST: ntv_v2a_lvst_sprites;
-  GRAI: ntv_v2a_line_cere_sprites;
-  WHEA: ntv_v2a_line_cere_sprites;
-  MAIZ: ntv_v2a_line_cere_sprites;
-  CERE: ntv_v2a_line_cere_sprites;
-        ntv_v2a_goods_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ntv_v2b_sprites,
-  cargo_type_in_veh)
-{
-  FICR: ntv_v2b_ficr_sprites;
-  WOOL: ntv_v2b_ficr_sprites;
-  OLSD: ntv_v2b_ficr_sprites;
-  CMNT: ntv_v2b_ficr_sprites;
-  BDMT: ntv_v2b_ficr_sprites;
-  LVST: ntv_v2b_lvst_sprites;
-  GRAI: ntv_v2b_line_cere_sprites;
-  WHEA: ntv_v2b_line_cere_sprites;
-  MAIZ: ntv_v2b_line_cere_sprites;
-  CERE: ntv_v2b_line_cere_sprites;
-        ntv_v2b_goods_sprites;
-}
-
-random_switch (FEAT_TRAINS, SELF, ntv_v1_RND_sprites, 0 )
-{
-  independent: ntv_v1a_goods_sprites;
-  1: ntv_v1a_sprites;
-  1: ntv_v1b_sprites;
-}
-
-random_switch (FEAT_TRAINS, SELF, ntv_v2_RND_sprites, 0 )
-{
-  dependent: ntv_v1_RND_sprites;
-  1: ntv_v2a_sprites;
-  1: ntv_v2b_sprites;
+  CERE: ntv_v2_grain_sprites_start;
+  GRAI: ntv_v2_grain_sprites_start;
+  MAIZ: ntv_v2_grain_sprites_start;
+  OLSD: ntv_v2_grain_sprites_start;
+  WHEA: ntv_v2_grain_sprites_start;
+        ntv_v2_base_sprites_start;
 }
 
 switch (FEAT_TRAINS, SELF, ntv_sprites_start,
   check_year(1918))
 {
-  0: ntv_v1_RND_sprites;
-     ntv_v2_RND_sprites;
+  0: ntv_v1_sprites_start;
+     ntv_v2_sprites_start;
 }
 
-long_vehicle_RND(ntv, ntv_v1a_goods_sprites)
+long_vehicle_RND(ntv, ntv_v1_sprites_asm_back)
 
 switch (FEAT_TRAINS, SELF, ntv_cargo_capacity_1891,
   cargo_type_in_veh)
@@ -312,7 +288,7 @@ item (FEAT_TRAINS, ntv, 303) {
     articulated_part: articulated_part_dummy1;
     running_cost_factor: ntv_running_cost_factor;
     additional_text: ntv_additional_text;
-    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    refit_cost: boxcar_refit_cost;
     cargo_capacity: ntv_cargo_capacity;
     colour_mapping: any_cc_colour;
     cargo_subtype_text: ntv_cargo_subtype_text;
