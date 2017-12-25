@@ -2,27 +2,27 @@
 
 #define IMAGEFILE  "src/freight/flatbeds/23-4000-wood.png"
 purchase_sprites(flatbed_23_4000, 0, 0)
-flatbed_empty_layout_template(flatbed_23_4000, 14, 32, 40)
-flatbed_layout1_template_fixed(flatbed_23_4000, 14, 32, 40+67*1, wood) // лес
+combo_layout_template(flatbed_23_4000, 14, 32, 40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, flatbed_23_4000_sprites_start,
-  cargo_subtype)
+  getbits(extra_callback_info1, 8, 8))
 {
-  0..3: flatbed_23_4000_wood_sprites;
-        align_14_sprites;
+  0: flatbed_23_4000_sprites_back;
+  1: cargo14all_sprites;
+  2: flatbed_23_4000_sprites_front;
+     return CB_FAILED;
 }
 
-long_vehicle_RND(flatbed_23_4000, flatbed_23_4000_wood_sprites)
+long_vehicle_RND(flatbed_23_4000, flatbed_23_4000_sprites_asm_back)
 
-wagon_running_cost(flatbed_23_4000, 17)
-
-random_switch (FEAT_TRAINS, SELF, flatbed_23_4000_random, 0 )
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
 {
-  independent: flatbed_23_4000_wood_sprites;
-  5: return ttdall_cc + 0x5C;
-  4: return ttdall_cc + 0x63;
-  4: return ttdall_cc + 0x53;
+   0..5: return ttdall_cc + 0x5C;
+  6..10: return ttdall_cc + 0x63;
+         return ttdall_cc + 0x53;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_23_4000_colour_mapping,
@@ -45,6 +45,7 @@ switch (FEAT_TRAINS, SELF, flatbed_23_4000_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
+wagon_running_cost(flatbed_23_4000, 17)
 hint_wagon_flat_noto2(flatbed_23_4000_bUSSREND,
                       56, 60,
                       STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
