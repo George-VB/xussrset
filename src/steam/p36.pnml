@@ -9,6 +9,48 @@ tender_sprites(7, p36_tender, 447,  40)
 steamer_direction_template(p36, _sprites_start)
 long_vehicle(p36)
 
+random_switch (FEAT_TRAINS, PARENT, p36_colour_mapping_6020_RND, 0)
+{
+   1: return ttd_cc2 + 0x3A;
+   1: return ttd_cc2 + 0x3B;
+   1: return ttd_cc2 + 0x3C;
+   1: return ttd_cc2 + 0x3D;
+}
+
+random_switch (FEAT_TRAINS, PARENT, p36_colour_mapping_6002_RND, 0)
+{
+   1: return ttd_cc2 + 0x38;
+   1: return ttd_cc2 + 0x39;
+}
+
+random_switch (FEAT_TRAINS, PARENT, p36_colour_mapping_93_RND, 0)
+{
+   1: return ttd_cc2 + 0x3E;
+   1: return ttd_cc2 + 0x3F;
+}                             
+
+switch (FEAT_TRAINS, SELF, p36_engine_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: p36_colour_mapping_6002_RND;
+  1: p36_colour_mapping_93_RND;
+  LV_RAL6020: p36_colour_mapping_6020_RND;
+  LV_RAL6002: p36_colour_mapping_6002_RND;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, p36_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+{
+  0: p36_colour_mapping_6002_RND;
+  1: p36_colour_mapping_93_RND;
+  LV_RAL6020: p36_colour_mapping_6020_RND;
+  LV_RAL6002: p36_colour_mapping_6002_RND;
+     return CB_FAILED;
+}
+
+steamer_direction_template(p36, _colour_mapping)
 engine_steam_1_effect(p36, -3, 13)
 engine_speed(p36, 125)
 engine_penalise_speed0(p36)
@@ -21,7 +63,14 @@ engine_weight_change_build_after(p36, 133+121,
 engine_TE_change_build_after(p36, get_tec_int(173.0, 133+121),
                                   get_tec_int(173.0, 133+123), 1954)
 engine_tender(p36)
-hint_engine(p36, STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM, STR_PURCHASE_HINT_SECTIONS_1, 1950, 1956, STR_PURCHASE_HINT_FACTORY_KOLOMNA)
+livery_template(p36_alt, TTD_53, LV_RAL6020, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_alt(p36, TTD_93)
+
+hint_engine(p36, 
+            STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM, 
+            STR_PURCHASE_HINT_SECTIONS_1, 
+            1950, 1956, 
+            STR_PURCHASE_HINT_FACTORY_KOLOMNA)
 
 item (FEAT_TRAINS, p36, 583) {
   property {
@@ -45,8 +94,8 @@ item (FEAT_TRAINS, p36, 583) {
     cargo_capacity: return 0;
     create_effect: p36_create_effect;
     running_cost_factor: p36_running_cost_factor;
-    colour_mapping: is20_colour_mapping;
-    cargo_subtype_text: is20_cargo_subtype_text;
+    colour_mapping: p36_colour_mapping;
+    cargo_subtype_text: p36_cargo_subtype_text;
     additional_text: p36_additional_text;
   }
 }
