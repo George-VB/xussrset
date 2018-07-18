@@ -1,0 +1,81 @@
+﻿ // refrigerator_type1951
+
+#define IMAGEFILE  "src/freight/refrigerators/type1951.png"
+purchase_sprites(refrigerator_type1951_v1, 0, 0)
+combo_layout_boxcar_template(refrigerator_type1951_v1, 9, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/refrigerators/type1951-a1954.png"
+purchase_sprites(refrigerator_type1951_v2, 0, 0)
+combo_layout_boxcar_template(refrigerator_type1951_v2, 9, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(refrigerator_type1951, 1954)
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1951_b1954_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_type1951_v1_sprites_back;
+  1: cargo9_frut_bc_sprites;
+  2: refrigerator_type1951_v1_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1951_a1954_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_type1951_v2_sprites_back;
+  1: cargo9_frut_bc_sprites;
+  2: refrigerator_type1951_v2_sprites_front;
+     return CB_FAILED;
+}
+
+engine_build_year_template(refrigerator_type1951, 1954, start, ) 
+long_vehicle_RND(refrigerator_type1951, refrigerator_type1951_v1_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1951_weight,
+  cargo_count > 0)
+{
+  1: return 32+6;
+     return 32;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1951_cargo_capacity,
+  cargo_type_in_veh)
+{
+  FOOD: return 24;
+  FISH: return 24;
+  FRUT: return 24;
+  SGBT: return 24;
+        return 24;
+}
+
+wagon_running_cost(refrigerator_type1951, 28)
+hint_wagon(refrigerator_type1951,
+           24, 65,
+           STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
+           1951, 1957,
+           STR_PURCHASE_HINT_FACTORY_BRYANSK)
+
+item (FEAT_TRAINS, refrigerator_type1951, 359) {
+  property {
+    name: string(STR_NAME_REFRIGERATOR_ISSUE_OF_1951);
+    vehicle_dates(1951, 1957, 25, 10, 8, 4)
+    vehicle_wagon(32, 120)
+    vehicle_wagon_cargo(24, 15)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    default: refrigerator_type1951_sprites;
+    purchase: refrigerator_type1951_purchase_sprites;
+    cargo_age_period: return 300;
+    running_cost_factor: refrigerator_type1951_running_cost_factor;
+    articulated_part: articulated_part_dummy1;
+    cargo_capacity: refrigerator_type1951_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    weight: refrigerator_type1951_weight;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: return string(STR_REFIT_FACTORY);
+    additional_text: refrigerator_type1951_additional_text;
+  }
+}
