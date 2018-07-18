@@ -1,0 +1,57 @@
+﻿ // flatbed_type1846
+
+#define IMAGEFILE  "src/freight/flatbeds/type1846.png"
+purchase_sprites(flatbed_type1846, 0, 0)
+combo_layout_template(flatbed_type1846, 5, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, flatbed_type1846_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_type1846_sprites_back;
+  1: cargo5all_sprites;
+  2: flatbed_type1846_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(flatbed_type1846, flatbed_type1846_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, flatbed_type1846_cargo_capacity,
+  cargo_type_in_veh)
+{
+  GOOD: return 20;
+  VEHI: return 1;
+  ENSP: return 16;
+  MNSP: return 32;
+  VPTS: return 32;
+        return 10;
+}
+
+wagon_running_cost(flatbed_type1846, 2)
+hint_wagon_flat(flatbed_type1846,
+                10, 23,
+                STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+                STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+                1846, 1878,
+                STR_PURCHASE_HINT_RWFACTORY_PM_RW)
+
+item (FEAT_TRAINS, flatbed_type1846, 533) {
+  property {
+    name: string(STR_NAME_FLATBED_ISSUE_OF_1846);
+    vehicle_dates(1846, 1878, 30, 10, 4, 1)
+    vehicle_wagon(6, 120)
+    vehicle_wagon_cargo(10, 5)
+    cargo_allow_refit: [cargo_all_flatbedlist()];
+  }
+  graphics {
+    default: flatbed_type1846_sprites;
+    purchase: flatbed_type1846_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    running_cost_factor: flatbed_type1846_running_cost_factor;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    cargo_capacity: flatbed_type1846_cargo_capacity;
+    loading_speed: cargo5_piece_loading_speed;
+    additional_text: flatbed_type1846_additional_text;
+  }
+}
