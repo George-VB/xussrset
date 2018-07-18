@@ -1,0 +1,69 @@
+﻿ // refrigerator_type1928
+
+#define IMAGEFILE  "src/freight/refrigerators/type1928.png"
+purchase_sprites(refrigerator_type1928, 0, 0)
+combo_layout_boxcar_template(refrigerator_type1928, 8, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1928_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_type1928_sprites_back;
+  1: cargo8_frut_bc_sprites;
+  2: refrigerator_type1928_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(refrigerator_type1928, refrigerator_type1928_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1928_weight,
+  cargo_count > 0)
+{
+  1: return 31+6;
+     return 31;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1928_cargo_capacity,
+  cargo_type_in_veh)
+{
+  FOOD: return 23;
+  FISH: return 23;
+  FRUT: return 23;
+  MILK: return 23;
+  SGBT: return 23;
+        return 23;
+}
+
+wagon_running_cost(refrigerator_type1928, 27)
+hint_wagon(refrigerator_type1928,
+           23, 76,
+           STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
+           1928, 1932,
+           STR_PURCHASE_HINT_FACTORY_RIGA_FENIX)
+
+item (FEAT_TRAINS, refrigerator_type1928, 337) {
+  property {
+    name: string(STR_NAME_REFRIGERATOR_ISSUE_OF_1928);
+    vehicle_dates(1928, 1932, 25, 10, 7, 4)
+    vehicle_wagon(30.5, 120)
+    vehicle_wagon_cargo(23, 13)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    default: refrigerator_type1928_sprites;
+    purchase: refrigerator_type1928_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    cargo_age_period: return 300;
+    running_cost_factor: refrigerator_type1928_running_cost_factor;
+    cargo_capacity: refrigerator_type1928_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    weight: refrigerator_type1928_weight;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: return string(STR_REFIT_FACTORY);
+    additional_text: refrigerator_type1928_additional_text;
+  }
+}
+
+long_name_template(refrigerator_type1928, STR_LONGNAME_REFRIGERATOR_ISSUE_OF_1928)

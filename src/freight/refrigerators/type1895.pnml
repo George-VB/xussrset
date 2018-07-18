@@ -1,0 +1,57 @@
+﻿ // refrigerator_type1895
+
+#define IMAGEFILE  "src/freight/refrigerators/type1895.png"
+purchase_sprites(refrigerator_type1895, 0, 0)
+combo_layout_boxcar_template(refrigerator_type1895, 4, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1895_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_type1895_sprites_back;
+//  1: cargo4_frut_bc_sprites;
+  2: refrigerator_type1895_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(refrigerator_type1895, refrigerator_type1895_sprites_asm_back)
+
+switch (FEAT_TRAINS, SELF, refrigerator_type1895_weight,
+  cargo_count > 0)
+{
+  1: return 7+3;
+     return 7;
+}
+
+wagon_running_cost(refrigerator_type1895, 7)
+hint_wagon(refrigerator_type1895,
+           10, 36,
+           STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
+           1895, 1930,
+           STR_PURCHASE_HINT_FACTORY_PUTILOVSKY)
+
+item (FEAT_TRAINS, refrigerator_type1895, 305) {
+  property {
+    name: string(STR_NAME_REFRIGERATOR_ISSUE_OF_1895);
+    vehicle_dates(1895, 1930, 25, 10, 3, 1)
+    vehicle_wagon(7, 120)
+    vehicle_wagon_cargo(10, 5)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    default: refrigerator_type1895_sprites;
+    purchase: refrigerator_type1895_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    cargo_age_period: return 300;
+    running_cost_factor: refrigerator_type1895_running_cost_factor;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    weight: refrigerator_type1895_weight;
+    colour_mapping: any_cc_colour;
+    cargo_subtype_text: return string(STR_REFIT_FACTORY);
+    additional_text: refrigerator_type1895_additional_text;
+  }
+}
+
+long_name_template(refrigerator_type1895, STR_LONGNAME_REFRIGERATOR_ISSUE_OF_1895)
