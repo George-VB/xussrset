@@ -1,0 +1,74 @@
+﻿ // coach_type1912
+
+#define IMAGEFILE  "src/coach/type1912.png"
+purchase_sprites(coach_type1912, 0, 0)
+
+pass_wagon_sprites(13, coach_type1912_v1, 32, 40)
+pass_wagon_sprites(13, coach_type1912_v2, 32, 40+268)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, coach_type1912_sprites_start_old2,
+  cargo_subtype)
+{
+  0: coach_type1912_v1_sprites_start;
+  LV_RAL6020: coach_type1912_v2_sprites_start;
+              align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, coach_type1912_sprites_start,
+  build_year >= 1918)
+{
+  1: coach_type1912_v2_sprites_start;
+     coach_type1912_sprites_start_old2;
+}
+
+long_vehicle_RND(coach_type1912, coach_type1912_v1_sprites_start)
+
+switch (FEAT_TRAINS, SELF, coach_type1912_cargo_capacity,
+  (cargo_subtype != 0) || (build_year >= 1918))
+{
+  1: return 96;
+     return 78;
+}
+
+livery_template1(coach_type1912_old, TTD_40)
+livery_template(coach_type1912_old2, TTD_40, LV_RAL6020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template1(coach_type1912_new, TTD_59)
+switch (FEAT_TRAINS, SELF, coach_type1912_cargo_subtype_text,
+  (build_year >= 1918) +
+  ((current_year >= 1918) * 2))
+{
+  0: coach_type1912_old_cargo_subtype_text;
+  2: coach_type1912_old2_cargo_subtype_text;
+     coach_type1912_new_cargo_subtype_text;
+}
+
+wagon_running_cost(coach_type1912, 48)
+hint_wagon_coach(coach_type1912,
+                 STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                 STR_PURCHASE_HINT_AGING_PERIOD_2_1,
+                 STR_PURCHASE_HINT_COACH_TYPE_S,
+                 1912, 1917,
+                 STR_PURCHASE_HINT_FACTORY_RBW)
+
+item (FEAT_TRAINS, coach_type1912, 356) {
+  property {
+    name: string(STR_NAME_COACH_ISSUE_OF_1912);
+    vehicle_dates(1912, 1917, 28, 10, 8, 6)
+    vehicle_wagon(43, 120)
+    vehicle_wagon_pass(78, 45)
+  }
+  graphics {
+    default: coach_type1912_sprites;
+    purchase: coach_type1912_purchase_sprites;
+    cargo_age_period: return 85;
+    running_cost_factor: coach_type1912_running_cost_factor;
+    cargo_capacity: coach_type1912_cargo_capacity;
+    cargo_subtype_text: coach_type1912_cargo_subtype_text;
+    articulated_part: articulated_part_dummy5;
+    colour_mapping: any_cc_colour;
+    additional_text: coach_type1912_additional_text;
+  }
+}
+
+long_name_template(coach_type1912, STR_LONGNAME_COACH_ISSUE_OF_1912)
