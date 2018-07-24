@@ -579,6 +579,31 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                     \
 { return; }                                                                                     \
 
+// Определение скорости с 3-я изменениями по году постройки
+#define engine_speed_change_build_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)                        \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2) + (build_year >= year3))             \
+{ 1: return new_speed;                                                                                                              \
+  2: return new_speed2;                                                                                                             \
+  3: return new_speed3;                                                                                                             \
+     return speed; }                                                                                                                \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                                            \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? new_speed3 : new_speed2) : new_speed) : speed, 0),  \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                                         \
+{ return; }                                                                                                                         \
+
+// Определение скорости с 4-я изменениями по году постройки
+#define engine_speed_change_build_after4(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3, new_speed4, year4)     \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))             \
+{ 1: return new_speed;                                                                                                              \
+  2: return new_speed2;                                                                                                             \
+  3: return new_speed3;                                                                                                             \
+  4: return new_speed3;                                                                                                             \
+     return speed; }                                                                                                                \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                                            \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? (build_year >= year4 ? new_speed4 : new_speed3) : new_speed2) : new_speed) : speed, 0),  \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                                         \
+{ return; }                                                                                                                         \
+
 // Определение скорости с изменением по году постройки и в заданном году
 #define engine_speed_change_build_after_and_year(name, speed, new_speed, year, new_speed2, year2) \
 switch (FEAT_TRAINS, SELF, name##_purchase_speed,                                                 \
@@ -697,6 +722,15 @@ switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= 
   3: return new_weight3;                                                                                            \
      return weight; }                                                                                               \
 
+// Определение массы с изменением по 4-м годам постройки
+#define engine_weight_change_build_after4(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3, new_weight4, year4)   \
+switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4)) \
+{ 1: return new_weight;                                                                                                                 \
+  2: return new_weight2;                                                                                                                \
+  3: return new_weight3;                                                                                                                \
+  4: return new_weight4;                                                                                                                \
+     return weight; }                                                                                                                   \
+     
 // Определение цены с изменением по году постройки
 #define engine_cost_change_build_after(name, cost, new_cost, year)        \
 switch (FEAT_TRAINS, SELF, name##_cost_factor, build_year >= year)        \
