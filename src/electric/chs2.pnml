@@ -21,18 +21,22 @@ purchase_sprites(chs2_v5, 100, 0)
 electric1r_2_sprites(11, chs2_v6, 32,  40)
 electric1r_2_sprites(11, chs2_v7, 32, 375)
 #undef IMAGEFILE
-purchase_sprites_select4pre(chs2, 1962, 1963, 1964, 1972)
+purchase_sprites_select4(chs2, 1962, 1963, 1964, 1972)
 
-random_switch (FEAT_TRAINS, SELF, chs2_v1_sprites_left, 0)
+switch (FEAT_TRAINS, SELF, chs2_sprites_left_25e0,
+  cargo_subtype)
 {
-   1: chs2_v1a_sprites_left;
-   1: chs2_v1b_sprites_left;
+  0: chs2_v1a_sprites_left;
+  LV_RAL6002: chs2_v1b_sprites_left;
+     align_10_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, chs2_v1_sprites_right, 0)
+switch (FEAT_TRAINS, SELF, chs2_sprites_right_25e0,
+  cargo_subtype)
 {
-   1: chs2_v1a_sprites_right;
-   1: chs2_v1b_sprites_right;
+  0: chs2_v1a_sprites_right;
+  LV_RAL6002: chs2_v1b_sprites_right;
+     align_10_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, chs2_sprites_left_34e0,
@@ -63,50 +67,64 @@ switch (FEAT_TRAINS, SELF, chs2_sprites_right_53e,
      chs2_v7_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, chs2_a1962_sprites_left,
+switch (FEAT_TRAINS, SELF, chs2_sprites_left,
+  (build_year >= 1962) +
   (build_year >= 1963) +
   (build_year >= 1964) +
   (build_year >= 1972))
 {
-  0: chs2_sprites_left_34e0;
-  1: chs2_sprites_left_34e2;
-  2: chs2_sprites_left_53e;
+  0: chs2_sprites_left_25e0;
+  1: chs2_sprites_left_34e0;
+  2: chs2_sprites_left_34e2;
+  3: chs2_sprites_left_53e;
      chs2_v7_sprites_left;
 }
-switch (FEAT_TRAINS, SELF, chs2_a1962_sprites_right,
+switch (FEAT_TRAINS, SELF, chs2_sprites_right,
+  (build_year >= 1962) +
   (build_year >= 1963) +
   (build_year >= 1964) +
   (build_year >= 1972))
 {
-  0: chs2_sprites_left_34e0;
-  1: chs2_sprites_left_34e2;
-  2: chs2_sprites_right_53e;
+  0: chs2_sprites_right_25e0;
+  1: chs2_sprites_left_34e0;
+  2: chs2_sprites_left_34e2;
+  3: chs2_sprites_right_53e;
      chs2_v7_sprites_right;
 }
                                     
-engine_pre_template(chs2, 1962, left)
-engine_pre_template(chs2, 1962, right)
 engine_RNDany_direction_template(chs2, 5, 3)
 long_vehicle_sp(chs2)
 
+switch (FEAT_TRAINS, SELF, chs2_long_cargo_subtype_text1,
+  cargo_subtype)
+{
+  LV_RAL6002: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_25E0), string(STR_REFIT_TTD_53));
+              return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_25E0), "");
+}
+
 switch (FEAT_TRAINS, SELF, chs2_long_cargo_subtype_text,
+  (build_year >= 1960) +
   (build_year >= 1962) +
   (build_year >= 1963) +
   (build_year >= 1964))
 {
   0: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_25E0), "");
-  1: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_34E0), "");
-  2: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_34E2), "");
+  1: chs2_long_cargo_subtype_text1;
+  2: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_34E0), "");
+  3: return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_34E2), "");
      return string(STR_REFIT_FACTORY_SKODA_TYPE, string(STR_PURCHASE_HINT_SKODA_53E), "");
 }
 
-  livery_template_preonly(chs2_short, 1962)
+    livery_template0(chs2_short_b1960)
+    livery_template(chs2_short_a1960, FACTORY, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    livery_template0(chs2_short_a1962)
+  livery_template_build_year2(chs2_short, 1960, 1962)
 livery_template_longnames(chs2)
 
 engine_electric1_2_effect(chs2, -2, 5)
 engine_RC_change_build_after2(chs2, 440,
                                     516, 1962,
-                                    517, 1964) // выявлена проблема. шаблоны свойств не учитывают pre (получается только графика и строки). расширить шаблоны на поддержку pre
+                                    517, 1964)
 engine_weight_change_build_after2(chs2, 120,
                                         125, 1962,
                                         126, 1964)
@@ -142,7 +160,7 @@ hint_engine_with_subtype(chs2_a1964,
                          STR_PURCHASE_HINT_SECTIONS_1_2,
                          1964, 1982,
                          STR_PURCHASE_HINT_FACTORY_SKODA)
-hint_change_pre_after3(chs2, 1962, 1963, 1964)
+hint_change_after3(chs2, 1962, 1963, 1964)
 
 item (FEAT_TRAINS, chs2, 304) {
   property {
