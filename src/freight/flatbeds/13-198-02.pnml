@@ -32,13 +32,6 @@ switch (FEAT_TRAINS, SELF, flatbed_13_198_02_sprites_start,
 
 long_vehicle_RND(flatbed_13_198_02, flatbed_13_198_02_sprites_asm_back)
 
-switch (FEAT_TRAINS, SELF, flatbed_13_198_02_weight,
-  (cargo_type_in_veh != WOOD) && (cargo_count > 0))
-{
-  1: return 26+6;
-     return 26;
-}
-
 switch (FEAT_TRAINS, SELF, flatbed_13_198_02_random, 
 [  set_offset_to(1),
    prev_vehicle_randombits() & 0x0F])
@@ -107,19 +100,25 @@ switch (FEAT_TRAINS, SELF, flatbed_13_198_02_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-wagon_loading_speed_unlim(flatbed_13_198_02_good)
+switch (FEAT_TRAINS, SELF, flatbed_13_198_02_weight,
+  cargo_type_in_veh == WOOD)
+{
+  1: return 26;
+     container_weight;
+}
+
 switch (FEAT_TRAINS, SELF, flatbed_13_198_02_loading_speed, 
   cargo_type_in_veh)
 { 
   WOOD: all_wagons_bulk_loading_speed; 
-        flatbed_13_198_02_good_loading_speed;
+        container_loading_speed;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_198_02_cargo_capacity,
   cargo_type_in_veh)
 {
   WOOD: return 65;
-        return 59;
+        container2_cargo_capacity;
 }
 
 wagon_running_cost(flatbed_13_198_02, 15)
@@ -138,7 +137,7 @@ item (FEAT_TRAINS, flatbed_13_198_02, 371) {
     vehicle_wagon(25.7, 120)
     vehicle_wagon_cargo(65, 255)
     default_cargo_type: WOOD;
-    cargo_allow_refit: [WOOD, cargo_all_containetlist()];
+    cargo_allow_refit: [WOOD, cargo_all_containerlist()];
   }
   graphics {
     default: flatbed_13_198_02_sprites;
