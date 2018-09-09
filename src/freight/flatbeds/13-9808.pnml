@@ -5,13 +5,29 @@ purchase_sprites(flatbed_13_9808, 0, 0)
 combo_layout_template(flatbed_13_9808, 9, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, flatbed_13_9808_sprites_start,
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_all_sprites_start,
   getbits(extra_callback_info1, 8, 8))
 {
   0: flatbed_13_9808_sprites_back;
   1: cargo9all_sprites;
   2: flatbed_13_9808_sprites_front;
      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_container_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_9808_sprites_back;
+  1: cargo9_container_2_20or40_sprites;
+  2: flatbed_13_9808_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_sprites_start,
+   cargo_type_in_veh)
+{
+flatbed_check(flatbed_13_9808_all_sprites_start) 
+  flatbed_13_9808_container_sprites_start;  
 }
 
 long_vehicle_RND(flatbed_13_9808, flatbed_13_9808_sprites_asm_back)
@@ -58,13 +74,30 @@ switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_capacity,
-  cargo_type_in_veh)
+[  STORE_TEMP(72, 0), // т
+   STORE_TEMP(37, 1), // м³
+   STORE_TEMP(37, 2), // м² 
+   STORE_TEMP(0, 3), // палетомест 
+   STORE_TEMP(9, 4), // шаблон
+   cargo_type_in_veh])
 {
-  GOOD: return 108;
-  WOOD: return 64;
-  WDPR: return 68;
-  BRCK: return 61;
-        return 72;
+flatbed_capacity() 
+  container_2_20or40_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_weight,
+[  STORE_TEMP(22, 7),
+   cargo_type_in_veh])
+{  
+flatbed_check(return LOAD_TEMP(7))
+  container_2_20or40_weight;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_loading_speed, 
+  cargo_type_in_veh)
+{ 
+flatbed_check(cargo9_piece_loading_speed)    
+   container_loading_speed;
 }
 
 wagon_running_cost(flatbed_13_9808, 15)
@@ -82,7 +115,7 @@ item (FEAT_TRAINS, flatbed_13_9808, 417) {
     vehicle_dates(2008, 2050, 32, 10, 8, 2)
     vehicle_wagon(22, 120)
     vehicle_wagon_cargo(72, 10)
-    cargo_allow_refit: [cargo_all_flatbedlist()];
+    cargo_allow_refit: [cargo_all_flatbedlist(), cargo_all_containerlist()];
   }
   graphics {
     default: flatbed_13_9808_sprites;
@@ -93,8 +126,9 @@ item (FEAT_TRAINS, flatbed_13_9808, 417) {
     cargo_subtype_text: flatbed_13_9808_cargo_subtype_text;
     colour_mapping: flatbed_13_9808_colour_mapping;
     cargo_capacity: flatbed_13_9808_cargo_capacity;
-    loading_speed: cargo9_piece_loading_speed;
+    loading_speed: flatbed_13_9808_loading_speed;
     additional_text: flatbed_13_9808_additional_text;
+    weight: flatbed_13_9808_weight;
   }
 }
 

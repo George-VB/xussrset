@@ -4,13 +4,29 @@ purchase_sprites(flatbed_13_401, 0, 0)
 combo_layout_template(flatbed_13_401, 9, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, flatbed_13_401_sprites_start,
+switch (FEAT_TRAINS, SELF, flatbed_13_401_all_sprites_start,
   getbits(extra_callback_info1, 8, 8))
 {
   0: flatbed_13_401_sprites_back;
   1: cargo9all_sprites;
   2: flatbed_13_401_sprites_front;
      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_401_container_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_401_sprites_back;
+  1: cargo9_container_2_20or40_sprites;
+  2: flatbed_13_401_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_401_sprites_start,
+   cargo_type_in_veh)
+{
+flatbed_check(flatbed_13_401_all_sprites_start) 
+  flatbed_13_401_container_sprites_start;  
 }
 
 long_vehicle_RND(flatbed_13_401, flatbed_13_401_sprites_asm_back)
@@ -60,33 +76,39 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1968,
-[  STORE_TEMP(63, 0), 
-   STORE_TEMP(37, 1), 
-   STORE_TEMP(9, 2), 
+[  STORE_TEMP(63, 0), // т
+   STORE_TEMP(37, 1), // м³
+   STORE_TEMP(37, 2), // м² 
+   STORE_TEMP(0, 3), // палетомест 
+   STORE_TEMP(9, 4), // шаблон
    cargo_type_in_veh])
 {
-  flatbed_capacity() 
-  container2_cargo_capacity;
+flatbed_capacity() 
+  container_2_20or40_cargo_capacity;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1979,
-[  STORE_TEMP(66, 0), 
-   STORE_TEMP(37, 1), 
-   STORE_TEMP(9, 2), 
+[  STORE_TEMP(66, 0), // т
+   STORE_TEMP(37, 1), // м³
+   STORE_TEMP(37, 2), // м² 
+   STORE_TEMP(0, 3), // палетомест 
+   STORE_TEMP(9, 4), // шаблон
    cargo_type_in_veh])
 {
-  flatbed_capacity() 
-  container2_cargo_capacity;
+flatbed_capacity() 
+  container_2_20or40_cargo_capacity;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity_1981,
-[  STORE_TEMP(70, 0), 
-   STORE_TEMP(37, 1), 
-   STORE_TEMP(9, 2), 
+[  STORE_TEMP(70, 0), // т
+   STORE_TEMP(37, 1), // м³
+   STORE_TEMP(37, 2), // м² 
+   STORE_TEMP(0, 3), // палетомест 
+   STORE_TEMP(9, 4), // шаблон
    cargo_type_in_veh])
 {
-  flatbed_capacity() 
-  container2_cargo_capacity;
+flatbed_capacity() 
+  container_2_20or40_cargo_capacity;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_401_cargo_capacity,
@@ -102,16 +124,15 @@ switch (FEAT_TRAINS, SELF, flatbed_13_401_weight,
 [  STORE_TEMP(21, 7),
    cargo_type_in_veh])
 {  
-  flatbed_weight(return LOAD_TEMP(7))
-  container_20or40_weight;
+flatbed_check(return LOAD_TEMP(7))
+  container_2_20or40_weight;
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_401_loading_speed, 
   cargo_type_in_veh)
 { 
-bulk_cargo_check(cargo9_piece_loading_speed)    
-piece_cargo_check(cargo9_piece_loading_speed)  
-   container_loading_speed;
+flatbed_check(cargo9_piece_loading_speed)    
+  container_loading_speed;
 }
  
 wagon_running_cost(flatbed_13_401, 13)
