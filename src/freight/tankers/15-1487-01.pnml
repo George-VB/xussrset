@@ -1,0 +1,75 @@
+﻿ // tanker_15_1487_01
+
+#define IMAGEFILE  "src/freight/tankers/15-1487-01.png"
+purchase_sprites(tanker_15_1487_01, 0, 0)
+tanker_layout_template(tanker_15_1487_01, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle_RND(tanker_15_1487_01, tanker_15_1487_01_sprites_start)
+
+switch (FEAT_TRAINS, SELF, tanker_15_1487_01_cargo_subtype_text,
+    cargo_subtype )
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_41);
+  2: return string(STR_REFIT_TTD_B5);
+     return CB_RESULT_NO_TEXT;
+}
+
+random_switch (FEAT_TRAINS, SELF, tanker_15_1487_01_random, 0 )
+{
+  independent: tanker_15_1487_01_sprites_start;
+  1: return ttdall_cc + 0x41;
+  1: return ttdall_cc + 0xB5;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1487_01_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: tanker_15_1487_01_random;
+  1: return ttdall_cc + 0x41;
+  2: return ttdall_cc + 0xB5;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1487_01_cargo_capacity,
+[  STORE_TEMP(68, 0), // т
+   STORE_TEMP(55, 1), // м³
+   STORE_TEMP(0, 2), // м² 
+   STORE_TEMP(0, 3), // палетомест 
+   STORE_TEMP(7, 4), // шаблон
+   cargo_type_in_veh])
+{
+  tank_cargo_capacity;
+}
+
+wagon_running_cost(tanker_15_1487_01, 34)
+hint_wagon_noto(tanker_15_1487_01,
+                68, 55,
+                STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+                STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+                1995, 
+                STR_PURCHASE_HINT_FACTORY_AZOVMASH_AUSSR)
+ 
+item (FEAT_TRAINS, tanker_15_1487_01, 592) {
+  property {
+    name: string(STR_MODEL_NUMBER3, 15, 1487, 1);
+    vehicle_dates(1980, 1995, 20, 10, 6, 5)
+    vehicle_wagon(21, 120)
+    vehicle_wagon_cargo(67, 15)
+    cargo_allow_refit: [cargo_all_other_tanker()];
+  }
+  graphics {
+    default: tanker_15_1487_01_sprites;
+    purchase: tanker_15_1487_01_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    running_cost_factor: tanker_15_1487_01_running_cost_factor;
+    cargo_subtype_text: tanker_15_1487_01_cargo_subtype_text;
+    refit_cost: tanker_refit_cost;
+    colour_mapping: tanker_15_1487_01_colour_mapping;
+    additional_text: tanker_15_1487_01_additional_text;
+    cargo_capacity: tanker_15_1487_01_cargo_capacity;
+  }
+}
+
+long_name_template(tanker_15_1487_01, STR_LONGNAME_TANKER_15_1487_01)
