@@ -8,8 +8,6 @@
   TODO 
 выделить грузы на палетах
 
-выделить объёмное и плоское наполнение. у сыпучих грузов на платформне расчёт вести по полу, а у полувагона - по объёму
-
 Регистр 0 - грузоподъёмность, т
 Регистр 1 - объём, м³
 Регистр 2 - площадь, м²
@@ -122,11 +120,14 @@ switch (FEAT_TRAINS, SELF, ref_cargo_capacity, cargo_type_in_veh)
 switch (FEAT_TRAINS, SELF, tank_cargo_capacity, cargo_type_in_veh)
 {
   BEER: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1045, cargo_unit_weight);  
+  BDMT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1540, cargo_unit_weight);  // Цементный клинкер, cement clinker 
   COLA: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1030, cargo_unit_weight);  
+  CMNT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1540, cargo_unit_weight);  // Цементный клинкер, cement clinker 
   DYES: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1400, cargo_unit_weight);  
   EOIL: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 915, cargo_unit_weight);  
   FERT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1505, cargo_unit_weight);  //  Азотная кислота, HNO3 водный раствор 91%, nitric acid 91%
   FZDR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 950, cargo_unit_weight);  
+  LIME: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1550, cargo_unit_weight);  
   MILK: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1027, cargo_unit_weight);  // Молоко, Milk
   MNO2: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 7430, cargo_unit_weight);  
   NITR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1200, cargo_unit_weight);  // Селитра натриевая измельченная, ground sodium nitrate    
@@ -137,6 +138,7 @@ switch (FEAT_TRAINS, SELF, tank_cargo_capacity, cargo_type_in_veh)
   PLST: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 800, cargo_unit_weight);  
   RFPR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 850, cargo_unit_weight);  
   RUBR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1190, cargo_unit_weight);  
+  SASH: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1080, cargo_unit_weight);  // Натрия карбонат в гранулах (углекислый натрий, сода кальцинированная) heavy soda ash 
   SULP: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 2085, cargo_unit_weight);  
   WATR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1000, cargo_unit_weight);  
         return 0;
@@ -152,8 +154,6 @@ switch (FEAT_TRAINS, SELF, hopper_cargo_capacity, cargo_type_in_veh)
         return 0;
 }
 
-
-
 switch (FEAT_TRAINS, SELF, gen_container_cargo_capacity,
 [  STORE_TEMP((LOAD_TEMP(5) * 30) + (LOAD_TEMP(6) * 30), 0), 
    STORE_TEMP((LOAD_TEMP(5) * 33) + (LOAD_TEMP(6) * 68), 1) ])
@@ -165,8 +165,8 @@ switch (FEAT_TRAINS, SELF, ref_container_cargo_capacity,
 {  ref_cargo_capacity;  }
 
 switch (FEAT_TRAINS, SELF, tank_container_cargo_capacity,
-[  STORE_TEMP((LOAD_TEMP(5)) * 32, 0), 
-   STORE_TEMP((LOAD_TEMP(5)) * 26, 1) ])
+[  STORE_TEMP((LOAD_TEMP(5) + LOAD_TEMP(7)) * 32, 0), 
+   STORE_TEMP((LOAD_TEMP(5) + LOAD_TEMP(7)) * 26, 1) ])
 {  tank_cargo_capacity;  }  
 
 switch (FEAT_TRAINS, SELF, container40_a1972_cargo_capacity,
@@ -263,12 +263,14 @@ switch (FEAT_TRAINS, SELF, container_2_20_cargo_capacity,
 {  container20_cargo_capacity;  }
 /*
 switch (FEAT_TRAINS, SELF, container_20and40_cargo_capacity, 
-[  STORE_TEMP(1, 3), 
-   STORE_TEMP(1, 4)])
+[  STORE_TEMP(1, 5), 
+   STORE_TEMP(1, 6),
+   STORE_TEMP(1, 7) ])
 {  container_cargo_capacity;  }
 */
 switch (FEAT_TRAINS, SELF, container_2_20or40_cargo_capacity, 
-  (random_bits >> 1) & 0x01)  
+[  STORE_TEMP(2, 7), 
+  ((random_bits >> 1) & 0x01) ])  
 {
   0: container_40_cargo_capacity;
      container_2_20_cargo_capacity;
