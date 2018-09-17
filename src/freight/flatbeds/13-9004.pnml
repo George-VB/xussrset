@@ -1,0 +1,64 @@
+﻿ // flatbed_13_9004
+
+#define IMAGEFILE  "src/freight/flatbeds/13-9004.png"
+purchase_sprites(flatbed_13_9004, 0, 0)
+container_platform_layout_template(flatbed_13_9004_back, 12, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9004_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_9004_back_sprites_start;
+  1: cargo12_container_20and40_sprites;
+     return CB_FAILED;
+}
+
+long_vehicle_RND(flatbed_13_9004, flatbed_13_9004_back_sprites_start_RND)
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9004_weight, 
+  STORE_TEMP(26 - 2 * (build_year >= 1994), 7))
+{  
+  container_20and40_weight;
+}
+
+wagon_running_cost(flatbed_13_9004, 13)
+hint_wagon_flat(flatbed_13_9004_b1994,
+                65, 53,
+                STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+                1987, 1993,
+                STR_PURCHASE_HINT_FACTORY_RUZHIMMASH)
+hint_wagon_flat_noto(flatbed_13_9004_a1994,
+                     68, 53,
+                     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                     STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+                     1994, 
+                     STR_PURCHASE_HINT_FACTORY_RUZHIMMASH)
+hint_change_after(flatbed_13_9004, 1994)
+
+item (FEAT_TRAINS, flatbed_13_9004, 595) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 13, 9004);
+    vehicle_dates(1987, 2050, 32, 10, 8, 2)
+    vehicle_wagon(22, 120)
+    vehicle_wagon_cargo(60, 30)
+    cargo_allow_refit: [cargo_all_containerlist()]; 
+  }
+  graphics {
+    default: flatbed_13_9004_sprites;
+    purchase: flatbed_13_9004_purchase_sprites;
+    articulated_part: articulated_part_dummy4;
+    running_cost_factor: flatbed_13_9004_running_cost_factor;
+    refit_cost: container_20and40_refit_cost;
+    cargo_capacity: container_20and40_cargo_capacity;
+    weight: flatbed_13_9004_weight;
+    purchase_weight: return (26 - 2 * (build_year >= 1994));
+    loading_speed: container_loading_speed;
+    colour_mapping: any_cc_colour;
+    additional_text: flatbed_13_9004_additional_text;
+  }
+}
+
+long_name_template(flatbed_13_9004, STR_LONGNAME_FLATBED_13_9004)

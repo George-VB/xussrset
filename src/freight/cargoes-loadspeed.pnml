@@ -1,25 +1,14 @@
 
 // Containers
 // LOAD_TEMP(8) содержит 255 (=0) или cargo_capacity / 2 + 1 (=1) 
-// LOAD_TEMP(9) содержит cargo_capacity / 2 + 1 (=0) или cargo_capacity / 2 + 1 (=1)
 // Если появятся более короткие вагоны с графикой 1 контейнера, то надо будет для них вернуть 255
 
-switch (FEAT_TRAINS, SELF, gen_ref_container_loading_speed,
-  vehicle_type_id)
-{
-  //  LOAD_TEMP(9) платформа на 3 или 4 контейнера 
-  return LOAD_TEMP(8);
-}
-
 switch (FEAT_TRAINS, SELF, container_loading_speed,
-[ STORE_TEMP((random_bits >> 1 & 0x01) * (cargo_capacity / 2 + 1) +
-             (1 - (random_bits >> 1 & 0x01)) * 255, 8),
-  STORE_TEMP((random_bits >> 1 & 0x01) * (cargo_capacity / 3 + 1) +
-             (1 - (random_bits >> 1 & 0x01)) * (cargo_capacity / 2 + 1), 9),
+[ STORE_TEMP((random_bits >> 1 & 0x01) * (cargo_capacity / 2 + 1) + (1 - (random_bits >> 1 & 0x01)) * 255, 8),
   cargo_type_in_veh])  
 {
   tank_container_cargo_check(return cargo_capacity / 2 + 1)
-  gen_ref_container_loading_speed;
+  return LOAD_TEMP(8);
 }
 
 // Определение неограниченной скорости погрузки
