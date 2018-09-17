@@ -55,9 +55,11 @@ switch (FEAT_TRAINS, SELF, piece_cargo_capacity, cargo_type_in_veh)
   WOOD: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 450, cargo_unit_weight);   // Дерево сухое, ель	
   ZINC: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 7130, cargo_unit_weight);  // Цинк чистый Zinc Zn   
 
+  POWR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 300, cargo_unit_weight);     
   ENSP: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 300, cargo_unit_weight);     
   GOOD: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 400, cargo_unit_weight);   
   MNSP: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 300, cargo_unit_weight);   // Удобрения минеральные	800-1200  
+  VBOD: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 400, cargo_unit_weight);     
   VPTS: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(2) * 5 / 2, 400, cargo_unit_weight);     
   VEHI: return LOAD_TEMP(4);   
         return 0;
@@ -100,11 +102,12 @@ switch (FEAT_TRAINS, SELF, box_cargo_capacity, cargo_type_in_veh)
   RCYC: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 480, cargo_unit_weight);  // Бытовые отходы, бытовой мусор, garbage, household rubbish
   RSGR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 960, cargo_unit_weight);  // Сахар-сырец тростниковый, raw cane sugar 
   RUBR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1950, cargo_unit_weight);  
+  SALT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1200, cargo_unit_weight);  // Соль пищевая тонкого помола, fine salt
   SGCN: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 270, cargo_unit_weight);  // Сахарный тростник, sugarcane
   SGBT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 560, cargo_unit_weight);  // Сахарной свеклы пульпа, wet sugarbeet pulp
   SUGR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 850, cargo_unit_weight);  // Сахар-песок, granulated sugar
-  SWET: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 86, cargo_unit_weight); 
-  TOFF: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 86, cargo_unit_weight); 
+  SWET: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 860, cargo_unit_weight); 
+  TOFF: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 860, cargo_unit_weight); 
   TOYS: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 400, cargo_unit_weight); 
   VPTS: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 500, cargo_unit_weight);  
   WATR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 820/3, cargo_unit_weight);  // на европалетах в бутылках по 1,5 литра исходя из плотности воды 1000  
@@ -125,6 +128,7 @@ switch (FEAT_TRAINS, SELF, ref_cargo_capacity, cargo_type_in_veh)
 switch (FEAT_TRAINS, SELF, tank_cargo_capacity, cargo_type_in_veh)
 {
   ACID: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1505, cargo_unit_weight);  //  Азотная кислота, HNO3 водный раствор 91%, nitric acid 91%
+  BUBL: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 50, cargo_unit_weight);  
   BEER: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1045, cargo_unit_weight);  
   BDMT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1540, cargo_unit_weight);  // Цементный клинкер, cement clinker 
   COLA: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1030, cargo_unit_weight);  
@@ -175,90 +179,58 @@ switch (FEAT_TRAINS, SELF, ref_container_cargo_capacity,
 {  ref_cargo_capacity;  }
 
 switch (FEAT_TRAINS, SELF, tank_container_cargo_capacity,
-[  STORE_TEMP((LOAD_TEMP(5) | LOAD_TEMP(7)) * 32, 0), 
-   STORE_TEMP((LOAD_TEMP(5) | LOAD_TEMP(7)) * 26, 1) ])
+[  STORE_TEMP((max(LOAD_TEMP(5), LOAD_TEMP(7))) * 32, 0), 
+   STORE_TEMP((max(LOAD_TEMP(5), LOAD_TEMP(7))) * 26, 1) ])
 {  tank_cargo_capacity;  }  
 
-switch (FEAT_TRAINS, SELF, container40_a1972_cargo_capacity,
+switch (FEAT_TRAINS, SELF, container_a1972_cargo_capacity,
   cargo_type_in_veh)
 {
 gen_container_cargo_check(gen_container_cargo_capacity)
   return 0;
 } 
 
-switch (FEAT_TRAINS, SELF, container40_a1988_cargo_capacity,
-  cargo_type_in_veh)
-{
-ref_container_cargo_check(ref_container_cargo_capacity)
-  container40_a1972_cargo_capacity;
-} 
-
-switch (FEAT_TRAINS, SELF, container40_a1995_cargo_capacity,
-  cargo_type_in_veh)
-{
-tank_container_cargo_check(tank_container_cargo_capacity)
-  container40_a1988_cargo_capacity;
-} 
-
-switch (FEAT_TRAINS, SELF, container40_cargo_capacity,
-  (date_of_last_service >= date(1972,1,1)) +  
-  (date_of_last_service >= date(1988,1,1)) +  
-  (date_of_last_service >= date(1995,1,1)))  
-{
-  1: container40_a1972_cargo_capacity;
-  2: container40_a1988_cargo_capacity;
-  3: container40_a1995_cargo_capacity;
-     return 0;
-}
-
-switch (FEAT_TRAINS, SELF, container20_a1972_cargo_capacity,
-  cargo_type_in_veh)
-{
-gen_container_cargo_check(gen_container_cargo_capacity)
-  return 0;
-} 
-
-switch (FEAT_TRAINS, SELF, container20_a1988_cargo_capacity,
+switch (FEAT_TRAINS, SELF, container_a1988_cargo_capacity,
   cargo_type_in_veh)
 {
 ref_container_cargo_check(ref_container_cargo_capacity)
   container20_a1972_cargo_capacity;
 } 
 
-switch (FEAT_TRAINS, SELF, container20_a1995_cargo_capacity,
+switch (FEAT_TRAINS, SELF, container_a1995_cargo_capacity,
   cargo_type_in_veh)
 {
 tank_container_cargo_check(tank_container_cargo_capacity)
   container20_a1988_cargo_capacity;
 } 
 
-switch (FEAT_TRAINS, SELF, container20_cargo_capacity,
+switch (FEAT_TRAINS, SELF, container_cargo_capacity,
   (date_of_last_service >= date(1972,1,1)) +  
   (date_of_last_service >= date(1988,1,1)) +  
   (date_of_last_service >= date(1995,1,1)))  
 {
-  1: container20_a1972_cargo_capacity;
-  2: container20_a1988_cargo_capacity;
-  3: container20_a1995_cargo_capacity;
+  1: container_a1972_cargo_capacity;
+  2: container_a1988_cargo_capacity;
+  3: container_a1995_cargo_capacity;
      return 0;
 }
 
 switch (FEAT_TRAINS, SELF, container_40_cargo_capacity, 
 [  STORE_TEMP(0, 5), 
    STORE_TEMP(1, 6)])
-{  container40_cargo_capacity;  }
+{  container_cargo_capacity;  }
 
 switch (FEAT_TRAINS, SELF, container_2_20_cargo_capacity, 
 [  STORE_TEMP(2, 5), 
    STORE_TEMP(0, 6)])
-{  container20_cargo_capacity;  }
-/*
+{  container_cargo_capacity;  }
+
 switch (FEAT_TRAINS, SELF, container_20and40_cargo_capacity, 
 [  STORE_TEMP(1, 5), 
    STORE_TEMP(1, 6),
-   STORE_TEMP(1, 7) ])
+   STORE_TEMP(2, 7) ])
 {  container_cargo_capacity;  }
-*/
+
 switch (FEAT_TRAINS, SELF, container_2_20or40_cargo_capacity, 
 [  STORE_TEMP(2, 7),
    ((random_bits >> 1) & 0x01) ] )
@@ -364,13 +336,10 @@ switch (FEAT_TRAINS, SELF, container_40_refit_cost,
      return 0;
 }
 
-/*
 switch (FEAT_TRAINS, SELF, container_20and40_refit_cost, 0) 
 { container_20_refit_cost; }
-*/
 
 switch (FEAT_TRAINS, SELF, container_2_20or40_refit_cost, 0) 
-// если можно везти 20-и, значит их и повезут. Типов, когда есть только 40-ки, не предусмотрено 
 {
   container_20_refit_cost;
 }
