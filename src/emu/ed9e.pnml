@@ -1,0 +1,177 @@
+﻿ // ed9e
+
+#define IMAGEFILE  "src/emu/ed9e_h.png"
+purchase_sprites(ed9e_h, 0, 0)
+MU_head_middle_sprites(13, ed9e_h_mu, 32, 40) 
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed9e_m.png"
+purchase_sprites(ed9e_m, 0, 0)
+EMU_motor1_sprites(13, ed9e_m_mu, 32, 40) 
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed9e_c.png"
+purchase_sprites(ed9e_c, 0, 0)
+MU_car_sprites(13, ed9e_c_mu, 32, 40) 
+#undef IMAGEFILE
+
+MU_head_middle_direction_template(ed9e_h, ed9e_h)
+engine_direction_template3m2(ed9e_h, ed9e_m, ed9e_c, )
+long_vehicle(ed9e_h)
+
+EMU_motor_direction_template(ed9e_m, ed9e_h)
+EMU_4_12_m_template(ed9e)
+EMU_direction_calculation_template(ed9e, _m)
+long_vehicle_dir(ed9e_m)
+
+EMU_motor_direction_template(ed9e_c, ed9e_h)
+EMU_4_12_c_template(ed9e)
+EMU_direction_calculation_template(ed9e, _c)
+long_vehicle_dir(ed9e_c)
+
+EMU_467891011_can_attach_wagon_template(ed9e)
+EMU_attach_calculation_template(ed9e)
+
+switch (FEAT_TRAINS, SELF, ed9e_can_attach_wagon1, vehicle_type_id)
+{
+  ed9e_h: ed9e_can_attach_wagon_template;
+  ed9e_m: ed9e_can_attach_wagon_template;
+  ed9e_c: ed9e_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, ed9e_can_attach_wagon, count_veh_id(ed9e_h))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: ed9e_can_attach_wagon1;
+  2: ed9e_can_attach_wagon_head;
+  3: ed9e_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, ed9e_h_start_stop,
+  count_veh_id(ed9e_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+  4: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+switch (FEAT_TRAINS, SELF, ed9e_long_cargo_subtype_text,
+  cargo_subtype)
+{
+  return string(STR_REFIT_FACTORY_MODEL_NUMBER2, 62, 6750, string(STR_REFIT_RZD_PID));
+}
+
+livery_template1(ed9e_short, RZD_PID)
+livery_template_longnames(ed9e)
+
+EMU_4_12_m_create_effect_template(ed9e, -1, 6)
+EMU_direction_calculation_template(ed9e, _m_create_effect)
+engine_effects_MU(ed9e_m, _create_effect_direction_template, ed9e_h)
+engine_power_MU(ed9e_m, 1066, ed9e_h)
+engine_capacity_MU(ed9e_h, 64, ed9e_h)
+engine_capacity_MU(ed9e_m, 116, ed9e_h)
+engine_capacity_MU(ed9e_c, 116, ed9e_h)
+general_running_cost(ed9e_m_MU, 126)
+RC_head_check(ed9e_m, ed9e_h)
+general_running_cost(ed9e_h_MU, 77)
+RC_head_check(ed9e_h, ed9e_h)
+general_running_cost(ed9e_c_MU, 52)
+RC_head_check(ed9e_c, ed9e_h)
+hint_MU_with_model2(ed9e_h,
+                    STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                    STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                    STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_AC_WITH_SUBTYPE, 62, 6752,
+                    STR_SECTIONS_EMU_4_6_7_8_9_10_11,
+                    2012, 2016, STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII)
+hint_MU_with_model2(ed9e_m,
+                    STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                    STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                    STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_AC_WITH_SUBTYPE, 62, 6751,
+                    STR_SECTIONS_EMU_4_6_7_8_9_10_11,
+                    2012, 2016, STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII)
+hint_MU_with_model2(ed9e_c,
+                    STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                    STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                    STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC_WITH_SUBTYPE, 62, 6753,
+                    STR_SECTIONS_EMU_4_6_7_8_9_10_11,
+                    2012, 2016, STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII)
+
+item (FEAT_TRAINS, ed9e_h, 599) {
+  property {
+    name: string(STR_NAME_ed9e);
+    vehicle_dates(2012, 2016, 30, 10, 8, 11)
+    vehicle_acemu_c(43.5, 64, 60)
+  }
+  graphics {
+    default: ed9e_h_sprites;
+    purchase: ed9e_h_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ed9e_h_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ed9e_can_attach_wagon;
+    start_stop: ed9e_h_start_stop;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    power: return 0;
+    cargo_capacity: ed9e_h_cargo_capacity;
+    cargo_subtype_text: ed9e_cargo_subtype_text;
+    colour_mapping: any_cc_colour;
+    additional_text: ed9e_h_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, ed9e_m, 600) {
+  property {
+    name: string(STR_NAME_ed9e);
+    vehicle_dates(2012, 2016, 30, 10, 8, 17)
+    vehicle_acemu(1066, 64.4, 102.0, 116, 60)
+  }
+  graphics {
+    default: ed9e_m_sprites;
+    purchase: ed9e_m_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ed9e_m_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ed9e_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    power: ed9e_m_power;
+    cargo_capacity: ed9e_m_cargo_capacity;
+    cargo_subtype_text: ed9e_cargo_subtype_text;
+    create_effect: ed9e_m_create_effect;
+    colour_mapping: any_cc_colour;
+    additional_text: ed9e_m_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, ed9e_c, 601) {
+  property {
+    name: string(STR_NAME_ed9e);
+    vehicle_dates(2012, 2016, 30, 10, 8, 7)
+    vehicle_acemu_c(39.7, 116, 60)
+  }
+  graphics {
+    default: ed9e_c_sprites;
+    purchase: ed9e_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ed9e_c_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    can_attach_wagon: ed9e_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    power: return 0;
+    cargo_capacity: ed9e_c_cargo_capacity;
+    cargo_subtype_text: ed9e_cargo_subtype_text;
+    colour_mapping: any_cc_colour;
+    additional_text: ed9e_c_additional_text;
+  }
+}
+
+long_name_template(ed9e_h, STR_LONGNAME_ED9E_H)
+long_name_template(ed9e_m, STR_LONGNAME_ED9E_M)
+long_name_template(ed9e_c, STR_LONGNAME_ED9E_C)
+allow_acemu(ed9e_h)
+allow_acemu(ed9e_m)
+allow_acemu(ed9e_c)
