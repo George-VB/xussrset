@@ -1,0 +1,177 @@
+﻿ // ep3d
+
+#define IMAGEFILE  "src/emu/ep3d_h.png"
+purchase_sprites(ep3d_h, 0, 0)
+MU_head_middle_sprites(13, ep3d_h_mu, 32, 40) 
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ep3d_m.png"
+purchase_sprites(ep3d_m, 0, 0)
+EMU_motor1_sprites(13, ep3d_m_mu, 32, 40) 
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ep3d_c.png"
+purchase_sprites(ep3d_c, 0, 0)
+MU_car_sprites(13, ep3d_c_mu, 32, 40) 
+#undef IMAGEFILE
+
+MU_head_middle_direction_template(ep3d_h, ep3d_h)
+engine_direction_template3m2(ep3d_h, ep3d_m, ep3d_c, )
+long_vehicle(ep3d_h)
+
+EMU_motor_direction_template(ep3d_m, ep3d_h)
+EMU_4_12_m_template(ep3d)
+EMU_direction_calculation_template(ep3d, _m)
+long_vehicle_dir(ep3d_m)
+
+EMU_motor_direction_template(ep3d_c, ep3d_h)
+EMU_4_12_c_template(ep3d)
+EMU_direction_calculation_template(ep3d, _c)
+long_vehicle_dir(ep3d_c)
+
+EMU_46789_can_attach_wagon_template(ep3d)
+EMU_attach_calculation_template(ep3d)
+
+switch (FEAT_TRAINS, SELF, ep3d_can_attach_wagon1, vehicle_type_id)
+{
+  ep3d_h: ep3d_can_attach_wagon_template;
+  ep3d_m: ep3d_can_attach_wagon_template;
+  ep3d_c: ep3d_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, ep3d_can_attach_wagon, count_veh_id(ep3d_h))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: ep3d_can_attach_wagon1;
+  2: ep3d_can_attach_wagon_head;
+  3: ep3d_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, ep3d_h_start_stop,
+  count_veh_id(ep3d_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+  4: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+switch (FEAT_TRAINS, SELF, ep3d_long_cargo_subtype_text,
+  cargo_subtype)
+{
+  return string(STR_REFIT_FACTORY_MODEL_NUMBER2, 62, 382, string(STR_REFIT_RZD_PID));
+}
+
+livery_template1(ep3d_short, RZD_PID)
+livery_template_longnames(ep3d)
+
+EMU_4_12_m_create_effect_template(ep3d, -1, 6)
+EMU_direction_calculation_template(ep3d, _m_create_effect)
+engine_effects_MU(ep3d_m, _create_effect_direction_template, ep3d_h)
+engine_power_MU(ep3d_m, 1066, ep3d_h)
+engine_capacity_MU(ep3d_h, 61, ep3d_h)
+engine_capacity_MU(ep3d_m, 116, ep3d_h)
+engine_capacity_MU(ep3d_c, 116, ep3d_h)
+general_running_cost(ep3d_m_MU, 126)
+RC_head_check(ep3d_m, ep3d_h)
+general_running_cost(ep3d_h_MU, 77)
+RC_head_check(ep3d_h, ep3d_h)
+general_running_cost(ep3d_c_MU, 52)
+RC_head_check(ep3d_c, ep3d_h)
+hint_MU_with_model2_noto(ep3d_h,
+                         STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                         STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                         STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_AC_WITH_SUBTYPE, 62, 383,
+                         STR_SECTIONS_EMU_4_6_7_8_9,
+                         2016, STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII)
+hint_MU_with_model2_noto(ep3d_m,
+                         STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                         STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                         STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_AC_WITH_SUBTYPE, 62, 384,
+                         STR_SECTIONS_EMU_4_6_7_8_9,
+                         2016, STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII)
+hint_MU_with_model2_noto(ep3d_c,
+                         STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+                         STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+                         STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC_WITH_SUBTYPE, 62, 385,
+                         STR_SECTIONS_EMU_4_6_7_8_9,
+                         2016, STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII)
+
+item (FEAT_TRAINS, ep3d_h, 602) {
+  property {
+    name: string(STR_NAME_EP3D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 11)
+    vehicle_acemu_c(43.5, 61, 60)
+  }
+  graphics {
+    default: ep3d_h_sprites;
+    purchase: ep3d_h_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep3d_h_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep3d_can_attach_wagon;
+    start_stop: ep3d_h_start_stop;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    power: return 0;
+    cargo_capacity: ep3d_h_cargo_capacity;
+    cargo_subtype_text: ep3d_cargo_subtype_text;
+    colour_mapping: any_cc_colour;
+    additional_text: ep3d_h_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, ep3d_m, 603) {
+  property {
+    name: string(STR_NAME_EP3D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 17)
+    vehicle_acemu(1066, 64.4, 102.0, 116, 60)
+  }
+  graphics {
+    default: ep3d_m_sprites;
+    purchase: ep3d_m_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep3d_m_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ep3d_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    power: ep3d_m_power;
+    cargo_capacity: ep3d_m_cargo_capacity;
+    cargo_subtype_text: ep3d_cargo_subtype_text;
+    create_effect: ep3d_m_create_effect;
+    colour_mapping: any_cc_colour;
+    additional_text: ep3d_m_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, ep3d_c, 604) {
+  property {
+    name: string(STR_NAME_EP3D);
+    vehicle_dates(2016, 2050, 30, 10, 8, 7)
+    vehicle_acemu_c(39.7, 116, 60)
+  }
+  graphics {
+    default: ep3d_c_sprites;
+    purchase: ep3d_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ep3d_c_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    speed: speed_after30_130to110;
+    purchase_speed: return 130;
+    can_attach_wagon: ep3d_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    power: return 0;
+    cargo_capacity: ep3d_c_cargo_capacity;
+    cargo_subtype_text: ep3d_cargo_subtype_text;
+    colour_mapping: any_cc_colour;
+    additional_text: ep3d_c_additional_text;
+  }
+}
+
+long_name_template(ep3d_h, STR_LONGNAME_EP3D_H)
+long_name_template(ep3d_m, STR_LONGNAME_EP3D_M)
+long_name_template(ep3d_c, STR_LONGNAME_EP3D_C)
+allow_acemu(ep3d_h)
+allow_acemu(ep3d_m)
+allow_acemu(ep3d_c)
