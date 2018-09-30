@@ -214,6 +214,41 @@ switch (FEAT_TRAINS, SELF, cargo8_gen_container_40_sprites,
      cargo8_gen_container_40_era_3_sprites;
 }
 
+#define IMAGEFILE  "src/freight/cargoes8/container/container-gen40mail.png"
+cargo_layout_template(cargo8_gen_container_40_mail_s1, 8, 32, 40)
+cargo_layout_template(cargo8_gen_container_40_mail_s2, 8, 32, 107)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, cargo8_gen_container_40_mail_1_sprites,
+ cargo_count * 100 / cargo_capacity)
+{ 0: dummy_sprites; 
+     cargo8_gen_container_40_mail_s1_sprites; }
+switch (FEAT_TRAINS, SELF, cargo8_gen_container_40_mail_2_sprites,
+ cargo_count * 100 / cargo_capacity)
+{ 0: dummy_sprites; 
+     cargo8_gen_container_40_mail_s2_sprites; }
+
+switch (FEAT_TRAINS, SELF, cargo8_gen_container_40mail_c_sprites,
+[  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100), 
+  (random_bits >> 2) & 0x01])  
+{
+  0: cargo8_gen_container_40_mail_1_sprites;
+     cargo8_gen_container_40_mail_2_sprites;
+}
+
+#define IMAGEFILE  "src/freight/cargoes8/container/container-gen20mail.png"
+cargo_layout_template_2_containers(cargo8_gen_container20mail, 8, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, cargo8_gen_container_2_20mail_c_sprites,
+[  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100), 
+  (random_bits >> 2) & 0x03])  
+{
+  0: cargo8_gen_container20mail_11_sprites;
+  1: cargo8_gen_container20mail_12_sprites;
+  2: cargo8_gen_container20mail_21_sprites;
+     cargo8_gen_container20mail_22_sprites;
+}
+
 // Рефконтейнеры 
 #define IMAGEFILE  "src/freight/cargoes8/container/container-ref40.png"
 cargo_layout_template(cargo8_ref_container_40_1_s1, 8, 32, 40)
@@ -383,6 +418,7 @@ ref_container_cargo_check(cargo8_ref_container_2_20_c_sprites)
 switch (FEAT_TRAINS, SELF, cargo8_container_2_20_a1995_sprites,
   cargo_type_in_veh)
 {
+  MAIL: cargo8_gen_container_2_20mail_c_sprites;
 tank_container_cargo_check(cargo8_tank_container_2_20_sprites)
   cargo8_container_2_20_a1988_sprites;
 } 
@@ -415,20 +451,10 @@ ref_container_cargo_check(cargo8_ref_container_40_c_sprites)
 switch (FEAT_TRAINS, SELF, cargo8_container_40_a1995_sprites,
   cargo_type_in_veh)
 {
+  MAIL: cargo8_gen_container_40mail_c_sprites;
 tank_container_cargo_check(cargo8_tank_container_2_20_sprites)
   cargo8_container_40_a1988_sprites;
 } 
-
-/*
-switch (FEAT_TRAINS, SELF, cargo8_container_40_sprites,
-  (date_of_last_service >= date(1972,1,1)) +  
-  (date_of_last_service >= date(1988,1,1)))  
-{
-  1: cargo8_container_40_a1972_sprites;
-  2: cargo8_container_40_a1988_sprites;
-     return 0;
-}
-*/
 
 switch (FEAT_TRAINS, SELF, cargo8_container_40or2_20_sprites,
   (date_of_last_service >= date(1972,1,1)) +  
