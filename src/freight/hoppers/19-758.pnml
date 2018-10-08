@@ -1,0 +1,95 @@
+﻿ // 19_758_hopper
+
+#define IMAGEFILE  "src/freight/hoppers/19-758.png"
+purchase_sprites(hopper_19_758, 0, 0)
+tanker_layout_template(hopper_19_758, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle_RND(hopper_19_758, hopper_19_758_sprites_start)
+
+random_switch (FEAT_TRAINS, SELF, hopper_19_758_random, 0 )
+{
+  independent: hopper_19_758_sprites_start;
+  3: return ttdall_cc + 0x7B;
+  3: return ttdall_cc + 0x7C;
+  2: return ttdall_cc + 0x72;
+  2: return ttdall_cc + 0x4B;
+  2: return ttdall_cc + 0x2A;
+  2: return ttdall_cc + 0x08;
+  2: return ttdall_cc + 0x09;
+}                    
+
+switch (FEAT_TRAINS, SELF, hopper_19_758_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: hopper_19_758_random;
+  1: return ttdall_cc + 0x7B;
+  2: return ttdall_cc + 0x7C;
+  3: return ttdall_cc + 0x72;
+  4: return ttdall_cc + 0x4B;
+  5: return ttdall_cc + 0x2A;
+  6: return ttdall_cc + 0x08;
+  7: return ttdall_cc + 0x09;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_758_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_7B);
+  2: return string(STR_REFIT_TTD_7C);
+  3: return string(STR_REFIT_TTD_72);
+  4: return string(STR_REFIT_TTD_4B);
+  5: return string(STR_REFIT_TTD_2A);
+  6: return string(STR_REFIT_TTD_08);
+  7: return string(STR_REFIT_TTD_09);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_19_758_cargo_capacity,
+[  STORE_TEMP(72, 0), // т
+   STORE_TEMP(60, 1), // м³
+   STORE_TEMP(0, 2),  // м² 
+   STORE_TEMP(0, 3),  // палетомест 
+   STORE_TEMP(7, 4)]) // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_19_758_loading_speed,
+[  STORE_TEMP(0, 0),    // определяется элеватором (4 больших люка)
+   STORE_TEMP(4, 1),    // 4 разгрузочных люка
+   STORE_TEMP(0, 2),    // верхняя загрузка не ограничена люками
+   STORE_TEMP(4*4, 3)]) // нижняя разгрузка ограничена 4 единицами груза на люк
+{ all_wagons_hopper_loading_speed; }
+
+wagon_running_cost(hopper_19_758, 33)
+hint_wagon_with_uspeed_noto(hopper_19_758,
+                            72, 60,
+                            STR_PURCHASE_HINT_LOADING_SPEED_5TIC,
+                            STR_PURCHASE_HINT_LOADING_SPEED_5TIC,
+                            STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                            STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+                            1986,
+                            STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW)
+
+item (FEAT_TRAINS, hopper_19_758, 612) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 19, 758); 
+    vehicle_dates(1986, 2050, 26, 10, 6, 5)
+    vehicle_wagon(20, 120)
+    cargo_allow_refit: [cargo_all_cement_hopperlist()];
+  }
+  graphics {
+    default: hopper_19_758_sprites;
+    purchase: hopper_19_758_purchase_sprites;
+    running_cost_factor: hopper_19_758_running_cost_factor;
+    articulated_part: articulated_part_dummy1;
+    colour_mapping: hopper_19_758_colour_mapping;
+    cargo_subtype_text: hopper_19_758_cargo_subtype_text;
+    loading_speed: hopper_19_758_loading_speed;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    additional_text: hopper_19_758_additional_text;
+    cargo_capacity: hopper_19_758_cargo_capacity;
+  }
+}
+
+long_name_template(hopper_19_758, STR_LONGNAME_HOPPER_19_758)
