@@ -20,15 +20,41 @@ switch (FEAT_TRAINS, SELF, container_loading_speed,
   container_loading_speed2;
 }
 
+
+// Определение скорости погрузки завозом через двери. ограничение по тикам не имеет смысла.
+
+switch (FEAT_TRAINS, SELF, all_wagons_box_station_loading_speed, 
+[ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255 : LOAD_TEMP(0), 0),
+  cargo_type_in_veh]) 
+{ 
+  ENSP: return min(10, LOAD_TEMP(0));
+  MNSP: return min(10, LOAD_TEMP(0));
+  VPTS: return min(10, LOAD_TEMP(0));
+        return min(calculate_loading_speed(15, 20, 25, 30, 35), LOAD_TEMP(0)); 
+} 
+
+switch (FEAT_TRAINS, SELF, all_wagons_box_station_unloading_speed, 
+  STORE_TEMP(LOAD_TEMP(1) == 0 ? 255 : LOAD_TEMP(1), 0)) 
+{ all_wagons_box_station_loading_speed; } 
+
+switch (FEAT_TRAINS, SELF, all_wagons_box_loading_speed, 
+[ STORE_TEMP(min((LOAD_TEMP(2) == 0) * 255 + LOAD_TEMP(2), 255), 0), // интерпритируем 0 как 255
+  STORE_TEMP(min((LOAD_TEMP(3) == 0) * 255 + LOAD_TEMP(3), 255), 1), // интерпритируем 0 как 255
+  vehicle_is_unloading]) 
+{ 
+  1: all_wagons_box_station_unloading_speed; 
+     all_wagons_box_station_loading_speed; 
+}
+
 // Определение скорости погрузки бункерной засыпкой. Скорость выгрузки задана в регистре 1
 // Для штучного груза считается скорость погрузки равной скорости выгрузки 
 switch (FEAT_TRAINS, SELF, all_wagons_bulk_station_loading_speed, 
 [ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255 : LOAD_TEMP(0), 0),
   cargo_type_in_veh]) 
 { 
-  ENSP: return 10;
-  MNSP: return 10;
-  VPTS: return 10;
+  ENSP: return min(10, LOAD_TEMP(0));
+  MNSP: return min(10, LOAD_TEMP(0));
+  VPTS: return min(10, LOAD_TEMP(0)); 
   CERE: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
   GRAI: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
   WHEA: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
