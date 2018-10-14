@@ -170,6 +170,14 @@ switch (FEAT_TRAINS, SELF, talgo9_articulated_part,
          return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+switch (FEAT_TRAINS, SELF, talgo9n_articulated_part,
+  extra_callback_info1)
+{
+  1: return talgo9n_part2;
+  2..19: return talgo9_part3;
+         return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
 switch (FEAT_TRAINS, SELF, talgo9_create_effect2,
   diesel_create_effect(0, 10))
 { return 1; }
@@ -198,7 +206,7 @@ item (FEAT_TRAINS, talgo9, 607) {
     vehicle_dates(2014, 2050, 40, 10, 8, 639)
     vehicle_wagon(359, 200)
     vehicle_wagon_pass(634, 11*5)
-    cargo_allow_refit: [PASS, TOUR];
+    cargo_allow_refit: [PASS];
   }
   graphics {
     default: talgo9_sprites;
@@ -221,7 +229,7 @@ item (FEAT_TRAINS, talgo9n, 610) {
     vehicle_dates(2014, 2050, 40, 10, 8, 639)
     vehicle_wagon(365, 200)
     vehicle_wagon_pass(142, 11*5)
-    cargo_allow_refit: [PASS, TOUR];
+    cargo_allow_refit: [PASS];
   }
   graphics {
     default: talgo9_sprites;
@@ -229,7 +237,7 @@ item (FEAT_TRAINS, talgo9n, 610) {
     cargo_age_period: return 1500;
     cost_factor: return 729;
     running_cost_factor: talgo9n_running_cost_factor;
-    articulated_part: talgo9_articulated_part;
+    articulated_part: talgo9n_articulated_part;
     additional_text: talgo9_additional_text;
     colour_mapping: any_cc_colour;
     length: talgo9_length;
@@ -239,14 +247,6 @@ item (FEAT_TRAINS, talgo9n, 610) {
 
 long_name_template(talgo9, STR_LONGNAME_TALGO9)
 long_name_template(talgo9n, STR_LONGNAME_TALGO9)
-
-switch (FEAT_TRAINS, SELF, talgo9_part2_cargo_capacity,
-[  set_offset_to(-position_in_articulated_veh),
-   prev_vehicle_type_id() ])
-{
-  talgo9n: return 86;
-           return 50;
-}
 
 item (FEAT_TRAINS, talgo9_part2, 608) {
   property {
@@ -259,8 +259,23 @@ item (FEAT_TRAINS, talgo9_part2, 608) {
   graphics {
     default: talgo9_sprites;
     cargo_age_period: return 3000;
-    purchase_cargo_capacity: return 50;
-    cargo_capacity: talgo9_part2_cargo_capacity;
+    create_effect: talgo9_create_effect;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    length: talgo9_length;
+  }
+}
+                         
+item (FEAT_TRAINS, talgo9n_part2, 616) {
+  property {
+    vehicle_no_dates(2014, 2050, 40, 10, 8, 0)
+    vehicle_wagon(0, 200)
+    vehicle_wagon_pass(86, 5*6)
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: talgo9_sprites;
+    cargo_age_period: return 3000;
     create_effect: talgo9_create_effect;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     length: talgo9_length;
@@ -271,9 +286,12 @@ item (FEAT_TRAINS, talgo9_part3, 609) {
   property {
     vehicle_no_dates(2014, 2050, 40, 10, 8, 0)
     vehicle_wagon(0, 200)
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
   }
   graphics {
     default: talgo9_sprites;
+    cargo_capacity: return 0;
     create_effect: talgo9_create_effect;
     length: talgo9_length;
   }
