@@ -1,11 +1,11 @@
 
 // Containers
-// LOAD_TEMP(8) содержит 255 (=0) или cargo_capacity / 2 + 1 (=1) 
+// LOAD_TEMP(8) содержит 255 (=0) или cargo_capacity / 2 + 1 (=1)
 // Если появятся более короткие вагоны с графикой 1 контейнера, то надо будет для них вернуть 255
 
 switch (FEAT_TRAINS, SELF, container_loading_speed2,
 [ STORE_TEMP((random_bits >> 1 & 0x01) * (cargo_capacity / 2 + 1) + (1 - (random_bits >> 1 & 0x01)) * 255, 8),
-  cargo_type_in_veh])  
+  cargo_type_in_veh])
 {
   tank_container_cargo_check(return cargo_capacity / 2 + 1)
   return LOAD_TEMP(8);
@@ -23,74 +23,74 @@ switch (FEAT_TRAINS, SELF, container_loading_speed,
 
 // Определение скорости погрузки завозом через двери. ограничение по тикам не имеет смысла. Скорость погрузки и выгрузки одинаковая
 
-switch (FEAT_TRAINS, SELF, all_wagons_box_loading_speed, 
+switch (FEAT_TRAINS, SELF, all_wagons_box_loading_speed,
 [ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255 : LOAD_TEMP(0), 0),
-  cargo_type_in_veh]) 
-{ 
+  cargo_type_in_veh])
+{
   ENSP: return min(10, LOAD_TEMP(0));
   MNSP: return min(10, LOAD_TEMP(0));
   VPTS: return min(10, LOAD_TEMP(0));
-        return min(calculate_loading_speed(15, 20, 25, 30, 35), LOAD_TEMP(0)); 
-} 
+        return min(calculate_loading_speed(15, 20, 25, 30, 35), LOAD_TEMP(0));
+}
 
 // Определение скорости погрузки бункерной засыпкой. Скорость выгрузки задана в регистре 1
-// Для штучного груза считается скорость погрузки равной скорости выгрузки 
-switch (FEAT_TRAINS, SELF, all_wagons_bulk_station_loading_speed, 
+// Для штучного груза считается скорость погрузки равной скорости выгрузки
+switch (FEAT_TRAINS, SELF, all_wagons_bulk_station_loading_speed,
 [ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255 : LOAD_TEMP(0), 0),
-  cargo_type_in_veh]) 
-{ 
+  cargo_type_in_veh])
+{
   ENSP: return min(10, LOAD_TEMP(0));
   MNSP: return min(10, LOAD_TEMP(0));
-  VPTS: return min(10, LOAD_TEMP(0)); 
-  CERE: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
-  GRAI: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
-  WHEA: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
-  MAIZ: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
-  OLSD: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0)); 
-  WOOD: return min(calculate_loading_speed(10, 11, 12, 13, 14), LOAD_TEMP(0)); 
-  WDPR: return min(calculate_loading_speed(10, 11, 12, 13, 14), LOAD_TEMP(0)); 
-  COPR: return min(calculate_loading_speed(6, 8, 10, 12, 14), LOAD_TEMP(0)); 
-  STEL: return min(calculate_loading_speed(6, 8, 10, 12, 14), LOAD_TEMP(0)); 
-  CLAY: return min(calculate_loading_speed(5, 7, 9, 11, 13), LOAD_TEMP(0)); 
-  LIME: return min(calculate_loading_speed(7, 10, 13, 16, 19), LOAD_TEMP(0)); 
-  SCMT: return min(calculate_loading_speed(9, 14, 19, 24, 29), LOAD_TEMP(0)); 
-        return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0)); 
-} 
+  VPTS: return min(10, LOAD_TEMP(0));
+  CERE: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
+  GRAI: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
+  WHEA: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
+  MAIZ: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
+  OLSD: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
+  WOOD: return min(calculate_loading_speed(10, 11, 12, 13, 14), LOAD_TEMP(0));
+  WDPR: return min(calculate_loading_speed(10, 11, 12, 13, 14), LOAD_TEMP(0));
+  COPR: return min(calculate_loading_speed(6, 8, 10, 12, 14), LOAD_TEMP(0));
+  STEL: return min(calculate_loading_speed(6, 8, 10, 12, 14), LOAD_TEMP(0));
+  CLAY: return min(calculate_loading_speed(5, 7, 9, 11, 13), LOAD_TEMP(0));
+  LIME: return min(calculate_loading_speed(7, 10, 13, 16, 19), LOAD_TEMP(0));
+  SCMT: return min(calculate_loading_speed(9, 14, 19, 24, 29), LOAD_TEMP(0));
+        return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
+}
 
-switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed2, 
+switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed2,
   cargo_type_in_veh) // возможность использования люков - неприменимо
-{ 
+{
 piece_wide_cargo_check(all_wagons_bulk_station_loading_speed)
-  CLAY: all_wagons_bulk_station_loading_speed; 
-  LIME: all_wagons_bulk_station_loading_speed; 
-  SCMT: all_wagons_bulk_station_loading_speed;                     
-        return LOAD_TEMP(1); 
-} 
+  CLAY: all_wagons_bulk_station_loading_speed;
+  LIME: all_wagons_bulk_station_loading_speed;
+  SCMT: all_wagons_bulk_station_loading_speed;
+        return LOAD_TEMP(1);
+}
 
-switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed1, 
+switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed1,
 [ STORE_TEMP((LOAD_TEMP(1) == 0) + LOAD_TEMP(1), 1),                   // интерпритируем 0 как 1
   STORE_TEMP(min((LOAD_TEMP(3) == 0) * 255 + LOAD_TEMP(3), 255), 3),   // интерпритируем 0 как 255
   STORE_TEMP(min(cargo_capacity / LOAD_TEMP(1) + 1, LOAD_TEMP(3)), 1), // переводим тики в 1 груза, берем минимум по объёму и тикам
-  vehicle_is_unloading]) 
-{ 
-  1: all_wagons_bulk_loading_speed2; 
-     all_wagons_bulk_station_loading_speed; 
+  vehicle_is_unloading])
+{
+  1: all_wagons_bulk_loading_speed2;
+     all_wagons_bulk_station_loading_speed;
 }
 
-switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed, 
+switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed,
 [ STORE_TEMP((LOAD_TEMP(0) == 0) + LOAD_TEMP(0), 0),                   // интерпритируем 0 как 1
   STORE_TEMP(min((LOAD_TEMP(2) == 0) * 255 + LOAD_TEMP(2), 255), 2),   // интерпритируем 0 как 255
   STORE_TEMP(min(cargo_capacity / LOAD_TEMP(0) + 1, LOAD_TEMP(2)), 0), // переводим тики в 1 груза, берем минимум по объёму и тикам
   (LOAD_TEMP(1) == 0) && (LOAD_TEMP(3) == 0)])                         // Глуходонные вагоны, выгрузка сваливанием не допускается, считается по скорости погрузки
-{ 
-  1: all_wagons_bulk_station_loading_speed; 
-     all_wagons_bulk_loading_speed1; 
+{
+  1: all_wagons_bulk_station_loading_speed;
+     all_wagons_bulk_loading_speed1;
 }
 
-// Определение скорости погрузки засыпкой из элеватора. Скорость принимающих устройств неограничена. 
+// Определение скорости погрузки засыпкой из элеватора. Скорость принимающих устройств неограничена.
 
-switch (FEAT_TRAINS, SELF, all_wagons_hopper_station_loading_speed, cargo_type_in_veh) 
-{ 
+switch (FEAT_TRAINS, SELF, all_wagons_hopper_station_loading_speed, cargo_type_in_veh)
+{
 // зерно                                      10  30  50  90
   CERE: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
   GRAI: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
@@ -98,113 +98,113 @@ switch (FEAT_TRAINS, SELF, all_wagons_hopper_station_loading_speed, cargo_type_i
   OLSD: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
   WHEA: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
 // прочее
-  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));  
-  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));  
-  PEAT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));  
-  PHOS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));  
-  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));  
-  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));  
+  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  PEAT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  PHOS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
         return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
 }
 
-switch (FEAT_TRAINS, SELF, all_wagons_hopper_loading_speed, 
+switch (FEAT_TRAINS, SELF, all_wagons_hopper_loading_speed,
 [ STORE_TEMP((LOAD_TEMP(0) == 0) + LOAD_TEMP(0), 0), // интерпритируем 0 как 1
   STORE_TEMP((LOAD_TEMP(1) == 0) + LOAD_TEMP(1), 1), // интерпритируем 0 как 1
   STORE_TEMP(min((LOAD_TEMP(2) == 0) * 255 + LOAD_TEMP(2), 255), 2), // интерпритируем 0 как 255
   STORE_TEMP(min((LOAD_TEMP(3) == 0) * 255 + LOAD_TEMP(3), 255), 3), // интерпритируем 0 как 255
   STORE_TEMP(min(cargo_capacity / LOAD_TEMP(0) + 1, LOAD_TEMP(2)), 0), // переводим тики в 1 груза, берем минимум по объёму и тикам
   STORE_TEMP(min(cargo_capacity / LOAD_TEMP(1) + 1, LOAD_TEMP(3)), 1), // переводим тики в 1 груза, берем минимум по объёму и тикам
-  vehicle_is_unloading]) 
-{ 
-  1: return LOAD_TEMP(1); 
-     all_wagons_hopper_station_loading_speed; 
+  vehicle_is_unloading])
+{
+  1: return LOAD_TEMP(1);
+     all_wagons_hopper_station_loading_speed;
 }
 
 // Определение скорости погрузки зливкой. Ограничены мощности подающих и принимающих устройств
 
-switch (FEAT_TRAINS, SELF, all_wagons_tanker_station_loading_speed, cargo_type_in_veh) 
-{ 
+switch (FEAT_TRAINS, SELF, all_wagons_tanker_station_loading_speed, cargo_type_in_veh)
+{
 // совсем невязкие грузы
   BUBL: return min(calculate_loading_speed(20, 25, 33, 42, 50), LOAD_TEMP(0));
 // Низковязкие грузы
-  BEER: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(0)); 
-  FZDR: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(0)); 
-  COLA: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(0)); 
-// обычные грузы 
+  BEER: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(0));
+  FZDR: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(0));
+  COLA: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(0));
+// обычные грузы
   MILK: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
   PETR: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
   WATR: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
-// Высоковязкие грузы 
+// Высоковязкие грузы
   BDMT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  DYES: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  EOIL: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  LIME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  OIL_: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  RFPR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  RUBR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  PLAS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  PLST: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
-  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0)); 
+  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  DYES: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  EOIL: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  LIME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  OIL_: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  RFPR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  RUBR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  PLAS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  PLST: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
   SASH: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
   SULP: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
-// Очень вязкие грузы и особоопасные грузы 
+// Очень вязкие грузы и особоопасные грузы
   ACID: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0));
-  CHLO: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0)); 
-  MNO2: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0)); 
-  NITR: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0)); 
+  CHLO: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0));
+  MNO2: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0));
+  NITR: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(0));
 
         return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
 }
 
-switch (FEAT_TRAINS, SELF, all_wagons_tanker_station_unloading_speed, cargo_type_in_veh) 
-{ 
+switch (FEAT_TRAINS, SELF, all_wagons_tanker_station_unloading_speed, cargo_type_in_veh)
+{
 // совсем невязкие грузы
   BUBL: return min(calculate_loading_speed(20, 25, 33, 42, 50), LOAD_TEMP(1));
 // Низковязкие грузы
-  BEER: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(1)); 
-  FZDR: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(1)); 
-  COLA: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(1)); 
-// обычные грузы 
+  BEER: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(1));
+  FZDR: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(1));
+  COLA: return min(calculate_loading_speed(14, 21, 25, 30, 36), LOAD_TEMP(1));
+// обычные грузы
   MILK: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(1));
   PETR: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(1));
   WATR: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(1));
-// Высоковязкие грузы 
+// Высоковязкие грузы
   BDMT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
-  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  DYES: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  EOIL: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  LIME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  OIL_: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  RFPR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  RUBR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  PLAS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  PLST: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  SASH: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-  SULP: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1)); 
-// Очень вязкие грузы и особоопасные грузы 
+  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  DYES: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  EOIL: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  LIME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  OIL_: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  RFPR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  RUBR: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  PLAS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  PLST: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  SASH: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  SULP: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+// Очень вязкие грузы и особоопасные грузы
   ACID: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1));
-  CHLO: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1)); 
-  MNO2: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1)); 
-  NITR: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1)); 
+  CHLO: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1));
+  MNO2: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1));
+  NITR: return min(calculate_loading_speed(3, 4, 6, 7, 8), LOAD_TEMP(1));
 
         return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(1));
 }
 
-switch (FEAT_TRAINS, SELF, all_wagons_tanker_loading_speed, 
+switch (FEAT_TRAINS, SELF, all_wagons_tanker_loading_speed,
 [ STORE_TEMP((LOAD_TEMP(0) == 0) + LOAD_TEMP(0), 0), // интерпритируем 0 как 1
   STORE_TEMP((LOAD_TEMP(1) == 0) + LOAD_TEMP(1), 1), // интерпритируем 0 как 1
   STORE_TEMP(min((LOAD_TEMP(2) == 0) * 255 + LOAD_TEMP(2), 255), 2), // интерпритируем 0 как 255
   STORE_TEMP(min((LOAD_TEMP(3) == 0) * 255 + LOAD_TEMP(3), 255), 3), // интерпритируем 0 как 255
   STORE_TEMP(min(cargo_capacity / LOAD_TEMP(0) + 1, LOAD_TEMP(2)), 0), // переводим тики в 1 груза, берем минимум по объёму и тикам
   STORE_TEMP(min(cargo_capacity / LOAD_TEMP(1) + 1, LOAD_TEMP(3)), 1), // переводим тики в 1 груза, берем минимум по объёму и тикам
-  vehicle_is_unloading]) 
-{ 
-  1: all_wagons_tanker_station_unloading_speed; 
-     all_wagons_tanker_station_loading_speed; 
+  vehicle_is_unloading])
+{
+  1: all_wagons_tanker_station_unloading_speed;
+     all_wagons_tanker_station_loading_speed;
 }
