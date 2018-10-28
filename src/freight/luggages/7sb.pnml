@@ -268,14 +268,27 @@ switch (FEAT_TRAINS, SELF, luggage_7sb_sprites_start,
 long_vehicle_RND(luggage_7sb, luggage_7sb_v1_sprites_start)
 
 switch (FEAT_TRAINS, SELF, luggage_7sb_cargo_capacity,
-[  STORE_TEMP(20, 0), // т
-   STORE_TEMP(42, 1), // м³
-   STORE_TEMP(20, 2), // м² 
-   STORE_TEMP(0, 3), // палетомест 
-   STORE_TEMP(14, 4)])// шаблон
+[  STORE_TEMP(20, 0),  // т
+   STORE_TEMP(42, 1),  // м³
+   STORE_TEMP(20, 2),  // м² 
+   STORE_TEMP(0, 3),   // палетомест 
+   STORE_TEMP(14, 4)]) // шаблон
 { box_cargo_capacity; }
 
-switch (FEAT_TRAINS, SELF, mail_7sb_loading_speed,
+switch (FEAT_TRAINS, SELF, luggage_7sb_running_cost_factor,
+[  STORE_TEMP(0, 0),            // Моторы
+   STORE_TEMP((75 - 3 * (build_year >= 1956) - 2 * (build_year >= 1958) + 11 * (build_year >= 1960))/12, 1),         // Бригада
+   STORE_TEMP((75 - 3 * (build_year >= 1956) - 2 * (build_year >= 1958) + 11 * (build_year >= 1960))*7/12, 2),       // Износ
+   STORE_TEMP(1, 3),            // Сопровождение
+   STORE_TEMP((75 - 3 * (build_year >= 1956) - 2 * (build_year >= 1958) + 11 * (build_year >= 1960))/3, 4),          // ТО
+   STORE_TEMP(1, 5),            // Сертификация
+
+   STORE_TEMP(140, 6),       // Скорость
+   STORE_TEMP(50 - (build_year >= 1956) - 2 * (build_year >= 1958) - 4 * (build_year >= 1960), 7),        // Тара
+   STORE_TEMP(50 + 20 - (build_year >= 1956) - 2 * (build_year >= 1958) - 4 * (build_year >= 1960), 8)])    // Максимальная масса
+{ all_running_cost_factor; } // 75 - 72 - 70 - 81
+
+switch (FEAT_TRAINS, SELF, luggage_7sb_loading_speed,
   STORE_TEMP(7, 2))
 { all_wagons_box_loading_speed; } 
 
@@ -307,10 +320,6 @@ engine_weight_change_build_after3(luggage_7sb, 50,
                                                49, 1956,
                                                47, 1958,
                                                43, 1960)
-wagon_RC_change_build_after3(luggage_7sb, 75,
-                                          72, 1956,
-                                          70, 1958,
-                                          81, 1960)
 engine_cost_change_build_after3(luggage_7sb, 8,
                                              7, 1956,
                                              7, 1958,
@@ -337,7 +346,7 @@ item (FEAT_TRAINS, luggage_7sb, 435) {
     cargo_subtype_text: luggage_7sb_cargo_subtype_text;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     colour_mapping: any_cc_colour;
-    loading_speed: mail_7sb_loading_speed;
+    loading_speed: luggage_7sb_loading_speed;
   }
 }
 
