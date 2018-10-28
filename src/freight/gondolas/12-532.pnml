@@ -95,49 +95,16 @@ switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_capacity_b1974,
-[  STORE_TEMP(64, 0), // т
-   STORE_TEMP(73, 1), // м³
-   STORE_TEMP(36, 2), // м² 
-   STORE_TEMP(0, 3), // палетомест 
-   STORE_TEMP(8, 4), // шаблон
-   cargo_type_in_veh])
-{
-gondola_capacity() 
-  return 0;
-}
-
-switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_capacity_a1974,
-[  STORE_TEMP(69, 0), // т
-   STORE_TEMP(73, 1), // м³
-   STORE_TEMP(36, 2), // м² 
-   STORE_TEMP(0, 3), // палетомест 
-   STORE_TEMP(8, 4), // шаблон
-   cargo_type_in_veh])
-{
-gondola_capacity() 
-  return 0;
-}
-
-switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_capacity_a1981,
-[  STORE_TEMP(69, 0), // т
-   STORE_TEMP(73, 1), // м³
-   STORE_TEMP(36, 2), // м² 
-   STORE_TEMP(0, 3), // палетомест 
-   STORE_TEMP(8, 4), // шаблон
-   cargo_type_in_veh])
-{
-gondola_capacity() 
-  return 0;
-}
-
 switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_capacity,
-  (build_year>=1974) +
-  (build_year>=1981))
+[  STORE_TEMP(64 + 5 * (build_year >= 1974), 0), // т
+   STORE_TEMP(73, 1), // м³
+   STORE_TEMP(36, 2), // м² 
+   STORE_TEMP(0, 3), // палетомест 
+   STORE_TEMP(8, 4), // шаблон
+   cargo_type_in_veh])
 {
-  0: gondola_12_532_cargo_capacity_b1974;
-  1: gondola_12_532_cargo_capacity_a1974;
-     gondola_12_532_cargo_capacity_a1981;
+gondola_capacity() 
+  return 0;
 }
 
 switch (FEAT_TRAINS, SELF, gondola_12_532_loading_speed, 
@@ -147,7 +114,19 @@ switch (FEAT_TRAINS, SELF, gondola_12_532_loading_speed,
    STORE_TEMP(0, 3)])
 { cargo8_piece_loading_speed; }
 
-wagon_running_cost(gondola_12_532, 11)
+switch (FEAT_TRAINS, SELF, gondola_12_532_running_cost_factor,
+[  STORE_TEMP(0, 0),            // Моторы
+   STORE_TEMP(0, 1),            // Бригада
+   STORE_TEMP(11*2/3, 2),       // Износ
+   STORE_TEMP(0, 3),            // Сопровождение
+   STORE_TEMP(11/3, 4),         // ТО
+   STORE_TEMP(0, 5),            // Сертификация
+
+   STORE_TEMP(120, 6),       // Скорость
+   STORE_TEMP(22, 7),        // Тара
+   STORE_TEMP(22 + 64 + 5 * (build_year >= 1974), 8)])    // Максимальная масса
+{ all_running_cost_factor; } // 11
+
 hint_wagon_with_uspeed(gondola_12_532_b1974,
                        64, 73,
                        STR_PURCHASE_HINT_LOADING_SPEED_5TIC,
