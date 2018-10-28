@@ -91,26 +91,26 @@ switch (FEAT_TRAINS, SELF, rs1_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, rs1_cargo_capacity_b1973,
-[  STORE_TEMP(42, 0), // т
+switch (FEAT_TRAINS, SELF, rs1_cargo_capacity,
+[  STORE_TEMP(42 + (build_year >= 1973), 0), // т
    STORE_TEMP(108, 1), // м³
-   STORE_TEMP(0, 2), // м²
-   STORE_TEMP(0, 3), // палетомест
-   STORE_TEMP(13, 4)])// шаблон
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(13, 4)]) // шаблон
 { ref_cargo_capacity; }
 
-switch (FEAT_TRAINS, SELF, rs1_cargo_capacity_a1973,
-  cargo_type_in_veh)
-{
-        return 43;
-}
+switch (FEAT_TRAINS, SELF, rs1_running_cost_factor, // Стоимость обслуживания дизельной секции разложена в стоимость обслуживания вагонов
+[  STORE_TEMP(0, 0),            // Моторы
+   STORE_TEMP(0, 1),            // Бригада
+   STORE_TEMP(516/4/2, 2),      // Износ
+   STORE_TEMP(516/4/6, 3),      // Сопровождение (охлаждение)
+   STORE_TEMP(516/4/3, 4),      // ТО
+   STORE_TEMP(1, 5),            // Сертификация
 
-switch (FEAT_TRAINS, SELF, rs1_cargo_capacity,
-  build_year >= 1973)
-{
-  1: rs1_cargo_capacity_a1973;
-     rs1_cargo_capacity_b1973;
-}
+   STORE_TEMP(140, 6),          // Скорость
+   STORE_TEMP(40 - (build_year >= 1973), 7),        // Тара
+   STORE_TEMP(40 + 42, 8)])    // Максимальная масса
+{ all_running_cost_factor; } // 516
 
 switch (FEAT_TRAINS, SELF, rs1_loading_speed,
   STORE_TEMP(10, 2))
@@ -138,7 +138,6 @@ switch (FEAT_TRAINS, SELF, rs1_additional_text,
                    string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD, 120, 144));
 }
 
-wagon_running_cost(rs1, 516)
 wagon_speed_change_on_load(rs1, 140, 120, 144)
 
 item (FEAT_TRAINS, rs1, 394) {
