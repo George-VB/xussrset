@@ -389,3 +389,47 @@ switch (FEAT_TRAINS, SELF, container_2_20or40_refit_cost, 0)
 {
   container_20_refit_cost;
 }
+
+// Защита от выбора груза, контейнеры для которого ещё не появились
+
+switch (FEAT_TRAINS, SELF, container_a1972_bitmask_vehicle_info, 
+  cargo_type_in_veh) 
+{
+gen_container_cargo_check(return 0)
+  return bitmask(FLAG_INADMISSIBLE_CARGO);
+}
+
+switch (FEAT_TRAINS, SELF, container_a1988_bitmask_vehicle_info, 
+  cargo_type_in_veh)
+{
+gen_container_cargo_check(return 0)
+ref_container_cargo_check(return 0)
+  return bitmask(FLAG_INADMISSIBLE_CARGO);
+}
+
+switch (FEAT_TRAINS, SELF, container_a1995_bitmask_vehicle_info, 
+  cargo_type_in_veh)
+{
+gen_container_cargo_check(return 0)
+ref_container_cargo_check(return 0)
+tank_container_cargo_check(return 0)
+  return bitmask(FLAG_INADMISSIBLE_CARGO);
+}
+
+switch (FEAT_TRAINS, SELF, container_bitmask_vehicle_info2,
+  (current_year >= 1972) +
+  (current_year >= 1988) +
+  (current_year >= 1995))
+{
+  0: return bitmask(FLAG_INADMISSIBLE_CARGO);
+  1: container_a1972_bitmask_vehicle_info;
+  2: container_a1988_bitmask_vehicle_info;
+     container_a1995_bitmask_vehicle_info;
+}
+
+switch (FEAT_TRAINS, SELF, container_bitmask_vehicle_info,
+  cargo_capacity)
+{
+  0: return bitmask(FLAG_INADMISSIBLE_CARGO);
+     container_bitmask_vehicle_info2;
+}
