@@ -1,0 +1,73 @@
+﻿ // 17_486_hopper
+
+#define IMAGEFILE  "src/freight/hoppers/17-486.png"
+purchase_sprites(hopper_17_486, 0, 0)
+tanker_layout_template(hopper_17_486, 10, 32, 40)
+#undef IMAGEFILE
+long_vehicle_RND(hopper_17_486, hopper_17_486_sprites_start)
+
+switch (FEAT_TRAINS, SELF, hopper_17_486_colour_mapping,
+  enable_cc_default)
+{
+  0: return ttdall_cc + 0x04;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_17_486_cargo_capacity,
+[  STORE_TEMP(52, 0),  // т
+   STORE_TEMP(86, 1),  // м³
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(10, 4)]) // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_17_486_running_cost_factor,
+[  STORE_TEMP(0, 0),            // Моторы
+   STORE_TEMP(0, 1),            // Бригада
+   STORE_TEMP(30*2/3, 2),       // Износ
+   STORE_TEMP(0, 3),            // Сопровождение
+   STORE_TEMP(30/3, 4),         // ТО
+   STORE_TEMP(0, 5),            // Сертификация
+
+   STORE_TEMP(120, 6),       // Скорость
+   STORE_TEMP(30, 7),        // Тара
+   STORE_TEMP(30+52, 8)])    // Максимальная масса
+{ all_running_cost_factor; } // 30
+
+switch (FEAT_TRAINS, SELF, hopper_17_486_loading_speed,
+[  STORE_TEMP(0, 0),    // определяется элеватором (4 больших люка)
+   STORE_TEMP(6, 1),    // 4 малых разгрузочных люков
+   STORE_TEMP(0, 2),    // верхняя загрузка не ограничена люками
+   STORE_TEMP(3*4, 3)]) // нижняя разгрузка ограничена 3 единицами груза на люк
+{ all_wagons_hopper_loading_speed; }
+
+hint_wagon_with_uspeed_noto_changeable_factory_name(hopper_17_486,
+     52, 86,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_LOADING_SPEED_6TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_BUNKER,
+     1988,
+     fact_stakhanovcw())
+
+item (FEAT_TRAINS, hopper_17_486, 617) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 17, 486);
+    vehicle_dates(1988, 2050, 30, 10, 8, 5)
+    vehicle_wagon(30, 120)
+    cargo_allow_refit: [cargo_all_flour_bunkerlist()];
+  }
+  graphics {
+    default: hopper_17_486_sprites;
+    purchase: hopper_17_486_purchase_sprites;
+    running_cost_factor: hopper_17_486_running_cost_factor;
+    articulated_part: articulated_part_dummy2;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: hopper_17_486_colour_mapping;
+    loading_speed: hopper_17_486_loading_speed;
+    additional_text: hopper_17_486_additional_text;
+    cargo_capacity: hopper_17_486_cargo_capacity;
+  }
+}
+
+long_name_template(hopper_17_486, STR_LONGNAME_BUNKER_17_486)
