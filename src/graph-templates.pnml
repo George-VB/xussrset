@@ -618,6 +618,58 @@ random_switch (FEAT_TRAINS, SELF, name##_sprites_start,                         
 { 1: name##_sprites_left;                                                            \
   1: name##_sprites_right; }                                                         \
 
+// Вагоны пассажирские унифицированные. открытые двери и фонари последнего вагона унифицированы
+#define IMAGEFILE  "src/coach/doors.png"                                            
+spriteset (doors_sprites_left, IMAGEFILE)                                   
+{ s14_template(32, 40, 0) }                                                         
+spriteset (doors_sprites_right, IMAGEFILE)                                   
+{ s14_r_template(32, 40, 0) }                                                         
+spriteset (doors_dummy_sprites, IMAGEFILE)                                   
+{ s14_template(32, 107, 0) }                                                         
+spriteset (backlights_sprites_left, IMAGEFILE)                                   
+{ s14_template(32, 174, 0) }                                                         
+spriteset (backlights_sprites_right, IMAGEFILE)                                   
+{ s14_r_template(32, 174, 0) }                                                         
+#undef IMAGEFILE
+spritegroup doors_sprites_asm_left_front                                
+{ loading: [doors_sprites_left];                                        
+  loaded: [doors_dummy_sprites]; }                                            
+spritegroup doors_sprites_asm_right_front                               
+{ loading: [doors_sprites_right];                                       
+  loaded: [doors_dummy_sprites]; }                                            
+switch (FEAT_TRAINS, SELF, doors_sprites_asm_front, random_bits & 1)    
+{ 0: doors_sprites_asm_left_front;                                      
+     doors_sprites_asm_right_front; }                                   
+switch (FEAT_TRAINS, SELF, doors_sprites_front,                         
+  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100))        
+{ doors_sprites_asm_front; }                                            
+switch (FEAT_TRAINS, SELF, backlights_sprites_asm_front, random_bits & 1)    
+{ 0: backlights_sprites_left;                                      
+     backlights_sprites_right; }                                   
+switch (FEAT_TRAINS, SELF, backlights_sprites_asm_front2, position_in_consist_from_end == 1)    
+{ 1: backlights_sprites_asm_front;
+     doors_dummy_sprites; }
+switch (FEAT_TRAINS, SELF, backlights_sprites_front,                         
+  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100))        
+{ backlights_sprites_asm_front2; }                                            
+
+#define pass_wagon_sprites_uni(size, name, x, y)                                                \
+spriteset (name##_sprites_asm_left_back, IMAGEFILE)                                             \
+{ s##size##_template(x, y, 0) }                                                                 \
+spriteset (name##_sprites_asm_right_back, IMAGEFILE)                                            \
+{ s##size##_r_template(x, y, 0) }                                                               \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_asm_back, bitmask(TRIGGER_VEHICLE_SERVICE))    \
+{ 1: name##_sprites_asm_left_back;                                                              \
+  1: name##_sprites_asm_right_back; }                                                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_back,                                                 \
+  STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100))                                \
+{ name##_sprites_asm_back; }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_sprites_start, getbits(extra_callback_info1, 8, 8))           \
+{ 0: name##_sprites_back;                                                                       \
+  1: doors_sprites_front;                                                                       \
+  2: backlights_sprites_front;                                                                  \
+     return CB_FAILED; }                                                                        \
+
 // Полувагоны, платформы.
 // шаблон пустого вагона
 #define flatbed_empty_layout_template(name, size, x, y)                              \
