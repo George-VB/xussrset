@@ -540,15 +540,121 @@ switch (FEAT_TRAINS, SELF, dr1a_c_long_a1990_a1985_cargo_subtype_text,
   livery_template(dr1a_c_short, SZD, LV_SZD, LV_LDZ, LV_LG, LV_BELARUSSIAN_RAILWAY, LV_BELARUSSIAN_RAILWAY_DRB, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 livery_template_longnames(dr1a_c)
 
-general_running_cost(dr1a_h_v1, 179)
-general_running_cost(dr1a_h_v2, 177)
+engine_weight_change_build_after(dr1a_h, 60,
+                                         58, 1985)
+engine_weight_change_build_after(dr1a_c, 38,
+                                         37, 1977)
+engine_power_MU(dr1a_h, 800, dr1a_h)
+
+RC_head_check2_new(dr1a_h_v1, dr1a_h, dr1a_n)
+switch (FEAT_TRAINS, SELF, dr1a_h_v1_running_cost_factor,
+[  STORE_TEMP(179*57/100, 0),    // Моторы
+   STORE_TEMP(179*8/100, 1),     // Бригада
+   STORE_TEMP(179*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(179*14/100, 4),    // ТО
+   STORE_TEMP(179/100, 5),       // Сертификация
+
+   STORE_TEMP(120, 6),          // Скорость
+   STORE_TEMP(60 - 2 * (build_year >= 1985), 7),           // Тара
+   STORE_TEMP(60 + 9 - 2 * (build_year >= 1985), 8)])      // Максимальная масса
+{ dr1a_h_v1_check_running_cost_factor; } // 179
+
+RC_head_check2_new(dr1a_h_v2, dr1a_h, dr1a_n)
+switch (FEAT_TRAINS, SELF, dr1a_h_v2_running_cost_factor,
+[  STORE_TEMP(177*57/100, 0),    // Моторы
+   STORE_TEMP(177*8/100, 1),     // Бригада
+   STORE_TEMP(177*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(177*14/100, 4),    // ТО
+   STORE_TEMP(177/100, 5),       // Сертификация
+
+   STORE_TEMP(120, 6),          // Скорость
+   STORE_TEMP(60 - 2 * (build_year >= 1985), 7),           // Тара
+   STORE_TEMP(60 + 9 - 2 * (build_year >= 1985), 8)])      // Максимальная масса
+{ dr1a_h_v2_check_running_cost_factor; } // 177
+
 switch (FEAT_TRAINS, PARENT, dr1a_h_running_cost_factor,
-  ((vehicle_type_id == dr1a_h) || (vehicle_type_id == dr1a_n)) * (1 + (build_year >= 1985)))
+ build_year >= 1985)
 {
-  1: dr1a_h_v1_running_cost_factor;
-  2: dr1a_h_v2_running_cost_factor;
-     return RC_MU_AS_CAR;
+  0: dr1a_h_v1_running_cost_factor;
+     dr1a_h_v2_running_cost_factor;
 }
+
+RC_head_check2_new(dr1a_c, dr1a_h, dr1a_n)
+switch (FEAT_TRAINS, SELF, dr1a_c_running_cost_factor,
+[  STORE_TEMP(0, 0),             // Моторы
+   STORE_TEMP(48*21/100, 1),     // Бригада
+   STORE_TEMP(48*57/100, 2),     // Износ
+   STORE_TEMP(48*5/100, 3),      // Сопровождение
+   STORE_TEMP(48*15/100, 4),     // ТО
+   STORE_TEMP(48*2/100, 5),      // Сертификация
+
+   STORE_TEMP(96, 6),       // Скорость
+   STORE_TEMP(38 - (build_year >= 1977), 7),           // Тара
+   STORE_TEMP(38 + 16 - (build_year >= 1977), 8)])     // Максимальная масса
+{ dr1a_c_check_running_cost_factor; } // 48
+
+RC_head_check2_new(dr1a_n, dr1a_h, dr1a_n)
+switch (FEAT_TRAINS, SELF, dr1a_n_running_cost_factor,
+[  STORE_TEMP(0, 0),              // Моторы
+   STORE_TEMP(113*21/100, 1),     // Бригада
+   STORE_TEMP(113*57/100, 2),     // Износ
+   STORE_TEMP(113*5/100, 3),      // Сопровождение
+   STORE_TEMP(113*15/100, 4),     // ТО
+   STORE_TEMP(113*2/100, 5),      // Сертификация
+
+   STORE_TEMP(96, 6),           // Скорость
+   STORE_TEMP(40, 7),           // Тара
+   STORE_TEMP(40 + 12, 8)])     // Максимальная масса
+{ dr1a_n_check_running_cost_factor; } // 113
+
+hint_MU_with_model2_changeable_factory_name(dr1a_h_b1978,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 324,
+     STR_SECTIONS_DMU_3_7_M2,
+     1976, 1977,
+     fact_rigacw())
+hint_MU_with_model2_changeable_factory_name(dr1a_h_a1978,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 642,
+     STR_SECTIONS_DMU_3_7_M2,
+     1978, 1984,
+     fact_rigacw())
+hint_MU_with_model2_changeable_factory_name(dr1a_h_a1985,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 350,
+     STR_SECTIONS_DMU_3_7_M2,
+     1978, 1998,
+     fact_rigacw())
+hint_MU_with_model2_changeable_factory_name(dr1a_h_a1994,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 350,
+     STR_SECTIONS_DMU_N3_7_M2,
+     1978, 1998,
+     fact_rigacw())
+hint_change_after3(dr1a_h, 1978, 1985, 1994)
+
+hint_MU_with_model2_changeable_factory_name(dr1a_n_b1994,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_N_WITH_SUBTYPE, 63, 352,
+     STR_SECTIONS_DMU_N3_7_M2,
+     1991, 2008,
+     fact_rigacw())
+hint_MU_with_model2_comment_changeable_factory_name(dr1a_n_a1994,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_N_WITH_SUBTYPE, 63, 352,
+     STR_SECTIONS_DMU_N3_7_M2,
+     1991, 2008,
+     fact_rigacw(),
+     string(STR_PURCHASE_HINT_DRB1))
+hint_change_after(dr1a_n, 1994)
 
 hint_MU_with_model2_changeable_factory_name(dr1a_c_b1978,
      STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
@@ -580,62 +686,6 @@ hint_MU_with_model2_comment_changeable_factory_name(dr1a_c_a1994,
      fact_rigacw(),
      string(STR_PURCHASE_HINT_DRB1))
 hint_change_after3(dr1a_c, 1978, 1985, 1994)
-
-hint_MU_with_model2_changeable_factory_name(dr1a_n_b1994,
-     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_N_WITH_SUBTYPE, 63, 352,
-     STR_SECTIONS_DMU_N3_7_M2,
-     1991, 2008,
-     fact_rigacw())
-hint_MU_with_model2_comment_changeable_factory_name(dr1a_n_a1994,
-     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_N_WITH_SUBTYPE, 63, 352,
-     STR_SECTIONS_DMU_N3_7_M2,
-     1991, 2008,
-     fact_rigacw(),
-     string(STR_PURCHASE_HINT_DRB1))
-hint_change_after(dr1a_n, 1994)
-
-engine_weight_change_build_after(dr1a_h, 60,
-                                         58, 1985)
-engine_weight_change_build_after(dr1a_c, 38,
-                                         37, 1977)
-engine_power_MU(dr1a_h, 800, dr1a_h)
-wagon_running_cost(dr1a_c_MU, 48)
-RC_head_check2(dr1a_c, dr1a_h, dr1a_n)
-wagon_running_cost(dr1a_n_MU, 113)
-RC_head_check2(dr1a_n, dr1a_h, dr1a_n)
-hint_MU_with_model2_changeable_factory_name(dr1a_h_b1978,
-     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 324,
-     STR_SECTIONS_DMU_3_7_M2,
-     1976, 1977,
-     fact_rigacw())
-hint_MU_with_model2_changeable_factory_name(dr1a_h_a1978,
-     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 642,
-     STR_SECTIONS_DMU_3_7_M2,
-     1978, 1984,
-     fact_rigacw())
-hint_MU_with_model2_changeable_factory_name(dr1a_h_a1985,
-     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 350,
-     STR_SECTIONS_DMU_3_7_M2,
-     1978, 1998,
-     fact_rigacw())
-hint_MU_with_model2_changeable_factory_name(dr1a_h_a1994,
-     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 350,
-     STR_SECTIONS_DMU_N3_7_M2,
-     1978, 1998,
-     fact_rigacw())
-hint_change_after3(dr1a_h, 1978, 1985, 1994)
 
 item (FEAT_TRAINS, dr1a_h, 212) {
   property {
