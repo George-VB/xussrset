@@ -2,11 +2,11 @@
 
 #define IMAGEFILE  "src/electric/vl19-pre.png"
 purchase_sprites(vl19_v1, 0, 0)
-electric1r_2_sprites(10, vl19_v1,   32,   40)
+electric1r_2_sprites(10, vl19_v1, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/electric/vl19.png"
 purchase_sprites(vl19_v2, 0, 0)
-electric1r_2_sprites(10, vl19_v2, 32,  40)
+electric1r_2_sprites(10, vl19_v2, 32, 40)
 electric1r_2_sprites(10, vl19_v3, 32, 375)
 electric1r_2_sprites(10, vl19_v4, 32, 710)
 #undef IMAGEFILE
@@ -66,15 +66,6 @@ switch (FEAT_TRAINS, SELF, vl19_tractive_effort_coefficient,
      return get_tec_int(335.0, 117);
 }
 
-general_running_cost(vl19o, 241)
-general_running_cost(vl19m, 242)
-switch (FEAT_TRAINS, SELF, vl19_running_cost_factor,
-  cargo_subtype >= 0xE0)
-{
-  1: vl19m_running_cost_factor;
-     vl19o_running_cost_factor;
-}
-
 engine_speed(vl19o, 85)
 engine_speed(vl19m, 90)
 switch (FEAT_TRAINS, SELF, vl19_speed,
@@ -94,6 +85,36 @@ livery_template_prealt(vl19, 1933)
 engine_electric1_2_effect(vl19, -2, 4)
 engine_penalise_speed(vl19, 2)
 engine_refit_cost_for_a_livery_change(vl19, 0xE0, 2)
+
+switch (FEAT_TRAINS, SELF, vl19o_running_cost_factor,
+[  STORE_TEMP(241*57/100, 0),    // Моторы
+   STORE_TEMP(241*8/100, 1),     // Бригада
+   STORE_TEMP(241*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(241*14/100, 4),    // ТО
+   STORE_TEMP(241/100, 5),       // Сертификация
+
+   STORE_TEMP(85, 6),        // Скорость
+   STORE_TEMP(117, 7),       // Тара
+   STORE_TEMP(117, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 241
+
+switch (FEAT_TRAINS, SELF, vl19m_running_cost_factor,
+[  STORE_TEMP(242*57/100, 0),    // Моторы
+   STORE_TEMP(242*8/100, 1),     // Бригада
+   STORE_TEMP(242*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(242*14/100, 4),    // ТО
+   STORE_TEMP(242/100, 5),       // Сертификация
+
+   STORE_TEMP(90, 6),        // Скорость
+   STORE_TEMP(117, 7),       // Тара
+   STORE_TEMP(117, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 242
+switch (FEAT_TRAINS, SELF, vl19_running_cost_factor,
+  cargo_subtype >= 0xE0)
+{ 1: vl19m_running_cost_factor;
+     vl19o_running_cost_factor; }
 
 hint_engine_in_2fact(vl19_b1933,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,

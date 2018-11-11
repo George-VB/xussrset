@@ -71,27 +71,42 @@ switch (FEAT_TRAINS, SELF, vl22m_speed,
   1: vl22mpass_speed;
      vl22mcargo_speed;
 }
-
 switch (FEAT_TRAINS, SELF, vl22m_purchase_speed,
   cargo_type_in_veh == PASS)
 {
   1: vl22mpass_purchase_speed;
      vl22mcargo_purchase_speed;
 }
-
 engine_penalise_speed(vl22m, 2)
-engine_RC_change_build_after2(vl22mpass, 267,
-                                         265, 1956,
-                                         260, 1957)
-engine_RC_change_build_after2(vl22mcargo, 241,
-                                          243, 1956,
-                                          234, 1957)
+
+switch (FEAT_TRAINS, SELF, vl22mpass_running_cost_factor,
+[  STORE_TEMP((267 - 2 * (build_year >= 1956) - 5 * (build_year >= 1957))*57/100, 0),    // Моторы
+   STORE_TEMP((267 - 2 * (build_year >= 1956) - 5 * (build_year >= 1957))*8/100, 1),     // Бригада
+   STORE_TEMP((267 - 2 * (build_year >= 1956) - 5 * (build_year >= 1957))*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP((267 - 2 * (build_year >= 1956) - 5 * (build_year >= 1957))*14/100, 4),    // ТО
+   STORE_TEMP((267 - 2 * (build_year >= 1956) - 5 * (build_year >= 1957))/100, 5),       // Сертификация
+
+   STORE_TEMP(90 + 10 * (build_year >= 1957), 6),       // Скорость
+   STORE_TEMP(132, 7),       // Тара
+   STORE_TEMP(132, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 267 - 265 - 260
+switch (FEAT_TRAINS, SELF, vl22mcargo_running_cost_factor,
+[  STORE_TEMP((241 + 2 * (build_year >= 1956) - 9 * (build_year >= 1957))*57/100, 0),    // Моторы
+   STORE_TEMP((241 + 2 * (build_year >= 1956) - 9 * (build_year >= 1957))*8/100, 1),     // Бригада
+   STORE_TEMP((241 + 2 * (build_year >= 1956) - 9 * (build_year >= 1957))*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP((241 + 2 * (build_year >= 1956) - 9 * (build_year >= 1957))*14/100, 4),    // ТО
+   STORE_TEMP((241 + 2 * (build_year >= 1956) - 9 * (build_year >= 1957))/100, 5),       // Сертификация
+
+   STORE_TEMP(75 + 5 * (build_year >= 1957), 6),       // Скорость
+   STORE_TEMP(132, 7),       // Тара
+   STORE_TEMP(132, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 241 - 243 - 234
 switch (FEAT_TRAINS, SELF, vl22m_running_cost_factor,
   cargo_type_in_veh == PASS)
-{
-  1: vl22mpass_running_cost_factor;
-     vl22mcargo_running_cost_factor;
-}
+{ 1: vl22mpass_running_cost_factor;
+     vl22mcargo_running_cost_factor; }
 
 hint_engine_2fact_comment(vl22m,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,

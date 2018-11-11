@@ -58,24 +58,52 @@ switch (FEAT_TRAINS, SELF, ep20_tractive_effort_coefficient,
 }
 livery_template1(ep20_alt, RZD_PID)
 livery_template_alt(ep20, WITH_INCREASED_SPEED)
-general_running_cost(ep20_200, 1492)
-general_running_cost(ep20_160, 1180)
-switch (FEAT_TRAINS, SELF, ep20_running_cost_factor,
-  cargo_subtype == 1)
-{
-  1: ep20_200_running_cost_factor;
-     ep20_160_running_cost_factor;
-}
+
 engine_speed(ep20_200, 200)
 engine_speed(ep20_160, 160)
+
 switch (FEAT_TRAINS, SELF, ep20_speed,
   cargo_subtype == 1)
 {
   1: ep20_200_speed;
      ep20_160_speed;
 }
+
 engine_penalise_speed0(ep20)
 engine_refit_cost_for_e2_livery_change(ep20, 1, 57, 57)
+
+switch (FEAT_TRAINS, SELF, ep20_200_running_cost_factor,
+[  STORE_TEMP(1492*57/100, 0),    // Моторы
+   STORE_TEMP(1492*8/100, 1),     // Бригада
+   STORE_TEMP(1492*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),              // Сопровождение
+   STORE_TEMP(1492*14/100, 4),    // ТО
+   STORE_TEMP(1492/100, 5),       // Сертификация
+
+   STORE_TEMP(200, 6),       // Скорость
+   STORE_TEMP(129, 7),       // Тара
+   STORE_TEMP(129, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 1492
+
+switch (FEAT_TRAINS, SELF, ep20_160_running_cost_factor,
+[  STORE_TEMP(1180*57/100, 0),    // Моторы
+   STORE_TEMP(1180*8/100, 1),     // Бригада
+   STORE_TEMP(1180*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),              // Сопровождение
+   STORE_TEMP(1180*14/100, 4),    // ТО
+   STORE_TEMP(1180/100, 5),       // Сертификация
+
+   STORE_TEMP(200, 6),       // Скорость
+   STORE_TEMP(129, 7),       // Тара
+   STORE_TEMP(129, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 1180
+
+switch (FEAT_TRAINS, SELF, ep20_running_cost_factor,
+  cargo_subtype == 1)
+{
+  1: ep20_200_running_cost_factor;
+     ep20_160_running_cost_factor;
+}
 
 hint_engine_noto_comment_changeable_factory_name(ep20,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_ACDC,
