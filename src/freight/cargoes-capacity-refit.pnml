@@ -151,8 +151,9 @@ switch (FEAT_TRAINS, SELF, tank_cargo_capacity, cargo_type_in_veh)
   EOIL: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 915, cargo_unit_weight);
   ETHL: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1076, cargo_unit_weight);  // водный раствор этиленгликоля 60%
   FERT: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1505, cargo_unit_weight);  //  Азотная кислота, HNO3 водный раствор 91%, nitric acid 91%
-  FZDR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 235, cargo_unit_weight);
   FOOD: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 950, cargo_unit_weight);
+  FUEL: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 815, cargo_unit_weight);   // Керосин, Kerosene
+  FZDR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 235, cargo_unit_weight);
   LYE_: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1525, cargo_unit_weight);   // водный раствор гидроксида натрия 50%;
   LIME: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1550, cargo_unit_weight);
   MILK: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1027, cargo_unit_weight);  // Молоко, Milk
@@ -169,6 +170,7 @@ switch (FEAT_TRAINS, SELF, tank_cargo_capacity, cargo_type_in_veh)
   SASH: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1080, cargo_unit_weight);  // Натрия карбонат в гранулах (углекислый натрий, сода кальцинированная) heavy soda ash
   SULP: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 2085, cargo_unit_weight);
   WATR: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 1000, cargo_unit_weight);
+  URAN: return calculate_capacity(LOAD_TEMP(0), LOAD_TEMP(1), 18950, cargo_unit_weight); // Уран чистый Uranium U
         return 0;
 }
 switch (FEAT_TRAINS, SELF, hopper_cargo_capacity, cargo_type_in_veh)
@@ -296,7 +298,8 @@ piece_cargo_check(piece_cargo_capacity)       \
 
 // paiment for cleaning after cargo
 switch (FEAT_TRAINS, SELF, tanker_refit_cost,
-  (5 * ((cargo_type_in_veh == PETR) && (getbits(extra_callback_info1, 0, 8) != PETR))) +
+  (5 * (((cargo_type_in_veh == PETR) || (cargo_type_in_veh == FUEL)) && 
+       (getbits(extra_callback_info1, 0, 8) != PETR) && (getbits(extra_callback_info1, 0, 8) != FUEL))) +
   (4 * (((cargo_type_in_veh == RFPR) || (cargo_type_in_veh == OIL_)) &&
        (getbits(extra_callback_info1, 0, 8) != RFPR) && (getbits(extra_callback_info1, 0, 8) != OIL_))) +
   (1 * (((cargo_type_in_veh == WATR) || (cargo_type_in_veh == COLA) || (cargo_type_in_veh == EOIL) || (cargo_type_in_veh == MILK) || (cargo_type_in_veh == BEER) || (cargo_type_in_veh == FZDR) || (cargo_type_in_veh == FOOD)) &&
