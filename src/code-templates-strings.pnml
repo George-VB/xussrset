@@ -417,6 +417,14 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                   \
   STORE_TEMP(string(strfactory), 0x103)])                            \
 { return string(STR_PURCHASE_HINT_WAGON_MAIL); }                     \
 
+#define hint_wagon_mail_noto_changeable_factory_name(name, cap, strlspeed, straging, strwagtype, from, factory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                   \
+[ STORE_TEMP(cap | (string(strlspeed) << 16), 0x100),                \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),  \
+  STORE_TEMP(factory, 0x103)])                                       \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL); }                     \
+
 // Описание почтового-вагона с производством в течение года
 #define hint_wagon_mail_in(name, cap, strlspeed, straging, strwagtype, in, strfactory)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text,                   \
@@ -498,6 +506,13 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | (string(strfactory) << 16), 0x102)])                                \
 { return string(STR_PURCHASE_HINT_COACH); }                                             \
 
+#define hint_wagon_coach_noto_changeable_factory_name(name, strlspeed, straging, strwagtype, from, factory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                      \
+[ STORE_TEMP(string(strlspeed) | (string(straging) << 16), 0x100),                      \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),       \
+  STORE_TEMP(from | (factory << 16), 0x102)])                                           \
+{ return string(STR_PURCHASE_HINT_COACH); }                                             \
+
 // Описание пассажирского вагона с производством в течение года
 #define hint_wagon_coach_in(name, strlspeed, straging, strwagtype, in, strfactory)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text,                                  \
@@ -539,6 +554,14 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),  \
   STORE_TEMP(from | (to << 16), 0x102),                                              \
   STORE_TEMP(string(strfactory) | (string(comment) << 16), 0x103)])                  \
+{ return string(STR_PURCHASE_HINT_COACH_WITH_COMMENT); }                             \
+
+#define hint_wagon_coach_comment_changeable_factory_name(name, strlspeed, straging, strwagtype, from, to, factory, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                   \
+[ STORE_TEMP(string(strlspeed) | (string(straging) << 16), 0x100),                   \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),  \
+  STORE_TEMP(from | (to << 16), 0x102),                                              \
+  STORE_TEMP(factory | (string(comment) << 16), 0x103)])                             \
 { return string(STR_PURCHASE_HINT_COACH_WITH_COMMENT); }                             \
 
 // Описание пассажирского вагона с 2 производителями
@@ -1424,4 +1447,9 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 #define fact_tbilisi() (current_year < USSREND ? string(STR_PURCHASE_HINT_FACTORY_TBILISI) :       \
                                                  string(STR_PURCHASE_HINT_FACTORY_TBILISI_AUSSR))  \
+
+#define fact_tver() (current_year < 1918 ? string(STR_PURCHASE_HINT_FACTORY_TVER_BUSSR) :         \
+                    (current_year < 1931 ? string(STR_PURCHASE_HINT_FACTORY_TVER_CW) :            \
+                    (current_year < USSREND ? string(STR_PURCHASE_HINT_FACTORY_TVER_KALININ_CW) : \
+                                           string(STR_PURCHASE_HINT_FACTORY_TVER_CW))))           \
 
