@@ -217,22 +217,6 @@ switch (FEAT_TRAINS, PARENT, em167_cargo_capacity,
      return 0;
 }
 
-emu_running_cost(em167_v1, 46, 41)
-
-switch (FEAT_TRAINS, SELF, em167_running_cost_factor1,
-  position_in_articulated_veh)
-{
-  0: em167_v1_running_cost_factor;
-     return 0;
-}
-
-switch (FEAT_TRAINS, PARENT, em167_running_cost_factor,
-  vehicle_type_id == em167)
-{
-  1: em167_running_cost_factor1;
-     return RC_MU_AS_CAR * 3;
-}
-
 switch (FEAT_TRAINS, PARENT, em167_start_stop,
   count_veh_id(em167))
 {
@@ -241,6 +225,21 @@ switch (FEAT_TRAINS, PARENT, em167_start_stop,
 }
 
 engine_speed(em167, 80)
+
+RC_head_check_new(em167, em167)
+switch (FEAT_TRAINS, SELF, em167_running_cost_factor,
+[  STORE_TEMP((46+41)*57/100, 0),    // Моторы
+   STORE_TEMP((46+41)*8/100, 1),     // Бригада
+   STORE_TEMP((46+41)*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP((46+41)*14/100, 4),    // ТО
+   STORE_TEMP((46+41)/100, 5),       // Сертификация
+
+   STORE_TEMP(80, 6),            // Скорость
+   STORE_TEMP(39+28, 7),       // Тара
+   STORE_TEMP(39+28, 8)])      // Максимальная масса
+{ em167_check_running_cost_factor; } // 46+41
+
 hint_MU_in(em167,
      STR_PURCHASE_HINT_LOADING_SPEED_1TIC,
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,

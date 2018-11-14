@@ -123,8 +123,20 @@ switch (FEAT_TRAINS, PARENT, sd_cargo_capacity,
      return 0;
 }
 
-emu_running_cost(sd_MU, 59, 50 + 50)
-RC_head_check_m(sd, sd, 3)
+RC_head_check_new(sd, sd)
+switch (FEAT_TRAINS, SELF, sd_running_cost_factor,
+[  STORE_TEMP((59+50 + 50)*57/100, 0),    // Моторы
+   STORE_TEMP((59+50 + 50)*8/100, 1),     // Бригада
+   STORE_TEMP((59+50 + 50)*20/100, 2),    // Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP((59+50 + 50)*14/100, 4),    // ТО
+   STORE_TEMP((59+50 + 50)/100, 5),       // Сертификация
+
+   STORE_TEMP(85, 6),       // Скорость
+   STORE_TEMP(59, 7),       // Тара
+   STORE_TEMP(59, 8)])      // Максимальная масса
+{ sd_check_running_cost_factor; } // 59+50 + 50
+
 engine_speed(sd, 85)
 engine_power_MU(sd, 680, sd)
 hint_MU_2fact(sd_b1939,
