@@ -111,34 +111,6 @@ switch (FEAT_TRAINS, PARENT, er7_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, er7_h_cargo_capacity2,
-  build_year >= 1960)
-{
-  0: return 83;
-     return 88;
-}
-
-switch (FEAT_TRAINS, PARENT, er7_h_cargo_capacity,
-  (vehicle_type_id == er7_h))
-{
-  1: er7_h_cargo_capacity2;
-     return 0;
-}
-
-switch (FEAT_TRAINS, SELF, er7_m_cargo_capacity2,
-  build_year >= 1960)
-{
-  0: return 83;
-     return 98;
-}
-
-switch (FEAT_TRAINS, PARENT, er7_m_cargo_capacity,
-  (vehicle_type_id == er7_h))
-{
-  1: er7_m_cargo_capacity2;
-     return 0;
-}
-
 switch (FEAT_TRAINS, SELF, er7_long_cargo_subtype_text,
   cargo_subtype)
 {
@@ -148,11 +120,15 @@ switch (FEAT_TRAINS, SELF, er7_long_cargo_subtype_text,
 livery_template_longnames_only(er7)
 engine_weight_change_build_after(er7_m, 60,
                                         61, 1960)
-engine_capacity_MU(er7_c, 110, er7_h)
 EMU_4_12_m_create_effect_template(er7, -1, 5)
 EMU_direction_calculation_template(er7, _m_create_effect)
 engine_effects_MU(er7_m, _create_effect_direction_template, er7_h)
 engine_power_MU(er7_m, 800, er7_h)
+engine_capacity_MU_change_build_after(er7_h, 83, 
+                                             88, 1960, er7_h)
+engine_capacity_MU_change_build_after(er7_m, 83, 
+                                             98, 1960, er7_h)
+engine_capacity_MU(er7_c, 110, er7_h)
 
 RC_head_check_new(er7_h, er7_h)
 switch (FEAT_TRAINS, SELF, er7_h_running_cost_factor,
@@ -164,8 +140,8 @@ switch (FEAT_TRAINS, SELF, er7_h_running_cost_factor,
    STORE_TEMP(73/100, 5),       // Сертификация
 
    STORE_TEMP(130, 6),       // Скорость
-   STORE_TEMP(93, 7),       // Тара
-   STORE_TEMP(93, 8)])      // Максимальная масса
+   STORE_TEMP(38, 7),       // Тара
+   STORE_TEMP(38+11, 8)])      // Максимальная масса
 { er7_h_check_running_cost_factor; } // 73
 
 RC_head_check_new(er7_m, er7_h)
@@ -178,8 +154,8 @@ switch (FEAT_TRAINS, SELF, er7_m_running_cost_factor,
    STORE_TEMP((120 + (build_year >= 1960))/100, 5),       // Сертификация
 
    STORE_TEMP(130, 6),       // Скорость
-   STORE_TEMP(93, 7),       // Тара
-   STORE_TEMP(93, 8)])      // Максимальная масса
+   STORE_TEMP(61, 7),       // Тара
+   STORE_TEMP(61 + 11 + 2 * (build_year >= 1960), 8)])      // Максимальная масса
 { er7_m_check_running_cost_factor; } // 120 - 121
 
 RC_head_check_new(er7_c, er7_h)
@@ -192,8 +168,8 @@ switch (FEAT_TRAINS, SELF, er7_c_running_cost_factor,
    STORE_TEMP(49/100, 5),       // Сертификация
 
    STORE_TEMP(130, 6),       // Скорость
-   STORE_TEMP(93, 7),       // Тара
-   STORE_TEMP(93, 8)])      // Максимальная масса
+   STORE_TEMP(37, 7),       // Тара
+   STORE_TEMP(37+14, 8)])      // Максимальная масса
 { er7_c_check_running_cost_factor; } // 49
 
 hint_MU_with_model2_in_changeable_factory_name(er7_h_b1960,

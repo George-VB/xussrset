@@ -142,9 +142,6 @@ switch (FEAT_TRAINS, SELF, evs1_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-// даём тягу, если локомотив evs1
-engine_power_MU(evs1, 10876, evs1)
-
 switch (FEAT_TRAINS, SELF, evs1_create_effect3,
   electric_create_effect(-3))
 {
@@ -165,34 +162,11 @@ switch (FEAT_TRAINS, SELF, evs1_create_effect1,
       return disable_create_effect();
 }
 
-// показываем визуальные эффекты, если локомотив evs1
 switch (FEAT_TRAINS, PARENT, evs1_create_effect,
   vehicle_type_id == evs1)
 {
   1: evs1_create_effect1;
      return disable_create_effect();
-}
-
-// Допускается эксплуатация с пассажирами только если голова - evs1
-switch (FEAT_TRAINS, SELF, evs1_cargo_capacity2,
-  build_year >= 2014)
-{
-  0: return 460;
-     return 433;
-}
-
-switch (FEAT_TRAINS, PARENT, evs1_cargo_capacity,
-  vehicle_type_id == evs1)
-{
-  1: evs1_cargo_capacity2;
-     return 0;
-}
-
-switch (FEAT_TRAINS, SELF, evs1_purchase_cargo_capacity,
-  current_year >= 2014)
-{
-  0: return 460;
-     return 433;
 }
 
 switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon3,
@@ -227,6 +201,14 @@ switch (FEAT_TRAINS, SELF, evs1_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
+engine_power_MU(evs1, 10876, evs1)
+engine_capacity_MU_change_build_after(evs1, 460, 
+                                            433, 2014, evs1)
+engine_capacity_MU_change_build_after(evs1_part2, 104, 
+                                                   75, 2014, evs1)
+engine_CAP_change_build_after(evs1_part2, 200,
+                                          300, 2014)
+
 RC_head_check_new(evs1, evs1)
 switch (FEAT_TRAINS, SELF, evs1_running_cost_factor,
 [  STORE_TEMP((2966+2556)*57/100, 0),    // Моторы
@@ -238,7 +220,7 @@ switch (FEAT_TRAINS, SELF, evs1_running_cost_factor,
 
    STORE_TEMP(250, 6),       // Скорость
    STORE_TEMP(577, 7),       // Тара
-   STORE_TEMP(577, 8)])      // Максимальная масса
+   STORE_TEMP(577+76, 8)])      // Максимальная масса
 { evs1_check_running_cost_factor; } // 2966+2556
 
 engine_speed(evs1, 250)
@@ -276,7 +258,6 @@ item (FEAT_TRAINS, evs1, 400) {
     additional_text: evs1_additional_text;
     power: evs1_power;
     cargo_capacity: evs1_cargo_capacity;
-    purchase_cargo_capacity: evs1_purchase_cargo_capacity;
     cost_factor: return 1696;
     colour_mapping: any_cc_colour;
     create_effect: evs1_create_effect;
@@ -286,30 +267,6 @@ item (FEAT_TRAINS, evs1, 400) {
 
 long_name_template(evs1, STR_LONGNAME_EVS1)
 allow_dcemu(evs1)
-
-switch (FEAT_TRAINS, SELF, evs1_part2_purchase_cargo_capacity,
-  current_year >= 2014)
-{
-  0: return 104;
-     return 75;
-}
-
-switch (FEAT_TRAINS, PARENT, evs1_part2_cargo_capacity2,
-  build_year >= 2014)
-{
-  0: return 104;
-     return 75;
-}
-
-switch (FEAT_TRAINS, PARENT, evs1_part2_cargo_capacity,
-  vehicle_type_id == evs1)
-{
-  1: evs1_part2_cargo_capacity2;
-     return 0;
-}
-
-engine_CAP_change_build_after(evs1_part2, 200,
-                                          300, 2014)
 
 item (FEAT_TRAINS, evs1_part2, 451) {
   property {
@@ -321,7 +278,6 @@ item (FEAT_TRAINS, evs1_part2, 451) {
   graphics {
     default: evs1_sprites;
     cargo_age_period: evs1_part2_cargo_age_period;
-    purchase_cargo_capacity: evs1_part2_purchase_cargo_capacity;
     create_effect: evs1_create_effect;
     cargo_capacity: evs1_part2_cargo_capacity;
     refit_cost: return 0 | CB_RESULT_AUTOREFIT;
