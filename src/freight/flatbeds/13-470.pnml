@@ -34,6 +34,32 @@ switch (FEAT_TRAINS, SELF, flatbed_13_470_weight,
   container_20and40_weight;
 }
 
+switch (FEAT_TRAINS, SELF, flatbed_13_470_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+  0..1: return ttdall_cc + 0x04;
+        return ttdall_cc + 0xC9;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_470_colour_mapping,
+  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+{
+  0: flatbed_13_470_random;
+  1: return ttdall_cc + 0x04;
+  2: return ttdall_cc + 0xC9;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_470_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_04);
+  2: return string(STR_REFIT_TTD_9C);
+     return CB_RESULT_NO_TEXT;
+}
+
 hint_wagon_flat(flatbed_13_470,
                 60, 53,
                 STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
@@ -59,7 +85,8 @@ item (FEAT_TRAINS, flatbed_13_470, 596) {
     weight: flatbed_13_470_weight;
     purchase_weight: return 22;
     loading_speed: container_loading_speed;
-    colour_mapping: any_cc_colour;
+    cargo_subtype_text: flatbed_13_470_cargo_subtype_text;
+    colour_mapping: flatbed_13_470_colour_mapping;
     additional_text: flatbed_13_470_additional_text;
     bitmask_vehicle_info: container_bitmask_vehicle_info;
   }
