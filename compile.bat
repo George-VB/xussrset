@@ -122,7 +122,7 @@ goto :EOF
 :WriteCustomTags
 echo VERSION  :%REPO_REVISION%
 echo MIN_COMPATIBLE_REVISION:%MIN_COMPATIBLE_REVISION%
-echo TITLE    :xUSSR Railway Set 0.5.r%REPO_REVISION%
+echo TITLE    :xUSSR Railway Set 0.6.r%REPO_REVISION%
 echo FILENAME :%NMLNAME%.grf
 goto :EOF
 
