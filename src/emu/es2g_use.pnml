@@ -1,0 +1,428 @@
+﻿ // es2g
+#define IMAGEFILE  "src/emu/es2g_mn.png"
+purchase_sprites(es2g_mn, 0, 0)
+MU_car_sprites(14, es2g_mn, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, es2g_hm_sprites_left,
+  LOAD_TEMP(4) == es2g_hm)
+{
+  1: es1_h_sprites_left_check;
+     es1_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, es2g_hm_sprites_right,
+  LOAD_TEMP(4) == es2g_hm)
+{
+  1: es1_h_sprites_right_check;
+     es1_h_notpowered_sprites_right;
+}
+
+engine_direction_template4m3(es2g_hm, es2g_mn, es2g_c, es2g_cp, )
+
+long_vehicle(es2g_hm)
+
+switch (FEAT_TRAINS, SELF, es2g_c_direction_left,
+  LOAD_TEMP(4) != es2g_hm)
+{
+  0: es1_c_sprites_left;
+     es1_c_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, es2g_c_direction_right,
+  LOAD_TEMP(4) != es2g_hm)
+{
+  0: es1_c_sprites_right;
+     es1_c_notpowered_sprites_right;
+}
+
+#define EMU_es2g_c_template(name)                                          \
+switch (FEAT_TRAINS, SELF, name##_c_direction_max, LOAD_TEMP(5))           \
+{ 0x2000011: name##_c_direction_left;    /* Г-Т-(П)-Т-Г               */   \
+  0x2000041: name##_c_direction_left;    /* Г-Т-(П)-П-Т-Г             */   \
+  0x3000041: name##_c_direction_right;   /* Г-Т-П-(П)-Т-Г             */   \
+  0x1000119: name##_c_direction_left;    /* Г-Т-(П)-Т-М-Т-Г           */   \
+  0x5000191: name##_c_direction_right;   /* Г-Т-М-Т-(П)-Т-Г           */   \
+  0x4006419: name##_c_direction_left;    /* Г-Т-М-Т-(П)-П-Т-М-Т-Г     */   \
+  0x5006419: name##_c_direction_right;   /* Г-Т-М-Т-П-(П)-Т-М-Т-Г     */   \
+  0x4064619: name##_c_direction_left;    /* Г-Т-М-Т-(П)-Т-М-П-Т-М-Т-Г */   \
+  0x7064619: name##_c_direction_right;   /* Г-Т-М-Т-П-Т-М-(П)-Т-М-Т-Г */   \
+  0x4064919: name##_c_direction_left;    /* Г-Т-М-Т-(П)-М-Т-П-Т-М-Т-Г */   \
+  0x7064919: name##_c_direction_right;   /* Г-Т-М-Т-П-М-Т-(П)-Т-М-Т-Г */   \
+             name##_c_direction_left; }                                    \
+
+EMU_es2g_c_template(es2g)
+EMU_direction_calculation_template2b(es2g_c, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
+long_vehicle_dir(es2g_c)
+
+switch (FEAT_TRAINS, SELF, es2g_mn_direction_left,
+  LOAD_TEMP(4) != es2g_hm)
+{
+  0: es2g_mn_sprites_left;
+     es2g_mn_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, es2g_mn_direction_right,
+  LOAD_TEMP(4) != es2g_hm)
+{
+  0: es2g_mn_sprites_right;
+     es2g_mn_notpowered_sprites_right;
+}
+
+#define EMU_es2g_mn_template(name)                                          \
+switch (FEAT_TRAINS, SELF, name##_mn_direction_max, LOAD_TEMP(5))           \
+{ 0x4000119: name##_mn_direction_left;    /* Г-Т-П-Т-(М)-Т-Г           */   \
+  0x2000191: name##_mn_direction_right;   /* Г-Т-(М)-Т-П-Т-Г           */   \
+  0x2006419: name##_mn_direction_right;   /* Г-Т-(М)-Т-П-П-Т-М-Т-Г     */   \
+  0x7006419: name##_mn_direction_left;    /* Г-Т-М-Т-П-П-Т-(М)-Т-Г     */   \
+  0x2064619: name##_mn_direction_right;   /* Г-Т-(М)-Т-П-Т-М-П-Т-М-Т-Г */   \
+  0x6064619: name##_mn_direction_left;    /* Г-Т-М-Т-П-Т-(М)-П-Т-М-Т-Г */   \
+  0x9064619: name##_mn_direction_left;    /* Г-Т-М-Т-П-Т-М-П-Т-(М)-Т-Г */   \
+  0x2064919: name##_mn_direction_right;   /* Г-Т-(М)-Т-П-М-Т-П-Т-М-Т-Г */   \
+  0x5064919: name##_mn_direction_right;   /* Г-Т-М-Т-П-(М)-Т-П-Т-М-Т-Г */   \
+  0x9064919: name##_mn_direction_left;    /* Г-Т-М-Т-П-М-Т-П-Т-(М)-Т-Г */   \
+             name##_mn_direction_left; }                                    \
+
+EMU_es2g_mn_template(es2g)
+EMU_direction_calculation_template2b(es2g_mn, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
+long_vehicle_dir(es2g_mn)
+
+// графика ЭС1_m зачем-то развёрнута
+
+switch (FEAT_TRAINS, SELF, es2g_cp_direction_right,
+  LOAD_TEMP(4) != es2g_hm)
+{
+  0: es1_m_sprites_left;
+     es1_m_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, es2g_cp_direction_left,
+  LOAD_TEMP(4) != es2g_hm)
+{
+  0: es1_m_sprites_right;
+     es1_m_notpowered_sprites_right;
+}
+
+#define EMU_es2g_cp_template(name)                                          \
+switch (FEAT_TRAINS, SELF, name##_cp_direction_max, LOAD_TEMP(5))           \
+{ 0x1000011: name##_cp_direction_left;    /* Г-(Т)-П-Т-Г               */   \
+  0x3000011: name##_cp_direction_right;   /* Г-Т-П-(Т)-Г               */   \
+  0x1000041: name##_cp_direction_left;    /* Г-(Т)-П-П-Т-Г             */   \
+  0x4000041: name##_cp_direction_right;   /* Г-Т-П-П-(Т)-Г             */   \
+  0x1000119: name##_cp_direction_left;    /* Г-(Т)-П-Т-М-Т-Г           */   \
+  0x3000119: name##_cp_direction_right;   /* Г-Т-П-(Т)-М-Т-Г           */   \
+  0x5000119: name##_cp_direction_right;   /* Г-Т-П-Т-М-(Т)-Г           */   \
+  0x1000191: name##_cp_direction_left;    /* Г-(Т)-М-Т-П-Т-Г           */   \
+  0x3000191: name##_cp_direction_left;    /* Г-Т-М-(Т)-П-Т-Г           */   \
+  0x5000191: name##_cp_direction_right;   /* Г-Т-М-Т-П-(Т)-Г           */   \
+  0x1006419: name##_cp_direction_left;    /* Г-(Т)-М-Т-П-П-Т-М-Т-Г     */   \
+  0x3006419: name##_cp_direction_left;    /* Г-Т-М-(Т)-П-П-Т-М-Т-Г     */   \
+  0x6006419: name##_cp_direction_right;   /* Г-Т-М-Т-П-П-(Т)-М-Т-Г     */   \
+  0x8006419: name##_cp_direction_right;   /* Г-Т-М-Т-П-П-Т-М-(Т)-Г     */   \
+  0x1064619: name##_cp_direction_left;    /* Г-(Т)-М-Т-П-Т-М-П-Т-М-Т-Г */   \
+  0x3064619: name##_cp_direction_left;    /* Г-Т-М-(Т)-П-Т-М-П-Т-М-Т-Г */   \
+  0x5064619: name##_cp_direction_right;   /* Г-Т-М-Т-П-(Т)-М-П-Т-М-Т-Г */   \
+  0x8064619: name##_cp_direction_right;   /* Г-Т-М-Т-П-Т-М-П-(Т)-М-Т-Г */   \
+  0xA064619: name##_cp_direction_right;   /* Г-Т-М-Т-П-Т-М-П-Т-М-(Т)-Г */   \
+  0x1064919: name##_cp_direction_left;    /* Г-(Т)-М-Т-П-М-Т-П-Т-М-Т-Г */   \
+  0x3064919: name##_cp_direction_left;    /* Г-Т-М-(Т)-П-М-Т-П-Т-М-Т-Г */   \
+  0x6064919: name##_cp_direction_left;    /* Г-Т-М-Т-П-М-(Т)-П-Т-М-Т-Г */   \
+  0x8064919: name##_cp_direction_right;   /* Г-Т-М-Т-П-М-Т-П-(Т)-М-Т-Г */   \
+  0xA064919: name##_cp_direction_right;   /* Г-Т-М-Т-П-М-Т-П-Т-М-(Т)-Г */   \
+             name##_cp_direction_left; }                                    \
+
+EMU_es2g_cp_template(es2g)
+EMU_direction_calculation_template2b(es2g_cp, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
+long_vehicle_dir(es2g_cp)
+
+#define EMU_es2g_can_attach_wagon_errors_template(name)                        \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_c, vehicle_type_id)         \
+{ name##_c: return CB_RESULT_ATTACH_ALLOW;                                     \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                     \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_cp, vehicle_type_id)        \
+{ name##_cp: return CB_RESULT_ATTACH_ALLOW;                                    \
+             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                    \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_mn, vehicle_type_id)        \
+{ name##_mn: return CB_RESULT_ATTACH_ALLOW;                                    \
+             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                    \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_c_mn, vehicle_type_id)      \
+{ name##_mn: return CB_RESULT_ATTACH_ALLOW;                                    \
+  name##_c: return CB_RESULT_ATTACH_ALLOW;                                     \
+             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                    \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_cp_c, vehicle_type_id)      \
+{ name##_cp: return CB_RESULT_ATTACH_ALLOW;                                    \
+  name##_c:  return CB_RESULT_ATTACH_ALLOW;                                    \
+             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                    \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_hm_mn, vehicle_type_id)     \
+{ name##_hm: return CB_RESULT_ATTACH_ALLOW;                                    \
+  name##_mn: return CB_RESULT_ATTACH_ALLOW;                                    \
+             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                    \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_cp_c_mn, vehicle_type_id)   \
+{ name##_mn: return CB_RESULT_ATTACH_ALLOW;                                    \
+  name##_cp: return CB_RESULT_ATTACH_ALLOW;                                    \
+  name##_c:  return CB_RESULT_ATTACH_ALLOW;                                    \
+             return string(STR_CAN_ATTACH_CAR_ONLY); }                         \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_hm, vehicle_type_id)        \
+{ name##_hm: return CB_RESULT_ATTACH_ALLOW;                                    \
+             return string(STR_CAN_ATTACH_HEAD_ONLY); }                        \
+
+#define EMU_es2g_can_attach_wagon_template(name)                                      \
+EMU_es2g_can_attach_wagon_errors_template(name)                                       \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_max, LOAD_TEMP(5))               \
+{ 0x1000000: name##_can_attach_wagon_cp;            /* Г-(Т)                     */   \
+  0x2000001: name##_can_attach_wagon_c_mn;          /* Г-Т-(П/М)                 */   \
+  0x3000004: name##_can_attach_wagon_cp_c;          /* Г-Т-П-(Т/П)               */   \
+  0x3000006: name##_can_attach_wagon_cp;            /* Г-Т-М-(Т)                 */   \
+  0x4000011: name##_can_attach_wagon_hm_mn;         /* Г-Т-П-Т-(Г/М)             */   \
+  0x4000010: name##_can_attach_wagon_cp;            /* Г-Т-П-П-(Т)               */   \
+  0x4000019: name##_can_attach_wagon_c;             /* Г-Т-М-Т-(П)               */   \
+  0x5000041: name##_can_attach_wagon_hm;            /* Г-Т-П-П-Т-(Г)             */   \
+  0x5000046: name##_can_attach_wagon_cp;            /* Г-Т-П-Т-М-(Т)             */   \
+  0x5000064: name##_can_attach_wagon_cp_c_mn;       /* Г-Т-М-Т-П-(Т/П/М)         */   \
+  0x6000119: name##_can_attach_wagon_hm;            /* Г-Т-П-Т-М-Т-(Г)           */   \
+  0x6000191: name##_can_attach_wagon_hm_mn;         /* Г-Т-М-Т-П-Т-(Г/М)         */   \
+  0x6000190: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-П-(Т)           */   \
+  0x6000192: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-М-(Т)           */   \
+  0x7000641: name##_can_attach_wagon_mn;            /* Г-Т-М-Т-П-П-Т-(М)         */   \
+  0x7000646: name##_can_attach_wagon_c;             /* Г-Т-М-Т-П-Т-М-(П)         */   \
+  0x7000649: name##_can_attach_wagon_c;             /* Г-Т-М-Т-П-М-Т-(П)         */   \
+  0x8001906: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-П-Т-М-(Т)       */   \
+  0x8001918: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-Т-М-П-(Т)       */   \
+  0x8001924: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-М-Т-П-(Т)       */   \
+  0x9006419: name##_can_attach_wagon_hm;            /* Г-Т-М-Т-П-П-Т-М-Т-(Г)     */   \
+  0x9006461: name##_can_attach_wagon_mn;            /* Г-Т-М-Т-П-Т-М-П-Т-(М)     */   \
+  0x9006491: name##_can_attach_wagon_mn;            /* Г-Т-М-Т-П-М-Т-П-Т-(М)     */   \
+  0xA019186: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-Т-М-П-Т-М-(Т)   */   \
+  0xA019246: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-М-Т-П-Т-М-(Т)   */   \
+  0xB064619: name##_can_attach_wagon_hm;            /* Г-Т-М-Т-П-Т-М-П-Т-М-Т-(Г) */   \
+  0xB064919: name##_can_attach_wagon_hm;            /* Г-Т-М-Т-П-М-Т-П-Т-М-Т-(Г) */   \
+	     return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                                  \
+
+EMU_es2g_can_attach_wagon_template(es2g)
+EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
+
+switch (FEAT_TRAINS, SELF, es2g_can_attach_wagon1, vehicle_type_id)
+{
+  es2g_hm: es2g_can_attach_wagon_template;
+  es2g_mn: es2g_can_attach_wagon_template;
+  es2g_c: es2g_can_attach_wagon_template;
+  es2g_cp: es2g_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon, count_veh_id(es2g_hm))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: es2g_can_attach_wagon1;
+  2: es2g_can_attach_wagon_hm;
+  3: es2g_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, es2g_hm_start_stop,
+  count_veh_id(es2g_hm))
+{
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+engine_electric1r_1_effect(es2g_create_effect_cp_direction, -1, 7)                                                         
+EMU_es2g_cp_template(es2g_create_effect)
+EMU_direction_calculation_template2b(es2g_create_effect_cp, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
+engine_effects_MU(es2g, _create_effect_cp_direction_template, es2g_hm)
+
+engine_power_MU(es2g_hm, 1993, es2g_hm)
+engine_power_MU(es2g_mn, 1993, es2g_hm)
+engine_capacity_MU(es2g_hm, 67, es2g_hm)
+engine_capacity_MU(es2g_mn, 94, es2g_hm)
+engine_capacity_MU(es2g_c, 94, es2g_hm)
+engine_capacity_MU(es2g_cp, 94, es2g_hm)
+
+RC_head_check_new(es2g_hm, es2g_hm)
+switch (FEAT_TRAINS, SELF, es2g_hm_running_cost_factor,
+[  STORE_TEMP(392, 0),    	/* 687*57/100 */	// Моторы
+   STORE_TEMP(55, 1),     	/* 687*8/100 */		// Бригада
+   STORE_TEMP(137, 2),    	/* 687*20/100 */	// Износ
+   STORE_TEMP(0, 3),             			// Сопровождение
+   STORE_TEMP(96, 4),    	/* 687*14/100 */	// ТО
+   STORE_TEMP(7, 5),       	/* 687/100 */		// Сертификация
+
+   STORE_TEMP(160, 6),       				// Скорость
+   STORE_TEMP(56, 7),      				// Тара
+   STORE_TEMP(64, 8)])      	/* 56+8 */		// Максимальная масса
+{ es2g_hm_check_running_cost_factor; } // 687
+
+RC_head_check_new(es2g_mn, es2g_hm)
+switch (FEAT_TRAINS, SELF, es2g_mn_running_cost_factor,
+[  STORE_TEMP(392, 0),    	/* 687*57/100 */	// Моторы
+   STORE_TEMP(0, 1),     				// Бригада
+   STORE_TEMP(137, 2),    	/* 687*20/100 */	// Износ
+   STORE_TEMP(0, 3),             			// Сопровождение
+   STORE_TEMP(96, 4),    	/* 687*14/100 */	// ТО
+   STORE_TEMP(7, 5),       	/* 687/100 */		// Сертификация
+
+   STORE_TEMP(160, 6),      				// Скорость
+   STORE_TEMP(56, 7),       				// Тара
+   STORE_TEMP(68, 8)])      	/* 56+12 */		// Максимальная масса
+{ es2g_mn_check_running_cost_factor; } // 687
+
+RC_head_check_new(es2g_c, es2g_hm)
+switch (FEAT_TRAINS, SELF, es2g_c_running_cost_factor,
+[  STORE_TEMP(0, 0),   					// Моторы
+   STORE_TEMP(0, 1),     				// Бригада
+   STORE_TEMP(60, 2),    	/* 301*20/100 */	// Износ
+   STORE_TEMP(0, 3),          				// Сопровождение
+   STORE_TEMP(42, 4),    	/* 301*14/100 */	// ТО
+   STORE_TEMP(3, 5),       	/* 301/100 */		// Сертификация
+
+   STORE_TEMP(160, 6),       				// Скорость
+   STORE_TEMP(45, 7),     				// Тара
+   STORE_TEMP(57, 8)])      	/* 45+12 */		// Максимальная масса
+{ es2g_c_check_running_cost_factor; } // 301
+
+RC_head_check_new(es2g_cp, es2g_hm)
+switch (FEAT_TRAINS, SELF, es2g_cp_running_cost_factor,
+[  STORE_TEMP(0, 0),    				// Моторы
+   STORE_TEMP(0, 1),     				// Бригада
+   STORE_TEMP(62, 2),    	/* 312*20/100 */	// Износ
+   STORE_TEMP(0, 3),          				// Сопровождение
+   STORE_TEMP(44, 4),    	/* 312*14/100 */	// ТО
+   STORE_TEMP(3, 5),       	/* 312/100 */		// Сертификация
+
+   STORE_TEMP(160, 6),       				// Скорость
+   STORE_TEMP(52, 7),     				// Тара
+   STORE_TEMP(64, 8)])      	/* 52+12 */		// Максимальная масса
+{ es2g_cp_check_running_cost_factor; } // 312
+
+engine_speed(es2g, 160)
+
+hint_MU_with_subtype_noto(es2g_hm,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_HM_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
+     STR_SECTIONS_EMU_ES2G,
+     2014,
+     STR_PURCHASE_HINT_FACTORY_URAL)
+hint_MU_with_subtype_noto(es2g_mn,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
+     STR_SECTIONS_EMU_ES2G,
+     2018,
+     STR_PURCHASE_HINT_FACTORY_URAL)
+hint_MU_with_subtype_noto(es2g_c,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
+     STR_SECTIONS_EMU_ES2G,
+     2014,
+     STR_PURCHASE_HINT_FACTORY_URAL)
+hint_MU_with_subtype_noto(es2g_cp,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_CP_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
+     STR_SECTIONS_EMU_ES2G,
+     2014,
+     STR_PURCHASE_HINT_FACTORY_URAL)
+
+item (FEAT_TRAINS, es2g_hm, 630) {
+  property {
+    name: string(STR_NAME_ES2G);
+    vehicle_dates(2014, 2050, 40, 10, 8, 121)
+    vehicle_dcemu(1993, 56.4, 128, 67, 25*2)
+  }
+  graphics {
+    default: es2g_hm_sprites;
+    purchase: es2g_hm_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: es2g_hm_running_cost_factor;
+    articulated_part: articulated_part_dummy7;
+    can_attach_wagon: es2g_can_attach_wagon;
+    start_stop: es2g_hm_start_stop;
+    speed: es2g_speed;
+    power: es2g_hm_power;
+    purchase_speed: return 160;
+    cargo_capacity: es2g_hm_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: es2g_hm_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, es2g_mn, 631) {
+  property {
+    name: string(STR_NAME_ES2G);
+    vehicle_dates(2018, 2050, 40, 10, 8, 121)
+    vehicle_dcemu(1993, 56.4, 128, 94, 2*25)
+  }
+  graphics {
+    default: es2g_mn_sprites;
+    purchase: es2g_mn_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: es2g_mn_running_cost_factor;
+    articulated_part: articulated_part_dummy6;
+    can_attach_wagon: es2g_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    speed: es2g_speed;
+    purchase_speed: return 160;
+    power: es2g_mn_power;
+    cargo_capacity: es2g_mn_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: es2g_mn_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, es2g_c, 632) {
+  property {
+    name: string(STR_NAME_ES2G);
+    vehicle_dates(2014, 2050, 40, 10, 8, 71)
+    vehicle_dcemu_c(45.5, 94, 25*2)
+  }
+  graphics {
+    default: es2g_c_sprites;
+    purchase: es2g_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: es2g_c_running_cost_factor;
+    articulated_part: articulated_part_dummy6;
+    speed: es2g_speed;
+    purchase_speed: return 160;
+    power: return 0;
+    can_attach_wagon: es2g_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    cargo_capacity: es2g_c_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: es2g_c_additional_text;
+  }
+}
+
+item (FEAT_TRAINS, es2g_cp, 633) {
+  property {
+    name: string(STR_NAME_ES2G);
+    vehicle_dates(2014, 2050, 30, 10, 8, 73)
+    vehicle_dcemu_c(52.5, 94, 2*25)
+  }
+  graphics {
+    default: es2g_cp_sprites;
+    purchase: es2g_cp_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: es2g_cp_running_cost_factor;
+    articulated_part: articulated_part_dummy6;
+    speed: es2g_speed;
+    purchase_speed: return 160;
+    power: return 0;
+    can_attach_wagon: es2g_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    cargo_capacity: es2g_cp_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: es2g_cp_additional_text;
+    create_effect: es2g_create_effect;
+  }
+}
+
+long_name_template(es2g_hm, STR_LONGNAME_ES2G_HM)
+long_name_template(es2g_mn, STR_LONGNAME_ES2G_MN)
+long_name_template(es2g_c, STR_LONGNAME_ES2G_C)
+long_name_template(es2g_cp, STR_LONGNAME_ES2G_CP)
+allow_dcemu(es2g_hm)
+allow_dcemu(es2g_mn)
+allow_dcemu(es2g_c)
+allow_dcemu(es2g_cp)

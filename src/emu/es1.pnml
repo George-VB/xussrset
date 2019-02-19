@@ -1,13 +1,16 @@
 ﻿ // es1
 
 #define IMAGEFILE  "src/emu/es1_h.png"
-purchase_sprites(es1, 0, 0)
+purchase_sprites(es1_h, 0, 0)
+purchase_sprites(es2g_hm, 0, 19)
 MU_head_middle_sprites(15, es1_h, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/es1_m.png"
+purchase_sprites(es2g_cp, 0, 0)
 EMU_motor1_middle_sprites(14, es1_m, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/es1_c.png"
+purchase_sprites(es2g_c, 0, 0)
 MU_car_sprites(14, es1_c, 32, 40)
 #undef IMAGEFILE
 
@@ -46,13 +49,13 @@ switch (FEAT_TRAINS, SELF, es1_sprites_start,
    position_in_articulated_veh])
 {
    0: es1_h_sprites_start;
-   2: es1_m_notpowered_normal_sprites_right;
+   2: es1_m_sprites_right;
    4: es1_c_sprites_left;
    6: es1_m_sprites_left;
    8: es1_h_sprites_right_check;
 
  100: es1_h_sprites_start;
- 102: es1_m_notpowered_normal_sprites_right;
+ 102: es1_m_sprites_right;
  104: es1_c_sprites_right;
  106: es1_m_sprites_left;
  108: es1_h_sprites_right_check;
@@ -91,16 +94,20 @@ switch (FEAT_TRAINS, SELF, es1_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+switch (FEAT_TRAINS, SELF, es1_create_effect4,
+  electric_create_effect(-1))
+{ return 1; }
+
 switch (FEAT_TRAINS, SELF, es1_create_effect3,
   electric_create_effect(7))
-{
-  return 1;
-}
+{ return 1; }
 
 switch (FEAT_TRAINS, SELF, es1_create_effect2,
-  position_in_articulated_veh == 6)
+  (position_in_articulated_veh == 2) +
+  (position_in_articulated_veh == 6) * 2)
 {
-  1: es1_create_effect3;
+  1: es1_create_effect4;
+  2: es1_create_effect3;
      return disable_create_effect();
 }
 
@@ -137,17 +144,17 @@ engine_power_MU(es1, 3467, es1)
 
 RC_head_check_new(es1, es1)
 switch (FEAT_TRAINS, SELF, es1_running_cost_factor,
-[  STORE_TEMP((687*2+308*3)*57/100, 0),    // Моторы
-   STORE_TEMP((687*2+308*3)*8/100, 1),     // Бригада
-   STORE_TEMP((687*2+308*3)*20/100, 2),    // Износ
+[  STORE_TEMP((687*2+312*2+301)*57/100, 0),    // Моторы
+   STORE_TEMP(687*8/100, 1),     // Бригада
+   STORE_TEMP((687*2+312*2+301)*20/100, 2),    // Износ
    STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP((687*2+308*3)*14/100, 4),    // ТО
-   STORE_TEMP((687*2+308*3)/100, 5),       // Сертификация
+   STORE_TEMP((687*2+312*2+301)*14/100, 4),    // ТО
+   STORE_TEMP((687*2+312*2+301)/100, 5),       // Сертификация
 
    STORE_TEMP(160, 6),       // Скорость
    STORE_TEMP(263, 7),       // Тара
    STORE_TEMP(320, 8)])      		/* 263+57 */	// Максимальная масса
-{ es1_check_running_cost_factor; } // 687*2+308*3 
+{ es1_check_running_cost_factor; } // 687*2+312*2+301 
 
 hint_MU_with_subtype_noto(es1_b2014,
      STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
@@ -166,12 +173,12 @@ hint_change_after(es1, 2014)
 item (FEAT_TRAINS, es1, 413) {
   property {
     name: string(STR_NAME_ES1);
-    vehicle_dates(2011, 2050, 40, 10, 8, 255)
+    vehicle_dates(2011, 2050, 40, 10, 8, 506)
     vehicle_acdcemu(3467, 263.2, 256.0, 443, 25*2*5)
   }
   graphics {
     default: es1_sprites;
-    purchase: es1_purchase_sprites;
+    purchase: es1_h_purchase_sprites;
     speed: es1_speed;
     cargo_age_period: return 90;
     running_cost_factor: es1_running_cost_factor;

@@ -77,8 +77,10 @@ switch (FEAT_TRAINS, PARENT, all_running_cost_factor_unused,
 }
 
 switch (FEAT_TRAINS, SELF, all_running_cost_factor_lic, // В регистре 10 собираем стоимость на данный тик
-  STORE_TEMP(                                           // оплата бригады идёт всегда  TODO Учесть СМЕ нормально
-  (LOAD_TEMP(1) * (1 - ((is_penalise_speed() == 0) && (position_in_consist > 0) && (vehicle_is_powered)))) +
+  STORE_TEMP(                                           // оплата бригады идёт всегда  
+                                                        // TODO Учесть СМЕ нормально - если штраф, то бригада в каждой секции??
+                                                        // TODO что делать с ПС не под током - куда исчезает команда?
+  (LOAD_TEMP(1) * (1 - ((is_penalise_speed() == 0) && (position_in_consist > 0)) * (vehicle_is_powered))) +
   (LOAD_TEMP(3) * (cargo_count > 0)) +         // оплата сопровождения зависит от наличия груза
   (LOAD_TEMP(5) * (current_day_of_year < 1)) + // оплата лицензий и налогов - раз в год, 1 января.
   (LOAD_TEMP(4) * ((current_date > date_of_last_service) &&
@@ -101,64 +103,65 @@ switch (FEAT_TRAINS, SELF, all_running_cost_factor,
      return 0;
 }
 
-#define RC_build_year_template(name, year)              \
-switch (FEAT_TRAINS, SELF, name##_running_cost_factor,  \
-  build_year >= year)                                   \
-{ 0: name##_b##year##_running_cost_factor;              \
-     name##_a##year##_running_cost_factor; }            \
+#define RC_build_year_template(name, year)               \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor,   \
+  build_year >= year)                                    \
+{ 0: name##_b##year##_running_cost_factor;               \
+     name##_a##year##_running_cost_factor; }             \
 
-#define RC_build_year2_template(name, year, year2)      \
-switch (FEAT_TRAINS, SELF, name##_running_cost_factor,  \
-  (build_year >= year) +                                \
-  (build_year >= year2))                                \
-{ 0: name##_b##year##_running_cost_factor;              \
-  1: name##_a##year##_running_cost_factor;              \
-     name##_a##year2##_running_cost_factor; }           \
+#define RC_build_year2_template(name, year, year2)       \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor,   \
+  (build_year >= year) +                                 \
+  (build_year >= year2))                                 \
+{ 0: name##_b##year##_running_cost_factor;               \
+  1: name##_a##year##_running_cost_factor;               \
+     name##_a##year2##_running_cost_factor; }            \
 
-#define RC_build_year3_template(name, year, year2, year3)  \
-switch (FEAT_TRAINS, SELF, name##_running_cost_factor,     \
-  (build_year >= year) +                                   \
-  (build_year >= year2) +                                  \
-  (build_year >= year3))                                   \
-{ 0: name##_b##year##_running_cost_factor;                 \
-  1: name##_a##year##_running_cost_factor;                 \
-  2: name##_a##year2##_running_cost_factor;                \
-     name##_a##year3##_running_cost_factor; }              \
+#define RC_build_year3_template(name, year, year2, year3)   \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor,      \
+  (build_year >= year) +                                    \
+  (build_year >= year2) +                                   \
+  (build_year >= year3))                                    \
+{ 0: name##_b##year##_running_cost_factor;                  \
+  1: name##_a##year##_running_cost_factor;                  \
+  2: name##_a##year2##_running_cost_factor;                 \
+     name##_a##year3##_running_cost_factor; }               \
 
-#define RC_build_year4_template(name, year, year2, year3, year4)  \
-switch (FEAT_TRAINS, SELF, name##_running_cost_factor,            \
-  (build_year >= year) +                                          \
-  (build_year >= year2) +                                         \
-  (build_year >= year3) +                                         \
-  (build_year >= year4))                                          \
-{ 0: name##_b##year##_running_cost_factor;                        \
-  1: name##_a##year##_running_cost_factor;                        \
-  2: name##_a##year2##_running_cost_factor;                       \
-  3: name##_a##year3##_running_cost_factor;                       \
-     name##_a##year4##_running_cost_factor; }                     \
+#define RC_build_year4_template(name, year, year2, year3, year4)   \
+switch (FEAT_TRAINS, SELF, name##_running_cost_factor,             \
+  (build_year >= year) +                                           \
+  (build_year >= year2) +                                          \
+  (build_year >= year3) +                                          \
+  (build_year >= year4))                                           \
+{ 0: name##_b##year##_running_cost_factor;                         \
+  1: name##_a##year##_running_cost_factor;                         \
+  2: name##_a##year2##_running_cost_factor;                        \
+  3: name##_a##year3##_running_cost_factor;                        \
+     name##_a##year4##_running_cost_factor; }                      \
 
 // Определение стоимости обслуживания МВПС
-#define RC_head_check_new(name, vehid)                           \
-switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
-{ all_running_cost_factor; }                                     \
-switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  vehicle_type_id == vehid)                                      \
-{ 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+#define RC_head_check_new(name, vehid)                            \
+switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,   \
+[  STORE_TEMP(0, 0),                                              \
+   STORE_TEMP(0, 1),                                              \
+   STORE_TEMP(0, 3),                                              \
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                  \
+{ all_running_cost_factor; }                                      \
+switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,    \
+  vehicle_type_id == vehid)                                       \
+{ 1: all_running_cost_factor;                                     \
+     name##_check2_running_cost_factor; }                         \
 
-#define RC_head_check2_new(name, vehid, vehid2)                  \
-switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
-{ all_running_cost_factor; }                                     \
-switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))     \
-{ 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+#define RC_head_check2_new(name, vehid, vehid2)                   \
+switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,   \
+[  STORE_TEMP(0, 0),                                              \
+   STORE_TEMP(0, 1),                                              \
+   STORE_TEMP(0, 3),                                              \
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                  \
+{ all_running_cost_factor; }                                      \
+switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,    \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))      \
+{ 1: all_running_cost_factor;                                     \
+     name##_check2_running_cost_factor; }                         \
 
+// end

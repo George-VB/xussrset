@@ -127,322 +127,332 @@ delta_age = 1;
 
 #define calculate_loading_speed(speed_b1910, speed_a1910, speed_a1930, speed_a1950, speed_a1990) current_year >= 1990 ? speed_a1990 : current_year >= 1950 ? speed_a1950 : current_year >= 1930 ? speed_a1930 : current_year >= 1910 ? speed_a1910 : speed_b1910
 
+// шаблон сравнения
+
+#define veh_in2(name, name1, name2) ((name == name1) || (name == name2))
+#define veh_in3(name, name1, name2, name3) ((name == name1) || (name == name2) || (name == name3))
+#define veh_in4(name, name1, name2, name3, name4) ((name == name1) || (name == name2) || (name == name3) || (name == name4))
+#define veh_in5(name, name1, name2, name3, name4, name5) ((name == name1) || (name == name2) || (name == name3) || (name == name4) || (name == name5))
+
+#define calc_eq3(name, name1, name2, name3) ((name == name1) + 2 * (name == name2) + 3 * (name == name3))
+
 // общий шаблон свойств
 #define get_all_year(year) year - delta_age
 
-#define vehicle_dates(start, finish, life, rd, vlength, vcost)        \
-climates_available: get_climates_available();                         \
-introduction_date: date(get_all_year(start), 1, 1);                   \
-model_life: get_model_life(start, finish);                            \
-retire_early: get_retire_early(start, finish);                        \
-vehicle_life: life;                                                   \
-reliability_decay: rd;                                                \
-cost_factor: vcost > 255 ? 255 : vcost;                               \
-length: vlength;                                                      \
+#define vehicle_dates(start, finish, life, rd, vlength, vcost)   \
+climates_available: get_climates_available();                    \
+introduction_date: date(get_all_year(start), 1, 1);              \
+model_life: get_model_life(start, finish);                       \
+retire_early: get_retire_early(start, finish);                   \
+vehicle_life: life;                                              \
+reliability_decay: rd;                                           \
+cost_factor: vcost > 255 ? 255 : vcost;                          \
+length: vlength;                                                 \
 
-#define vehicle_no_dates(start, finish, life, rd, vlength, vcost)     \
-climates_available: NO_CLIMATE;                                       \
-introduction_date: date(get_all_year(start), 1, 1);                   \
-model_life: get_model_life(start, finish);                            \
-retire_early: get_retire_early(start, finish);                        \
-vehicle_life: life;                                                   \
-reliability_decay: rd;                                                \
-cost_factor: vcost > 255 ? 255 : vcost;                               \
-length: vlength;                                                      \
+#define vehicle_no_dates(start, finish, life, rd, vlength, vcost)   \
+climates_available: NO_CLIMATE;                                     \
+introduction_date: date(get_all_year(start), 1, 1);                 \
+model_life: get_model_life(start, finish);                          \
+retire_early: get_retire_early(start, finish);                      \
+vehicle_life: life;                                                 \
+reliability_decay: rd;                                              \
+cost_factor: vcost > 255 ? 255 : vcost;                             \
+length: vlength;                                                    \
 
-#define vehicle_steam(powerhpm, weigthton, TE)                                        \
-power: get_power_in_cb(powerhpm);                                                     \
-weight: (weigthton) ton;                                                              \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                              \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                       \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);                  \
-track_type: get_normal_track_type_steam();                                            \
-running_cost_base: RUNNING_COST_STEAM;                                                \
-engine_class: ENGINE_CLASS_STEAM;                                                     \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;                             \
+#define vehicle_steam(powerhpm, weigthton, TE)                                                  \
+power: get_power_in_cb(powerhpm);                                                               \
+weight: (weigthton) ton;                                                                        \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                        \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                 \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_normal_track_type_steam();                                                      \
+running_cost_base: RUNNING_COST_STEAM;                                                          \
+engine_class: ENGINE_CLASS_STEAM;                                                               \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_STEAM;                                       \
 
-#define vehicle_diesel(powerhpm, weigthton, TE)                                       \
-power: get_power_in_cb(powerhpm);                                                     \
-weight: (weigthton) ton;                                                              \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                              \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                       \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);                  \
-track_type: get_normal_track_type_diesel();                                           \
-running_cost_base: RUNNING_COST_DIESEL;                                               \
-engine_class: ENGINE_CLASS_DIESEL;                                                    \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;                            \
+#define vehicle_diesel(powerhpm, weigthton, TE)                                                 \
+power: get_power_in_cb(powerhpm);                                                               \
+weight: (weigthton) ton;                                                                        \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                        \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                 \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_normal_track_type_diesel();                                                     \
+running_cost_base: RUNNING_COST_DIESEL;                                                         \
+engine_class: ENGINE_CLASS_DIESEL;                                                              \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;                                      \
 
-#define vehicle_acelectric(powerhpm, weigthton, TE)                                   \
-power: get_power_in_cb(powerhpm);                                                     \
-weight: (weigthton) ton;                                                              \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                              \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                       \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);                  \
-track_type: get_ac_track_type();                                                      \
-running_cost_base: RUNNING_COST_ELECTRIC;                                             \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                  \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                          \
+#define vehicle_acelectric(powerhpm, weigthton, TE)                                             \
+power: get_power_in_cb(powerhpm);                                                               \
+weight: (weigthton) ton;                                                                        \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                        \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                 \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_ac_track_type();                                                                \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                       \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                            \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                    \
 
-#define vehicle_dcelectric(powerhpm, weigthton, TE)                                   \
-power: get_power_in_cb(powerhpm);                                                     \
-weight: (weigthton) ton;                                                              \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                              \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                       \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);                  \
-track_type: get_dc_track_type();                                                      \
-running_cost_base: RUNNING_COST_ELECTRIC;                                             \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                  \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                          \
+#define vehicle_dcelectric(powerhpm, weigthton, TE)                                             \
+power: get_power_in_cb(powerhpm);                                                               \
+weight: (weigthton) ton;                                                                        \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                        \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                 \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dc_track_type();                                                                \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                       \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                            \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                    \
 
-#define vehicle_acdcelectric(powerhpm, weigthton, TE)                                 \
-power: get_power_in_cb(powerhpm);                                                     \
-weight: (weigthton) ton;                                                              \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                              \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                       \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);                  \
-track_type: get_dual_track_type();                                                    \
-running_cost_base: RUNNING_COST_ELECTRIC;                                             \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                  \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                          \
+#define vehicle_acdcelectric(powerhpm, weigthton, TE)                                           \
+power: get_power_in_cb(powerhpm);                                                               \
+weight: (weigthton) ton;                                                                        \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                        \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                 \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dual_track_type();                                                              \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                       \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                            \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                    \
 
-#define vehicle_dis_electric(powerhpm, weigthton, TE)                                 \
-power: get_power_in_cb(powerhpm);                                                     \
-weight: (weigthton) ton;                                                              \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                              \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                       \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);                  \
-track_type: get_normal_track_type_diesel();                                           \
-running_cost_base: RUNNING_COST_ELECTRIC;                                             \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                  \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                          \
+#define vehicle_dis_electric(powerhpm, weigthton, TE)                                           \
+power: get_power_in_cb(powerhpm);                                                               \
+weight: (weigthton) ton;                                                                        \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                        \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                 \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_normal_track_type_diesel();                                                     \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                       \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                            \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                    \
 
-#define vehicle_dmu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                           \
-power: get_power_in_cb(powerhpm);                                                                   \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                                            \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_normal_track_type_dmu();                                                            \
-running_cost_base: RUNNING_COST_DIESEL;                                                             \
-engine_class: ENGINE_CLASS_DIESEL;                                                                  \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;                                          \
+#define vehicle_dmu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                                             \
+power: get_power_in_cb(powerhpm);                                                                                     \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                                              \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_normal_track_type_dmu();                                                                              \
+running_cost_base: RUNNING_COST_DIESEL;                                                                               \
+engine_class: ENGINE_CLASS_DIESEL;                                                                                    \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;                                                            \
 
-#define vehicle_dmu_c(weigthton, capacitypass, loadspeedpass)                                       \
-power: 1;                                                                                           \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_normal_track_type_dmu();                                                            \
-running_cost_base: RUNNING_COST_DIESEL;                                                             \
-engine_class: ENGINE_CLASS_DIESEL;                                                                  \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;                                          \
+#define vehicle_dmu_c(weigthton, capacitypass, loadspeedpass)                                                         \
+power: 1;                                                                                                             \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_normal_track_type_dmu();                                                                              \
+running_cost_base: RUNNING_COST_DIESEL;                                                                               \
+engine_class: ENGINE_CLASS_DIESEL;                                                                                    \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_DIESEL;                                                            \
 
-#define vehicle_acemu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                         \
-power: get_power_in_cb(powerhpm);                                                                   \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                                            \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_ac_track_type_emu();                                                                \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_acemu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                                           \
+power: get_power_in_cb(powerhpm);                                                                                     \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                                              \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_ac_track_type_emu();                                                                                  \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_acemu_c(weigthton, capacitypass, loadspeedpass)                                     \
-power: 1;                                                                                           \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_ac_track_type_emu();                                                                \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_acemu_c(weigthton, capacitypass, loadspeedpass)                                                       \
+power: 1;                                                                                                             \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_ac_track_type_emu();                                                                                  \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_acemu_empty()                                                                       \
-power: 1;                                                                                           \
-weight: 0;                                                                                          \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: 0;                                                                                  \
-loading_speed: 0;                                                                                   \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_ac_track_type_emu();                                                                \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_acemu_empty()                                                                                         \
+power: 1;                                                                                                             \
+weight: 0;                                                                                                            \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: 0;                                                                                                    \
+loading_speed: 0;                                                                                                     \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_ac_track_type_emu();                                                                                  \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_dcemu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                         \
-power: get_power_in_cb(powerhpm);                                                                   \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                                            \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_dc_track_type_emu();                                                                \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_dcemu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                                           \
+power: get_power_in_cb(powerhpm);                                                                                     \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                                              \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dc_track_type_emu();                                                                                  \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_dcemu_c(weigthton, capacitypass, loadspeedpass)                                     \
-power: 1;                                                                                           \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_dc_track_type_emu();                                                                \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_dcemu_c(weigthton, capacitypass, loadspeedpass)                                                       \
+power: 1;                                                                                                             \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dc_track_type_emu();                                                                                  \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_dcemu_empty()                                                                       \
-power: 1;                                                                                           \
-weight: 0;                                                                                          \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: 0;                                                                                  \
-loading_speed: 0;                                                                                   \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_dc_track_type_emu();                                                                \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_dcemu_empty()                                                                                         \
+power: 1;                                                                                                             \
+weight: 0;                                                                                                            \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: 0;                                                                                                    \
+loading_speed: 0;                                                                                                     \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dc_track_type_emu();                                                                                  \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_acdcemu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                       \
-power: get_power_in_cb(powerhpm);                                                                   \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: get_tec((TE), (weigthton));                                            \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_dual_track_type_emu();                                                              \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_acdcemu(powerhpm, weigthton, TE, capacitypass, loadspeedpass)                                         \
+power: get_power_in_cb(powerhpm);                                                                                     \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: get_tec((TE), (weigthton));                                                              \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dual_track_type_emu();                                                                                \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_acdcemu_c(weigthton, capacitypass, loadspeedpass)                                   \
-power: 1;                                                                                           \
-weight: (weigthton) ton;                                                                            \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                            \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                           \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_dual_track_type_emu();                                                              \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_acdcemu_c(weigthton, capacitypass, loadspeedpass)                                                     \
+power: 1;                                                                                                             \
+weight: (weigthton) ton;                                                                                              \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;                                                              \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;                                                             \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dual_track_type_emu();                                                                                \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_acdcemu_empty()                                                                     \
-power: 1;                                                                                           \
-weight: 0;                                                                                          \
-tractive_effort_coefficient: 0;                                                                     \
-cargo_capacity: 0;                                                                                  \
-loading_speed: 0;                                                                                   \
-cargo_allow_refit: [PASS];                                                                          \
-default_cargo_type: PASS;                                                                           \
-ai_special_flag: AI_FLAG_PASSENGER;                                                                 \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_dual_track_type_emu();                                                              \
-running_cost_base: RUNNING_COST_ELECTRIC;                                                           \
-engine_class: ENGINE_CLASS_ELECTRIC;                                                                \
-effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                        \
+#define vehicle_acdcemu_empty()                                                                                       \
+power: 1;                                                                                                             \
+weight: 0;                                                                                                            \
+tractive_effort_coefficient: 0;                                                                                       \
+cargo_capacity: 0;                                                                                                    \
+loading_speed: 0;                                                                                                     \
+cargo_allow_refit: [PASS];                                                                                            \
+default_cargo_type: PASS;                                                                                             \
+ai_special_flag: AI_FLAG_PASSENGER;                                                                                   \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_dual_track_type_emu();                                                                                \
+running_cost_base: RUNNING_COST_ELECTRIC;                                                                             \
+engine_class: ENGINE_CLASS_ELECTRIC;                                                                                  \
+effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;                                                          \
 
-#define vehicle_wagon(weigthton, speedkmh)                                                          \
-power: get_power_in_cb(0);                                                                          \
-weight: (weigthton) ton;                                                                            \
-speed: (speedkmh) km/h;                                                                             \
-sprite_id: SPRITE_ID_NEW_TRAIN;                                                                     \
-misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);          \
-track_type: get_normal_track_type();                                                                \
-running_cost_base: RUNNING_COST_ROADVEH;                                                            \
-bitmask_vehicle_info: 0;                                                                            \
-default_cargo_type: GOOD;                                                                           \
+#define vehicle_wagon(weigthton, speedkmh)                                                                            \
+power: get_power_in_cb(0);                                                                                            \
+weight: (weigthton) ton;                                                                                              \
+speed: (speedkmh) km/h;                                                                                               \
+sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                       \
+misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);   \
+track_type: get_normal_track_type();                                                                                  \
+running_cost_base: RUNNING_COST_ROADVEH;                                                                              \
+bitmask_vehicle_info: 0;                                                                                              \
+default_cargo_type: GOOD;                                                                                             \
 cargo_capacity: 1;
 
-#define vehicle_wagon_cargo(capacityunits, loadspeedunits)       \
-cargo_allow_refit: [GOOD];                                       \
-default_cargo_type: GOOD;                                        \
-cargo_capacity: capacityunits > 255 ? 255 : capacityunits;       \
-loading_speed: loadspeedunits > 255 ? 255 : loadspeedunits;      \
+#define vehicle_wagon_cargo(capacityunits, loadspeedunits)    \
+cargo_allow_refit: [GOOD];                                    \
+default_cargo_type: GOOD;                                     \
+cargo_capacity: capacityunits > 255 ? 255 : capacityunits;    \
+loading_speed: loadspeedunits > 255 ? 255 : loadspeedunits;   \
 
-#define vehicle_wagon_pass(capacitypass, loadspeedpass)          \
-cargo_allow_refit: [PASS];                                       \
-default_cargo_type: PASS;                                        \
-cargo_capacity: capacitypass > 255 ? 255 : capacitypass;         \
-loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;        \
+#define vehicle_wagon_pass(capacitypass, loadspeedpass)     \
+cargo_allow_refit: [PASS];                                  \
+default_cargo_type: PASS;                                   \
+cargo_capacity: capacitypass > 255 ? 255 : capacitypass;    \
+loading_speed: loadspeedpass > 255 ? 255 : loadspeedpass;   \
 
-#define vehicle_cargo()                                          \
-cargo_allow_refit: [GOOD];                                       \
-default_cargo_type: GOOD;                                        \
-cargo_capacity: 1;                                               \
-ai_special_flag: AI_FLAG_CARGO;                                  \
+#define vehicle_cargo()           \
+cargo_allow_refit: [GOOD];        \
+default_cargo_type: GOOD;         \
+cargo_capacity: 1;                \
+ai_special_flag: AI_FLAG_CARGO;   \
 
-#define vehicle_pass()                                           \
-cargo_allow_refit: [PASS];                                       \
-default_cargo_type: PASS;                                        \
-cargo_capacity: 1;                                               \
-ai_special_flag: AI_FLAG_PASSENGER;                              \
+#define vehicle_pass()                \
+cargo_allow_refit: [PASS];            \
+default_cargo_type: PASS;             \
+cargo_capacity: 1;                    \
+ai_special_flag: AI_FLAG_PASSENGER;   \
 
-#define vehicle_passcargo()                                      \
-cargo_allow_refit: [MAIL];                                       \
-default_cargo_type: MAIL;                                        \
-cargo_capacity: 1;                                               \
-ai_special_flag: AI_FLAG_PASSENGER;                              \
+#define vehicle_passcargo()           \
+cargo_allow_refit: [MAIL];            \
+default_cargo_type: MAIL;             \
+cargo_capacity: 1;                    \
+ai_special_flag: AI_FLAG_PASSENGER;   \
 
-#define vehicle_pass_and_cargo()                                 \
-cargo_allow_refit: [MAIL, PASS];                                 \
-default_cargo_type: MAIL;                                        \
-cargo_capacity: 1;                                               \
-ai_special_flag: AI_FLAG_PASSENGER;                              \
+#define vehicle_pass_and_cargo()      \
+cargo_allow_refit: [MAIL, PASS];      \
+default_cargo_type: MAIL;             \
+cargo_capacity: 1;                    \
+ai_special_flag: AI_FLAG_PASSENGER;   \
 
-#define vehicle_cargo_and_pass()                                 \
-cargo_allow_refit: [GOOD, PASS];                                 \
-default_cargo_type: GOOD;                                        \
-cargo_capacity: 1;                                               \
-ai_special_flag: AI_FLAG_CARGO;                                  \
+#define vehicle_cargo_and_pass()   \
+cargo_allow_refit: [GOOD, PASS];   \
+default_cargo_type: GOOD;          \
+cargo_capacity: 1;                 \
+ai_special_flag: AI_FLAG_CARGO;    \
 
+// end
