@@ -119,9 +119,8 @@ switch (FEAT_TRAINS, SELF, name##mod##_cargo_subtype_text_##lvnum, enable_long_n
      name##mod##_cargo_subtype_text_long_##lvnum; }                                                                                                                                                                                                                                           \
 
 #define livery_template(name, basename, str1, str2, str3, str4, str5, str6, str7, str8, str9, str10, str11, str12, str13, str14, str15, str16, str17, str18, str19, str20, str21, str22, str23, str24, str25, str26, str27, str28, str29, str30)                                                                                                       \
-switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text_0, enable_cc_default)                                                                                                                                                                                                                                                                             \
-{ 1: return string(STR_REFIT_FACTORY);                                                                                                                                                                                                                                                                                                                 \
-     return string(STR_REFIT_##basename); }                                                                                                                                                                                                                                                                                                            \
+switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text_0, 0)                                                                                                                                                                                                                                                                                             \
+{ return string(STR_REFIT_##basename); }                                                                                                                                                                                                                                                                                                               \
 livery_subtemplate(name, , basename, LV_RAL6020                   , TTD_59                       , TTD_59                       , 0, str1, str2, str3, str4, str5, str6, str7, str8, str9, str10, str11, str12, str13, str14, str15, str16, str17, str18, str19, str20, str21, str22, str23, str24, str25, str26, str27, str28, str29, str30)          \
 livery_subtemplate(name, , basename, LV_RAL6002                   , TTD_53                       , TTD_53                       , 0, str1, str2, str3, str4, str5, str6, str7, str8, str9, str10, str11, str12, str13, str14, str15, str16, str17, str18, str19, str20, str21, str22, str23, str24, str25, str26, str27, str28, str29, str30)          \
                                                                                                                                                                                                                                                                                                                                                        \
@@ -299,11 +298,8 @@ switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)            
 // Выбор ливреи без вариантов
 
 #define livery_template1(name, basename)                                     \
-switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text_0, enable_cc_default)   \
-{ 1: return CB_RESULT_NO_TEXT;                                               \
-     return string(STR_REFIT_##basename); }                                  \
 switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)         \
-{ 0..0xDF: name##_cargo_subtype_text_0;                                      \
+{ 0..0xDF: return string(STR_REFIT_##basename);                              \
   return CB_RESULT_NO_TEXT; }                                                \
 
 #define livery_template_none(name)                                     \
@@ -523,7 +519,7 @@ switch (FEAT_TRAINS, SELF, name##_cargo_subtype_text, cargo_subtype)            
 // Предустановленные наборы ливрей
 // Паровозы с грузовым шаблоном (02, 53, 61, 93)
 switch (FEAT_TRAINS, SELF, steam_freight_engine_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+  cargo_subtype)
 {
   0: return ttdall_cc + 0x02;
   1: return ttdall_cc + 0x93;
@@ -534,7 +530,7 @@ switch (FEAT_TRAINS, SELF, steam_freight_engine_colour_mapping,
 
 switch (FEAT_TRAINS, SELF, steam_freight_tender_colour_mapping,
 [ set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+  prev_vehicle_cargo_subtype()])
 {
   0: return ttdall_cc + 0x02;
   1: return ttdall_cc + 0x93;
@@ -549,7 +545,7 @@ livery_template_alt(steam_freight, TTD_93)
 
 // Паровозы с пассажирским шаблоном (53, 61)
 switch (FEAT_TRAINS, SELF, steam_pass_engine_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+  cargo_subtype)
 {
   0: return ttdall_cc + 0x53;
   LV_RAL6002: return ttdall_cc + 0x53;
@@ -559,7 +555,7 @@ switch (FEAT_TRAINS, SELF, steam_pass_engine_colour_mapping,
 
 switch (FEAT_TRAINS, SELF, steam_pass_tender_colour_mapping,
 [ set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+  prev_vehicle_cargo_subtype()])
 {
   0: return ttdall_cc + 0x53;
   LV_RAL6002: return ttdall_cc + 0x53;
@@ -572,7 +568,7 @@ livery_template(steam_pass, TTD_53, LV_RAL6020, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0,
 
 // Паровозы с пасс. + красным и синим (53, 61, В3, 93)
 switch (FEAT_TRAINS, SELF, steam_pass_extra_engine_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+  cargo_subtype)
 {
   0: return ttdall_cc + 0x53;
   1: return ttdall_cc + 0xB3;
@@ -584,7 +580,7 @@ switch (FEAT_TRAINS, SELF, steam_pass_extra_engine_colour_mapping,
 
 switch (FEAT_TRAINS, SELF, steam_pass_extra_tender_colour_mapping,
 [ set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+  prev_vehicle_cargo_subtype()])
 {
   0: return ttdall_cc + 0x53;
   1: return ttdall_cc + 0xB3;
@@ -600,7 +596,7 @@ livery_template_alt2(steam_pass_extra, TTD_B3, TTD_93)
 
 // Паровозы с пасс. + красная стрела (53, 61, "красная стрела")
 switch (FEAT_TRAINS, SELF, steam_pass_red_arrow_engine_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+  cargo_subtype)
 {
   0: return ttdall_cc + 0x53;
   LV_RAL6002:       return ttdall_cc + 0x53;
@@ -611,7 +607,7 @@ switch (FEAT_TRAINS, SELF, steam_pass_red_arrow_engine_colour_mapping,
 
 switch (FEAT_TRAINS, SELF, steam_pass_red_arrow_tender_colour_mapping,
 [ set_offset_to(-2),
-  prev_vehicle_cargo_subtype() + (enable_cc_default * 1024 * (prev_vehicle_cargo_subtype() == 0))])
+  prev_vehicle_cargo_subtype()])
 {
   0: return ttdall_cc + 0x53;
   LV_RAL6002:       return ttdall_cc + 0x53;
@@ -625,7 +621,7 @@ livery_template(steam_pass_red_arrow, TTD_53, LV_RAL6020, LV_RED_ARROW_OLD, LV_R
 
 // Электровозы семейства ВЛ
 switch (FEAT_TRAINS, SELF, vl_type_colour_mapping,
-  cargo_subtype + (enable_cc_default * 1024 * (cargo_subtype == 0)))
+  cargo_subtype)
 {
   0: return vl11_cc + 0;
   1: return vl11_cc + 5;
