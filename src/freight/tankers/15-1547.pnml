@@ -14,11 +14,12 @@ tanker_layout_template(tanker_15_1547_v2y, 7, 32, 107)
 #undef IMAGEFILE
 purchase_sprites_select(tanker_15_1547, 1993)
 
-random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_sprites_random, 0)
+switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_sprites_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x3F])
 {
-  independent: tanker_15_1547_v1_sprites_start;
-  56: tanker_15_1547_v1_sprites_start;          // 25*3, 39*3, 41,
-   8: tanker_15_1547_v1y_sprites_start;         // 08
+  0..55: tanker_15_1547_v1_sprites_start;          // 25*3, 39*3, 41,
+         tanker_15_1547_v1y_sprites_start;         // 08
 }
 
 switch (FEAT_TRAINS, SELF, tanker_15_1547_b1993,
@@ -32,11 +33,12 @@ switch (FEAT_TRAINS, SELF, tanker_15_1547_b1993,
         align_7_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v2_sprites_random, 0)
+switch (FEAT_TRAINS, SELF, tanker_15_1547_v2_sprites_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x3F])
 {
-  dependent: tanker_15_1547_v1_sprites_random;
-  56: tanker_15_1547_v2_sprites_start;             // 25*5, 39*5, 41*3, 0А*3, 95*3, 92*3, В4*2, 53*2, 08*2
-   8: tanker_15_1547_v2y_sprites_start;            // полоса 08*2, 25*2
+  0..55: tanker_15_1547_v2_sprites_start;             // 25*5, 39*5, 41*3, 0А*3, 95*3, 92*3, В4*2, 53*2, 08*2
+         tanker_15_1547_v2y_sprites_start;            // полоса 08*2, 25*2
 }
 
 switch (FEAT_TRAINS, SELF, tanker_15_1547_a1993,
@@ -57,15 +59,15 @@ switch (FEAT_TRAINS, SELF, tanker_15_1547_sprites_start,
 
 long_vehicle_RND(tanker_15_1547, tanker_15_1547_v1_sprites_start)
 
-random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_colour_mapping_random, 0)
+switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_colour_mapping_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
 {
-  dependent: tanker_15_1547_v1_sprites_random;
-  3: return ttdall_cc + 0x25;
-  3: return ttdall_cc + 0x39;
-  1: return ttdall_cc + 0x41;
-  1: return ttdall_cc + 0x08;
-}
-
+  0..2: return ttdall_cc + 0x25;
+  3..5: return ttdall_cc + 0x39;
+     6: return ttdall_cc + 0x41;
+        return ttdall_cc + 0x08;
+}      
 
 switch (FEAT_TRAINS, SELF, tanker_15_1547_b1993_colour_mapping,
   cargo_subtype)
@@ -85,22 +87,22 @@ switch (FEAT_TRAINS, SELF, tanker_15_1547_b1993_colour_mapping,
       return CB_FAILED;
 }
 
-
-random_switch (FEAT_TRAINS, SELF, tanker_15_1547_v2_colour_mapping_random, 0)
+switch (FEAT_TRAINS, SELF, tanker_15_1547_v2_colour_mapping_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x3F])
 {
-  dependent: tanker_15_1547_v1_sprites_random;
-  10: return ttdall_cc + 0x25;
-  12: return ttdall_cc + 0x39;
-   7: return ttdall_cc + 0x41;
-   3: return ttdall_cc + 0x0A;
-   6: return ttdall_cc + 0x95;
-   8: return ttdall_cc + 0x92;
-   2: return ttdall_cc + 0xB4;
-   5: return ttdall_cc + 0x53;
-   3: return ttdall_cc + 0x08;
+    0..9: return ttdall_cc + 0x25;
+  10..21: return ttdall_cc + 0x39;
+  22..28: return ttdall_cc + 0x41;
+  29..31: return ttdall_cc + 0x0A;
+  32..37: return ttdall_cc + 0x95;
+  38..45: return ttdall_cc + 0x92;
+  46..47: return ttdall_cc + 0xB4;
+  48..52: return ttdall_cc + 0x53;
+  53..55: return ttdall_cc + 0x08;
 
-   3: return ttdall_cc + 0x25;
-   5: return ttdall_cc + 0x08;
+  56..58: return ttdall_cc + 0x25;
+          return ttdall_cc + 0x08;
 }
 
 switch (FEAT_TRAINS, SELF, tanker_15_1547_a1993_colour_mapping,
@@ -190,9 +192,9 @@ switch (FEAT_TRAINS, SELF, tanker_15_1547_loading_speed,
 switch (FEAT_TRAINS, SELF, tanker_15_1547_cargo_capacity,
 [  STORE_TEMP(68, 0), // т
    STORE_TEMP(86, 1), // м³
-   STORE_TEMP(0, 2), // м²
-   STORE_TEMP(0, 3), // палетомест
-   STORE_TEMP(7, 4)])// шаблон
+   STORE_TEMP(0, 2),  // м²
+   STORE_TEMP(0, 3),  // палетомест
+   STORE_TEMP(7, 4)]) // шаблон
 { tank_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, tanker_15_1547_running_cost_factor,
