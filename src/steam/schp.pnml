@@ -1,0 +1,65 @@
+ // schp
+
+#define IMAGEFILE  "src/steam/schp.png"
+purchase_sprites(schp, 0, 0)
+steam_sprites(7, schp_engine, 32,  40)
+tender_sprites(4, schp_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(schp, _sprites_start)
+long_vehicle(schp)
+
+switch (FEAT_TRAINS, SELF, schp_running_cost_factor,
+[  STORE_TEMP(101, 0),       // Моторы
+   STORE_TEMP(14, 1),        // Бригада
+   STORE_TEMP(35, 2),        // Износ
+   STORE_TEMP(0, 3),         // Сопровождение
+   STORE_TEMP(25, 4),        // ТО
+   STORE_TEMP(2, 5),         // Сертификация
+
+   STORE_TEMP(65 + 10 * (current_year >= 1936), 6),       // Скорость
+   STORE_TEMP(124, 7),     		/* 77+47 */	// Тара
+   STORE_TEMP(124, 8)])    		/* 77+47 */	// Максимальная масса
+{ all_running_cost_factor; } // 177
+
+engine_steam_1_effect(schp_create_effect, -3, 11)
+engine_speed_change_after(schp, 65,
+                                75, 1936)
+engine_penalise_speed0(schp)
+engine_tender(schp)
+engine_tender_length(schp, 6, 1, 3, 1)
+hint_engine_2fact(schp,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1910, 1915,
+     STR_PURCHASE_HINT_FACTORY_BRYANSK,
+     STR_PURCHASE_HINT_FACTORY_SORMOVO)
+
+item (FEAT_TRAINS, schp, 535) {
+  property {
+    name: string(STR_NAME_SCHP);
+    vehicle_dates(1910, 1915, 50, 10, 6, 8)
+    vehicle_pass()
+    vehicle_steam(1087, 77+47, 120.0)
+  }
+  graphics {
+    default: schp_sprites;
+    purchase: schp_purchase_sprites;
+    articulated_part: schp_articulated_part;
+    length: schp_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: schp_speed;
+    purchase_speed: schp_purchase_speed;
+    bitmask_vehicle_info: schp_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: schp_create_effect;
+    running_cost_factor: schp_running_cost_factor;
+    colour_mapping: any_cc_colour;
+    additional_text: schp_additional_text;
+  }
+}
+
+long_name_template(schp, STR_LONGNAME_SCHP)
+models_default_cargo_template(schp)
+allow_steamer(schp)

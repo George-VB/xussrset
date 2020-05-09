@@ -1,0 +1,69 @@
+ // sch
+
+#define IMAGEFILE  "src/steam/sch.png"
+purchase_sprites(sch, 0, 0)
+steam_sprites(7, sch_engine, 32,  40)
+tender_sprites(5, sch_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(sch, _sprites_start)
+long_vehicle(sch)
+
+switch (FEAT_TRAINS, SELF, sch_running_cost_factor,
+[  STORE_TEMP(101, 0),       // Моторы
+   STORE_TEMP(14, 1),        // Бригада
+   STORE_TEMP(35, 2),        // Износ
+   STORE_TEMP(0, 3),         // Сопровождение
+   STORE_TEMP(25, 4),        // ТО
+   STORE_TEMP(2, 5),         // Сертификация
+
+   STORE_TEMP(65 + 10 * (current_year >= 1936), 6),       // Скорость
+   STORE_TEMP(141, 7),     		/* 77+64 */	// Тара
+   STORE_TEMP(141, 8)])    		/* 77+64 */	// Максимальная масса
+{ all_running_cost_factor; } // 177
+
+engine_steam_1_effect(sch_create_effect, -3, 11)
+engine_speed_change_after(sch, 65,
+                               75, 1936)
+engine_penalise_speed0(sch)
+engine_tender(sch)
+engine_tender_length(sch, 6, 1, 4, 1)
+hint_engine_6fact_changeable_factory_name(sch,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1906, 1918,
+     fact_kharkiv(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO))
+
+item (FEAT_TRAINS, sch, 627) {
+  property {
+    name: string(STR_NAME_SCH);
+    vehicle_dates(1906, 1918, 50, 10, 6, 8)
+    vehicle_pass()
+    vehicle_steam(1055, 77+64, 117.0)
+  }
+  graphics {
+    default: sch_sprites;
+    purchase: sch_purchase_sprites;
+    articulated_part: sch_articulated_part;
+    length: sch_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: sch_speed;
+    purchase_speed: sch_purchase_speed;
+    bitmask_vehicle_info: sch_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: sch_create_effect;
+    running_cost_factor: sch_running_cost_factor;
+    colour_mapping: return ttdall_cc + 0x02;
+    additional_text: sch_additional_text;
+  }
+}
+
+long_name_template(sch, STR_LONGNAME_SCH)
+models_default_cargo_template(sch)
+allow_steamer(sch)
