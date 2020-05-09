@@ -1,0 +1,305 @@
+﻿ // etr575
+
+#define IMAGEFILE  "src/addon/emu/etr575_01.png"
+purchase_sprites(etr575, 0, 0)
+MU_head_sprites(12, etr575_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/etr575_02.png"
+MU_car_sprites(10, etr575_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/etr575_04.png"
+EMU_motor1_middle_sprites(10, etr575_04, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/etr575_05.png"
+EMU_motor1_middle_sprites(10, etr575_05, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/etr575_07.png"
+EMU_motor1_nd_sprites(10, etr575_07, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/etr575_08.png"
+EMU_motor1_middle_sprites(10, etr575_08, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, etr575_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: etr575_h_sprites_left;
+     etr575_h_notpowered_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, etr575_h_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: etr575_h_sprites_left_check;
+  1: etr575_h_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, etr575_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: etr575_h_sprites_right;
+     etr575_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, etr575_never_train, 0)
+{
+   0: etr575_04_normal_sprites;
+   1: etr575_04_sprites_left;
+   2: etr575_04_sprites_right;
+   3: etr575_04_r_normal_sprites;
+   4: etr575_05_sprites_left;
+   5: etr575_05_sprites_right;
+   6: etr575_05_normal_sprites;
+   7: etr575_07_sprites_left;
+   8: etr575_08_sprites_left;
+   9: etr575_08_normal_sprites;
+  10: etr575_08_sprites_right;
+  11: etr575_08_r_normal_sprites;
+      align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, etr575_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != etr575) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+/* неправильная ориентация */
+   0: etr575_h_sprites_start;
+   2: etr575_02_sprites_right;
+   4: etr575_02_sprites_right;
+   6: etr575_04_notpowered_normal_sprites_right;
+   8: etr575_05_notpowered_normal_sprites_right;
+  10: etr575_02_sprites_right;
+  12: etr575_07_sprites_right;
+  14: etr575_08_notpowered_normal_sprites_right;
+  16: etr575_02_sprites_left;
+  18: etr575_02_sprites_left;
+  20: etr575_h_sprites_right_check;
+
+ 100: etr575_h_sprites_start;
+ 102: etr575_02_sprites_right;
+ 104: etr575_02_sprites_right;
+ 106: etr575_08_notpowered_normal_sprites_left;
+ 108: etr575_07_notpowered_sprites_left;
+ 110: etr575_02_sprites_left;
+ 112: etr575_05_sprites_left;
+ 114: etr575_04_notpowered_normal_sprites_left;
+ 116: etr575_02_sprites_left;
+ 118: etr575_02_sprites_left;
+ 120: etr575_h_sprites_right_check;
+
+ 200: etr575_h_sprites_start;
+ 202: etr575_02_notpowered_sprites_right;
+ 204: etr575_02_notpowered_sprites_right;
+ 206: etr575_04_notpowered_sprites_right;
+ 208: etr575_05_notpowered_sprites_right;
+ 210: etr575_02_notpowered_sprites_right;
+ 212: etr575_07_notpowered_sprites_right;
+ 214: etr575_08_notpowered_sprites_right;
+ 216: etr575_02_notpowered_sprites_left;
+ 218: etr575_02_notpowered_sprites_left;
+ 220: etr575_h_sprites_right_check;
+
+ 300: etr575_h_sprites_start;
+ 302: etr575_02_notpowered_sprites_right;
+ 304: etr575_02_notpowered_sprites_right;
+ 306: etr575_08_notpowered_sprites_left;
+ 308: etr575_07_notpowered_sprites_left;
+ 310: etr575_02_notpowered_sprites_left;
+ 312: etr575_05_notpowered_sprites_left;
+ 314: etr575_04_notpowered_sprites_left;
+ 316: etr575_02_notpowered_sprites_left;
+ 318: etr575_02_notpowered_sprites_left;
+ 320: etr575_h_sprites_right_check;
+
+/* правильная ориентация
+   0: etr575_h_sprites_start;
+   2: etr575_02_sprites_left;
+   4: etr575_02_sprites_left;
+   6: etr575_04_notpowered_normal_sprites_left;
+   8: etr575_05_notpowered_normal_sprites_left;
+  10: etr575_02_sprites_left;
+  12: etr575_07_sprites_right;
+  14: etr575_08_notpowered_normal_sprites_right;
+  16: etr575_02_sprites_right;
+  18: etr575_02_sprites_right;
+  20: etr575_h_sprites_right_check;
+
+ 100: etr575_h_sprites_start;
+ 102: etr575_02_sprites_left;
+ 104: etr575_02_sprites_left;
+ 106: etr575_08_notpowered_normal_sprites_left;
+ 108: etr575_07_notpowered_sprites_left;
+ 110: etr575_02_sprites_right;
+ 112: etr575_05_sprites_right;
+ 114: etr575_04_notpowered_normal_sprites_right;
+ 116: etr575_02_sprites_right;
+ 118: etr575_02_sprites_right;
+ 120: etr575_h_sprites_right_check;
+
+ 200: etr575_h_sprites_start;
+ 202: etr575_02_notpowered_sprites_left;
+ 204: etr575_02_notpowered_sprites_left;
+ 206: etr575_04_notpowered_sprites_left;
+ 208: etr575_05_notpowered_sprites_left;
+ 210: etr575_02_notpowered_sprites_left;
+ 212: etr575_07_notpowered_sprites_right;
+ 214: etr575_08_notpowered_sprites_right;
+ 216: etr575_02_notpowered_sprites_right;
+ 218: etr575_02_notpowered_sprites_right;
+ 220: etr575_h_sprites_right_check;
+
+ 300: etr575_h_sprites_start;
+ 302: etr575_02_notpowered_sprites_left;
+ 304: etr575_02_notpowered_sprites_left;
+ 306: etr575_08_notpowered_sprites_left;
+ 308: etr575_07_notpowered_sprites_left;
+ 310: etr575_02_notpowered_sprites_right;
+ 312: etr575_05_notpowered_sprites_right;
+ 314: etr575_04_notpowered_sprites_right;
+ 316: etr575_02_notpowered_sprites_right;
+ 318: etr575_02_notpowered_sprites_right;
+ 320: etr575_h_sprites_right_check;
+*/
+ 777: etr575_never_train;
+
+      align_11_sprites;
+}
+
+long_vehicle_RND(etr575, etr575_h_sprites_start)
+
+switch (FEAT_TRAINS, SELF, etr575_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return etr575_part2;
+  3: return dummy2;
+  4: return etr575_part3;
+  5: return dummy2;
+  6: return etr575_part3;
+  7: return dummy2;
+  8: return etr575_part3;
+  9: return dummy2;
+ 10: return etr575_part3;
+ 11: return dummy2;
+ 12: return etr575_part3;
+ 13: return dummy2;
+ 14: return etr575_part3;
+ 15: return dummy2;
+ 16: return etr575_part3;
+ 17: return dummy2;
+ 18: return etr575_part3;
+ 19: return dummy2;
+ 20: return etr575_part3;
+ 21: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, etr575_create_effect7,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, etr575_create_effect0,
+  position_in_articulated_veh)
+{
+  13: etr575_create_effect7;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, etr575_create_effect,
+  vehicle_type_id == etr575)
+{
+  1: etr575_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, etr575_can_attach_wagon,
+  vehicle_type_id == etr575)
+{
+  1: return string(STR_CAN_ATTACH_NO_MORE);
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+engine_capacity_MU(etr575, 293, etr575)
+engine_power_MU(etr575, 7478, etr575)
+
+RC_head_check_new(etr575, etr575)
+switch (FEAT_TRAINS, SELF, etr575_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(220, 6),       // Скорость
+   STORE_TEMP(423, 7),       // Тара
+   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
+{ etr575_check_running_cost_factor; } // 1921+817
+
+engine_speed(etr575, 220)
+hint_MU_with_subtype_noto(etr575,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_AC_WITH_SUBTYPE, STR_PURCHASE_HINT_PENDOLINO,
+     STR_SECTIONS_MU_S1of11,
+     2010, STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS)
+
+item (FEAT_TRAINS, etr575, 311) {
+  property {
+    name: string(STR_NAME_ETR575);
+    vehicle_dates(2010, 2050, 30, 10, 8, 1079)
+    vehicle_acemu(7478, 423, 226.0, 293, 15*5)
+  }
+  graphics {
+    default: etr575_sprites;
+    purchase: etr575_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: etr575_speed;
+    running_cost_factor: etr575_running_cost_factor;
+    articulated_part: etr575_articulated_part;
+    can_attach_wagon: etr575_can_attach_wagon;
+    power: etr575_power;
+    cargo_capacity: etr575_cargo_capacity;
+    cost_factor: return 1079;
+    colour_mapping: any_cc_colour;
+    create_effect: etr575_create_effect;
+    purchase_speed: return 220;
+    additional_text: etr575_additional_text;
+  }
+}
+
+long_name_template(etr575, STR_LONGNAME_ETR575)
+allow_acemu(etr575)
+
+engine_capacity_MU(etr575_part2, 48, etr575)
+
+item (FEAT_TRAINS, etr575_part2, 315) {
+  property {
+    vehicle_no_dates(2010, 2050, 30, 10, 8, 0)
+    vehicle_acemu_c(0, 48, 15*1)
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: etr575_sprites;
+    cargo_age_period: return 370;
+    create_effect: etr575_create_effect;
+    cargo_capacity: etr575_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
+
+item (FEAT_TRAINS, etr575_part3, 318) {
+  property {
+    vehicle_no_dates(2010, 2050, 30, 10, 8, 0)
+    vehicle_acemu_empty()
+  }
+  graphics {
+    default: etr575_sprites;
+    create_effect: etr575_create_effect;
+  }
+}
