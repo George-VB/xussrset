@@ -1,0 +1,98 @@
+﻿ // tanker_15_1443p
+
+#define IMAGEFILE  "src/freight/tankers/15-1443p.png"
+purchase_sprites(tanker_15_1443p, 0, 0)
+tanker_layout_template(tanker_15_1443p, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle_RND(tanker_15_1443p, tanker_15_1443p_sprites_start)
+
+switch (FEAT_TRAINS, SELF, tanker_15_1443p_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x03])
+{
+  0: return ttdall_cc + 0x25;
+  1: return ttdall_cc + 0x39;
+  2: return ttdall_cc + 0x08;
+     return ttdall_cc + 0x0B;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1443p_colour_mapping,
+  cargo_subtype)
+{
+  0: tanker_15_1443p_random;
+  1: return ttdall_cc + 0x25;
+  2: return ttdall_cc + 0x39;
+  3: return ttdall_cc + 0x08;
+  4: return ttdall_cc + 0x0B;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1443p_cargo_subtype_text,
+    cargo_subtype )
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_25);
+  2: return string(STR_REFIT_TTD_39);
+  3: return string(STR_REFIT_TTD_08);
+  4: return string(STR_REFIT_TTD_0B);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_1443p_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1443p_cargo_capacity,
+[  STORE_TEMP(60, 0), // т
+   STORE_TEMP(73, 1), // м³
+   STORE_TEMP(0, 2), // м²
+   STORE_TEMP(0, 3), // палетомест
+   STORE_TEMP(7, 4)])// шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1443p_running_cost_factor,
+[  STORE_TEMP(0, 0),            // Моторы
+   STORE_TEMP(0, 1),            // Бригада
+   STORE_TEMP(15, 2),       		/* 22*2/3 */	// Износ
+   STORE_TEMP(0, 3),            // Сопровождение
+   STORE_TEMP(7, 4),         		/* 22/3 */	// ТО
+   STORE_TEMP(2, 5),            // Сертификация
+
+   STORE_TEMP(120, 6),       // Скорость
+   STORE_TEMP(24, 7),        // Тара
+   STORE_TEMP(84, 8)])    		/* 24+60 */	// Максимальная масса
+{ all_running_cost_factor; } // 22
+
+hint_wagon_with_uspeed_changeable_factory_name(tanker_15_1443p,
+           60, 73,
+           STR_PURCHASE_HINT_LOADING_SPEED_4TIC, STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+           1969, 1995,
+           fact_azovmach())
+
+item (FEAT_TRAINS, tanker_15_1443p, 635) {
+  property {
+    name: string(STR_NAME_TANKER_15_1443P);
+    vehicle_dates(1969, 1995, 32, 10, 6, 92)
+    vehicle_wagon(24, 120)
+    cargo_allow_refit: [cargo_all_food_tanker()];
+  }
+  graphics {
+    default: tanker_15_1443p_sprites;
+    purchase: tanker_15_1443p_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    running_cost_factor: tanker_15_1443p_running_cost_factor;
+    additional_text: tanker_15_1443p_additional_text;
+    cargo_subtype_text: tanker_15_1443p_cargo_subtype_text;
+    cargo_capacity: tanker_15_1443p_cargo_capacity;
+    loading_speed: tanker_15_1443p_loading_speed;
+    refit_cost: tanker_refit_cost;
+    colour_mapping: tanker_15_1443p_colour_mapping;
+  }
+}
+
+long_name_template(tanker_15_1443p, STR_LONGNAME_TANKER_15_1443P)
