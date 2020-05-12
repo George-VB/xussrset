@@ -1,0 +1,227 @@
+﻿ // crh380a
+
+#define IMAGEFILE  "src/addon/emu/crh380a_01.png"
+purchase_sprites(crh380a, 0, 0)
+MU_head_sprites(15, crh380a_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/crh380a_02.png"
+MU_car_sprites(14, crh380a_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/crh380a_04.png"
+EMU_motor1_middle_sprites(14, crh380a_04, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/crh380a_05.png"
+MU_car_nd_sprites(14, crh380a_05, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/crh380a_06.png"
+EMU_motor1_middle_sprites(14, crh380a_06, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, crh380a_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: crh380a_h_sprites_left;
+     crh380a_h_notpowered_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, crh380a_h_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: crh380a_h_sprites_left_check;
+  1: crh380a_h_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: crh380a_h_sprites_right;
+     crh380a_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_never_train, 0)
+{
+   0: crh380a_04_sprites_right;
+   1: crh380a_04_r_normal_sprites;
+   2: crh380a_06_sprites_left;
+   3: crh380a_06_normal_sprites;
+      align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != crh380a) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   0: crh380a_h_sprites_start;
+   2: crh380a_02_sprites_left;
+   4: crh380a_02_sprites_left;
+   6: crh380a_04_sprites_left;
+   8: crh380a_05_sprites_left;
+  10: crh380a_06_notpowered_normal_sprites_left;
+  12: crh380a_02_sprites_left;
+  14: crh380a_h_sprites_right_check;
+
+ 100: crh380a_h_sprites_start;
+ 102: crh380a_02_sprites_right;
+ 104: crh380a_06_sprites_right;
+ 106: crh380a_05_sprites_right;
+ 108: crh380a_04_notpowered_normal_sprites_right;
+ 110: crh380a_02_sprites_right;
+ 112: crh380a_02_sprites_right;
+ 114: crh380a_h_sprites_right_check;
+
+ 200: crh380a_h_sprites_start;      
+ 202: crh380a_02_notpowered_sprites_left; 
+ 204: crh380a_02_notpowered_sprites_left; 
+ 206: crh380a_04_notpowered_sprites_left; 
+ 208: crh380a_05_sprites_left;
+ 210: crh380a_06_notpowered_sprites_left;
+ 212: crh380a_02_notpowered_sprites_left;
+ 214: crh380a_h_sprites_right_check;
+
+ 300: crh380a_h_sprites_start;
+ 302: crh380a_02_notpowered_sprites_right; 
+ 304: crh380a_06_notpowered_sprites_right; 
+ 306: crh380a_05_sprites_right; 
+ 308: crh380a_04_notpowered_sprites_right;
+ 310: crh380a_02_notpowered_sprites_right;
+ 312: crh380a_02_notpowered_sprites_right;
+ 314: crh380a_h_sprites_right_check;
+
+ 777: crh380a_never_train;
+
+      align_11_sprites;
+}
+
+long_vehicle_RND(crh380a, crh380a_h_sprites_start)
+
+switch (FEAT_TRAINS, SELF, crh380a_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy7;
+  2: return crh380a_part2;
+  3: return dummy6;
+  4: return crh380a_part3;
+  5: return dummy6;
+  6: return crh380a_part3;
+  7: return dummy6;
+  8: return crh380a_part3;
+  9: return dummy6;
+ 10: return crh380a_part3;
+ 11: return dummy6;
+ 12: return crh380a_part3;
+ 13: return dummy6;
+ 14: return crh380a_part3;
+ 15: return dummy7;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_create_effect3,
+  electric_create_effect(-1))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_create_effect0,
+  position_in_articulated_veh)
+{
+  12: crh380a_create_effect3;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, crh380a_create_effect,
+  vehicle_type_id == crh380a)
+{
+  1: crh380a_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_can_attach_wagon,
+  vehicle_type_id == crh380a)
+{
+  1: return string(STR_CAN_ATTACH_NO_MORE);
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(crh380a, crh380a)
+switch (FEAT_TRAINS, SELF, crh380a_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(320, 6),       // Скорость
+   STORE_TEMP(423, 7),       // Тара
+   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
+{ crh380a_check_running_cost_factor; } // 1921+817
+
+engine_capacity_MU(crh380a, 441, crh380a)
+engine_power_MU(crh380a, 10876, crh380a)
+engine_speed(crh380a, 320)
+hint_MU_with_subtype_noto(crh380a,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_AC_WITH_SUBTYPE, STR_PURCHASE_HINT_VALERO,
+     STR_SECTIONS_MU_S1of8,
+     1999, STR_PURCHASE_HINT_FACTORY_SIEMENS)
+
+item (FEAT_TRAINS, crh380a, 194) {
+  property {
+    name: string(STR_NAME_CRH380A);
+    vehicle_dates(1999, 2050, 30, 10, 8, 1500)
+    vehicle_acemu(10876, 409, 200.0, 441, 15*9)
+  }
+  graphics {
+    default: crh380a_sprites;
+    purchase: crh380a_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: crh380a_speed;
+    running_cost_factor: crh380a_running_cost_factor;
+    articulated_part: crh380a_articulated_part;
+    can_attach_wagon: crh380a_can_attach_wagon;
+    power: crh380a_power;
+    cargo_capacity: crh380a_cargo_capacity;
+    cost_factor: return 1500;
+    colour_mapping: any_cc_colour;
+    create_effect: crh380a_create_effect;
+    purchase_speed: return 320;
+    additional_text: crh380a_additional_text;
+  }
+}
+
+long_name_template(crh380a, STR_LONGNAME_CRH380A)
+allow_acemu(crh380a)
+
+engine_capacity_MU(crh380a_part2, 48, crh380a)
+
+item (FEAT_TRAINS, crh380a_part2, 363) {
+  property {
+    vehicle_no_dates(1999, 2050, 30, 10, 8, 0)
+    vehicle_acemu_c(0, 48, 15*1)
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: crh380a_sprites;
+    cargo_age_period: return 370;
+    create_effect: crh380a_create_effect;
+    cargo_capacity: crh380a_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, crh380a_part3, 518) {
+  property {
+    vehicle_no_dates(1999, 2050, 30, 10, 8, 0)
+    vehicle_acemu_empty()
+  }
+  graphics {
+    default: crh380a_sprites;
+    create_effect: crh380a_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
