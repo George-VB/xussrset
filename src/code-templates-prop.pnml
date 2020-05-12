@@ -471,6 +471,23 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                       \
 { 1: return loaded_speed;                                                      \
      return speed; }                                                           \
 
+// Определение скорости в зависимости от типа пути
+#define engine_speed_change_AC_DC(name)                     \
+switch (FEAT_TRAINS, SELF, name##_speed, current_railtype)  \
+{ ERD1: name##_DC_speed;                                    \
+  ERD2: name##_DC_speed;                                    \
+  ERD3: name##_DC_speed;                                    \
+        name##_AC_speed; }                                  \
+
+#define engine_speed_change_after(name, speed, new_speed, year)               \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)       \
+{ 1: return new_speed;                                                        \
+     return speed; }                                                          \
+switch (FEAT_TRAINS, SELF, name##_speed,                                      \
+[ STORE_TEMP(check_year(year) ? new_speed : speed, 0),                        \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
+{ return; }                                                                   \
+
 // Определение старения груза с изменением по году постройки
 #define engine_CAP_change_build_after(name, CAP, new_CAP, year)           \
 switch (FEAT_TRAINS, SELF, name##_cargo_age_period, build_year >= year)   \
