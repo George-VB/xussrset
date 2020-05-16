@@ -1,0 +1,246 @@
+﻿ // ice2
+
+#define IMAGEFILE  "src/addon/emu/ice2_01.png"
+purchase_sprites(ice2, 0, 0)
+MU_head_sprites(12, ice2_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice2_02.png"
+MU_car_sprites(15, ice2_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice2_04.png"
+MU_car_nd_sprites(15, ice2_04, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice2_05.png"
+MU_car_sprites(15, ice2_05, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice2_08.png"
+MU_head_sprites(15, ice2_08, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ice2_h_sprites_start,
+  position_in_consist == 0)
+{
+  1: ice2_h_sprites_left;
+     ice2_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: ice2_h_sprites_right;
+     ice2_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_sprites_left,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != ice2) * 200) +
+   position_in_articulated_veh])
+{
+   0: ice2_h_sprites_start;
+   2: ice2_02_sprites_left;
+   4: ice2_02_sprites_left;
+   6: ice2_04_sprites_left;
+   8: ice2_05_sprites_left;
+  10: ice2_05_sprites_left;
+  12: ice2_05_sprites_left;
+  14: ice2_08_sprites_right;
+
+ 200: ice2_h_sprites_start;      
+ 202: ice2_02_notpowered_sprites_left; 
+ 204: ice2_02_notpowered_sprites_left; 
+ 206: ice2_04_sprites_left; 
+ 208: ice2_05_notpowered_sprites_left;
+ 210: ice2_05_notpowered_sprites_left;
+ 212: ice2_05_notpowered_sprites_left;
+ 214: ice2_08_sprites_right;
+
+ 777: ice2_never_train;
+
+      align_11_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_sprites_right,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != ice2) * 200) +
+   position_in_articulated_veh])
+{
+   0: ice2_08_sprites_left;
+   2: ice2_05_sprites_right;
+   4: ice2_05_sprites_right;
+   6: ice2_05_sprites_right;
+   8: ice2_04_sprites_right;
+  10: ice2_02_sprites_right;
+  12: ice2_02_sprites_right;
+  14: ice2_h_sprites_right_check;
+
+ 200: ice2_08_sprites_left;      
+ 202: ice2_05_notpowered_sprites_left; 
+ 204: ice2_05_notpowered_sprites_left; 
+ 206: ice2_05_notpowered_sprites_left; 
+ 208: ice2_04_sprites_right;
+ 210: ice2_02_notpowered_sprites_right;
+ 212: ice2_02_notpowered_sprites_right;
+ 214: ice2_h_sprites_right_check;
+
+      align_15_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_sprites_start,
+  (LOAD_TEMP(4) == ice2) && (position_in_consist < 16))
+{
+   1: ice2_sprites_left;
+      ice2_sprites_right;
+}
+
+long_vehicle(ice2)
+
+switch (FEAT_TRAINS, SELF, ice2_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return ice2_part2;
+  3: return dummy7;
+  4: return ice2_part3;
+  5: return dummy7;
+  6: return ice2_part3;
+  7: return dummy7;
+  8: return ice2_part3;
+  9: return dummy7;
+ 10: return ice2_part3;
+ 11: return dummy7;
+ 12: return ice2_part3;
+ 13: return dummy7;
+ 14: return ice2_part3;
+ 15: return dummy7;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_create_effect_01,
+  electric_create_effect(6))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_create_effect_16,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_create_effect0,
+  position_in_consist)
+{
+  0: ice2_create_effect_01;
+  31: ice2_create_effect_16;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, ice2_create_effect,
+  vehicle_type_id == ice2)
+{
+  1: ice2_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, ice2_can_attach_wagon2,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, ice2_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(ice2), 0))
+{
+  ice2_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_can_attach_wagon,
+  vehicle_type_id == ice2)
+{
+  1: ice2_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(ice2, ice2)
+switch (FEAT_TRAINS, SELF, ice2_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(280, 6),       // Скорость
+   STORE_TEMP(418, 7),       // Тара
+   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
+{ ice2_check_running_cost_factor; } // 1921+817
+
+engine_capacity_MU(ice2, 370-105, ice2)
+engine_power_MU(ice2, 6526, ice2)
+engine_speed(ice2, 280)
+hint_MU(ice2,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_AC,
+     STR_SECTIONS_MU_S1_2of8,
+     1995, 1997,
+     STR_PURCHASE_HINT_FACTORY_SIEMENS)
+
+item (FEAT_TRAINS, ice2, 462) {
+  property {
+    name: string(STR_NAME_ICE2);
+    vehicle_dates(1995, 1997, 30, 10, 8, 1500)
+    vehicle_acemu(6526, 418, 200.0, 370-105, 15*7)
+  }
+  graphics {
+    default: ice2_sprites;
+    purchase: ice2_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: ice2_speed;
+    running_cost_factor: ice2_running_cost_factor;
+    articulated_part: ice2_articulated_part;
+    can_attach_wagon: ice2_can_attach_wagon;
+    power: ice2_power;
+    cargo_capacity: ice2_cargo_capacity;
+    cost_factor: return 1500;
+    colour_mapping: any_cc_colour;
+    create_effect: ice2_create_effect;
+    purchase_speed: return 280;
+    additional_text: ice2_additional_text;
+  }
+}
+
+long_name_template(ice2, STR_LONGNAME_ICE2)
+allow_acemu(ice2)
+
+engine_capacity_MU(ice2_part2, 48, ice2)
+
+item (FEAT_TRAINS, ice2_part2, 463) {
+  property {
+    vehicle_no_dates(1995, 1997, 30, 10, 8, 0)
+    vehicle_acemu_c(0, 105, 15*4)
+    cargo_allow_refit: [TOUR, PASS];
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: ice2_sprites;
+    cargo_age_period: return 370;
+    create_effect: ice2_create_effect;
+    cargo_capacity: ice2_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, ice2_part3, 464) {
+  property {
+    vehicle_no_dates(1995, 1997, 30, 10, 8, 0)
+    vehicle_acemu_empty()
+  }
+  graphics {
+    default: ice2_sprites;
+    create_effect: ice2_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
