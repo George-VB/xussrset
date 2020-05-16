@@ -118,10 +118,23 @@ switch (FEAT_TRAINS, PARENT, es250_create_effect,
      return disable_create_effect();
 }
 
+switch (FEAT_TRAINS, SELF, es250_can_attach_wagon2,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, es250_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(es250), 0))
+{
+  es250_can_attach_wagon2;
+}
+
 switch (FEAT_TRAINS, SELF, es250_can_attach_wagon,
   vehicle_type_id == es250)
 {
-  1: return string(STR_CAN_ATTACH_NO_MORE);
+  1: es250_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
@@ -163,7 +176,7 @@ hint_MU_2fact(es250,
      STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC, 
-     STR_SECTIONS_MU_S1of6,
+     STR_SECTIONS_MU_S1_2of6,
      1999, 2002,
      STR_PURCHASE_HINT_FACTORY_RAO_VSM, 
      STR_PURCHASE_HINT_FACTORY_TIKHVIN_CBP)
