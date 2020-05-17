@@ -117,22 +117,41 @@ switch (FEAT_TRAINS, SELF, crh380a_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, crh380a_create_effect3,
-  electric_create_effect(-1))
+switch (FEAT_TRAINS, SELF, crh380a_06_create_effect,
+  electric_create_effect(6))
 {
   return 1;
+}
+
+switch (FEAT_TRAINS, SELF, crh380a_04_create_effect,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+random_switch (FEAT_TRAINS, FORWARD_SELF(6), crh380a_04_create_effect_rnd, 0)
+{
+  1: crh380a_04_create_effect;
+  1: return disable_create_effect();
+}
+
+random_switch (FEAT_TRAINS, FORWARD_SELF(4), crh380a_06_create_effect_rnd, 0)
+{
+  1: return disable_create_effect();
+  1: crh380a_06_create_effect;
 }
 
 switch (FEAT_TRAINS, SELF, crh380a_create_effect0,
   position_in_articulated_veh)
 {
-  12: crh380a_create_effect3;
+   4: crh380a_06_create_effect_rnd;
+   6: crh380a_04_create_effect_rnd;
       return disable_create_effect();
 }
 
 switch (FEAT_TRAINS, PARENT, crh380a_create_effect,
   vehicle_type_id == crh380a)
-{
+{ 
   1: crh380a_create_effect0;
      return disable_create_effect();
 }
