@@ -54,9 +54,13 @@ switch (FEAT_TRAINS, SELF, ice2_sprites_left,
  212: ice2_05_notpowered_sprites_left;
  214: ice2_08_sprites_right;
 
- 777: ice2_never_train;
+// orientation code
+   1: dummy_sprites;
+  15: dummy_sprites;
+ 201: dummy_sprites;
+ 215: dummy_sprites;
 
-      align_11_sprites;
+      align_15_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, ice2_sprites_right,
@@ -82,6 +86,12 @@ switch (FEAT_TRAINS, SELF, ice2_sprites_right,
  212: ice2_02_notpowered_sprites_right;
  214: ice2_h_sprites_right_check;
 
+// orientation code
+   1: dummy_sprites;
+  15: dummy_sprites;
+ 201: dummy_sprites;
+ 215: dummy_sprites;
+
       align_15_sprites;
 }
 
@@ -94,10 +104,38 @@ switch (FEAT_TRAINS, SELF, ice2_sprites_start,
 
 long_vehicle(ice2)
 
+switch (FEAT_TRAINS, SELF, ice2_part3_length_left, position_in_articulated_veh)
+{
+  1: return 4;
+ 15: return 7;
+     return 8;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_part3_length_right, position_in_articulated_veh)
+{
+  1: return 7;
+ 15: return 4;
+     return 8;
+}
+
+switch (FEAT_TRAINS, SELF, ice2_part3_length2,
+  position_in_consist < 16)
+{
+   1: ice2_part3_length_left;
+      ice2_part3_length_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ice2_part3_length,
+  vehicle_type_id == ice2)
+{
+  1: ice2_part3_length2;
+     ice2_part3_length_right;
+}
+
 switch (FEAT_TRAINS, SELF, ice2_articulated_part,
   extra_callback_info1)
 {
-  1: return dummy4;
+  1: return ice2_part3;
   2: return ice2_part2;
   3: return dummy7;
   4: return ice2_part3;
@@ -111,7 +149,7 @@ switch (FEAT_TRAINS, SELF, ice2_articulated_part,
  12: return ice2_part3;
  13: return dummy7;
  14: return ice2_part3;
- 15: return dummy7;
+ 15: return ice2_part3;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
@@ -214,7 +252,7 @@ item (FEAT_TRAINS, ice2, 462) {
 long_name_template(ice2, STR_LONGNAME_ICE2)
 allow_acemu(ice2)
 
-engine_capacity_MU(ice2_part2, 48, ice2)
+engine_capacity_MU(ice2_part2, 105, ice2)
 
 item (FEAT_TRAINS, ice2_part2, 463) {
   property {
@@ -242,5 +280,6 @@ item (FEAT_TRAINS, ice2_part3, 464) {
     default: ice2_sprites;
     create_effect: ice2_create_effect;
     colour_mapping: any_cc_colour;
+    length:ice2_part3_length;
   }
 }
