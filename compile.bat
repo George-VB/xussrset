@@ -98,6 +98,8 @@ if /i not %errorlevel% == 0 goto :Error
 if /i not "%GRFFOLDER%" == "" (
   xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
   if /i not %errorlevel% == 0 goto :Error
+  xcopy /y %NMLNAME%.grf "F:\Мои_Документы\YandexDisk\My\-todelete\xUSSR set\" 
+  if /i not %errorlevel% == 0 goto :Error
 )
 echo [Ok]
 set compres=[Ok]
