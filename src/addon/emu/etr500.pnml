@@ -168,7 +168,20 @@ switch (FEAT_TRAINS, SELF, etr500_can_attach_wagon,
 }
 
 RC_head_check_new(etr500, etr500)
-switch (FEAT_TRAINS, SELF, etr500_running_cost_factor,
+switch (FEAT_TRAINS, SELF, etr500_DC_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(250, 6),       // Скорость
+   STORE_TEMP(798, 7),       // Тара
+   STORE_TEMP(798, 8)])      		/* 423+44 */	// Максимальная масса
+{ etr500_check_running_cost_factor; } // 1921+817
+
+switch (FEAT_TRAINS, SELF, etr500_AC_running_cost_factor,
 [  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
    STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
    STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
@@ -181,16 +194,22 @@ switch (FEAT_TRAINS, SELF, etr500_running_cost_factor,
    STORE_TEMP(798, 8)])      		/* 423+44 */	// Максимальная масса
 { etr500_check_running_cost_factor; } // 1921+817
 
+engine_RC_change_AC_DC(etr500)
+
 engine_capacity_MU(etr500, 340, etr500)
 engine_power_MU(etr500, 11964, etr500)
-engine_speed(etr500, 360)
-hint_MU(etr500,
+engine_speed(etr500_AC, 360)
+engine_speed(etr500_DC, 250)
+engine_speed_change_AC_DC(etr500)
+
+hint_MU_comment(etr500,
      STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_AC,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
      STR_SECTIONS_MU_S1of13,
      2000, 2005, 
-     STR_PURCHASE_HINT_FACTORY_SIEMENS)
+     STR_PURCHASE_HINT_FACTORY_TREVI,
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DC, 250))
 
 item (FEAT_TRAINS, etr500, 468) {
   property {
