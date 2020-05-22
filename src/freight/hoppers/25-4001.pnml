@@ -1,0 +1,108 @@
+﻿ // 25_4001_hopper
+
+#define IMAGEFILE  "src/freight/hoppers/25-4001.png"
+purchase_sprites(hopper_25_4001, 0, 0)
+tanker_layout_template(hopper_25_4001, 10, 32, 40)
+#undef IMAGEFILE
+long_vehicle_RND(hopper_25_4001, hopper_25_4001_sprites_start)
+
+switch (FEAT_TRAINS, SELF, hopper_25_4001_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+    0..2: return ttdall_cc + 0x7B;
+    3..5: return ttdall_cc + 0x7C;
+    6..7: return ttdall_cc + 0x72;
+    8..9: return ttdall_cc + 0x4B;
+  10..11: return ttdall_cc + 0x2A;
+  12..13: return ttdall_cc + 0x08;
+          return ttdall_cc + 0x09;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_25_4001_colour_mapping,
+  cargo_subtype)
+{
+  0: hopper_25_4001_random;
+  1: return ttdall_cc + 0x7B;
+  2: return ttdall_cc + 0x7C;
+  3: return ttdall_cc + 0x72;
+  4: return ttdall_cc + 0x4B;
+  5: return ttdall_cc + 0x2A;
+  6: return ttdall_cc + 0x08;
+  7: return ttdall_cc + 0x09;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_25_4001_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_7B);
+  2: return string(STR_REFIT_TTD_7C);
+  3: return string(STR_REFIT_TTD_72);
+  4: return string(STR_REFIT_TTD_4B);
+  5: return string(STR_REFIT_TTD_2A);
+  6: return string(STR_REFIT_TTD_08);
+  7: return string(STR_REFIT_TTD_09);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, hopper_25_4001_cargo_capacity,
+[  STORE_TEMP(60, 0), // т
+   STORE_TEMP(146, 1), // м³
+   STORE_TEMP(0, 2),  // м²
+   STORE_TEMP(0, 3),  // палетомест
+   STORE_TEMP(10, 4)]) // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_25_4001_running_cost_factor,
+[  STORE_TEMP(0, 0),            // Моторы
+   STORE_TEMP(0, 1),            // Бригада
+   STORE_TEMP(31, 2),       	// Износ
+   STORE_TEMP(0, 3),            // Сопровождение
+   STORE_TEMP(19, 4),         	// ТО
+   STORE_TEMP(0, 5),            // Сертификация
+
+   STORE_TEMP(120, 6),       // Скорость
+   STORE_TEMP(24, 7),        // Тара
+   STORE_TEMP(84, 8)])       // Максимальная масса
+{ all_running_cost_factor; }  
+
+switch (FEAT_TRAINS, SELF, hopper_25_4001_loading_speed,
+[  STORE_TEMP(0, 0),    // определяется элеватором 
+   STORE_TEMP(4, 1),    // 4 разгрузочных люка
+   STORE_TEMP(14, 2),   // верхняя загрузка ограничена люками (10 очень маленьких люков, 2 маленьких люка)
+   STORE_TEMP(4*4, 3)]) // нижняя разгрузка ограничена 4 единицами груза на люк
+{ all_wagons_hopper_loading_speed; }
+
+hint_wagon_with_uspeed_changeable_factory_name(hopper_25_4001,
+   60, 146,
+   STR_PURCHASE_HINT_LOADING_SPEED_5TIC,
+   STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+   STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+   STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+   1979, 1989,
+   fact_dneprodzerzhinskycw())
+
+item (FEAT_TRAINS, hopper_25_4001, 640) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 25, 4001);
+    vehicle_dates(1979, 1989, 24, 10, 8, 96)
+    vehicle_wagon(24, 120)
+    cargo_allow_refit: [cargo_all_cement_hopperlist()];
+  }
+  graphics {
+    default: hopper_25_4001_sprites;
+    purchase: hopper_25_4001_purchase_sprites;
+    running_cost_factor: hopper_25_4001_running_cost_factor;
+    articulated_part: articulated_part_dummy2;
+    colour_mapping: hopper_25_4001_colour_mapping;
+    cargo_subtype_text: hopper_25_4001_cargo_subtype_text;
+    loading_speed: hopper_25_4001_loading_speed;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    additional_text: hopper_25_4001_additional_text;
+    cargo_capacity: hopper_25_4001_cargo_capacity;
+  }
+}
+
+long_name_template(hopper_25_4001, STR_LONGNAME_HOPPER_25_4001)

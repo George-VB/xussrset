@@ -20,11 +20,20 @@ switch (FEAT_TRAINS, SELF, container_loading_speed,
   container_loading_speed2;
 }
 
-
+/*
+Регистр 0 // Ограничение "способа погрузки" (количество тиков на погрузку) (сколько стадий погрузки нарисовано)
+Регистр 1 // Ограничение "способа выгрузки" (количество тиков на выгрузку) (сколько стадий выгрузки нарисовано)
+Регистр 2 // ограничение "входных" дверей/люков вагон. Количество единиц груза, которое может войти 
+Регистр 3 // ограничение "выходных" дверей/люков вагон. Количество единиц груза, которое может выйти 
+TODO разобраться, зачем у хопперов выставлено 4/6 тика на выгрузку
+TODO понять корректность модели расчёта скорости погрузки. По сути указанные ограничения вагонов - это ограничения в "кубах", 
+а грузы идут в тоннах. Грузы имеют в несколько раз различающуюся плотность. По сути нужен "пересчёт" ограничений количества 
+груза, переданного от вагона, в тонны груза через плотность. У цистерн груз идёт в литрах, расчёт верен.
+*/
 // Определение скорости погрузки завозом через двери. ограничение по тикам не имеет смысла. Скорость погрузки и выгрузки одинаковая
 
 switch (FEAT_TRAINS, SELF, all_wagons_box_loading_speed,
-[ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255 : LOAD_TEMP(0), 0),
+[ STORE_TEMP(LOAD_TEMP(2) == 0 ? 255 : LOAD_TEMP(2), 0),
   cargo_type_in_veh])
 {
   ENSP: return min(10, LOAD_TEMP(0));
@@ -103,21 +112,22 @@ switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed,
 
 switch (FEAT_TRAINS, SELF, all_wagons_hopper_station_loading_speed, cargo_type_in_veh)
 {
-// зерно                                      10  30  50  90
-  BAKE: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
-  CERE: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
-  GRAI: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
-  MAIZ: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
-  OLSD: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
-  WHEA: return min(calculate_loading_speed(8, 11, 14, 17, 20), LOAD_TEMP(0));
-// прочее
-  CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-  FERT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-  PEAT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-  PHOS: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-  POTA: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-  QLME: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
-        return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
+// зерно                                     1910 1930 1950 1990
+  BAKE: return min(calculate_loading_speed(8,  11,  14,  17,  20), LOAD_TEMP(0));
+  CERE: return min(calculate_loading_speed(8,  11,  14,  17,  20), LOAD_TEMP(0));
+  GRAI: return min(calculate_loading_speed(8,  11,  14,  17,  20), LOAD_TEMP(0));
+  MAIZ: return min(calculate_loading_speed(8,  11,  14,  17,  20), LOAD_TEMP(0));
+  OLSD: return min(calculate_loading_speed(8,  11,  14,  17,  20), LOAD_TEMP(0));
+  WHEA: return min(calculate_loading_speed(8,  11,  14,  17,  20), LOAD_TEMP(0));
+// прочее                                                    
+  CBLK: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+  CMNT: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+  FERT: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+  PEAT: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+  PHOS: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+  POTA: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+  QLME: return min(calculate_loading_speed(6,  8,  12,  14,  15), LOAD_TEMP(0));
+        return min(calculate_loading_speed(9,  13,  17,  21,  25), LOAD_TEMP(0));
 }
 
 switch (FEAT_TRAINS, SELF, all_wagons_hopper_loading_speed,
@@ -150,6 +160,7 @@ switch (FEAT_TRAINS, SELF, all_wagons_tanker_station_loading_speed, cargo_type_i
   WATR: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
 // Высоковязкие грузы
   BDMT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
+  CBLK: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
   CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
   DYES: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
   EOIL: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(0));
@@ -192,6 +203,7 @@ switch (FEAT_TRAINS, SELF, all_wagons_tanker_station_unloading_speed, cargo_type
   WATR: return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(1));
 // Высоковязкие грузы
   BDMT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
+  CBLK: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
   CMNT: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
   DYES: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
   EOIL: return min(calculate_loading_speed(6, 8, 12, 14, 15), LOAD_TEMP(1));
