@@ -1,0 +1,279 @@
+﻿ // ice3m
+
+#define IMAGEFILE  "src/addon/emu/ice3m_03.png"
+purchase_sprites(ice3m, 0, 0)
+EMU_motor1_middle_sprites(14, ice3m_03, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice3m_04.png"
+MU_car_sprites(14, ice3m_04, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice3m_05.png"
+MU_car_nd_sprites(14, ice3m_05, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ice3m_03_sprites_left_railcheck,
+  current_railtype)
+{
+  ERD1: ice3m_03_sprites_left;
+  ERD2: ice3m_03_sprites_left;
+  ERD3: ice3m_03_sprites_left;
+        ice3m_03_notpowered_normal_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_03_sprites_right_railcheck,
+  current_railtype)
+{
+  ERD1: ice3m_03_sprites_right;
+  ERD2: ice3m_03_sprites_right;
+  ERD3: ice3m_03_sprites_right;
+        ice3m_03_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ice3_02_sprites_right_railcheck,
+  current_railtype)
+{
+  ERD1: ice3_02_notpowered_normal_sprites_right;
+  ERD2: ice3_02_notpowered_normal_sprites_right;
+  ERD3: ice3_02_notpowered_normal_sprites_right;
+        ice3_02_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != ice3m) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   0: ice3_h_sprites_start;
+   2: ice3_02_notpowered_normal_sprites_left;
+   4: ice3m_03_sprites_left_railcheck;
+   6: ice3m_04_sprites_left;
+   8: ice3m_05_sprites_right;
+  10: ice3m_03_sprites_right_railcheck;
+  12: ice3_02_sprites_right_railcheck;
+  14: ice3_h_sprites_right_check;
+
+ 100: ice3_h_sprites_start;
+ 102: ice3_02_notpowered_normal_sprites_left;
+ 104: ice3m_03_sprites_left_railcheck;
+ 106: ice3m_05_sprites_left;
+ 108: ice3m_04_sprites_right;
+ 110: ice3m_03_sprites_right_railcheck;
+ 112: ice3_02_sprites_right_railcheck;
+ 114: ice3_h_sprites_right_check;
+
+ 200: ice3_h_sprites_start;      
+ 202: ice3_02_notpowered_sprites_left; 
+ 204: ice3m_03_notpowered_sprites_left; 
+ 206: ice3m_04_notpowered_sprites_left; 
+ 208: ice3m_05_sprites_right;
+ 210: ice3m_03_notpowered_sprites_right;
+ 212: ice3_02_notpowered_sprites_right;
+ 214: ice3_h_sprites_right_check;
+
+ 300: ice3_h_sprites_start;
+ 302: ice3_02_notpowered_sprites_left; 
+ 304: ice3m_03_notpowered_sprites_left; 
+ 306: ice3m_05_sprites_left; 
+ 308: ice3m_04_notpowered_sprites_right;
+ 310: ice3m_03_notpowered_sprites_right;
+ 312: ice3_02_notpowered_sprites_right;
+ 314: ice3_h_sprites_right_check;
+
+ 777: ice3_never_train;
+
+      align_15_sprites;
+}
+
+long_vehicle_RND(ice3m, ice3_h_sprites_start)
+
+switch (FEAT_TRAINS, SELF, ice3m_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy7;
+  2: return ice3m_part2;
+  3: return dummy6;
+  4: return ice3m_part3;
+  5: return dummy6;
+  6: return ice3m_part3;
+  7: return dummy6;
+  8: return ice3m_part3;
+  9: return dummy6;
+ 10: return ice3m_part3;
+ 11: return dummy6;
+ 12: return ice3m_part3;
+ 13: return dummy6;
+ 14: return ice3m_part3;
+ 15: return dummy7;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_03,
+  electric_create_effect(-1))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_06,
+  electric_create_effect(6))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_07,
+  electric_create_effect(-1))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_ERA,
+  position_in_articulated_veh)
+{
+  12: ice3m_create_effect_07;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_ERD,
+  position_in_articulated_veh)
+{
+   4: ice3m_create_effect_03;
+  10: ice3m_create_effect_06;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect0,
+  current_railtype)
+{
+  ERD1: ice3m_create_effect_ERD;
+  ERD2: ice3m_create_effect_ERD;
+  ERD3: ice3m_create_effect_ERD;
+        ice3m_create_effect_ERA;
+}
+
+switch (FEAT_TRAINS, PARENT, ice3m_create_effect,
+  vehicle_type_id == ice3m)
+{
+  1: ice3m_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_can_attach_wagon2,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, ice3m_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(ice3m), 0))
+{
+  ice3m_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_can_attach_wagon,
+  vehicle_type_id == ice3m)
+{
+  1: ice3m_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(ice3m, ice3m)
+switch (FEAT_TRAINS, SELF, ice3m_AC_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(330, 6),       // Скорость
+   STORE_TEMP(423, 7),       // Тара
+   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
+{ ice3m_check_running_cost_factor; } // 1921+817
+switch (FEAT_TRAINS, SELF, ice3m_DC_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(220, 6),       // Скорость
+   STORE_TEMP(423, 7),       // Тара
+   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
+{ ice3m_check_running_cost_factor; } // 1921+817
+engine_RC_change_AC_DC(ice3m)
+
+engine_power_MU(ice3m_DC, 5846, ice3m)
+engine_power_MU(ice3m_AC, 10876, ice3m)
+engine_power_change_AC_DC(ice3m)
+engine_speed(ice3m_AC, 330)
+engine_speed(ice3m_DC, 220)
+engine_speed_change_AC_DC(ice3m)
+engine_capacity_MU(ice3m, 242, ice3m)
+hint_MU_with_subtype_noto_comment(ice3m,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_VALERO,
+     STR_SECTIONS_MU_S1_2of8,
+     2002,
+     string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DC, 220))
+
+item (FEAT_TRAINS, ice3m, 138) {
+  property { 
+    name: string(STR_NAME_ICE3M);
+    vehicle_dates(2002, 2050, 30, 10, 8, 1500)
+    vehicle_acdcemu(10876, 435, 300.0, 242, 15*7)
+  }
+  graphics {
+    default: ice3m_sprites;
+    purchase: ice3m_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: ice3m_speed;
+    running_cost_factor: ice3m_running_cost_factor;
+    articulated_part: ice3m_articulated_part;
+    can_attach_wagon: ice3m_can_attach_wagon;
+    power: ice3m_power;
+    cargo_capacity: ice3m_cargo_capacity;
+    cost_factor: return 1500;
+    colour_mapping: any_cc_colour;
+    create_effect: ice3m_create_effect;
+    purchase_speed: return 330;
+    additional_text: ice3m_additional_text;
+  }
+}
+
+long_name_template(ice3m, STR_LONGNAME_ICE3M)
+allow_acdcemu(ice3m)
+
+engine_capacity_MU(ice3m_part2, 136, ice3m)
+
+item (FEAT_TRAINS, ice3m_part2, 139) {
+  property {
+    vehicle_no_dates(2002, 2050, 30, 10, 8, 0)
+    vehicle_acdcemu_c(0, 136, 15*5)
+    vehicle_allow_tourists()
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: ice3m_sprites;
+    cargo_age_period: return 370;
+    create_effect: ice3m_create_effect;
+    cargo_capacity: ice3m_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, ice3m_part3, 140) {
+  property {
+    vehicle_no_dates(2002, 2050, 30, 10, 8, 0)
+    vehicle_acdcemu_empty()
+  }
+  graphics {
+    default: ice3m_sprites;
+    create_effect: ice3m_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
