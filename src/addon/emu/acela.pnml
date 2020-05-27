@@ -1,0 +1,225 @@
+﻿ // acela
+
+#define IMAGEFILE  "src/addon/emu/acela_01.png"
+purchase_sprites(acela, 0, 0)
+MU_head_sprites(12, acela_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/acela_02.png"
+MU_car_sprites(15, acela_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/acela_03.png"
+MU_car_sprites(15, acela_03, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/acela_07.png"
+MU_car_sprites(15, acela_07, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/acela_04.png"
+MU_car_nd_sprites(15, acela_04, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, acela_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: acela_h_sprites_left;
+     acela_h_notpowered_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, acela_h_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: acela_h_sprites_left_check;
+  1: acela_h_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, acela_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: acela_h_sprites_right;
+     acela_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, acela_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != acela) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   0: acela_h_sprites_start;
+   2: acela_02_sprites_left;
+   4: acela_03_sprites_left;
+   6: acela_04_sprites_left;
+   8: acela_03_sprites_left;
+  10: acela_03_sprites_right;
+  12: acela_07_sprites_right;
+  14: acela_h_sprites_right_check;
+
+ 100: acela_h_sprites_start;
+ 102: acela_07_sprites_left;
+ 104: acela_03_sprites_left;
+ 106: acela_03_sprites_right;
+ 108: acela_04_sprites_right;
+ 110: acela_03_sprites_right;
+ 112: acela_02_sprites_right;
+ 114: acela_h_sprites_right_check;
+
+ 200: acela_h_sprites_start;      
+ 202: acela_02_notpowered_sprites_left;  
+ 204: acela_03_notpowered_sprites_left;  
+ 206: acela_04_sprites_left;  
+ 208: acela_03_notpowered_sprites_left;  
+ 210: acela_03_notpowered_sprites_right; 
+ 212: acela_07_notpowered_sprites_right; 
+ 214: acela_h_sprites_right_check;
+
+ 300: acela_h_sprites_start;
+ 302: acela_07_notpowered_sprites_left; 
+ 304: acela_03_notpowered_sprites_left; 
+ 306: acela_03_notpowered_sprites_right; 
+ 308: acela_04_sprites_right; 
+ 310: acela_03_notpowered_sprites_right; 
+ 312: acela_02_notpowered_sprites_right;
+ 314: acela_h_sprites_right_check;
+
+      align_11_sprites;
+}
+
+long_vehicle_RND(acela, acela_h_sprites_start)
+
+switch (FEAT_TRAINS, SELF, acela_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return acela_part2;
+  3: return dummy7;
+  4: return acela_part3;
+  5: return dummy7;
+  6: return acela_part3;
+  7: return dummy7;
+  8: return acela_part3;
+  9: return dummy7;
+ 10: return acela_part3;
+ 11: return dummy7;
+ 12: return acela_part3;
+ 13: return dummy7;
+ 14: return acela_part3;
+ 15: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, acela_create_effect_01,
+  electric_create_effect(6))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, acela_create_effect_08,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, acela_create_effect0,
+  position_in_articulated_veh)
+{
+   0: acela_create_effect_01;
+  14: acela_create_effect_08;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, acela_create_effect,
+  vehicle_type_id == acela)
+{
+  1: acela_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, acela_can_attach_wagon,
+  vehicle_type_id == acela)
+{
+  1: return string(STR_CAN_ATTACH_NO_MORE);
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(acela, acela)
+switch (FEAT_TRAINS, SELF, acela_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(280, 6),       // Скорость
+   STORE_TEMP(798, 7),       // Тара
+   STORE_TEMP(798, 8)])      		/* 423+44 */	// Максимальная масса
+{ acela_check_running_cost_factor; } // 1921+817
+
+engine_capacity_MU(acela, 304, acela)
+engine_power_MU(acela, 12508, acela)
+engine_speed(acela, 240)
+hint_MU_2fact(acela,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_AC,
+     STR_SECTIONS_MU_S1of8,
+     1998, 2001, 
+     string(STR_PURCHASE_HINT_FACTORY_ALSTOM),
+     string(STR_PURCHASE_HINT_FACTORY_BOMBARDIER))
+
+item (FEAT_TRAINS, acela, 135) {
+  property {
+    name: string(STR_NAME_ACELA);
+    vehicle_dates(1998, 2001, 30, 10, 8, 1200)
+    vehicle_acemu(12508, 565, 440.4, 304, 15*7)
+  }
+  graphics {
+    default: acela_sprites;
+    purchase: acela_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: acela_speed;
+    running_cost_factor: acela_running_cost_factor;
+    articulated_part: acela_articulated_part;
+    can_attach_wagon: acela_can_attach_wagon;
+    power: acela_power;
+    cargo_capacity: acela_cargo_capacity;
+    cost_factor: return 1200;
+    colour_mapping: any_cc_colour;
+    create_effect: acela_create_effect;
+    purchase_speed: return 240;
+    additional_text: acela_additional_text;
+  }
+}
+
+long_name_template(acela, STR_LONGNAME_ACELA)
+allow_acemu(acela)
+
+engine_capacity_MU(acela_part2, 44, acela)
+
+item (FEAT_TRAINS, acela_part2, 136) {
+  property {
+    vehicle_no_dates(1998, 2001, 30, 10, 8, 0)
+    vehicle_acemu_c(0, 44, 15*1)
+    vehicle_allow_tourists()
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: acela_sprites;
+    cargo_age_period: return 370;
+    create_effect: acela_create_effect;
+    cargo_capacity: acela_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, acela_part3, 137) {
+  property {
+    vehicle_no_dates(1998, 2001, 30, 10, 8, 0)
+    vehicle_acemu_empty()
+  }
+  graphics {
+    default: acela_sprites;
+    create_effect: acela_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
