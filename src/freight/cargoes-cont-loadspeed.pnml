@@ -1,0 +1,20 @@
+// Containers
+// LOAD_TEMP(8) содержит 255 (=0) или cargo_capacity / 2 + 1 (=1)
+// Если появятся более короткие вагоны с графикой 1 контейнера, то надо будет для них вернуть 255
+
+switch (FEAT_TRAINS, SELF, container_loading_speed2,
+[ STORE_TEMP((random_bits >> 1 & 0x01) * (cargo_capacity / 2 + 1) + (1 - (random_bits >> 1 & 0x01)) * 255, 8),
+  cargo_type_in_veh])
+{
+  tank_container_cargo_check(return cargo_capacity / 2 + 1)
+  return LOAD_TEMP(8);
+}
+
+switch (FEAT_TRAINS, SELF, container_loading_speed,
+[ STORE_TEMP(cargo_capacity / 2 + 2 - (random_bits >> 1 & 0x01), 8),
+  vehicle_type_id])
+{
+  flatbed_13_9004: LOAD_TEMP(8); // 60 футовые грузить всегда в 2 захода
+  flatbed_13_470: LOAD_TEMP(8); // 60 футовые грузить всегда в 2 захода
+  container_loading_speed2;
+}

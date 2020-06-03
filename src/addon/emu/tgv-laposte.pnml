@@ -1,0 +1,203 @@
+﻿ // tgv_laposte
+
+#define IMAGEFILE  "src/addon/emu/tgv-laposte_01.png"
+purchase_sprites(tgv_laposte, 0, 0)
+MU_head_sprites(12, tgv_laposte_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-laposte_02.png"
+MU_car_sprites(12, tgv_laposte_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-laposte_03.png"
+MU_car_sprites(11, tgv_laposte_03, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-laposte_04.png"
+MU_car_sprites(11, tgv_laposte_04, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_h_sprites_start,
+  position_in_consist == 0)
+{
+  1: tgv_laposte_h_sprites_left;
+     tgv_laposte_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: tgv_laposte_h_sprites_right;
+     tgv_laposte_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != tgv_laposte) * 200) +
+   position_in_articulated_veh])
+{
+   0: tgv_laposte_h_sprites_start;
+   2: tgv_laposte_02_sprites_left;
+   4: tgv_laposte_03_sprites_left;
+   6: tgv_laposte_04_sprites_left;
+   8: tgv_laposte_03_sprites_left;
+  10: tgv_laposte_03_sprites_right;
+  12: tgv_laposte_04_sprites_right;
+  14: tgv_laposte_03_sprites_right;
+  16: tgv_laposte_02_sprites_right;
+  18: tgv_laposte_h_sprites_right_check;
+
+ 200: tgv_laposte_h_sprites_start;      
+ 202: tgv_laposte_02_notpowered_sprites_left; 
+ 204: tgv_laposte_03_notpowered_sprites_left; 
+ 206: tgv_laposte_04_notpowered_sprites_left; 
+ 208: tgv_laposte_03_notpowered_sprites_left; 
+ 210: tgv_laposte_03_notpowered_sprites_right; 
+ 212: tgv_laposte_04_notpowered_sprites_right; 
+ 214: tgv_laposte_03_notpowered_sprites_right; 
+ 216: tgv_laposte_02_notpowered_sprites_right;
+ 218: tgv_laposte_h_sprites_right_check;
+
+      align_11_sprites;
+}
+
+long_vehicle(tgv_laposte)
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return tgv_laposte_part2;
+  3: return dummy4;
+  4: return tgv_laposte_part2;
+  5: return dummy3;
+  6: return tgv_laposte_part2;
+  7: return dummy3;
+  8: return tgv_laposte_part2;
+  9: return dummy3;
+ 10: return tgv_laposte_part2;
+ 11: return dummy3;
+ 12: return tgv_laposte_part2;
+ 13: return dummy3;
+ 14: return tgv_laposte_part2;
+ 15: return dummy3;
+ 16: return tgv_laposte_part2;
+ 17: return dummy4;
+ 18: return tgv_laposte;
+ 19: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_create_effect_01,
+  electric_create_effect(3))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_create_effect_10,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_create_effect0,
+  position_in_articulated_veh)
+{
+   0: tgv_laposte_create_effect_01;
+  18: tgv_laposte_create_effect_10;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, tgv_laposte_create_effect,
+  vehicle_type_id == tgv_laposte)
+{
+  1: tgv_laposte_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_can_attach_wagon,
+  vehicle_type_id == tgv_laposte)
+{
+  1: return string(STR_CAN_ATTACH_NO_MORE);
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(tgv_laposte, tgv_laposte)
+switch (FEAT_TRAINS, SELF, tgv_laposte_running_cost_factor,
+[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
+   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
+   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
+   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+
+   STORE_TEMP(270, 6),       // Скорость
+   STORE_TEMP(798, 7),       // Тара
+   STORE_TEMP(798, 8)])      		/* 423+44 */	// Максимальная масса
+{ tgv_laposte_check_running_cost_factor; } // 1921+817
+
+engine_capacity_MU(tgv_laposte, 0, tgv_laposte)
+engine_power_MU(tgv_laposte_DC, 4214, tgv_laposte)
+engine_power_MU(tgv_laposte_AC, 9245, tgv_laposte)
+engine_power_change_AC_DC(tgv_laposte)
+engine_speed(tgv_laposte, 270)
+hint_MU_comment(tgv_laposte,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
+     STR_SECTIONS_MU_S1of10,
+     1978, 1986, 
+     string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
+     string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 4214))
+
+item (FEAT_TRAINS, tgv_laposte, 129) {
+  property {
+    name: string(STR_NAME_TGV_LAPOSTE);
+    vehicle_dates(1978, 1986, 30, 10, 8, 1500)
+    vehicle_acdcemu(9245, 385, 220.0, 0, 0)   
+  }
+  graphics {
+    default: tgv_laposte_sprites;
+    purchase: tgv_laposte_purchase_sprites;
+    speed: tgv_laposte_speed;
+    running_cost_factor: tgv_laposte_running_cost_factor;
+    articulated_part: tgv_laposte_articulated_part;
+    can_attach_wagon: tgv_laposte_can_attach_wagon;
+    power: tgv_laposte_power;
+    cargo_capacity: tgv_laposte_cargo_capacity;
+    cost_factor: return 1500;
+    colour_mapping: any_cc_colour;
+    create_effect: tgv_laposte_create_effect;
+    purchase_speed: return 270;
+    purchase_power: return 9245;
+    additional_text: tgv_laposte_additional_text;
+  }
+}
+
+long_name_template(tgv_laposte, STR_LONGNAME_TGV_LAPOSTE)
+allow_acdcemu(tgv_laposte)
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_part2_cargo_capacity,
+[  STORE_TEMP(8, 0),  // т
+   STORE_TEMP(114, 1),  // м³
+   STORE_TEMP(38, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(11, 4)]) // шаблон
+{ box_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tgv_laposte_part2_loading_speed,
+  STORE_TEMP(7, 2))
+{ all_wagons_box_loading_speed; }
+
+item (FEAT_TRAINS, tgv_laposte_part2, 130) {
+  property {
+    vehicle_no_dates(1978, 1986, 30, 10, 8, 0)
+    vehicle_acdcemu_c(0, 8, 15)
+    cargo_allow_refit: [cargo_all_maillist()];    
+  }
+  graphics {
+    default: tgv_laposte_sprites;
+    create_effect: tgv_laposte_create_effect;
+    cargo_capacity: tgv_laposte_part2_cargo_capacity;
+    loading_speed: tgv_laposte_part2_loading_speed;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
