@@ -1,0 +1,299 @@
+﻿ // ra2                
+
+#define IMAGEFILE  "src/dmu/ra2_h.png"
+purchase_sprites(ra2_h_v1, 0, 0)
+purchase_sprites(ra2_h_v2, 100, 0)
+MU_head_middle_sprites(13, ra2_h_v1_mu, 32, 40)
+MU_head_middle_sprites(13, ra2_h_v2_mu, 32, 308)
+MU_head_middle_sprites(13, ra2_h_v3_mu, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/dmu/ra2_c.png"
+purchase_sprites(ra2_c_v1, 0, 0)
+purchase_sprites(ra2_c_v2, 100, 0)
+MU_car_sprites(13, ra2_c_v1_mu, 32, 40)
+MU_car_sprites(13, ra2_c_v2_mu, 32, 308)
+MU_car_sprites(13, ra2_c_v3_mu, 32, 576)
+#undef IMAGEFILE
+purchase_sprites_select(ra2_h, 2012)
+purchase_sprites_select(ra2_c, 2012)
+
+MU_head_middle_direction_template(ra2_h_v1, ra2_h)
+MU_head_middle_direction_template(ra2_h_v2, ra2_h)
+MU_head_middle_direction_template(ra2_h_v3, ra2_h)
+
+switch (FEAT_TRAINS, SELF, ra2_h_sprites_left2,
+  build_year >= 2012)
+{
+  1: ra2_h_v2_sprites_left;
+     ra2_h_v1_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, ra2_h_sprites_left,
+  cargo_subtype)
+{
+  0: ra2_h_sprites_left2;
+  LV_RZD_PID: ra2_h_v2_sprites_left;
+  LV_LG:      ra2_h_v3_sprites_left;
+  align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ra2_h_sprites_right2,
+  build_year >= 2012)
+{
+  1: ra2_h_v2_sprites_right;
+     ra2_h_v1_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ra2_h_sprites_right,
+  cargo_subtype)
+{
+  0: ra2_h_sprites_right2;
+  LV_RZD_PID: ra2_h_v2_sprites_right;
+  LV_LG:      ra2_h_v3_sprites_right;
+  align_13_sprites;
+}
+
+engine_direction_template2m(ra2_h, ra2_c, )
+long_vehicle(ra2_h)
+
+MU_car_direction_template(ra2_c_v1)
+MU_car_direction_template(ra2_c_v2)
+MU_car_direction_template(ra2_c_v3)
+
+switch (FEAT_TRAINS, SELF, ra2_c_sprites_start2,
+  build_year >= 2012)
+{
+  1: ra2_c_v2_sprites_start;
+     ra2_c_v1_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ra2_c_sprites_start,
+  cargo_subtype)
+{
+  0: ra2_c_sprites_start2;
+  LV_RZD_PID: ra2_c_v2_sprites_start;
+  LV_LG:      ra2_c_v3_sprites_start;
+  align_13_sprites;
+}
+
+long_vehicle_RND(ra2_c, ra2_c_v1_sprites_start)
+
+switch (FEAT_TRAINS, PARENT, ra2_can_attach_wagon_length,
+  count_veh_id(ra2_h) > 3)
+{
+  0: CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, ra2_c_can_attach_wagon_h,
+  count_veh_id(ra2_h) % 2)
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ra2_c_can_attach_wagon2,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  ra2_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_4D);
+         return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, ra2_c_can_attach_wagon,
+[
+  set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+  ra2_c: ra2_c_can_attach_wagon2;
+  ra2_h: ra2_c_can_attach_wagon_h;
+         return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, ra2_can_attach_wagon,
+  vehicle_type_id)
+{
+  ra2_h: ra2_can_attach_wagon_length;
+  ra2_c: ra2_c_can_attach_wagon;
+         return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, ra2_h_start_stop,
+  count_veh_id(ra2_h) % 2)
+{
+  0: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+engine_diesel_1r_effect(ra2_h_create_effect_sprites, -2, 5, 12)
+
+switch (FEAT_TRAINS, SELF, ra2_h_create_effect1,
+  (LOAD_TEMP(0) - count_veh_id(ra2_h)) % 2)
+{
+  0: ra2_h_create_effect_sprites_left;
+     ra2_h_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ra2_h_create_effect0,
+  STORE_TEMP(count_veh_id(ra2_h), 0))
+{
+  ra2_h_create_effect1;
+}
+
+engine_effects_MU(ra2_h, _create_effect0, ra2_h)
+engine_capacity_MU(ra2_h, 68, ra2_h)
+engine_capacity_MU(ra2_c, 86, ra2_h)
+engine_power_MU_change_build_after(ra2_h, 343,
+                                          381, 2008, ra2_h)
+
+RC_head_check_new(ra2_h, ra2_h)
+switch (FEAT_TRAINS, SELF, ra2_h_b2008_running_cost_factor,
+[  STORE_TEMP(46, 0),   // Моторы
+   STORE_TEMP(06, 1),   // Бригада
+   STORE_TEMP(16, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(11, 4),   // ТО
+   STORE_TEMP(1, 5),    // Сертификация
+
+   STORE_TEMP(100, 6),  // Скорость
+   STORE_TEMP(45, 7),   // Тара
+   STORE_TEMP(49, 8)])  // Максимальная масса
+{ ra2_h_check_running_cost_factor; } // 81
+switch (FEAT_TRAINS, SELF, ra2_h_a2008_running_cost_factor,
+[  STORE_TEMP(52, 0),   // Моторы            
+   STORE_TEMP(07, 1),   // Бригада           
+   STORE_TEMP(18, 2),   // Износ             
+   STORE_TEMP(0, 3),    // Сопровождение     
+   STORE_TEMP(13, 4),   // ТО                
+   STORE_TEMP(1, 5),    // Сертификация      
+                                             
+   STORE_TEMP(100, 6),  // Скорость          
+   STORE_TEMP(47, 7),   // Тара              
+   STORE_TEMP(51, 8)])  // Максимальная масса
+{ ra2_h_check_running_cost_factor; } // 91
+RC_build_year_template(ra2_h, 2008)
+
+RC_head_check_new(ra2_c, ra2_h)
+switch (FEAT_TRAINS, SELF, ra2_c_b2008_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы            
+   STORE_TEMP(2, 1),    // Бригада           
+   STORE_TEMP(18, 2),   // Износ             
+   STORE_TEMP(0, 3),    // Сопровождение     
+   STORE_TEMP(3, 4),    // ТО                
+   STORE_TEMP(1, 5),    // Сертификация      
+                                             
+   STORE_TEMP(100, 6),  // Скорость          
+   STORE_TEMP(37, 7),   // Тара              
+   STORE_TEMP(53, 8)])  // Максимальная масса
+{ ra2_c_check_running_cost_factor; } // 23
+switch (FEAT_TRAINS, SELF, ra2_c_a2008_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы            
+   STORE_TEMP(2, 1),    // Бригада           
+   STORE_TEMP(20, 2),   // Износ             
+   STORE_TEMP(0, 3),    // Сопровождение     
+   STORE_TEMP(4, 4),    // ТО                
+   STORE_TEMP(1, 5),    // Сертификация      
+                                             
+   STORE_TEMP(100, 6),  // Скорость          
+   STORE_TEMP(37, 7),   // Тара              
+   STORE_TEMP(53, 8)])  // Максимальная масса
+{ ra2_c_check_running_cost_factor; } // 26
+RC_build_year_template(ra2_c, 2008)
+
+  livery_template(ra2_b2012, FACTORY, LV_RZD_PID, LV_LG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+  livery_template(ra2_a2012, RZD_PID, LV_LG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_build_year(ra2, 2012)
+
+engine_speed(ra2, 100)
+engine_cost_change_build_after(ra2_h, 10, 11, 2008)
+engine_TE_change_build_after(ra2_h, get_tec_int(55.0, 45), 
+                                    get_tec_int(61.0, 47), 2008)
+
+hint_MU_with_subtype(ra2_h_b2008,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC_WITH_SUBTYPE, STR_PURCHASE_HINT_750_05,
+     STR_SECTIONS_DMU_2_4_M2,
+     2005, 2015, 
+     fact_mytishchi())
+hint_MU_with_subtype(ra2_h_a2008,
+     STR_PURCHASE_HINT_LOADING_SPEED_3TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC_WITH_SUBTYPE, STR_PURCHASE_HINT_750_05_20,
+     STR_SECTIONS_DMU_2_4_M2,
+     2005, 2015, 
+     fact_mytishchi())
+hint_change_after(ra2_h, 2008)
+hint_MU_with_subtype(ra2_c_b2008,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, STR_PURCHASE_HINT_750_05,
+     STR_SECTIONS_DMU_2_4_M2,
+     2005, 2015, 
+     fact_mytishchi())
+hint_MU_with_subtype(ra2_c_a2008,
+     STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, STR_PURCHASE_HINT_750_05_20,
+     STR_SECTIONS_DMU_2_4_M2,
+     2005, 2015, 
+     fact_mytishchi())
+hint_change_after(ra2_c, 2008)
+
+item (FEAT_TRAINS, ra2_h, 643) {
+  property {
+    name: string(STR_NAME_RA2);
+    vehicle_dates(2005, 2015, 25, 10, 8, 10)
+    vehicle_dmu(343, 45, 55, 68, 24)
+  }
+  graphics {
+    default: ra2_h_sprites;
+    purchase: ra2_h_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ra2_h_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    can_attach_wagon: ra2_can_attach_wagon;
+    start_stop: ra2_h_start_stop;
+    create_effect: ra2_h_create_effect;
+    speed: ra2_speed;
+    purchase_speed: return 100;
+    power: ra2_h_power;
+    cargo_capacity: ra2_h_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: ra2_h_additional_text;
+    cost_factor: ra2_h_cost_factor;
+    tractive_effort_coefficient: ra2_h_tractive_effort_coefficient;
+    cargo_subtype_text: ra2_cargo_subtype_text;
+  }
+}
+
+item (FEAT_TRAINS, ra2_c, 644) {
+  property {
+    name: string(STR_NAME_RA2);
+    vehicle_dates(2005, 2015, 25, 10, 8, 3)
+    vehicle_dmu_c(37, 86, 24*2)
+  }
+  graphics {
+    default: ra2_c_sprites;
+    purchase: ra2_c_purchase_sprites;
+    cargo_age_period: return 60;
+    running_cost_factor: ra2_c_running_cost_factor;
+    articulated_part: articulated_part_dummy5;
+    speed: ra2_speed;
+    purchase_speed: return 100;
+    power: return 0;
+    can_attach_wagon: ra2_can_attach_wagon;
+    start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    cargo_capacity: ra2_c_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    additional_text: ra2_c_additional_text;
+    cargo_subtype_text: ra2_cargo_subtype_text;
+  }
+}
+
+long_name_template(ra2_h, STR_LONGNAME_RA2_H)
+long_name_template(ra2_c, STR_LONGNAME_RA2_C)
+allow_dmu(ra2_h)
+allow_dmu(ra2_c)
