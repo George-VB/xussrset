@@ -1,21 +1,64 @@
 ﻿ // tgv_pse
 
 #define IMAGEFILE  "src/addon/emu/tgv-pse_01.png"
-purchase_sprites(tgv_pse, 0, 0)
-MU_head_2d_sprites(12, tgv_pse_h, 32, 40)
+purchase_sprites(tgv_pse_v1, 0, 0)
+purchase_sprites(tgv_pse_v2, 101, 0)
+MU_head_2d_sprites(12, tgv_pse_h_v1, 32, 40)
+MU_head_2d_sprites(12, tgv_pse_h_v2, 32, 576)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-pse_02.png"
-MU_car_sprites(12, tgv_pse_02, 32, 40)
+MU_car_sprites(12, tgv_pse_02_v1, 32, 40)
+MU_car_sprites(12, tgv_pse_02_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-pse_03.png"
-MU_car_sprites(11, tgv_pse_03, 32, 40)
+MU_car_sprites(11, tgv_pse_03_v1, 32, 40)
+MU_car_sprites(11, tgv_pse_03_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-pse_05.png"
-MU_car_nd_sprites(11, tgv_pse_05, 32, 40)
+MU_car_nd_sprites(11, tgv_pse_05_v1, 32, 40)
+MU_car_nd_sprites(11, tgv_pse_05_v2, 32, 308)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-pse_06.png"
+MU_car_sprites(11, tgv_pse_06_v1, 32, 40)
+MU_car_sprites(11, tgv_pse_06_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-pse_09.png"
-MU_car_sprites(12, tgv_pse_09, 32, 40)
+MU_car_sprites(12, tgv_pse_09_v1, 32, 40)
+MU_car_sprites(12, tgv_pse_09_v2, 32, 308)
 #undef IMAGEFILE
+purchase_sprites_select(tgv_pse, 1985)
+
+#define tgv_pse_graphics_template(name, suffix)               \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_left,       \
+[ set_offset_to(-position_in_articulated_veh),                \
+  prev_vehicle_cargo_subtype() + 2 * (build_year >= 1985) ])  \
+{ 0: name##_v1##suffix##_sprites_left;                        \
+  1: name##_v2##suffix##_sprites_left;                        \
+  2: name##_v2##suffix##_sprites_left;                        \
+  3: name##_v1##suffix##_sprites_left;                        \
+  align_12_sprites; }                                         \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,      \
+[ set_offset_to(-position_in_articulated_veh),                \
+  prev_vehicle_cargo_subtype() + 2 * (build_year >= 1985) ])  \
+{ 0: name##_v1##suffix##_sprites_right;                       \
+  1: name##_v2##suffix##_sprites_right;                       \
+  2: name##_v2##suffix##_sprites_right;                       \
+  3: name##_v1##suffix##_sprites_right;                       \
+  align_12_sprites; }                                         \
+
+tgv_pse_graphics_template(tgv_pse_h, )
+tgv_pse_graphics_template(tgv_pse_h, _notpowered)
+tgv_pse_graphics_template(tgv_pse_02, )
+tgv_pse_graphics_template(tgv_pse_02, _notpowered)
+tgv_pse_graphics_template(tgv_pse_03, )
+tgv_pse_graphics_template(tgv_pse_03, _notpowered)
+tgv_pse_graphics_template(tgv_pse_05, )
+tgv_pse_graphics_template(tgv_pse_06, )
+tgv_pse_graphics_template(tgv_pse_06, _notpowered)
+tgv_pse_graphics_template(tgv_pse_09, )
+tgv_pse_graphics_template(tgv_pse_09, _notpowered)
+
+// choose graphics block 
 
 switch (FEAT_TRAINS, SELF, tgv_pse_h_sprites_left_check,
   position_in_consist == 0)
@@ -49,17 +92,17 @@ switch (FEAT_TRAINS, SELF, tgv_pse_sprites_start,
    4: tgv_pse_03_sprites_left;
    6: tgv_pse_03_sprites_left;
    8: tgv_pse_05_sprites_left;
-  10: tgv_pse_03_sprites_right;
-  12: tgv_pse_03_sprites_right;
-  14: tgv_pse_03_sprites_right;
+  10: tgv_pse_06_sprites_right;
+  12: tgv_pse_06_sprites_right;
+  14: tgv_pse_06_sprites_right;
   16: tgv_pse_09_sprites_right;
   18: tgv_pse_h_sprites_right_check;
 
  100: tgv_pse_h_sprites_start;
  102: tgv_pse_09_sprites_left;
- 104: tgv_pse_03_sprites_left;
- 106: tgv_pse_03_sprites_left;
- 108: tgv_pse_03_sprites_left;
+ 104: tgv_pse_06_sprites_left;
+ 106: tgv_pse_06_sprites_left;
+ 108: tgv_pse_06_sprites_left;
  110: tgv_pse_05_sprites_right;
  112: tgv_pse_03_sprites_right;
  114: tgv_pse_03_sprites_right;
@@ -71,17 +114,17 @@ switch (FEAT_TRAINS, SELF, tgv_pse_sprites_start,
  204: tgv_pse_03_notpowered_sprites_left; 
  206: tgv_pse_03_notpowered_sprites_left; 
  208: tgv_pse_05_sprites_left; 
- 210: tgv_pse_03_notpowered_sprites_right; 
- 212: tgv_pse_03_notpowered_sprites_right; 
- 214: tgv_pse_03_notpowered_sprites_right; 
+ 210: tgv_pse_06_notpowered_sprites_right; 
+ 212: tgv_pse_06_notpowered_sprites_right; 
+ 214: tgv_pse_06_notpowered_sprites_right; 
  216: tgv_pse_09_notpowered_sprites_right;
  218: tgv_pse_h_sprites_right_check;
 
  300: tgv_pse_h_sprites_start;
- 302: tgv_pse_09_notpowered_sprites_right; 
- 304: tgv_pse_03_notpowered_sprites_right; 
- 306: tgv_pse_03_notpowered_sprites_right; 
- 308: tgv_pse_03_notpowered_sprites_right; 
+ 302: tgv_pse_09_notpowered_sprites_left; 
+ 304: tgv_pse_06_notpowered_sprites_left; 
+ 306: tgv_pse_06_notpowered_sprites_left; 
+ 308: tgv_pse_06_notpowered_sprites_left; 
  310: tgv_pse_05_sprites_right; 
  312: tgv_pse_03_notpowered_sprites_right;
  314: tgv_pse_03_notpowered_sprites_right;
@@ -152,6 +195,12 @@ switch (FEAT_TRAINS, SELF, tgv_pse_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
+    livery_template1(tgv_pse_b1985_alt, TTD_B9)
+  livery_template_alt(tgv_pse_b1985, TTD_0C)
+    livery_template1(tgv_pse_a1985_alt, TTD_0C)
+  livery_template_alt(tgv_pse_a1985, TTD_B9)
+livery_template_build_year(tgv_pse, 1985)
+
 RC_head_check_new(tgv_pse, tgv_pse)
 switch (FEAT_TRAINS, SELF, tgv_pse_running_cost_factor,
 [  STORE_TEMP(1561, 0),      // Моторы
@@ -204,6 +253,7 @@ item (FEAT_TRAINS, tgv_pse, 131) {
     purchase_speed: return 270;
     purchase_power: return 9245;
     additional_text: tgv_pse_additional_text;
+    cargo_subtype_text: tgv_pse_cargo_subtype_text;
   }
 }
 
