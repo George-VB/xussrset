@@ -1,0 +1,153 @@
+// paiment for cleaning after cargo
+switch (FEAT_TRAINS, SELF, tanker_refit_cost,
+  (5 * (((cargo_type_in_veh == PETR) || (cargo_type_in_veh == FUEL)) && 
+       (getbits(extra_callback_info1, 0, 8) != PETR) && (getbits(extra_callback_info1, 0, 8) != FUEL))) +
+  (4 * (((cargo_type_in_veh == RFPR) || (cargo_type_in_veh == OIL_)) &&
+       (getbits(extra_callback_info1, 0, 8) != RFPR) && (getbits(extra_callback_info1, 0, 8) != OIL_))) +
+  (1 * (((cargo_type_in_veh == WATR) || (cargo_type_in_veh == COLA) || (cargo_type_in_veh == EOIL) || (cargo_type_in_veh == MILK) || (cargo_type_in_veh == BEER) || (cargo_type_in_veh == FZDR) || (cargo_type_in_veh == FOOD)) &&
+       (getbits(extra_callback_info1, 0, 8) != WATR) && (getbits(extra_callback_info1, 0, 8) != COLA) && (getbits(extra_callback_info1, 0, 8) != EOIL) && (getbits(extra_callback_info1, 0, 8) != MILK) && (getbits(extra_callback_info1, 0, 8) != BEER) && (getbits(extra_callback_info1, 0, 8) != FZDR) && (getbits(extra_callback_info1, 0, 8) != FOOD))) +
+  (2 * (((cargo_type_in_veh == RUBR) || (cargo_type_in_veh == DYES) || (cargo_type_in_veh == PLAS) || (cargo_type_in_veh == PLST)) &&
+       (getbits(extra_callback_info1, 0, 8) != RUBR) && (getbits(extra_callback_info1, 0, 8) != DYES) && (getbits(extra_callback_info1, 0, 8) != PLAS) && (getbits(extra_callback_info1, 0, 8) != PLST))) )
+{
+  1..5: return;
+        return 0 | CB_RESULT_AUTOREFIT;
+}
+
+// paiment for cleaning for cargo
+switch (FEAT_TRAINS, SELF, boxcar_refit_cost,
+  ((cargo_type_in_veh != CERE) && (cargo_type_in_veh != GRAI) &&
+   (cargo_type_in_veh != WHEA) && (cargo_type_in_veh != MAIZ) &&
+   (cargo_type_in_veh != OLSD) && (cargo_type_in_veh != TOFF) &&
+   (cargo_type_in_veh != CTCD)) &&
+  ((getbits(extra_callback_info1, 0, 8) == CERE) || (getbits(extra_callback_info1, 0, 8) == GRAI) ||
+   (getbits(extra_callback_info1, 0, 8) == WHEA) || (getbits(extra_callback_info1, 0, 8) == MAIZ) ||
+   (getbits(extra_callback_info1, 0, 8) == OLSD) || (getbits(extra_callback_info1, 0, 8) == TOFF) ||
+   (getbits(extra_callback_info1, 0, 8) == CTCD)) )
+{
+  1: return 1;
+     return 0 | CB_RESULT_AUTOREFIT;
+}
+
+// WOOD only
+switch (FEAT_TRAINS, SELF, wood_refit_cost,
+  ((cargo_type_in_veh != WOOD) && (cargo_type_in_veh != WDPR) && (cargo_type_in_veh != BATT)) ||
+  ((getbits(extra_callback_info1, 0, 8) != WOOD) && (getbits(extra_callback_info1, 0, 8) != WDPR) && (getbits(extra_callback_info1, 0, 8) != BATT)))
+{
+  1: return 1;
+     return 0 | CB_RESULT_AUTOREFIT;
+}
+
+// allow autorefit for containers
+
+switch (FEAT_TRAINS, SELF, container20_a1972_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+gen_container_cargo_check(return (0 | CB_RESULT_AUTOREFIT))
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, container20_a1988_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+ref_container_cargo_check(return (0 | CB_RESULT_AUTOREFIT))
+  container20_a1972_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, container20_a1995_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+tank_container_cargo_check(return (0 | CB_RESULT_AUTOREFIT))
+  container20_a1988_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, container_20_refit_cost,
+  (date_of_last_service >= date(1972,1,1)) +
+  (date_of_last_service >= date(1988,1,1)) +
+  (date_of_last_service >= date(1995,1,1)))
+{
+  1: container20_a1972_refit_cost;
+  2: container20_a1988_refit_cost;
+  3: container20_a1995_refit_cost;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, container40_a1972_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+gen_container_cargo_check(return (0 | CB_RESULT_AUTOREFIT))
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, container40_a1988_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+ref_container_cargo_check(return (0 | CB_RESULT_AUTOREFIT))
+  container40_a1972_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, container40_a1995_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+tank_container_cargo_check(return 0)
+  container40_a1988_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, container_40_refit_cost,
+  (date_of_last_service >= date(1972,1,1)) +
+  (date_of_last_service >= date(1988,1,1)) +
+  (date_of_last_service >= date(1995,1,1)))
+{
+  1: container40_a1972_refit_cost;
+  2: container40_a1988_refit_cost;
+  3: container40_a1995_refit_cost;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, container_20and40_refit_cost, 0)
+{ container_20_refit_cost; }
+
+switch (FEAT_TRAINS, SELF, container_2_20or40_refit_cost, 0)
+{
+  container_20_refit_cost;
+}
+
+// Защита от выбора груза, контейнеры для которого ещё не появились
+
+switch (FEAT_TRAINS, SELF, container_a1972_bitmask_vehicle_info,
+  cargo_type_in_veh)
+{
+gen_container_cargo_check(return 0)
+  return bitmask(FLAG_INADMISSIBLE_CARGO);
+}
+
+switch (FEAT_TRAINS, SELF, container_a1988_bitmask_vehicle_info,
+  cargo_type_in_veh)
+{
+ref_container_cargo_check(return 0)
+  container_a1972_bitmask_vehicle_info;
+}
+
+switch (FEAT_TRAINS, SELF, container_a1995_bitmask_vehicle_info,
+  cargo_type_in_veh)
+{
+tank_container_cargo_check(return 0)
+  container_a1988_bitmask_vehicle_info;
+}
+
+switch (FEAT_TRAINS, SELF, container_bitmask_vehicle_info2,
+  (current_year >= 1972) +
+  (current_year >= 1988) +
+  (current_year >= 1995))
+{
+  0: return bitmask(FLAG_INADMISSIBLE_CARGO);
+  1: container_a1972_bitmask_vehicle_info;
+  2: container_a1988_bitmask_vehicle_info;
+     container_a1995_bitmask_vehicle_info;
+}
+
+switch (FEAT_TRAINS, SELF, container_bitmask_vehicle_info,
+  cargo_capacity)
+{
+  0: return bitmask(FLAG_INADMISSIBLE_CARGO);
+     container_bitmask_vehicle_info2;
+}

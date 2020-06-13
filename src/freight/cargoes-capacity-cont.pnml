@@ -1,0 +1,93 @@
+switch (FEAT_TRAINS, SELF, gen_container_cargo_capacity,
+[  STORE_TEMP((LOAD_TEMP(5) * 30) + (LOAD_TEMP(6) * 30), 0),
+   STORE_TEMP((LOAD_TEMP(5) * 33) + (LOAD_TEMP(6) * 68), 1) ])
+{  box_cargo_capacity;  }
+
+switch (FEAT_TRAINS, SELF, ref_container_cargo_capacity,
+[  STORE_TEMP((LOAD_TEMP(5) * 22) + (LOAD_TEMP(6) * 28), 0),
+   STORE_TEMP((LOAD_TEMP(5) * 28) + (LOAD_TEMP(6) * 59), 1) ])
+{  ref_cargo_capacity;  }
+
+switch (FEAT_TRAINS, SELF, tank_container_cargo_capacity,
+[  STORE_TEMP((max(LOAD_TEMP(5), LOAD_TEMP(7))) * 32, 0),
+   STORE_TEMP((max(LOAD_TEMP(5), LOAD_TEMP(7))) * 26, 1) ])
+{  tank_cargo_capacity;  }
+
+switch (FEAT_TRAINS, SELF, container_a1972_cargo_capacity,
+  cargo_type_in_veh)
+{
+gen_container_cargo_check(gen_container_cargo_capacity)
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, container_a1988_cargo_capacity,
+  cargo_type_in_veh)
+{
+ref_container_cargo_check(ref_container_cargo_capacity)
+  container_a1972_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, container_a1995_cargo_capacity,
+  cargo_type_in_veh)
+{
+tank_container_cargo_check(tank_container_cargo_capacity)
+  container_a1988_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, container_cargo_capacity,
+  (date_of_last_service >= date(1972,1,1)) +
+  (date_of_last_service >= date(1988,1,1)) +
+  (date_of_last_service >= date(1995,1,1)))
+{
+  1: container_a1972_cargo_capacity;
+  2: container_a1988_cargo_capacity;
+  3: container_a1995_cargo_capacity;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, container40_cargo_capacity,
+  (date_of_last_service >= date(1972,1,1)) +
+  (date_of_last_service >= date(1988,1,1)))
+{
+  1: container_a1972_cargo_capacity;
+  2: container_a1988_cargo_capacity;
+     return 0;
+}
+
+switch (FEAT_TRAINS, SELF, container_40_cargo_capacity, // only 40
+[  STORE_TEMP(0, 5),
+   STORE_TEMP(1, 6),
+   STORE_TEMP(0, 7)])
+{  container40_cargo_capacity;  }
+
+switch (FEAT_TRAINS, SELF, container_2_20_cargo_capacity,
+[  STORE_TEMP(2, 5),
+   STORE_TEMP(0, 6)])
+{  container_cargo_capacity;  }
+
+/*
+switch (FEAT_TRAINS, SELF, container_2040_cargo_capacity,
+[  STORE_TEMP(1, 5),
+   STORE_TEMP(1, 6)])
+{  container_cargo_capacity;  }
+
+   TODO
+   Отложим правильный код до лучших времён. пока будем всё считать по худшему
+*/
+switch (FEAT_TRAINS, SELF, container_20and40_cargo_capacity,
+[  STORE_TEMP(2, 7),
+   ((random_bits >> 1) & 0x01) ] )
+{
+//  0: container_2040_cargo_capacity;
+  container_2_20_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, container_2_20or40_cargo_capacity,
+[  STORE_TEMP(0, 5),
+   STORE_TEMP(1, 6),
+   STORE_TEMP(2, 7),
+   ((random_bits >> 1) & 0x01) ] )
+{
+// 1: container_2_20_cargo_capacity;
+   container_cargo_capacity;
+}
