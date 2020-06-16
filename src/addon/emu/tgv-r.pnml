@@ -1,0 +1,245 @@
+﻿ // tgv_r
+
+#define IMAGEFILE  "src/addon/emu/tgv-r_01.png"
+purchase_sprites(tgv_r, 0, 0)
+MU_head_2d_sprites(12, tgv_r_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-r_02.png"
+MU_car_sprites(12, tgv_r_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-r_03.png"
+MU_car_sprites(11, tgv_r_03, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-r_05.png"
+MU_car_nd_sprites(11, tgv_r_05, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-r_06.png"
+MU_car_sprites(11, tgv_r_06, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-r_09.png"
+MU_car_sprites(12, tgv_r_09, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: tgv_r_h_sprites_left;
+     tgv_r_h_notpowered_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: tgv_r_h_sprites_left_check;
+  1: tgv_r_h_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: tgv_r_h_sprites_right;
+     tgv_r_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_r_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != tgv_r) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   0: tgv_r_h_sprites_start;
+   2: tgv_r_02_sprites_left;
+   4: tgv_r_03_sprites_left;
+   6: tgv_r_03_sprites_left;
+   8: tgv_r_05_sprites_left;
+  10: tgv_r_06_sprites_right;
+  12: tgv_r_06_sprites_right;
+  14: tgv_r_06_sprites_right;
+  16: tgv_r_09_sprites_right;
+  18: tgv_r_h_sprites_right_check;
+
+ 100: tgv_r_h_sprites_start;
+ 102: tgv_r_09_sprites_left;
+ 104: tgv_r_06_sprites_left;
+ 106: tgv_r_06_sprites_left;
+ 108: tgv_r_06_sprites_left;
+ 110: tgv_r_05_sprites_right;
+ 112: tgv_r_03_sprites_right;
+ 114: tgv_r_03_sprites_right;
+ 116: tgv_r_02_sprites_right;
+ 118: tgv_r_h_sprites_right_check;
+
+ 200: tgv_r_h_sprites_start;      
+ 202: tgv_r_02_notpowered_sprites_left; 
+ 204: tgv_r_03_notpowered_sprites_left; 
+ 206: tgv_r_03_notpowered_sprites_left; 
+ 208: tgv_r_05_sprites_left; 
+ 210: tgv_r_06_notpowered_sprites_right; 
+ 212: tgv_r_06_notpowered_sprites_right; 
+ 214: tgv_r_06_notpowered_sprites_right; 
+ 216: tgv_r_09_notpowered_sprites_right;
+ 218: tgv_r_h_sprites_right_check;
+
+ 300: tgv_r_h_sprites_start;
+ 302: tgv_r_09_notpowered_sprites_left; 
+ 304: tgv_r_06_notpowered_sprites_left; 
+ 306: tgv_r_06_notpowered_sprites_left; 
+ 308: tgv_r_06_notpowered_sprites_left; 
+ 310: tgv_r_05_sprites_right; 
+ 312: tgv_r_03_notpowered_sprites_right;
+ 314: tgv_r_03_notpowered_sprites_right;
+ 316: tgv_r_02_notpowered_sprites_right;
+ 318: tgv_r_h_sprites_right_check;
+
+      align_11_sprites;
+}
+
+long_vehicle_RND(tgv_r, tgv_r_h_sprites_start)
+
+switch (FEAT_TRAINS, SELF, tgv_r_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return tgv_r_part2;
+  3: return dummy4;
+  4: return tgv_r_part3;
+  5: return dummy3;
+  6: return tgv_r_part3;
+  7: return dummy3;
+  8: return tgv_r_part3;
+  9: return dummy3;
+ 10: return tgv_r_part3;
+ 11: return dummy3;
+ 12: return tgv_r_part3;
+ 13: return dummy3;
+ 14: return tgv_r_part3;
+ 15: return dummy3;
+ 16: return tgv_r_part3;
+ 17: return dummy4;
+ 18: return tgv_r_part3;
+ 19: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_r_create_effect_01_d,
+  electric_create_effect(3))
+{
+  return 1;
+}
+
+is_ERD(tgv_r_create_effect_01, tgv_r_create_effect_01_d, return disable_create_effect())
+
+switch (FEAT_TRAINS, SELF, tgv_r_create_effect_10,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_r_create_effect0,
+  position_in_articulated_veh)
+{
+   0: tgv_r_create_effect_01;
+  18: tgv_r_create_effect_10;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, tgv_r_create_effect,
+  vehicle_type_id == tgv_r)
+{
+  1: tgv_r_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, tgv_r_can_attach_wagon,
+  vehicle_type_id == tgv_r)
+{
+  1: return string(STR_CAN_ATTACH_NO_MORE);
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(tgv_r, tgv_r)
+switch (FEAT_TRAINS, SELF, tgv_r_running_cost_factor,
+[  STORE_TEMP(1561, 0),      // Моторы
+   STORE_TEMP(219, 1),       // Бригада
+   STORE_TEMP(548, 2),       // Износ
+   STORE_TEMP(0, 3),         // Сопровождение
+   STORE_TEMP(383, 4),       // ТО
+   STORE_TEMP(27, 5),        // Сертификация
+
+   STORE_TEMP(320, 6),       // Скорость
+   STORE_TEMP(383, 7),       // Тара
+   STORE_TEMP(414, 8)])      // Максимальная масса
+{ tgv_r_check_running_cost_factor; }
+
+engine_capacity_MU(tgv_r, 257, tgv_r)
+engine_power_MU(tgv_r_DC, 5003, tgv_r)
+engine_power_MU(tgv_r_AC, 11965, tgv_r)
+engine_power_change_AC_DC(tgv_r)
+engine_speed(tgv_r, 320)
+hint_MU_comment(tgv_r,
+     STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
+     STR_SECTIONS_MU_S1of10,
+     1992, 1996, 
+     string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
+     string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5003))
+
+item (FEAT_TRAINS, tgv_r, 123) {
+  property {
+    name: string(STR_NAME_TGV_R);
+    vehicle_dates(1992, 1996, 30, 10, 8, 1500)
+    vehicle_acdcemu(11965, 383, 400.0, 257, 15*4)
+  }
+  graphics {
+    default: tgv_r_sprites;
+    purchase: tgv_r_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: tgv_r_speed;
+    running_cost_factor: tgv_r_running_cost_factor;
+    articulated_part: tgv_r_articulated_part;
+    can_attach_wagon: tgv_r_can_attach_wagon;
+    power: tgv_r_power;
+    cargo_capacity: tgv_r_cargo_capacity;
+    cost_factor: return 1500;
+    colour_mapping: any_cc_colour;
+    create_effect: tgv_r_create_effect;
+    purchase_speed: return 320;
+    purchase_power: return 11965;
+    additional_text: tgv_r_additional_text;
+  }
+}
+
+long_name_template(tgv_r, STR_LONGNAME_TGV_R)
+allow_acdcemu(tgv_r)
+
+engine_capacity_MU(tgv_r_part2, 120, tgv_r)
+
+item (FEAT_TRAINS, tgv_r_part2, 124) {
+  property {
+    vehicle_no_dates(1992, 1996, 30, 10, 8, 0)
+    vehicle_acdcemu_c(0, 120, 15*3)
+    vehicle_allow_tourists()
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: tgv_r_sprites;
+    cargo_age_period: return 370;
+    create_effect: tgv_r_create_effect;
+    cargo_capacity: tgv_r_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, tgv_r_part3, 125) {
+  property {
+    vehicle_no_dates(1992, 1996, 30, 10, 8, 0)
+    vehicle_acdcemu_empty()
+  }
+  graphics {
+    default: tgv_r_sprites;
+    create_effect: tgv_r_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
