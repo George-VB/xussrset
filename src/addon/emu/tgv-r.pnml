@@ -2,24 +2,57 @@
 
 #define IMAGEFILE  "src/addon/emu/tgv-r_01.png"
 purchase_sprites(tgv_r, 0, 0)
-MU_head_2d_sprites(12, tgv_r_h, 32, 40)
+MU_head_2d_sprites(12, tgv_r_h_v1, 32, 40)
+MU_head_2d_sprites(12, tgv_r_h_v2, 32, 576)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r_02.png"
-MU_car_sprites(12, tgv_r_02, 32, 40)
+MU_car_sprites(12, tgv_r_02_v1, 32, 40)
+MU_car_sprites(12, tgv_r_02_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r_03.png"
-MU_car_sprites(11, tgv_r_03, 32, 40)
+MU_car_sprites(11, tgv_r_03_v1, 32, 40)
+MU_car_sprites(11, tgv_r_03_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r_05.png"
-MU_car_nd_sprites(11, tgv_r_05, 32, 40)
+MU_car_nd_sprites(11, tgv_r_05_v1, 32, 40)
+MU_car_nd_sprites(11, tgv_r_05_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r_06.png"
-MU_car_sprites(11, tgv_r_06, 32, 40)
+MU_car_sprites(11, tgv_r_06_v1, 32, 40)
+MU_car_sprites(11, tgv_r_06_v2, 32, 308)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r_09.png"
-MU_car_sprites(12, tgv_r_09, 32, 40)
+MU_car_sprites(12, tgv_r_09_v1, 32, 40)
+MU_car_sprites(12, tgv_r_09_v2, 32, 308)
 #undef IMAGEFILE
+#define tgv_r_graphics_template(name, suffix)                 \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_left,       \
+[ set_offset_to(-position_in_articulated_veh),                \
+  prev_vehicle_cargo_subtype()])                              \
+{ 0: name##_v1##suffix##_sprites_left;                        \
+  LV_SNCF_ATLANTIQUE: name##_v1##suffix##_sprites_left;       \
+  LV_SNCF_CARMILLON: name##_v2##suffix##_sprites_left;        \
+     align_12_sprites; }                                      \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,      \
+[ set_offset_to(-position_in_articulated_veh),                \
+  prev_vehicle_cargo_subtype()])                              \
+{ 0: name##_v1##suffix##_sprites_right;                       \
+  LV_SNCF_ATLANTIQUE: name##_v1##suffix##_sprites_right;      \
+  LV_SNCF_CARMILLON: name##_v2##suffix##_sprites_right;       \
+     align_12_sprites; }                                      \
 
+tgv_r_graphics_template(tgv_r_h, )
+tgv_r_graphics_template(tgv_r_h, _notpowered)
+tgv_r_graphics_template(tgv_r_02, )
+tgv_r_graphics_template(tgv_r_02, _notpowered)
+tgv_r_graphics_template(tgv_r_03, )
+tgv_r_graphics_template(tgv_r_03, _notpowered)
+tgv_r_graphics_template(tgv_r_05, )
+tgv_r_graphics_template(tgv_r_06, )
+tgv_r_graphics_template(tgv_r_06, _notpowered)
+tgv_r_graphics_template(tgv_r_09, )
+tgv_r_graphics_template(tgv_r_09, _notpowered)
+        
 switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_left_check,
   position_in_consist == 0)
 {
@@ -171,6 +204,8 @@ switch (FEAT_TRAINS, SELF, tgv_r_running_cost_factor,
    STORE_TEMP(414, 8)])      // Максимальная масса
 { tgv_r_check_running_cost_factor; }
 
+livery_template(tgv_r, SNCF_ATLANTIQUE, LV_SNCF_ATLANTIQUE, LV_SNCF_CARMILLON, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
 engine_capacity_MU(tgv_r, 257, tgv_r)
 engine_power_MU(tgv_r_DC, 5003, tgv_r)
 engine_power_MU(tgv_r_AC, 11965, tgv_r)
@@ -207,6 +242,7 @@ item (FEAT_TRAINS, tgv_r, 134) {
     purchase_speed: return 320;
     purchase_power: return 11965;
     additional_text: tgv_r_additional_text;
+    cargo_subtype_text: tgv_r_cargo_subtype_text;
   }
 }
 
