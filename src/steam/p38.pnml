@@ -1,0 +1,63 @@
+ // p38
+
+#define IMAGEFILE  "src/steam/p38.png"
+purchase_sprites(p38, 0, 0)
+steam_sprites(13, p38_engine, 32,  40)
+tender_sprites(9, p38_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(p38, _sprites_start)
+long_vehicle(p38)
+
+switch (FEAT_TRAINS, SELF, p38_running_cost_factor,
+[  STORE_TEMP(894, 0),        // Моторы
+   STORE_TEMP(126, 1),        // Бригада
+   STORE_TEMP(314, 2),        // Износ
+   STORE_TEMP(0, 3),          // Сопровождение
+   STORE_TEMP(220, 4),        // ТО
+   STORE_TEMP(16, 5),         // Сертификация
+
+   STORE_TEMP(85, 6),         // Скорость
+   STORE_TEMP(383, 7),        // Тара
+   STORE_TEMP(383, 8)])       // Максимальная масса
+{ all_running_cost_factor; }  // 1569
+
+engine_tender(p38)
+engine_tender_length(p38, 8, 5, 8, 1)
+engine_steam_1_effect(p38_create_effect, -2, 13)
+engine_speed(p38, 85)
+engine_penalise_speed0(p38)
+hint_engine(p38,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1954, 1955,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, p38, 654) {
+  property {
+    name: string(STR_NAME_P38);
+    vehicle_dates(1954, 1955, 20, 10, 8, 62)
+    vehicle_cargo()
+    vehicle_steam(4840, 215+168, 377.0)
+  }
+  graphics {
+    default: p38_sprites;
+    purchase: p38_purchase_sprites;
+    articulated_part: p38_articulated_part;
+    length: p38_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: p38_speed;
+    bitmask_vehicle_info: p38_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: p38_create_effect;
+    running_cost_factor: p38_running_cost_factor;
+    colour_mapping: any_cc_colour;
+    purchase_speed: return 85;
+    additional_text: p38_additional_text;
+  }
+}
+
+long_name_template(p38, STR_LONGNAME_P38)
+models_default_cargo_template(p38)
+allow_steamer(p38)
