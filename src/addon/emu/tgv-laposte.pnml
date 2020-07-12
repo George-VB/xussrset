@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/addon/emu/tgv-laposte_01.png"
 purchase_sprites(tgv_laposte, 0, 0)
-MU_head_2d_sprites(12, tgv_laposte_h, 32, 40)
+MU_head_2d_middle_sp_sprites(12, tgv_laposte_h, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-laposte_02.png"
 MU_car_sprites(12, tgv_laposte_02, 32, 40)
@@ -18,14 +18,14 @@ switch (FEAT_TRAINS, SELF, tgv_laposte_h_sprites_start,
   position_in_consist == 0)
 {
   1: tgv_laposte_h_sprites_left;
-     tgv_laposte_h_notpowered_sprites_left;
+     tgv_laposte_h_middle_sprites_left;
 }
 
 switch (FEAT_TRAINS, SELF, tgv_laposte_h_sprites_right_check,
   position_in_consist_from_end == 1) 
 {
   1: tgv_laposte_h_sprites_right;
-     tgv_laposte_h_notpowered_sprites_right;
+     tgv_laposte_h_middle_sprites_right;
 }
 
 switch (FEAT_TRAINS, SELF, tgv_laposte_sprites_start,
@@ -112,10 +112,17 @@ switch (FEAT_TRAINS, PARENT, tgv_laposte_create_effect,
      return disable_create_effect();
 }
 
+switch (FEAT_TRAINS, PARENT, tgv_laposte_can_attach_wagon1,
+  count_veh_id(tgv_laposte) < 2)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
 switch (FEAT_TRAINS, SELF, tgv_laposte_can_attach_wagon,
   vehicle_type_id == tgv_laposte)
 {
-  1: return string(STR_CAN_ATTACH_NO_MORE);
+  1: tgv_laposte_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
@@ -143,7 +150,7 @@ hint_MU_comment(tgv_laposte,
      STR_PURCHASE_HINT_LOADING_SPEED_2TIC,
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
-     STR_SECTIONS_MU_S1of10,
+     STR_SECTIONS_MU_S1_2of10,
      1978, 1986, 
      string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
      string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 4214))

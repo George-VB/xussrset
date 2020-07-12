@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/addon/emu/tgv-a_01.png"
 purchase_sprites(tgv_a, 0, 0)
-MU_head_2d_sprites(12, tgv_a_h, 32, 40)
+MU_head_2d_middle_sp_sprites(12, tgv_a_h, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-a_02.png"
 MU_car_sprites(12, tgv_a_02, 32, 40)
@@ -24,7 +24,7 @@ switch (FEAT_TRAINS, SELF, tgv_a_h_sprites_left_check,
   position_in_consist == 0)
 {
   1: tgv_a_h_sprites_left;
-     tgv_a_h_notpowered_sprites_left;
+     tgv_a_h_middle_sprites_left;
 }
 
 random_switch (FEAT_TRAINS, SELF, tgv_a_h_sprites_start,
@@ -38,7 +38,7 @@ switch (FEAT_TRAINS, SELF, tgv_a_h_sprites_right_check,
   position_in_consist_from_end == 1) 
 {
   1: tgv_a_h_sprites_right;
-     tgv_a_h_notpowered_sprites_right;
+     tgv_a_h_middle_sprites_right;
 }
 
 switch (FEAT_TRAINS, SELF, tgv_a_sprites_start,
@@ -162,11 +162,24 @@ switch (FEAT_TRAINS, PARENT, tgv_a_create_effect,
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, tgv_a_can_attach_wagon,
-  vehicle_type_id == tgv_a)
+switch (FEAT_TRAINS, PARENT, tgv_a_can_attach_wagon1,
+  count_veh_id(tgv_pse) + count_veh_id(tgv_a) + count_veh_id(tgv_r) < 2)
 {
-  1: return string(STR_CAN_ATTACH_NO_MORE);
-     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, tgv_a_can_attach_wagon,
+  (vehicle_type_id == tgv_pse) ||
+  (vehicle_type_id == tgv_a) ||
+  (vehicle_type_id == tgv_r))
+{
+  1: tgv_a_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SPECIFIED_CAR, 
+                   string(STR_PURCHASE_HINT_LIST3, 
+  			  string(STR_NAME_TGV_PSE), 
+  			  string(STR_NAME_TGV_A), 
+  			  string(STR_NAME_TGV_R)));
 }
 
 RC_head_check_new(tgv_a, tgv_a)
@@ -192,10 +205,12 @@ hint_MU_comment(tgv_a,
      STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
-     STR_SECTIONS_MU_S1of12,
+     STR_SECTIONS_MU_S1_2of12,
      1988, 1992, 
      string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
-     string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5275))
+     string(STR_PURCHASE_HINT_LIST2_COMMENT,	     
+            string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5275),
+            string(STR_PURCHASE_HINT_TGV)))
 
 item (FEAT_TRAINS, tgv_a, 126) {
   property {

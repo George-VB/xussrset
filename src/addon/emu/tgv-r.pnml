@@ -2,12 +2,12 @@
 
 #define IMAGEFILE  "src/addon/emu/tgv-r_01.png"
 purchase_sprites(tgv_r, 0, 0)
-MU_head_2d_sprites(12, tgv_r_h_v1, 32, 40)
-MU_head_2d_sprites(12, tgv_r_h_v2, 32, 576)
+MU_head_2d_middle_sp_sprites(12, tgv_r_h_v1, 32, 40)
+MU_head_2d_middle_sp_sprites(12, tgv_r_h_v2, 32, 576)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r-pba_01.png"
-MU_head_2d_sprites(12, tgv_r_h_v3, 32, 40)
-MU_head_2d_sprites(12, tgv_r_h_v4, 32, 576)
+MU_head_2d_middle_sp_sprites(12, tgv_r_h_v3, 32, 40)
+MU_head_2d_middle_sp_sprites(12, tgv_r_h_v4, 32, 576)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/tgv-r_02.png"
 MU_car_sprites(12, tgv_r_02_v1, 32, 40)
@@ -84,7 +84,7 @@ switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,              \
      align_12_sprites; }                                              \
 
 tgv_r_graphics_template(tgv_r_h,  tgv_r_h,  )
-tgv_r_graphics_template(tgv_r_h,  tgv_r_h,  _notpowered)
+tgv_r_graphics_template(tgv_r_h,  tgv_r_h,  _middle)
 tgv_r_graphics_template(tgv_r_02, tgv_r_02, )
 tgv_r_graphics_template(tgv_r_02, tgv_r_02, _notpowered)
 tgv_r_graphics_template(tgv_r_03, tgv_r_03, )
@@ -103,7 +103,7 @@ switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_left_check,
   position_in_consist == 0)
 {
   1: tgv_r_h_sprites_left;
-     tgv_r_h_notpowered_sprites_left;
+     tgv_r_h_middle_sprites_left;
 }
 
 random_switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_start,
@@ -117,7 +117,7 @@ switch (FEAT_TRAINS, SELF, tgv_r_h_sprites_right_check,
   position_in_consist_from_end == 1) 
 {
   1: tgv_r_h_sprites_right;
-     tgv_r_h_notpowered_sprites_right;
+     tgv_r_h_middle_sprites_right;
 }
 
 switch (FEAT_TRAINS, SELF, tgv_r_sprites_start,
@@ -229,11 +229,24 @@ switch (FEAT_TRAINS, PARENT, tgv_r_create_effect,
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, tgv_r_can_attach_wagon,
-  vehicle_type_id == tgv_r)
+switch (FEAT_TRAINS, PARENT, tgv_r_can_attach_wagon1,
+  count_veh_id(tgv_pse) + count_veh_id(tgv_a) + count_veh_id(tgv_r) < 2)
 {
-  1: return string(STR_CAN_ATTACH_NO_MORE);
-     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, tgv_r_can_attach_wagon,
+  (vehicle_type_id == tgv_pse) ||
+  (vehicle_type_id == tgv_a) ||
+  (vehicle_type_id == tgv_r))
+{
+  1: tgv_r_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SPECIFIED_CAR, 
+                   string(STR_PURCHASE_HINT_LIST3, 
+  			  string(STR_NAME_TGV_PSE), 
+  			  string(STR_NAME_TGV_A), 
+  			  string(STR_NAME_TGV_R)));
 }
 
 RC_head_check_new(tgv_r, tgv_r)
@@ -261,10 +274,12 @@ hint_MU_comment(tgv_r,
      STR_PURCHASE_HINT_LOADING_SPEED_4TIC,
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
-     STR_SECTIONS_MU_S1of10,
+     STR_SECTIONS_MU_S1_2of10,
      1992, 1996, 
      string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
-     string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5003))
+     string(STR_PURCHASE_HINT_LIST2_COMMENT,	     
+            string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5003),
+            string(STR_PURCHASE_HINT_TGV)))
 
 item (FEAT_TRAINS, tgv_r, 134) {
   property {
