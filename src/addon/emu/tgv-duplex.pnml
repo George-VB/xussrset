@@ -1,0 +1,314 @@
+﻿ // tgv_duplex
+
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_01.png"
+purchase_sprites(tgv_duplex, 0, 0)
+MU_head_2d_middle_sp_sprites(12, tgv_duplex_h_v1, 32, 40)
+MU_head_2d_middle_sp_sprites(12, tgv_duplex_h_v2, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_01-part2.png"
+MU_head_2d_middle_sp_sprites(12, tgv_duplex_h_v3, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_02.png"
+MU_car_sprites(12, tgv_duplex_02_v1, 32, 40)
+MU_car_sprites(12, tgv_duplex_02_v2, 32, 308)
+MU_car_sprites(12, tgv_duplex_02_v3, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_03.png"
+MU_car_sprites(11, tgv_duplex_03_v1, 32, 40)
+MU_car_sprites(11, tgv_duplex_03_v2, 32, 308)
+MU_car_sprites(11, tgv_duplex_03_v3, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_04.png"
+MU_car_sprites(11, tgv_duplex_04_v1, 32, 40)
+MU_car_sprites(11, tgv_duplex_04_v2, 32, 308)
+MU_car_sprites(11, tgv_duplex_04_v3, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_05.png"
+MU_car_nd_sprites(11, tgv_duplex_05_v1, 32, 40)
+MU_car_nd_sprites(11, tgv_duplex_05_v2, 32, 308)
+MU_car_nd_sprites(11, tgv_duplex_05_v3, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_06.png"
+MU_car_sprites(11, tgv_duplex_06_v1, 32, 40)
+MU_car_sprites(11, tgv_duplex_06_v2, 32, 308)
+MU_car_sprites(11, tgv_duplex_06_v3, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_07.png"
+MU_car_sprites(11, tgv_duplex_07_v1, 32, 40)
+MU_car_sprites(11, tgv_duplex_07_v2, 32, 308)
+MU_car_sprites(11, tgv_duplex_07_v3, 32, 576)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/tgv-duplex_09.png"
+MU_car_sprites(12, tgv_duplex_09_v1, 32, 40)
+MU_car_sprites(12, tgv_duplex_09_v2, 32, 308)
+MU_car_sprites(12, tgv_duplex_09_v3, 32, 576)
+#undef IMAGEFILE
+#define tgv_duplex_graphics_template(name, suffix)                   \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_left,              \
+[ set_offset_to(-position_in_articulated_veh),                       \
+  prev_vehicle_cargo_subtype()])                                     \
+{ 0: name##_v1##suffix##_sprites_left;                               \
+  LV_SNCF_ATLANTIQUE: name##_v1##suffix##_sprites_left;              \
+  LV_SNCF_CARMILLON: name##_v2##suffix##_sprites_left;               \
+  LV_OUIGO: name##_v3##suffix##_sprites_left;                        \
+     align_12_sprites; }                                             \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,             \
+[ set_offset_to(-position_in_articulated_veh),                       \
+  prev_vehicle_cargo_subtype()])                                     \
+{ 0: name##_v1##suffix##_sprites_right;                              \
+  LV_SNCF_ATLANTIQUE: name##_v1##suffix##_sprites_right;             \
+  LV_SNCF_CARMILLON: name##_v2##suffix##_sprites_right;              \
+  LV_OUIGO: name##_v3##suffix##_sprites_right;                       \
+     align_12_sprites; }                                             \
+
+tgv_duplex_graphics_template(tgv_duplex_h, )
+tgv_duplex_graphics_template(tgv_duplex_h, _middle)
+tgv_duplex_graphics_template(tgv_duplex_02, )
+tgv_duplex_graphics_template(tgv_duplex_02, _notpowered)
+tgv_duplex_graphics_template(tgv_duplex_03, )
+tgv_duplex_graphics_template(tgv_duplex_03, _notpowered)
+tgv_duplex_graphics_template(tgv_duplex_04, )
+tgv_duplex_graphics_template(tgv_duplex_04, _notpowered)
+tgv_duplex_graphics_template(tgv_duplex_05, )
+tgv_duplex_graphics_template(tgv_duplex_06, )
+tgv_duplex_graphics_template(tgv_duplex_06, _notpowered)
+tgv_duplex_graphics_template(tgv_duplex_07, )
+tgv_duplex_graphics_template(tgv_duplex_07, _notpowered)
+tgv_duplex_graphics_template(tgv_duplex_09, )
+tgv_duplex_graphics_template(tgv_duplex_09, _notpowered)
+        
+switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: tgv_duplex_h_sprites_left;
+     tgv_duplex_h_middle_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: tgv_duplex_h_sprites_left_check;
+  1: tgv_duplex_h_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_right_check,
+  position_in_consist_from_end == 1) 
+{
+  1: tgv_duplex_h_sprites_right;
+     tgv_duplex_h_middle_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != tgv_duplex) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   0: tgv_duplex_h_sprites_start;
+   2: tgv_duplex_02_sprites_left;
+   4: tgv_duplex_03_sprites_left;
+   6: tgv_duplex_04_sprites_left;
+   8: tgv_duplex_05_sprites_left;
+  10: tgv_duplex_06_sprites_left;
+  12: tgv_duplex_07_sprites_right;
+  14: tgv_duplex_06_sprites_right;
+  16: tgv_duplex_09_sprites_right;
+  18: tgv_duplex_h_sprites_right_check;
+
+ 100: tgv_duplex_h_sprites_start;
+ 102: tgv_duplex_09_sprites_left;
+ 104: tgv_duplex_06_sprites_left;
+ 106: tgv_duplex_07_sprites_left;
+ 108: tgv_duplex_06_sprites_right;
+ 110: tgv_duplex_05_sprites_right;
+ 112: tgv_duplex_04_sprites_right;
+ 114: tgv_duplex_03_sprites_right;
+ 116: tgv_duplex_02_sprites_right;
+ 118: tgv_duplex_h_sprites_right_check;
+
+ 200: tgv_duplex_h_sprites_start;      
+ 202: tgv_duplex_02_notpowered_sprites_left; 
+ 204: tgv_duplex_03_notpowered_sprites_left; 
+ 206: tgv_duplex_04_notpowered_sprites_left; 
+ 208: tgv_duplex_05_sprites_left; 
+ 210: tgv_duplex_06_notpowered_sprites_left; 
+ 212: tgv_duplex_07_notpowered_sprites_right; 
+ 214: tgv_duplex_06_notpowered_sprites_right; 
+ 216: tgv_duplex_09_notpowered_sprites_right;
+ 218: tgv_duplex_h_sprites_right_check;
+
+ 300: tgv_duplex_h_sprites_start;
+ 302: tgv_duplex_09_notpowered_sprites_left; 
+ 304: tgv_duplex_06_notpowered_sprites_left; 
+ 306: tgv_duplex_07_notpowered_sprites_left; 
+ 308: tgv_duplex_06_notpowered_sprites_right; 
+ 310: tgv_duplex_05_sprites_right; 
+ 312: tgv_duplex_04_notpowered_sprites_right;
+ 314: tgv_duplex_03_notpowered_sprites_right;
+ 316: tgv_duplex_02_notpowered_sprites_right;
+ 318: tgv_duplex_h_sprites_right_check;
+
+      align_11_sprites;
+}
+
+long_vehicle_RND(tgv_duplex, tgv_duplex_h_sprites_start)
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return tgv_duplex_part2;
+  3: return dummy4;
+  4: return tgv_duplex_part3;
+  5: return dummy3;
+  6: return tgv_duplex_part3;
+  7: return dummy3;
+  8: return tgv_duplex_part3;
+  9: return dummy3;
+ 10: return tgv_duplex_part3;
+ 11: return dummy3;
+ 12: return tgv_duplex_part3;
+ 13: return dummy3;
+ 14: return tgv_duplex_part3;
+ 15: return dummy3;
+ 16: return tgv_duplex_part3;
+ 17: return dummy4;
+ 18: return tgv_duplex_part3;
+ 19: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_create_effect_01_d,
+  electric_create_effect(3))
+{
+  return 1;
+}
+
+is_ERD(tgv_duplex_create_effect_01, tgv_duplex_create_effect_01_d, return disable_create_effect())
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_create_effect_10,
+  electric_create_effect(-2))
+{
+  return 1;
+}
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_create_effect0,
+  position_in_articulated_veh)
+{
+   0: tgv_duplex_create_effect_01;
+  18: tgv_duplex_create_effect_10;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, tgv_duplex_create_effect,
+  any_tgv())
+{
+  1: tgv_duplex_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, tgv_duplex_can_attach_wagon1,
+  tgvs_count() < 2)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, tgv_duplex_can_attach_wagon,
+  any_tgv())
+{
+  1: tgv_duplex_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_TGV);
+}
+
+RC_head_check_tgv_new(tgv_duplex)
+switch (FEAT_TRAINS, SELF, tgv_duplex_running_cost_factor,
+[  STORE_TEMP(1561, 0),      // Моторы
+   STORE_TEMP(219, 1),       // Бригада
+   STORE_TEMP(548, 2),       // Износ
+   STORE_TEMP(0, 3),         // Сопровождение
+   STORE_TEMP(383, 4),       // ТО
+   STORE_TEMP(27, 5),        // Сертификация
+
+   STORE_TEMP(320, 6),       // Скорость
+   STORE_TEMP(383, 7),       // Тара
+   STORE_TEMP(414, 8)])      // Максимальная масса
+{ tgv_duplex_check_running_cost_factor; }
+
+livery_template(tgv_duplex, SNCF_ATLANTIQUE, LV_SNCF_ATLANTIQUE, LV_SNCF_CARMILLON, LV_OUIGO, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+engine_capacity_MU_tgv(tgv_duplex, 348)
+engine_power_MU_tgv(tgv_duplex_DC, 4935)
+engine_power_MU_tgv(tgv_duplex_AC, 11800)
+engine_power_change_AC_DC(tgv_duplex)
+engine_speed(tgv_duplex, 320)
+hint_MU_comment(tgv_duplex,
+     STR_PURCHASE_HINT_LOADING_SPEED_6TIC,
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC,
+     STR_SECTIONS_MU_S1_2of10,
+     1995, 2012, 
+     string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
+     string(STR_PURCHASE_HINT_LIST2_COMMENT,	     
+            string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 4935),
+            string(STR_PURCHASE_HINT_TGV)))
+
+item (FEAT_TRAINS, tgv_duplex, 662) {
+  property {
+    name: string(STR_NAME_TGV_DUPLEX);
+    vehicle_dates(1995, 2012, 30, 10, 8, 1500)
+    vehicle_acdcemu(11800, 380, 400.0, 348, 15*4)
+  }
+  graphics {
+    default: tgv_duplex_sprites;
+    purchase: tgv_duplex_purchase_sprites;
+    cargo_age_period: return 174;
+    speed: tgv_duplex_speed;
+    running_cost_factor: tgv_duplex_running_cost_factor;
+    articulated_part: tgv_duplex_articulated_part;
+    can_attach_wagon: tgv_duplex_can_attach_wagon;
+    power: tgv_duplex_power;
+    cargo_capacity: tgv_duplex_cargo_capacity;
+    cost_factor: return 1500;
+    colour_mapping: any_cc_colour;
+    create_effect: tgv_duplex_create_effect;
+    purchase_speed: return 320;
+    purchase_power: return 11800;
+    additional_text: tgv_duplex_additional_text;
+    cargo_subtype_text: tgv_duplex_cargo_subtype_text;
+  }
+}
+
+long_name_template(tgv_duplex, STR_LONGNAME_TGV_DUPLEX)
+allow_acdcemu(tgv_duplex)
+
+engine_capacity_MU_tgv(tgv_duplex_part2, 197)
+
+item (FEAT_TRAINS, tgv_duplex_part2, 663) {
+  property {
+    vehicle_no_dates(1995, 2012, 30, 10, 8, 0)
+    vehicle_acdcemu_c(0, 197, 15*3)
+    vehicle_allow_tourists()
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: tgv_duplex_sprites;
+    cargo_age_period: return 370;
+    create_effect: tgv_duplex_create_effect;
+    cargo_capacity: tgv_duplex_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, tgv_duplex_part3, 664) {
+  property {
+    vehicle_no_dates(1995, 2012, 30, 10, 8, 0)
+    vehicle_acdcemu_empty()
+  }
+  graphics {
+    default: tgv_duplex_sprites;
+    create_effect: tgv_duplex_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
