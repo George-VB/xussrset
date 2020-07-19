@@ -1,0 +1,69 @@
+ // ea
+
+#define IMAGEFILE  "src/steam/ea.png"
+purchase_sprites(ea, 0, 0)
+steam_sprites(8, ea_engine, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ea_tender_sprites_start, 0)
+{
+  e_er_v1_tender_sprites_start;
+}
+
+steamer_direction_template(ea, _sprites_start)
+long_vehicle(ea)
+
+switch (FEAT_TRAINS, SELF, ea_running_cost_factor,
+[  STORE_TEMP(243, 0),       // Моторы
+   STORE_TEMP(34, 1),        // Бригада
+   STORE_TEMP(85, 2),        // Износ
+   STORE_TEMP(0, 3),         // Сопровождение
+   STORE_TEMP(60, 4),        // ТО
+   STORE_TEMP(4, 5),         // Сертификация
+
+   STORE_TEMP(70 + 10 * (current_year >= 1956), 6),        // Скорость
+   STORE_TEMP(172, 7),       // Тара
+   STORE_TEMP(172, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 426
+
+engine_steam_1_effect(ea_create_effect, -2, 12)
+engine_tender(ea)
+engine_tender_length(ea, 7, 1, 5, 1)
+engine_speed_change_after(ea, 70,
+                              80, 1956)
+engine_penalise_speed0(ea)
+hint_engine_2fact(ea,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1944, 1947,
+     string(STR_PURCHASE_HINT_FACTORY_ALCO),
+     string(STR_PURCHASE_HINT_FACTORY_BALDWIN))
+
+item (FEAT_TRAINS, ea, 672) {
+  property {
+    name: string(STR_NAME_EA);
+    vehicle_dates(1944, 1947, 30, 10, 7, 19)
+    vehicle_cargo()
+    vehicle_steam(2112, 100+72, 228.0)
+  }
+  graphics {
+    default: ea_sprites;
+    purchase: ea_purchase_sprites;
+    articulated_part: ea_articulated_part;
+    length: ea_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: ea_speed;
+    purchase_speed: ea_purchase_speed;
+    bitmask_vehicle_info: ea_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: ea_create_effect;
+    running_cost_factor: ea_running_cost_factor;
+    colour_mapping: any_cc_colour;
+    additional_text: ea_additional_text;
+  }
+}
+
+long_name_template(el, STR_LONGNAME_EA)
+models_default_cargo_template(el)
+allow_steamer(el)
