@@ -1,0 +1,68 @@
+ // el
+
+#define IMAGEFILE  "src/steam/el.png"
+purchase_sprites(el, 0, 0)
+steam_sprites(8, el_engine, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, el_tender_sprites_start, 0)
+{
+  e_e_tender_sprites_start;
+}
+
+steamer_direction_template(el, _sprites_start)
+long_vehicle(el)
+
+switch (FEAT_TRAINS, SELF, el_running_cost_factor,
+[  STORE_TEMP(169, 0),       // Моторы
+   STORE_TEMP(24, 1),        // Бригада
+   STORE_TEMP(59, 2),        // Износ
+   STORE_TEMP(0, 3),         // Сопровождение
+   STORE_TEMP(41, 4),        // ТО
+   STORE_TEMP(3, 5),         // Сертификация
+
+   STORE_TEMP(55 + 15 * (current_year >= 1936), 6),        // Скорость
+   STORE_TEMP(161, 7),       // Тара
+   STORE_TEMP(161, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 296
+
+engine_tender(el)
+engine_tender_length(el, 7, 1, 4, 1)
+engine_speed_change_after(el, 55,
+                              70, 1936)
+engine_penalise_speed0(el)
+hint_engine_2fact(el,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1916, 1919,
+     string(STR_PURCHASE_HINT_FACTORY_ALCO),
+     string(STR_PURCHASE_HINT_FACTORY_BALDWIN))
+
+item (FEAT_TRAINS, el, 671) {
+  property {
+    name: string(STR_NAME_EL);
+    vehicle_dates(1916, 1919, 40, 10, 7, 13)
+    vehicle_cargo()
+    vehicle_steam(1488, 91+70, 209.0)
+  }
+  graphics {
+    default: el_sprites;
+    purchase: el_purchase_sprites;
+    articulated_part: el_articulated_part;
+    length: el_length;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    speed: el_speed;
+    purchase_speed: el_purchase_speed;
+    bitmask_vehicle_info: el_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: el_create_effect;
+    running_cost_factor: el_running_cost_factor;
+    colour_mapping: any_cc_colour;
+    additional_text: el_additional_text;
+  }
+}
+
+long_name_template(el, STR_LONGNAME_EL)
+models_default_cargo_template(el)
+allow_steamer(el)
