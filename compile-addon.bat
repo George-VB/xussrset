@@ -48,45 +48,6 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-change.pl xussr-addon.nml "\(0 == [0-9]+\)" "0"
-change.pl xussr-addon.nml "\(1[0-9]+ == [2-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(2[0-9]+ == [1,3-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(3[0-9]+ == [1-2,4-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(4[0-9]+ == [1-3,5-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(5[0-9]+ == [1-4,6-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(6[0-9]+ == [1-5,7-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(7[0-9]+ == [1-6,8-9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(8[0-9]+ == [1-7,9][0-9]+\)" "0"
-change.pl xussr-addon.nml "\(9[0-9]+ == [1-8][0-9]+\)" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "0\s+\|\|\s+0" "0"
-change.pl xussr-addon.nml "\(\(build_year \>\=\s*[0-9]+\) \|\| \(current_year \>\=\s*[0-9]+\)\) \&\& \(\s*0\)" "0"
 change.pl xussr-addon.nml "\) \{" "\)\n\{"
 change.pl xussr-addon.nml "\} switch" "\}\nswitch"
 change.pl xussr-addon.nml "\; " "\;\n"
@@ -135,7 +96,7 @@ set NMLNAME=xussr-addon
 :: имя служебного файла для сборки
 set CUSTOM_TAGS=custom_tags.txt
 :: минимальная совместимая ревизия
-set MIN_COMPATIBLE_REVISION=496
+set MIN_COMPATIBLE_REVISION=1
 goto :EOF
 
 :EchoParams
