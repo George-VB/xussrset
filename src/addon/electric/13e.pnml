@@ -1,0 +1,111 @@
+ // 13e
+
+#define IMAGEFILE  "src/electric/13e_h.png"
+purchase_sprites(_13e, 0, 0)
+diesel2nol_sprites(4, _13e_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/13e_c.png"
+diesel2_sprites(4e, _13e_c, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _13e_h_sprites_start,
+  position_in_consist == 0)
+{
+  1: _13e_h_sprites_left;
+     _13e_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, _13e_c_sprites_start,
+  (position_in_consist == 2) + 
+  2 * (vehicle_is_not_powered || vehicle_is_in_depot))
+{
+  0: _13e_c_loading_sprites_left;
+  1: _13e_c_traveling_sprites_left;
+ 98: _13e_c_sprites_left; // unused
+ 99: _13e_c_normal_sprites_left; // unused
+     _13e_c_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, _13e_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   position_in_articulated_veh])
+{
+   0: _13e_h_sprites_start;
+   2: _13e_c_sprites_start;
+   4: _13e_h_sprites_right;
+      align_4_sprites;
+}
+
+long_vehicle(_13e)
+
+switch (FEAT_TRAINS, SELF, _13e_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy1;
+  2: return _13e;
+  3: return dummy1;
+  4: return _13e;
+  5: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, _13e_create_effect_c,
+  electric_create_effect(-1)) { return 1; }
+
+switch (FEAT_TRAINS, SELF, _13e_create_effect,
+  position_in_articulated_veh)
+{
+  2: _13e_create_effect_c;
+     return disable_create_effect();
+}
+
+engine_speed(_13e, 60)
+engine_penalise_speed0(_13e)
+
+switch (FEAT_TRAINS, SELF, _13e_running_cost_factor,
+[  STORE_TEMP(210, 0),    		/* 368*57/100 */	// Моторы
+   STORE_TEMP(29, 1),     		/* 368*8/100 */	// Бригада
+   STORE_TEMP(74, 2),    		/* 368*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(52, 4),    		/* 368*14/100 */	// ТО
+   STORE_TEMP(4, 5),       		/* 368/100 */	// Сертификация
+
+   STORE_TEMP(120, 6),       // Скорость
+   STORE_TEMP(96, 7),       // Тара
+   STORE_TEMP(96, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 368
+
+hint_engine(_13e,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2_4,
+     2006, 2006,
+     fact_skoda())
+
+item (FEAT_TRAINS, _13e, 673) {
+  property {
+    name: string(STR_NAME_13E);
+    vehicle_dates(2006, 2013, 30, 10, 3, 54)
+    vehicle_cargo()
+    vehicle_dcelectric(3940, 96, 320.0)
+  }
+  graphics {
+    default: _13e_sprites;
+    purchase: _13e_purchase_sprites;
+    articulated_part: _13e_articulated_part;
+//    can_attach_wagon: any_can_attach_wagon;
+//    start_stop: any_start_stop;
+    speed: _13e_speed;
+    bitmask_vehicle_info: _13e_bitmask_vehicle_info;
+    cargo_capacity: return 0;
+    create_effect: _13e_create_effect;
+    running_cost_factor: _13e_running_cost_factor;
+    purchase_speed: return 120;
+    additional_text: _13e_additional_text;
+//    cargo_subtype_text: pe_type_cargo_subtype_text;
+//    colour_mapping: pe_type_colour_mapping;
+  }
+}
+
+long_name_template(_13e, STR_LONGNAME_13E)
+models_default_cargo_template(_13e)
+allow_dcelectric(_13e)

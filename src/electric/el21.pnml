@@ -1,0 +1,71 @@
+﻿ // el21
+
+#define IMAGEFILE  "src/electric/el21.png"
+purchase_sprites(el21, 0, 0)
+electric2_1_sprites(6, el21, 32, 40)
+#undef IMAGEFILE
+
+engine_direction_template(el21, )
+long_vehicle(el21)
+
+switch (FEAT_TRAINS, SELF, el21_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy1;
+  2: return el21;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}                 
+
+engine_electric2_1_effect(el21_create_effect_sprites, -2, -1)
+engine_direction_template(el21, _create_effect)
+engine_speed(el21, 110)
+engine_penalise_speed0(el21)
+
+switch (FEAT_TRAINS, SELF, el21_running_cost_factor,
+[  STORE_TEMP(228, 0),    		/* 400*57/100 */	// Моторы
+   STORE_TEMP(32, 1),     		/* 400*8/100 */	// Бригада
+   STORE_TEMP(80, 2),    		/* 400*20/100 */	// Износ
+   STORE_TEMP(0, 3),             // Сопровождение
+   STORE_TEMP(56, 4),    		/* 400*14/100 */	// ТО
+   STORE_TEMP(4, 5),       		/* 400/100 */	// Сертификация
+
+   STORE_TEMP(65, 6),       // Скорость
+   STORE_TEMP(160, 7),       // Тара
+   STORE_TEMP(160, 8)])      // Максимальная масса
+{ all_running_cost_factor; } // 400
+
+hint_engine(el21,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_15DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1981, 1986,
+     string(STR_PURCHASE_HINT_FACTORY_HENNIGSDORF))
+
+item (FEAT_TRAINS, el21, 675) {
+  property {
+    name: string(STR_NAME_EL21);
+    vehicle_dates(1981, 1986, 45, 5, 5, 57)
+    vehicle_cargo()
+    vehicle_dcelectric(2816, 160, 237.0)
+  }
+  graphics {
+    default: el21_sprites;
+    purchase: el21_purchase_sprites;
+    articulated_part: el21_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    cargo_capacity: return 0;
+    speed: el21_speed;
+    purchase_speed: return 65;
+    bitmask_vehicle_info: el21_bitmask_vehicle_info;
+    create_effect: el21_create_effect_sprites_start;
+    running_cost_factor: el21_running_cost_factor;
+    additional_text: el21_additional_text;
+    cargo_subtype_text: pe_type_cargo_subtype_text;
+    colour_mapping: pe_type_colour_mapping;
+  }
+}
+
+long_name_template(el21, STR_LONGNAME_EL21)
+models_default_cargo_template(el21)
+allow_dcelectric(el21)
