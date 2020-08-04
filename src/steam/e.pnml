@@ -1,113 +1,83 @@
- // e
+ // steam_e
 
 #define IMAGEFILE  "src/steam/e.png"
-purchase_sprites(e_e, 0, 0)
-steam_sprites(7, e_e_engine,  32,   40)
-tender_sprites(5, e_e_tender, 447,  40)
+purchase_sprites(steam_e, 0, 0)
+steam_sprites(7, steam_e_engine,  32,   40)
+tender_sprites(5, steam_e_tender, 447,  40)
 #undef IMAGEFILE
 
-steamer_direction_template(e_e, _sprites_start)
-long_vehicle(e_e)
+steamer_direction_template(steam_e, _sprites_start)
+long_vehicle(steam_e)
 
-switch (FEAT_TRAINS, SELF, e_e_b1914_running_cost_factor,
-[  STORE_TEMP(119, 0),       // Моторы
-   STORE_TEMP(17, 1),        // Бригада
-   STORE_TEMP(42, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(29, 4),        // ТО
-   STORE_TEMP(2, 5),         // Сертификация
+switch (FEAT_TRAINS, SELF, steam_e_running_cost_factor,
+[  STORE_TEMP(119 +  6 * (build_year >= 1914)
+                  +  8 * (build_year >= 1916)
+                  + 17 * (build_year >= 1920), 0),  // Моторы
+   STORE_TEMP(17  +  1 * (build_year >= 1914)
+                  +  1 * (build_year >= 1916)
+                  +  2 * (build_year >= 1920), 1),  // Бригада
+   STORE_TEMP(42  +  2 * (build_year >= 1914)
+                  +  3 * (build_year >= 1916)
+                  +  6 * (build_year >= 1920), 2),  // Износ
+   STORE_TEMP(0, 3),                                   // Сопровождение
+   STORE_TEMP(29  +  2 * (build_year >= 1914)
+                  +  2 * (build_year >= 1916)
+                  +  4 * (build_year >= 1920), 4),  // ТО
+   STORE_TEMP(2   +  1 * (build_year >= 1920), 5),  // Сертификация
 
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(144, 7),     		/* 80+64 */	// Тара
-   STORE_TEMP(144, 8)])    		/* 80+64 */	// Максимальная масса
-{ all_running_cost_factor; } // 209
+   STORE_TEMP(55  + 10 * (current_year >= 1936), 6),    // Скорость
+   STORE_TEMP(144 +  1 * (build_year >= 1914)
+                  +  8 * (build_year >= 1916)
+                  +  1 * (build_year >= 1920), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                       // Максимальная масса
+{ all_running_cost_factor; } // 209 + 11 + 13 + 30
 
-switch (FEAT_TRAINS, SELF, e_e_a1914_running_cost_factor,
-[  STORE_TEMP(125, 0),       // Моторы
-   STORE_TEMP(18, 1),        // Бригада
-   STORE_TEMP(44, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(31, 4),        // ТО
-   STORE_TEMP(2, 5),         // Сертификация
-
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(145, 7),     		/* 81+64 */	// Тара
-   STORE_TEMP(145, 8)])    		/* 81+64 */	// Максимальная масса
-{ all_running_cost_factor; } // 220
-
-switch (FEAT_TRAINS, SELF, e_e_a1916_running_cost_factor,
-[  STORE_TEMP(133, 0),       // Моторы
-   STORE_TEMP(19, 1),        // Бригада
-   STORE_TEMP(47, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(33, 4),        // ТО
-   STORE_TEMP(2, 5),         // Сертификация
-
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(153, 7),     		/* 81+72 */	// Тара
-   STORE_TEMP(153, 8)])    		/* 81+72 */	// Максимальная масса
-{ all_running_cost_factor; } // 233
-
-switch (FEAT_TRAINS, SELF, e_e_a1920_running_cost_factor,
-[  STORE_TEMP(150, 0),       // Моторы
-   STORE_TEMP(21, 1),        // Бригада
-   STORE_TEMP(53, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(37, 4),        // ТО
-   STORE_TEMP(3, 5),         // Сертификация
-
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(154, 7),     		/* 82+72 */	// Тара
-   STORE_TEMP(154, 8)])    		/* 82+72 */	// Максимальная масса
-{ all_running_cost_factor; } // 263
-
-RC_build_year3_template(e_e, 1914, 1916, 1920)
-engine_power_change_build_after(e_e_v2, 1018,
+engine_power_change_build_after(steam_e_v2, 1018,
                                         1031, 1916)
-switch (FEAT_TRAINS, SELF, e_e_power,
+switch (FEAT_TRAINS, SELF, steam_e_power,
   check_year(1920))
 {
-  0: e_e_v2_power;
+  0: steam_e_v2_power;
      return get_power_in_cb(1306);
 }
 
-engine_tender(e_e)
-engine_tender_length(e_e, 6, 1, 4, 1)
-engine_steam_1_effect(e_create_effect, -3, 12)
-engine_weight_change_build_after3(e_e, 80+64,
-                                       81+64, 1914,
-                                       81+72, 1916,
-                                       82+72, 1920)
-engine_TE_change_build_after3(e_e, get_tec_int(184.0, 80+64),
-                                   get_tec_int(203.0, 80+64), 1914,
-                                   get_tec_int(216.0, 81+72), 1916,
-                                   get_tec_int(216.0, 82+72), 1920)
-engine_cost_change_build_after3(e_e, 9,
-                                     10, 1914,
-                                     11, 1916,
-                                     11, 1920)
-engine_speed_change_after(e_e, 55,
-                               65, 1936)
-engine_penalise_speed0(e_e)
+engine_tender(steam_e)
+engine_tender_length(steam_e, 6, 1, 4, 1)
+engine_steam_1_effect(steam_e_create_effect, -3, 12)
+engine_weight_change_build_after3(steam_e, 80+64,
+                                           81+64, 1914,
+                                           81+72, 1916,
+                                           82+72, 1920)
+engine_TE_change_build_after3(steam_e, get_tec_int(184.0, 80+64),
+                                       get_tec_int(203.0, 80+64), 1914,
+                                       get_tec_int(216.0, 81+72), 1916,
+                                       get_tec_int(216.0, 82+72), 1920)
+engine_cost_change_build_after3(steam_e,  9,
+                                         10, 1914,
+                                         11, 1916,
+                                         11, 1920)
+engine_speed_change_after(steam_e, 55,
+                                   65, 1936)
+engine_penalise_speed0(steam_e)
 
-hint_engine_with_subtype(e_e_b1914,
+hint_engine_with_subtype(steam_e_b1914,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_E_6606,
      STR_PURCHASE_HINT_SECTIONS_1,
      1912, 1913,
      fact_lugansk())
-hint_engine_with_subtype(e_e_a1914,
+hint_engine_with_subtype(steam_e_a1914,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_E_9201,
      STR_PURCHASE_HINT_SECTIONS_1,
      1914, 1915,
      fact_lugansk())
-hint_engine_with_subtype(e_e_a1916,
+hint_engine_with_subtype(steam_e_a1916,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_E_9555A,
      STR_PURCHASE_HINT_SECTIONS_1,
      1916, 1926,
      fact_lugansk())
-hint_change_after2(e_e, 1914, 1916)
+hint_change_after2(steam_e, 1914, 1916)
 
-item (FEAT_TRAINS, e_e, 330) {
+item (FEAT_TRAINS, steam_e, 330) {
   property {
     name: string(STR_NAME_E);
     vehicle_dates(1912, 1926, 40, 10, 6, 8)
@@ -115,27 +85,27 @@ item (FEAT_TRAINS, e_e, 330) {
     vehicle_steam(780, 78+64, 127.0)
   }
   graphics {
-    default: e_e_sprites;
-    purchase: e_e_purchase_sprites;
-    articulated_part: e_e_articulated_part;
-    length: e_e_length;
+    default: steam_e_sprites;
+    purchase: steam_e_purchase_sprites;
+    articulated_part: steam_e_articulated_part;
+    length: steam_e_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    additional_text: e_e_additional_text;
-    speed: e_e_speed;
-    purchase_speed: e_e_purchase_speed;
-    bitmask_vehicle_info: e_e_bitmask_vehicle_info;
+    additional_text: steam_e_additional_text;
+    speed: steam_e_speed;
+    purchase_speed: steam_e_purchase_speed;
+    bitmask_vehicle_info: steam_e_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    power: e_e_power;
-    tractive_effort_coefficient: e_e_tractive_effort_coefficient;
-    weight: e_e_weight;
-    create_effect: e_create_effect;
-    cost_factor: e_e_cost_factor;
-    running_cost_factor: e_e_running_cost_factor;
+    power: steam_e_power;
+    tractive_effort_coefficient: steam_e_tractive_effort_coefficient;
+    weight: steam_e_weight;
+    create_effect: steam_e_create_effect;
+    cost_factor: steam_e_cost_factor;
+    running_cost_factor: steam_e_running_cost_factor;
     colour_mapping: any_cc_colour;
   }
 }
 
-long_name_template(e_e, STR_LONGNAME_E)
-models_default_cargo_template(e_e)
-allow_steamer(e_e)
+long_name_template(steam_e, STR_LONGNAME_E)
+models_default_cargo_template(steam_e)
+allow_steamer(steam_e)

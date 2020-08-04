@@ -1,90 +1,67 @@
- // er
+ // steam_er
 
 #define IMAGEFILE  "src/steam/er.png"
-purchase_sprites(e_er_v1, 0, 0)
-purchase_sprites(e_er_v2, 100, 0)
-steam_sprites(7, e_er_engine, 32, 40)
-tender_sprites(6, e_er_v1_tender, 447, 40)
+purchase_sprites(steam_er_v1, 0, 0)
+purchase_sprites(steam_er_v2, 100, 0)
+steam_sprites(7, steam_er_engine, 32, 40)
+tender_sprites(6, steam_er_v1_tender, 447, 40)
 #undef IMAGEFILE
-purchase_sprites_select(e_er, 1948)
+purchase_sprites_select(steam_er, 1948)
 
-switch (FEAT_TRAINS, SELF, e_er_tender_sprites_start,
+switch (FEAT_TRAINS, SELF, steam_er_tender_sprites_start,
   build_year >= 1948)
 {
-  0: e_e_tender_sprites_start;
-     e_er_v1_tender_sprites_start;
+  0: steam_e_tender_sprites_start;
+     steam_er_v1_tender_sprites_start;
 }
 
-steamer_direction_template(e_er, _sprites_start)
-long_vehicle(e_er)
+steamer_direction_template(steam_er, _sprites_start)
+long_vehicle(steam_er)
 
-switch (FEAT_TRAINS, SELF, e_er_b1946_running_cost_factor,
-[  STORE_TEMP(179, 0),       // Моторы
-   STORE_TEMP(25, 1),        // Бригада
-   STORE_TEMP(63, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(44, 4),        // ТО
-   STORE_TEMP(3, 5),         // Сертификация
+switch (FEAT_TRAINS, SELF, steam_er_running_cost_factor,
+[  STORE_TEMP(179 +  4 * (build_year >= 1946)
+                  +  2 * (build_year >= 1948), 0),  // Моторы
+   STORE_TEMP(25, 1),                               // Бригада
+   STORE_TEMP(63  +  1 * (build_year >= 1946)
+                  +  1 * (build_year >= 1948), 2),  // Износ
+   STORE_TEMP(0, 3),                                // Сопровождение
+   STORE_TEMP(44  +  1 * (build_year >= 1946)
+                  +  1 * (build_year >= 1948), 4),  // ТО
+   STORE_TEMP(3, 5),                                // Сертификация
 
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(152, 7),     		/* 84+68 */	// Тара
-   STORE_TEMP(152, 8)])    		/* 84+68 */	// Максимальная масса
-{ all_running_cost_factor; } // 314
+   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(152 + 10 * (build_year >= 1946)
+                  -  9 * (build_year >= 1948), 7),   // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                     // Максимальная масса
+{ all_running_cost_factor; }                         // 314 + 7 + 4
 
-switch (FEAT_TRAINS, SELF, e_er_a1946_running_cost_factor,
-[  STORE_TEMP(183, 0),       // Моторы
-   STORE_TEMP(26, 1),        // Бригада
-   STORE_TEMP(64, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(45, 4),        // ТО
-   STORE_TEMP(3, 5),         // Сертификация
-
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(162, 7),     		/* 85+77 */	// Тара
-   STORE_TEMP(162, 8)])    		/* 85+77 */	// Максимальная масса
-{ all_running_cost_factor; } // 321
-
-switch (FEAT_TRAINS, SELF, e_er_a1948_running_cost_factor,
-[  STORE_TEMP(185, 0),       // Моторы
-   STORE_TEMP(26, 1),        // Бригада
-   STORE_TEMP(65, 2),        // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(46, 4),        // ТО
-   STORE_TEMP(3, 5),         // Сертификация
-
-   STORE_TEMP(55 + 10 * (current_year >= 1936), 6),        // Скорость
-   STORE_TEMP(153, 7),     		/* 85+68 */	// Тара
-   STORE_TEMP(153, 8)])    		/* 85+68 */	// Максимальная масса
-{ all_running_cost_factor; } // 325
-
-RC_build_year2_template(e_er, 1946, 1948)
-engine_tender(e_er)
-engine_tender_length_change_build_after(e_er, 6, 1, 4, 1,
-                                              6, 1, 5, 1, 1948)
-engine_weight_change_build_after2(e_er, 84+68,
-                                        85+77, 1946,
-                                        85+68, 1948)
-engine_TE_change_build_after2(e_er, get_tec_int(229.0, 84+68),
-                                    get_tec_int(229.0, 85+77), 1946,
-                                    get_tec_int(229.0, 85+68), 1948)
-engine_cost_change_build_after2(e_er, 13,
-                                      13, 1946,
-                                      14, 1948)
-engine_speed_change_after(e_er, 55,
-                                65, 1936)
-engine_penalise_speed0(e_er)
-hint_engine(e_er_b1947,
+engine_tender(steam_er)
+engine_tender_length_change_build_after(steam_er, 6, 1, 4, 1,
+                                                  6, 1, 5, 1, 1948)
+engine_weight_change_build_after2(steam_er, 84+68,
+                                            85+77, 1946,
+                                            85+68, 1948)
+engine_TE_change_build_after2(steam_er, get_tec_int(229.0, 84+68),
+                                        get_tec_int(229.0, 85+77), 1946,
+                                        get_tec_int(229.0, 85+68), 1948)
+engine_cost_change_build_after2(steam_er, 13,
+                                          13, 1946,
+                                          14, 1948)
+engine_speed_change_after(steam_er, 55,
+                                    65, 1936)
+engine_penalise_speed0(steam_er)
+hint_engine(steam_er_b1947,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
      1933, 1957,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
-hint_engine_2fact(e_er_a1947,
+hint_engine_2fact(steam_er_a1947,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
      1933, 1957,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
      string(STR_PURCHASE_HINT_FACTORY_MAVAG))
-hint_engine_5fact(e_er_a1949,
+hint_engine_5fact(steam_er_a1949,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
      1933, 1957,
@@ -93,7 +70,7 @@ hint_engine_5fact(e_er_a1949,
      string(STR_PURCHASE_HINT_FACTORY_POZNAN),
      string(STR_PURCHASE_HINT_FACTORY_MAVAG),
      fact_skoda())
-hint_engine_4fact(e_er_a1957,
+hint_engine_4fact(steam_er_a1957,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
      1933, 1957,
@@ -101,9 +78,9 @@ hint_engine_4fact(e_er_a1957,
      fact_chkd(),
      string(STR_PURCHASE_HINT_FACTORY_POZNAN),
      fact_skoda())
-hint_change_after3(e_er, 1947, 1949, 1957)
+hint_change_after3(steam_er, 1947, 1949, 1957)
 
-item (FEAT_TRAINS, e_er, 333) {
+item (FEAT_TRAINS, steam_er, 333) {
   property {
     name: string(STR_NAME_ER);
     vehicle_dates(1933, 1957, 40, 10, 6, 13)
@@ -111,26 +88,26 @@ item (FEAT_TRAINS, e_er, 333) {
     vehicle_steam(1500, 84+82, 229.0)
   }
   graphics {
-    default: e_er_sprites;
-    purchase: e_er_purchase_sprites;
-    articulated_part: e_er_articulated_part;
-    length: e_er_length;
+    default: steam_er_sprites;
+    purchase: steam_er_purchase_sprites;
+    articulated_part: steam_er_articulated_part;
+    length: steam_er_length;
     can_attach_wagon: any_can_attach_wagon;
     start_stop: any_start_stop;
-    tractive_effort_coefficient: e_er_tractive_effort_coefficient;
-    speed: e_er_speed;
-    purchase_speed: e_er_purchase_speed;
-    bitmask_vehicle_info: e_er_bitmask_vehicle_info;
+    tractive_effort_coefficient: steam_er_tractive_effort_coefficient;
+    speed: steam_er_speed;
+    purchase_speed: steam_er_purchase_speed;
+    bitmask_vehicle_info: steam_er_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    weight: e_er_weight;
-    create_effect: e_create_effect;
-    running_cost_factor: e_er_running_cost_factor;
-    cost_factor: e_er_cost_factor;
+    weight: steam_er_weight;
+    create_effect: steam_e_create_effect;
+    running_cost_factor: steam_er_running_cost_factor;
+    cost_factor: steam_er_cost_factor;
     colour_mapping: any_cc_colour;
-    additional_text: e_er_additional_text;
+    additional_text: steam_er_additional_text;
   }
 }
 
-long_name_template(e_er, STR_LONGNAME_ER)
-models_default_cargo_template(e_er)
-allow_steamer(e_er)
+long_name_template(steam_er, STR_LONGNAME_ER)
+models_default_cargo_template(steam_er)
+allow_steamer(steam_er)

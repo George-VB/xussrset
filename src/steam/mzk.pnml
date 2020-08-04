@@ -24,72 +24,31 @@ purchase_sprites_select4(mzk, 1883, 1897, 1912, 1926)
 engine_build_year4_template(mzk, 1883, 1897, 1912, 1926, start, )
 long_vehicle(mzk)
 
-switch (FEAT_TRAINS, SELF, mzk_b1883_running_cost_factor,
-[  STORE_TEMP(8, 0),        // Моторы
-   STORE_TEMP(1, 1),        // Бригада
-   STORE_TEMP(3, 2),        // Износ
-   STORE_TEMP(0, 3),        // Сопровождение
-   STORE_TEMP(2, 4),        // ТО
-   STORE_TEMP(0, 5),        // Сертификация
+switch (FEAT_TRAINS, SELF, mzk_running_cost_factor,
+[  STORE_TEMP(8   +  2 * (build_year >= 1883)
+                  +  3 * (build_year >= 1897)
+                  +  3 * (build_year >= 1912)
+                  +  6 * (build_year >= 1926), 0),  // Моторы
+   STORE_TEMP(1   +  1 * (build_year >= 1897)
+                  +  1 * (build_year >= 1912), 1),  // Бригада
+   STORE_TEMP(3   +  2 * (build_year >= 1897)
+                  +  1 * (build_year >= 1912), 2),  // Износ
+   STORE_TEMP(0, 3),                                // Сопровождение
+   STORE_TEMP(2   +  1 * (build_year >= 1897)
+                  +  3 * (build_year >= 1912), 4),  // ТО
+   STORE_TEMP(0, 5),                                // Сертификация
 
-   STORE_TEMP(40, 6),        // Скорость
-   STORE_TEMP(36, 7),        // Тара
-   STORE_TEMP(36, 8)])       // Максимальная масса
-{ all_running_cost_factor; } // 44
-
-switch (FEAT_TRAINS, SELF, mzk_a1883_running_cost_factor,
-[  STORE_TEMP(10, 0),       // Моторы
-   STORE_TEMP(1, 1),        // Бригада
-   STORE_TEMP(3, 2),        // Износ
-   STORE_TEMP(0, 3),        // Сопровождение
-   STORE_TEMP(2, 4),        // ТО
-   STORE_TEMP(0, 5),        // Сертификация
-
-   STORE_TEMP(46, 6),        // Скорость
-   STORE_TEMP(37, 7),        // Тара
-   STORE_TEMP(37, 8)])       // Максимальная масса
-{ all_running_cost_factor; } // 48
-
-switch (FEAT_TRAINS, SELF, mzk_a1897_running_cost_factor,
-[  STORE_TEMP(14, 0),        // Моторы
-   STORE_TEMP(2, 1),         // Бригада
-   STORE_TEMP(5, 2),         // Износ
-   STORE_TEMP(0, 3),         // Сопровождение
-   STORE_TEMP(3, 4),         // ТО
-   STORE_TEMP(0, 5),         // Сертификация
-
-   STORE_TEMP(44, 6),         // Скорость
-   STORE_TEMP(42, 7),         // Тара
-   STORE_TEMP(42, 8)])        // Максимальная масса
-{ all_running_cost_factor; }  // 65
-
-switch (FEAT_TRAINS, SELF, mzk_a1912_running_cost_factor,
-[  STORE_TEMP(23, 0),       // Моторы
-   STORE_TEMP(3, 1),        // Бригада
-   STORE_TEMP(8, 2),        // Износ
-   STORE_TEMP(0, 3),        // Сопровождение
-   STORE_TEMP(6, 4),        // ТО
-   STORE_TEMP(0, 5),        // Сертификация
-
-   STORE_TEMP(48, 6),          // Скорость
-   STORE_TEMP(45, 7),          // Тара
-   STORE_TEMP(45, 8)])         // Максимальная масса
-{ all_running_cost_factor; }   // 72
-
-switch (FEAT_TRAINS, SELF, mzk_a1926_running_cost_factor,
-[  STORE_TEMP(24, 0),         // Моторы
-   STORE_TEMP(3, 1),          // Бригада
-   STORE_TEMP(8, 2),          // Износ
-   STORE_TEMP(0, 3),          // Сопровождение
-   STORE_TEMP(6, 4),          // ТО
-   STORE_TEMP(0, 5),          // Сертификация
-
-   STORE_TEMP(50, 6),         // Скорость
-   STORE_TEMP(50, 7),         // Тара
-   STORE_TEMP(50, 8)])        // Максимальная масса
-{ all_running_cost_factor; }  // 98
-
-RC_build_year4_template(mzk, 1883, 1897, 1912, 1926)
+   STORE_TEMP(40  +  6 * (build_year >= 1883)
+                  -  2 * (build_year >= 1897)
+                  +  3 * (build_year >= 1912)
+                  +  2 * (build_year >= 1926), 6),  // Скорость
+   STORE_TEMP(36  +  1 * (build_year >= 1883)
+                  +  5 * (build_year >= 1897)
+                  +  3 * (build_year >= 1912)
+                  +  5 * (build_year >= 1926), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                    // Максимальная масса
+{ all_running_cost_factor; }                        // 44 + 4 + 17 + 7
+                                               
 engine_steam_1_effect(mzk_create_effect, -2, 10)
 engine_speed_change_build_after4(mzk, 40,
                                       46, 1883,
@@ -97,10 +56,10 @@ engine_speed_change_build_after4(mzk, 40,
                                       48, 1912,
                                       50, 1926)
 engine_TE_change_build_after4(mzk, get_tec_int(56, 36),
-                                  get_tec_int(53, 37), 1883,
-                                  get_tec_int(73, 42), 1897,
-                                  get_tec_int(73, 45), 1912,
-                                  get_tec_int(93, 50), 1926)
+                                   get_tec_int(53, 37), 1883,
+                                   get_tec_int(73, 42), 1897,
+                                   get_tec_int(73, 45), 1912,
+                                   get_tec_int(93, 50), 1926)
 engine_power_change_build_after4(mzk, 313,
                                       342, 1883,
                                       446, 1897,

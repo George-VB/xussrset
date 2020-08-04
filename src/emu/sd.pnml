@@ -1,120 +1,120 @@
-﻿ // sd
+﻿ // emu_sd
 
 #define IMAGEFILE  "src/emu/sd_h.png"
-purchase_sprites(sd, 0, 0)
-MU_head_middle_sprites(12, sd_h_v1, 32, 40)
+purchase_sprites(emu_sd, 0, 0)
+MU_head_middle_sprites(12, emu_sd_h_v1, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/sd_h-bag.png"
-MU_head_middle_sprites(12, sd_h_v1u, 32, 40)
+MU_head_middle_sprites(12, emu_sd_h_v1u, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/sd_m.png"
-EMU_motor2_sprites(12, sd_m_v1, 32, 40)
+EMU_motor2_sprites(12, emu_sd_m_v1, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, sd_h_sprites_left_check,
+switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_check,
   (position_in_consist == 0) * 100 +
   (random_bits % 2))
 {
-    0: sd_h_v1u_notpowered_normal_sprites_left;
-    1: sd_h_v1_notpowered_normal_sprites_left;
-  100: sd_h_v1u_sprites_left;
-  101: sd_h_v1_sprites_left;
+    0: emu_sd_h_v1u_notpowered_normal_sprites_left;
+    1: emu_sd_h_v1_notpowered_normal_sprites_left;
+  100: emu_sd_h_v1u_sprites_left;
+  101: emu_sd_h_v1_sprites_left;
        align_12_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, sd_a_sprites_start,
+random_switch (FEAT_TRAINS, SELF, emu_sd_a_sprites_start,
   bitmask(TRIGGER_VEHICLE_SERVICE))
 {
-  1: sd_h_sprites_left_check;
-  1: sd_h_sprites_left_check;
+  1: emu_sd_h_sprites_left_check;
+  1: emu_sd_h_sprites_left_check;
 }
 
-switch (FEAT_TRAINS, SELF, sd_b_sprites_start,
+switch (FEAT_TRAINS, SELF, emu_sd_b_sprites_start,
 [  set_offset_to(-2),
-  ((LOAD_TEMP(4) != sd) * 100) +
+  ((LOAD_TEMP(4) != emu_sd) * 100) +
   (prev_vehicle_randombits() % 2) ])
 {
-    0: sd_m_v1_sprites_left;
-    1: sd_m_v1_sprites_right;
-  100: sd_m_v1_notpowered_sprites_left;
-  101: sd_m_v1_notpowered_sprites_right;
+    0: emu_sd_m_v1_sprites_left;
+    1: emu_sd_m_v1_sprites_right;
+  100: emu_sd_m_v1_notpowered_sprites_left;
+  101: emu_sd_m_v1_notpowered_sprites_right;
        align_12_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, sd_c_sprites_start,
+switch (FEAT_TRAINS, SELF, emu_sd_c_sprites_start,
 [ set_offset_to(-4),
   ((position_in_consist_from_end == 1) * 100) +
   (prev_vehicle_randombits() % 2) ])
 {
-    0: sd_h_v1_notpowered_normal_sprites_right;
-    1: sd_h_v1u_notpowered_normal_sprites_right;
-  100: sd_h_v1_sprites_right;
-  101: sd_h_v1u_sprites_right;
+    0: emu_sd_h_v1_notpowered_normal_sprites_right;
+    1: emu_sd_h_v1u_notpowered_normal_sprites_right;
+  100: emu_sd_h_v1_sprites_right;
+  101: emu_sd_h_v1u_sprites_right;
        align_12_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, sd_sprites_start,
+switch (FEAT_TRAINS, SELF, emu_sd_sprites_start,
   position_in_articulated_veh)
 {
-  0: sd_a_sprites_start;
-  2: sd_b_sprites_start;
-  4: sd_c_sprites_start;
+  0: emu_sd_a_sprites_start;
+  2: emu_sd_b_sprites_start;
+  4: emu_sd_c_sprites_start;
      dummy_sprites;
 }
 
-long_vehicle_RND(sd, sd_a_sprites_start)
+long_vehicle_RND(emu_sd, emu_sd_a_sprites_start)
 
-switch (FEAT_TRAINS, PARENT, sd_can_attach_wagon1,
-  count_veh_id(sd) < (2 * (2 + (current_year >= 1939))))
+switch (FEAT_TRAINS, PARENT, emu_sd_can_attach_wagon1,
+  count_veh_id(emu_sd) < (2 * (2 + (current_year >= 1939))))
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
-switch (FEAT_TRAINS, SELF, sd_can_attach_wagon,
-  vehicle_type_id == sd)
+switch (FEAT_TRAINS, SELF, emu_sd_can_attach_wagon,
+  vehicle_type_id == emu_sd)
 {
-  1: sd_can_attach_wagon1;
+  1: emu_sd_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, SELF, sd_articulated_part,
+switch (FEAT_TRAINS, SELF, emu_sd_articulated_part,
   extra_callback_info1)
 {
   1: return dummy4;
-  2: return sd;
+  2: return emu_sd;
   3: return dummy4;
-  4: return sd_part2;
+  4: return emu_sd_part2;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, sd_create_effect2,
+switch (FEAT_TRAINS, SELF, emu_sd_create_effect2,
   electric_create_effect(4))
 {
   return 1;
 }
 
-switch (FEAT_TRAINS, PARENT, sd_create_effect1,
-  vehicle_type_id == sd)
+switch (FEAT_TRAINS, PARENT, emu_sd_create_effect1,
+  vehicle_type_id == emu_sd)
 {
-  1: sd_create_effect2;
+  1: emu_sd_create_effect2;
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, sd_create_effect,
+switch (FEAT_TRAINS, SELF, emu_sd_create_effect,
   position_in_articulated_veh)
 {
-  2: sd_create_effect1;
+  2: emu_sd_create_effect1;
      return disable_create_effect();
 }
 
-engine_speed(sd, 85)
-engine_capacity_MU(sd, 306, sd)
-engine_power_MU(sd, 680, sd)
+engine_speed(emu_sd, 85)
+engine_capacity_MU(emu_sd, 306, emu_sd)
+engine_power_MU(emu_sd, 680, emu_sd)
 
-RC_head_check_new(sd, sd)
-switch (FEAT_TRAINS, SELF, sd_running_cost_factor,
+RC_head_check_new(emu_sd, emu_sd)
+switch (FEAT_TRAINS, SELF, emu_sd_running_cost_factor,
 [  STORE_TEMP(91, 0),    		/* 159*57/100 */	// Моторы
    STORE_TEMP(13, 1),     		/* 159*8/100 */	// Бригада
    STORE_TEMP(32, 2),    		/* 159*20/100 */	// Износ
@@ -125,9 +125,9 @@ switch (FEAT_TRAINS, SELF, sd_running_cost_factor,
    STORE_TEMP(85, 6),       // Скорость
    STORE_TEMP(59+38+38, 7),       // Тара
    STORE_TEMP(59+38+38+41, 8)])      // Максимальная масса
-{ sd_check_running_cost_factor; } // 59+50 + 50
+{ emu_sd_check_running_cost_factor; } // 59+50 + 50
 
-hint_MU_2fact(sd_b1939,
+hint_MU_2fact(emu_sd_b1939,
      calc_loading(306 / (3 * 2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_15DC,
@@ -135,7 +135,7 @@ hint_MU_2fact(sd_b1939,
      1932, 1938, 
      fact_mytishchi(), 
      string(STR_PURCHASE_HINT_FACTORY_DINAMO))
-hint_MU_2fact(sd_a1939,
+hint_MU_2fact(emu_sd_a1939,
      calc_loading(306 / (3 * 2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_15DC,
@@ -143,45 +143,45 @@ hint_MU_2fact(sd_a1939,
      1939, 1941, 
      fact_mytishchi(), 
      string(STR_PURCHASE_HINT_FACTORY_DINAMO))
-hint_change_after(sd, 1939)
+hint_change_after(emu_sd, 1939)
 
-item (FEAT_TRAINS, sd, 443) {
+item (FEAT_TRAINS, emu_sd, 443) {
   property {
     name: string(STR_NAME_SD);
     vehicle_dates(1932, 1941, 20, 10, 8, 8 + 6 + 6)
     vehicle_15dcemu(680, 59 + 38 + 38, 95.0, 306, 3 * 2 * DOUBLE_DOOR)
   }
   graphics {
-    default: sd_sprites;
-    purchase: sd_purchase_sprites;
-    speed: sd_speed;
+    default: emu_sd_sprites;
+    purchase: emu_sd_purchase_sprites;
+    speed: emu_sd_speed;
     cargo_age_period: return 60;
-    running_cost_factor: sd_running_cost_factor;
-    articulated_part: sd_articulated_part;
-    can_attach_wagon: sd_can_attach_wagon;
-    additional_text: sd_additional_text;
-    cargo_capacity: sd_cargo_capacity;
+    running_cost_factor: emu_sd_running_cost_factor;
+    articulated_part: emu_sd_articulated_part;
+    can_attach_wagon: emu_sd_can_attach_wagon;
+    additional_text: emu_sd_additional_text;
+    cargo_capacity: emu_sd_cargo_capacity;
     purchase_cargo_capacity: return 306/2;
-    power: sd_power;
-    create_effect: sd_create_effect;
+    power: emu_sd_power;
+    create_effect: emu_sd_create_effect;
     colour_mapping: any_cc_colour;
     purchase_speed: return 85;
   }
 }
 
-long_name_template(sd, STR_LONGNAME_SD)
-allow_dcemu(sd)
+long_name_template(emu_sd, STR_LONGNAME_SD)
+allow_dcemu(emu_sd)
 
-item (FEAT_TRAINS, sd_part2, 448) {
+item (FEAT_TRAINS, emu_sd_part2, 448) {
   property {
     vehicle_no_dates(1932, 1941, 20, 10, 8, 0)
     vehicle_15dcemu_c(0, 20, 10)
     cargo_allow_refit: [MAIL];
   }
   graphics {
-    default: sd_sprites;
+    default: emu_sd_sprites;
     cargo_age_period: return 60;
-    create_effect: sd_create_effect;
+    create_effect: emu_sd_create_effect;
     colour_mapping: any_cc_colour;
   }
 }
