@@ -1,31 +1,50 @@
 ﻿ /// railtracks
 
+map_color_rail = 0x07;
+map_color_ac = 0x91;
+map_color_16ac = 0x87;
+map_color_dc = 0x73;
+map_color_15dc = 0x2B; //0xB2;
+map_color_double = 0xBB;
+
 #define all_broad_rails()                  \
   "RLA0", "RLA1", "RLA2", "RLA3",          \
-  "ERA1", "ERA2", "ERA3", "ERA4",          \
-  "ERd0", "ERd1", "ERD1", "ERD2", "ERD3",  \
-  "ER2D", "ER2S"                           \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+          "ERa1", "ERa2", "ERa3", "ERa4",  \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+          "ERD1", "ERD2", "ERD3",          \
+                  "ER2D",                  \
+                  "ER2S"                   \
   
 #define all_AC_broad_rails()               \
-  "ERA1", "ERA2", "ERA3", "ERA4",          \
-  "ER2S"                                   \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+                  "ER2S"                   \
+  
+#define all_aC_broad_rails()               \
+          "ERa1", "ERa2", "ERa3", "ERa4"   \
   
 #define all_DC_broad_rails()               \
-  "ERD1", "ERD2", "ERD3",                  \
-  "ER2D", "ER2S"                           \
+          "ERD1", "ERD2", "ERD3",          \
+                  "ER2D",                  \
+                  "ER2S"                   \
 
 #define all_dC_broad_rails()               \
-  "ERd0", "ERd1", "ER2D"                   \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+                  "ER2D"                   \
 
 #define all_dDC_broad_rails()              \
-  "ERD1", "ERD2", "ERD3",                  \
-  "ERd0", "ERd1", "ER2D"                   \
+          "ERD1", "ERD2", "ERD3",          \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+                  "ER2D",                  \
+                  "ER2S"                   \
 
-#define all_ADC_broad_rails()              \
-  "ERA1", "ERA2", "ERA3", "ERA4",          \
-  "ERD1", "ERD2", "ERD3", "ER2S"           \
+#define all_ACDC_broad_rails()             \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+          "ERD1", "ERD2", "ERD3",          \
+                  "ER2D",                  \
+                  "ER2S"                   \
 
-if (enable_rails) {
+if (disable_rails != 1) {
 
 /// Пути эпохи индустриализации, пути промпредприятий (Малодеятельная линия)
 // Автономная железная дорога
@@ -48,7 +67,7 @@ item (FEAT_RAILTYPES, rla0) {
     maintenance_cost: 2;
     speed_limit: 37.5 mph; // 60 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x07;
+    map_colour: map_color_rail;
     sort_order: 0x00;
     alternative_railtype_list: ["RAIL", "BAAN"];
   }
@@ -64,7 +83,7 @@ item (FEAT_RAILTYPES, rla0) {
   }
 }
 
-item (FEAT_RAILTYPES, er15d0) {
+item (FEAT_RAILTYPES, er15dc0) {
   property {
     label: "ERd0";
     introduction_date: date(1924, 1, 1);
@@ -83,8 +102,8 @@ item (FEAT_RAILTYPES, er15d0) {
     maintenance_cost: 3;
     speed_limit: 37.5 mph; // 60 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x3E;
-    sort_order: 0x1C;
+    map_colour: map_color_15dc;
+    sort_order: 0x08;
     alternative_railtype_list: ["RAIL", "BAAd"];
   }
   graphics {
@@ -123,8 +142,8 @@ item (FEAT_RAILTYPES, rla1) {
     maintenance_cost: 2;
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x09;
-    sort_order: 0x08;
+    map_colour: map_color_rail + 2;
+    sort_order: 0x01;
     alternative_railtype_list: ["RAIL", "BBAN"];
   }
   graphics {
@@ -139,7 +158,7 @@ item (FEAT_RAILTYPES, rla1) {
   }
 }
 
-// электрифицированная железная дорога переменного тока
+// электрифицированная железная дорога переменного тока 25кВ
 // electrified railway AC (alternate current)
 item (FEAT_RAILTYPES, era1) {
   property {
@@ -160,8 +179,8 @@ item (FEAT_RAILTYPES, era1) {
     maintenance_cost: 4;
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x96;
-    sort_order: 0x18;
+    map_colour: map_color_ac + 2;
+    sort_order: 0x1C;
     alternative_railtype_list: ["ELRL", "BBAA"];
   }
   graphics {
@@ -175,6 +194,45 @@ item (FEAT_RAILTYPES, era1) {
     depots: rail1_depots;
     catenary_wire: erac_catenary_wire;
     catenary_pylons: erac_catenary_pylons;
+  }
+}
+
+// электрифицированная железная дорога переменного тока 16кВ
+// electrified railway AC (alternate current)
+item (FEAT_RAILTYPES, er16ac1) {
+  property {
+    label: "ERa1";
+    introduction_date: date(1952, 1, 1);
+    name: string(STR_NAME_ER16AC1);
+    toolbar_caption: string(STR_ER16AC1_TOOLBAR);
+    menu_text: string(STR_ER16AC1_MENU);
+    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_aC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 115;
+    maintenance_cost: 4;
+    speed_limit: 62.5 mph; // 100 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_16ac + 2;
+    sort_order: 0x18;
+    alternative_railtype_list: ["ELRL", "BBAa"];
+  }
+  graphics {
+    gui: rail1_gui;
+    track_overlay: get_rail1_track_overlay;
+    underlay: get_rail1_underlay;
+    tunnels: get_rail1_tunnels;
+    bridge_surfaces: get_rail1_bridge_surfaces;
+    level_crossings: get_rail1_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: er16ac_catenary_wire;
+    catenary_pylons: er16ac_catenary_pylons;
   }
 }
 
@@ -199,8 +257,8 @@ item (FEAT_RAILTYPES, erd1) {
     maintenance_cost: 5;
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x75;
-    sort_order: 0x1E;
+    map_colour: map_color_dc + 2;
+    sort_order: 0x0C;
     alternative_railtype_list: ["ELRL", "BBAD"];
   }
   graphics {
@@ -219,7 +277,7 @@ item (FEAT_RAILTYPES, erd1) {
 
 // электрифицированная железная дорога постоянного тока 1,5 кВ
 // electrified railway DC (direct current)
-item (FEAT_RAILTYPES, er15d1) {
+item (FEAT_RAILTYPES, er15dc1) {
   property {
     label: "ERd1";
     introduction_date: date(1924, 1, 1);
@@ -238,8 +296,8 @@ item (FEAT_RAILTYPES, er15d1) {
     maintenance_cost: 4;
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x40;   
-    sort_order: 0x1D;
+    map_colour: map_color_15dc + 2;   
+    sort_order: 0x09;
     alternative_railtype_list: ["ELRL", "BBAd"];
   }
   graphics {
@@ -274,7 +332,7 @@ item (FEAT_RAILTYPES, er2d) {
     maintenance_cost: 7;
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x8D;
+    map_colour: map_color_double;
     sort_order: 0x22;
     alternative_railtype_list: ["ELRL", "BBAE"];
   }
@@ -306,13 +364,13 @@ item (FEAT_RAILTYPES, er2s) {
     autoreplace_text: string(STR_ERDS_AUTOREPLACE);
     new_engine_text: string(STR_ERDS_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_ADC_broad_rails()];
+    powered_railtype_list: [all_ACDC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
     construction_cost: 384;
     maintenance_cost: 10;
     speed_limit: 75 mph;                      //120 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x8F;
+    map_colour: map_color_double + 2;
     sort_order: 0x23;
     alternative_railtype_list: ["ELRL", "BCAE"];
   }
@@ -352,8 +410,8 @@ item (FEAT_RAILTYPES, rla2) {
     maintenance_cost: 4;
     speed_limit: 87.5 mph;                      //140 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x0B;
-    sort_order: 0x09;
+    map_colour: map_color_rail + 4;
+    sort_order: 0x02;
     alternative_railtype_list: ["RAIL", "BDAN"];
   }
   graphics {
@@ -368,7 +426,7 @@ item (FEAT_RAILTYPES, rla2) {
   }
 }
 
-// электрифицированная железная дорога переменного тока
+// электрифицированная железная дорога переменного тока 25кВ
 item (FEAT_RAILTYPES, era2) {
   property {
     label: "ERA2";
@@ -388,8 +446,8 @@ item (FEAT_RAILTYPES, era2) {
     maintenance_cost: 7;
     speed_limit: 87.5 mph;                      //140 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x97;
-    sort_order: 0x19;
+    map_colour: map_color_ac + 4;
+    sort_order: 0x1D;
     alternative_railtype_list: ["ELRL", "BDAA"];
   }
   graphics {
@@ -406,7 +464,45 @@ item (FEAT_RAILTYPES, era2) {
   }
 }
 
-// электрифицированная железная дорога постоянного тока
+// электрифицированная железная дорога переменного тока 16кВ
+item (FEAT_RAILTYPES, er16ac2) {
+  property {
+    label: "ERa2";
+    introduction_date: date(1952, 1, 1);
+    name: string(STR_NAME_ER16AC2);
+    toolbar_caption: string(STR_ER16AC2_TOOLBAR);
+    menu_text: string(STR_ER16AC2_MENU);
+    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_AC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 230;
+    maintenance_cost: 7;
+    speed_limit: 87.5 mph;                      //140 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_16ac + 4;
+    sort_order: 0x19;
+    alternative_railtype_list: ["ELRL", "BDAa"];
+  }
+  graphics {
+    gui: rail2_gui;
+    track_overlay: get_rail2_track_overlay;
+    underlay: get_rail2_underlay;
+    tunnels: get_rail2_tunnels;
+    bridge_surfaces: get_rail2_bridge_surfaces;
+    level_crossings: get_rail2_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: er16ac_catenary_wire;
+    catenary_pylons: er16ac_catenary_pylons;
+  }
+}
+
+// электрифицированная железная дорога постоянного тока 3кВ
 item (FEAT_RAILTYPES, erd2) {
   property {
     label: "ERD2";
@@ -426,8 +522,8 @@ item (FEAT_RAILTYPES, erd2) {
     maintenance_cost: 8;
     speed_limit: 87.5 mph;                      //140 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x77;
-    sort_order: 0x1F;
+    map_colour: map_color_dc + 4;
+    sort_order: 0x0D;
     alternative_railtype_list: ["ELRL", "BDAD"];
   }
   graphics {
@@ -441,6 +537,44 @@ item (FEAT_RAILTYPES, erd2) {
     depots: rail1_depots;
     catenary_wire: erdc_catenary_wire;
     catenary_pylons: erdc_catenary_pylons;
+  }
+}
+
+// электрифицированная железная дорога постоянного тока 1,5кВ
+item (FEAT_RAILTYPES, er15dc2) {
+  property {
+    label: "ERd2";
+    introduction_date: date(1930, 1, 1);
+    name: string(STR_NAME_ER15DC2);
+    toolbar_caption: string(STR_ER15DC2_TOOLBAR);
+    menu_text: string(STR_ER15DC2_MENU);
+    build_window_caption: string(STR_ER15DC0_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15DC0_AUTOREPLACE);
+    new_engine_text: string(STR_ER15DC0_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_DC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 256;
+    maintenance_cost: 8;
+    speed_limit: 87.5 mph;                      //140 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_15dc + 4;
+    sort_order: 0x0A;
+    alternative_railtype_list: ["ELRL", "BDAd"];
+  }
+  graphics {
+    gui: rail2_gui;
+    track_overlay: get_rail2_track_overlay;
+    underlay: get_rail2_underlay;
+    tunnels: get_rail2_tunnels;
+    bridge_surfaces: get_rail2_bridge_surfaces;
+    level_crossings: get_rail2_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: er15dc_catenary_wire;
+    catenary_pylons: er15dc_catenary_pylons;
   }
 }
 
@@ -466,8 +600,8 @@ item (FEAT_RAILTYPES, rla3) {
     maintenance_cost: 8;
     speed_limit: 250 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x0D;
-    sort_order: 0x0A;
+    map_colour: map_color_rail + 6;
+    sort_order: 0x03;
     alternative_railtype_list: ["RAIL", "BEAN"];
   }
   graphics {
@@ -482,7 +616,7 @@ item (FEAT_RAILTYPES, rla3) {
   }
 }
 
-// электрифицированная железная дорога переменного тока
+// электрифицированная железная дорога переменного тока 25кВ
 item (FEAT_RAILTYPES, era3) {
   property {
     label: "ERA3";
@@ -502,8 +636,8 @@ item (FEAT_RAILTYPES, era3) {
     maintenance_cost: 14;
     speed_limit: 250 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x98;
-    sort_order: 0x1A;
+    map_colour: map_color_ac + 6;
+    sort_order: 0x1E;
     alternative_railtype_list: ["ELRL", "BEAA"];
   }
   graphics {
@@ -520,7 +654,45 @@ item (FEAT_RAILTYPES, era3) {
   }
 }
 
-// электрифицированная железная дорога постоянного тока
+// электрифицированная железная дорога переменного тока 16кВ
+item (FEAT_RAILTYPES, er16ac3) {
+  property {
+    label: "ERa3";
+    introduction_date: date(1958, 1, 1);
+    name: string(STR_NAME_ER16AC3);
+    toolbar_caption: string(STR_ER16AC3_TOOLBAR);
+    menu_text: string(STR_ER16AC3_MENU);
+    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_aC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 461;
+    maintenance_cost: 14;
+    speed_limit: 250 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_16ac + 6;
+    sort_order: 0x1A;
+    alternative_railtype_list: ["ELRL", "BEAa"];
+  }
+  graphics {
+    gui: rail3_gui;
+    track_overlay: get_rail3_track_overlay;
+    underlay: get_rail3_underlay;
+    tunnels: get_rail3_tunnels;
+    bridge_surfaces: get_rail3_bridge_surfaces;
+    level_crossings: get_rail3_level_crossings;
+    fences: fences;
+    depots: rail1_depots;
+    catenary_wire: er16ac_catenary_wire;
+    catenary_pylons: er16ac_catenary_pylons;
+  }
+}
+
+// электрифицированная железная дорога постоянного тока 3кВ
 item (FEAT_RAILTYPES, erd3) {
   property {
     label: "ERD3";
@@ -540,8 +712,8 @@ item (FEAT_RAILTYPES, erd3) {
     maintenance_cost: 16;
     speed_limit: 250 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x79;
-    sort_order: 0x20;
+    map_colour: map_color_dc + 6;
+    sort_order: 0x0E;
     alternative_railtype_list: ["ELRL", "BEAD"];
   }
   graphics {
@@ -558,9 +730,47 @@ item (FEAT_RAILTYPES, erd3) {
   }
 }
 
+// электрифицированная железная дорога постоянного тока 1,5кВ
+item (FEAT_RAILTYPES, er15dc3) {
+  property {
+    label: "ERd3";
+    introduction_date: date(1956, 1, 1);
+    name: string(STR_NAME_ER15DC3);
+    toolbar_caption: string(STR_ER15DC3_TOOLBAR);
+    menu_text: string(STR_ER15DC3_MENU);
+    build_window_caption: string(STR_ER15DC0_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15DC0_AUTOREPLACE);
+    new_engine_text: string(STR_ER15DC0_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_DC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 512;
+    maintenance_cost: 16;
+    speed_limit: 250 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_15dc + 6;
+    sort_order: 0x0B;
+    alternative_railtype_list: ["ELRL", "BEAd"];
+  }
+  graphics {
+    gui: rail3_gui;
+    track_overlay: get_rail3_track_overlay;
+    underlay: get_rail3_underlay;
+    tunnels: get_rail3_tunnels;
+    bridge_surfaces: get_rail3_bridge_surfaces;
+    level_crossings: get_rail3_level_crossings;
+    fences: fences;
+    depots: rail1_depots;
+    catenary_wire: er15dc_catenary_wire;
+    catenary_pylons: er15dc_catenary_pylons;
+  }
+}
+
 /// Высокоскоростная линия (ВСМ)
 
-// электрифицированная железная дорога переменного тока
+// электрифицированная железная дорога переменного тока 25кВ
 item (FEAT_RAILTYPES, era4) {
   property {
     label: "ERA4";
@@ -580,8 +790,8 @@ item (FEAT_RAILTYPES, era4) {
     maintenance_cost: 19;
     speed_limit: 0 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: 0x99;
-    sort_order: 0x1B;
+    map_colour: map_color_ac + 8;
+    sort_order: 0x1F;
     alternative_railtype_list: ["ELRL", "BFAA"];
   }
   graphics {
@@ -595,6 +805,44 @@ item (FEAT_RAILTYPES, era4) {
     depots: rail1_depots;
     catenary_wire: erac_catenary_wire;
     catenary_pylons: erac_catenary_pylons;
+  }
+}
+
+// электрифицированная железная дорога переменного тока 16кВ
+item (FEAT_RAILTYPES, er16ac4) {
+  property {
+    label: "ERa4";
+    introduction_date: date(2008, 1, 1);
+    name: string(STR_NAME_ER16AC4);
+    toolbar_caption: string(STR_ER16AC4_TOOLBAR);
+    menu_text: string(STR_ER16AC4_MENU);
+    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_aC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 640;
+    maintenance_cost: 19;
+    speed_limit: 0 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_16ac + 8;
+    sort_order: 0x1B;
+    alternative_railtype_list: ["ELRL", "BFAa"];
+  }
+  graphics {
+    gui: rail4_gui;
+    track_overlay: get_rail4_track_overlay;
+    underlay: get_rail4_underlay;
+    tunnels: get_rail4_tunnels;
+    bridge_surfaces: get_rail4_bridge_surfaces;
+    level_crossings: get_rail4_level_crossings;
+    fences: fences;
+    depots: rail1_depots;
+    catenary_wire: er16ac_catenary_wire;
+    catenary_pylons: er16ac_catenary_pylons;
   }
 }
 
@@ -627,10 +875,10 @@ if (grf_future_status("AKA\08")) {
   }
   
   if (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric) {
-    item (FEAT_RAILTYPES, er15d0) {
+    item (FEAT_RAILTYPES, er15dc0) {
       property {
         railtype_flags: bitmask(2); } }
-    item (FEAT_RAILTYPES, er15d1) {
+    item (FEAT_RAILTYPES, er15dc1) {
       property {
         railtype_flags: bitmask(2); } }
     item (FEAT_RAILTYPES, erd1) {
@@ -664,6 +912,30 @@ if (grf_future_status("AKA\08")) {
       property {
         railtype_flags: bitmask(2); } }
     item (FEAT_RAILTYPES, er2s) {
+      property {
+        railtype_flags: bitmask(2); } }
+  }
+
+  if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) {
+    item (FEAT_RAILTYPES, er15dc2) {
+      property {
+        railtype_flags: bitmask(2); } }
+    item (FEAT_RAILTYPES, er15dc3) {
+      property {
+        railtype_flags: bitmask(2); } }
+  }
+
+  if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_acemu && xUSSRset_disable_acelectric)) {
+    item (FEAT_RAILTYPES, er16ac1) {
+      property {
+        railtype_flags: bitmask(2); } }
+    item (FEAT_RAILTYPES, er16ac2) {
+      property {
+        railtype_flags: bitmask(2); } }
+    item (FEAT_RAILTYPES, er16ac3) {
+      property {
+        railtype_flags: bitmask(2); } }
+    item (FEAT_RAILTYPES, er16ac4) {
       property {
         railtype_flags: bitmask(2); } }
   }
