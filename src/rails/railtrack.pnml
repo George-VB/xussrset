@@ -2,10 +2,17 @@
 
 map_color_rail = 0x07;
 map_color_ac = 0x91;
-map_color_16ac = 0x87;
+map_color_15ac = 0x87;
 map_color_dc = 0x73;
 map_color_15dc = 0x2B; //0xB2;
 map_color_double = 0xBB;
+
+// 2D = D + d
+// 3D = D + d + A (ETR500)
+// 2S = A + D
+// 2s = A + d (TGV)
+// 4S = A + D + a + d (ETR575, ICE-3M)
+// 3a = A + a + d (TGV-POS)
 
 #define all_broad_rails()                  \
   "RLA0", "RLA1", "RLA2", "RLA3",          \
@@ -14,35 +21,103 @@ map_color_double = 0xBB;
   "ERd0", "ERd1", "ERd2", "ERd3",          \
           "ERD1", "ERD2", "ERD3",          \
                   "ER2D",                  \
-                  "ER2S"                   \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
   
 #define all_AC_broad_rails()               \
           "ERA1", "ERA2", "ERA3", "ERA4",  \
-                  "ER2S"                   \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
   
-#define all_aC_broad_rails()               \
-          "ERa1", "ERa2", "ERa3", "ERa4"   \
+#define all_15AC_broad_rails()             \
+          "ERa1", "ERa2", "ERa3", "ERa4",  \
+                  "ER3a",                  \
+                  "ER4S"                   \
   
 #define all_DC_broad_rails()               \
           "ERD1", "ERD2", "ERD3",          \
                   "ER2D",                  \
-                  "ER2S"                   \
+                  "ER3D",                  \
+                  "ER2S",                  \
+                  "ER4S"                   \
 
 #define all_dC_broad_rails()               \
   "ERd0", "ERd1", "ERd2", "ERd3",          \
-                  "ER2D"                   \
+                  "ER2D",                  \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
 
 #define all_dDC_broad_rails()              \
           "ERD1", "ERD2", "ERD3",          \
   "ERd0", "ERd1", "ERd2", "ERd3",          \
                   "ER2D",                  \
-                  "ER2S"                   \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
 
 #define all_ACDC_broad_rails()             \
           "ERA1", "ERA2", "ERA3", "ERA4",  \
           "ERD1", "ERD2", "ERD3",          \
                   "ER2D",                  \
-                  "ER2S"                   \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
+
+#define all_ACdDC_broad_rails()            \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+          "ERD1", "ERD2", "ERD3",          \
+                  "ER2D",                  \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
+
+#define all_AC15DC_broad_rails()           \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+                  "ER2D",                  \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
+
+#define all_aACdDC_broad_rails()           \
+          "ERa1", "ERa2", "ERa3", "ERa4",  \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+          "ERD1", "ERD2", "ERD3",          \
+                  "ER2D",                  \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
+
+#define all_aAC15DC_broad_rails()          \
+          "ERa1", "ERa2", "ERa3", "ERa4",  \
+          "ERA1", "ERA2", "ERA3", "ERA4",  \
+  "ERd0", "ERd1", "ERd2", "ERd3",          \
+                  "ER2D",                  \
+                  "ER3D",                  \
+                  "ER3a",                  \
+                  "ER2S",                  \
+                  "ER2s",                  \
+                  "ER4S"                   \
 
 if (disable_rails != 1) {
 
@@ -197,20 +272,20 @@ item (FEAT_RAILTYPES, era1) {
   }
 }
 
-// электрифицированная железная дорога переменного тока 16кВ
+// электрифицированная железная дорога переменного тока 15кВ
 // electrified railway AC (alternate current)
-item (FEAT_RAILTYPES, er16ac1) {
+item (FEAT_RAILTYPES, er15ac1) {
   property {
     label: "ERa1";
     introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ER16AC1);
-    toolbar_caption: string(STR_ER16AC1_TOOLBAR);
-    menu_text: string(STR_ER16AC1_MENU);
-    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    name: string(STR_NAME_ER15AC1);
+    toolbar_caption: string(STR_ER15AC1_TOOLBAR);
+    menu_text: string(STR_ER15AC1_MENU);
+    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_aC_broad_rails()];
+    powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
     curve_speed_multiplier: 1;
     station_graphics: RAILTYPE_STATION_NORMAL;
@@ -218,7 +293,7 @@ item (FEAT_RAILTYPES, er16ac1) {
     maintenance_cost: 4;
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_16ac + 2;
+    map_colour: map_color_15ac + 2;
     sort_order: 0x18;
     alternative_railtype_list: ["ELRL", "BBAa"];
   }
@@ -231,8 +306,8 @@ item (FEAT_RAILTYPES, er16ac1) {
     level_crossings: get_rail1_level_crossings;
     fences: fences_none;
     depots: rail1_depots;
-    catenary_wire: er16ac_catenary_wire;
-    catenary_pylons: er16ac_catenary_pylons;
+    catenary_wire: er15ac_catenary_wire;
+    catenary_pylons: er15ac_catenary_pylons;
   }
 }
 
@@ -319,12 +394,12 @@ item (FEAT_RAILTYPES, er2d) {
   property {
     label: "ER2D";
     introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ERDD);
-    toolbar_caption: string(STR_ERDD_TOOLBAR);
-    menu_text: string(STR_ERDD_MENU);
-    build_window_caption: string(STR_ERDD_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERDD_AUTOREPLACE);
-    new_engine_text: string(STR_ERDD_NEW_ENGINE);
+    name: string(STR_NAME_ERDDC);
+    toolbar_caption: string(STR_ERDDC_TOOLBAR);
+    menu_text: string(STR_ERDDC_MENU);
+    build_window_caption: string(STR_ERDDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERDDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERDDC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_dDC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -333,7 +408,7 @@ item (FEAT_RAILTYPES, er2d) {
     speed_limit: 62.5 mph; // 100 km/h;
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double;
-    sort_order: 0x22;
+    sort_order: 0x20;
     alternative_railtype_list: ["ELRL", "BBAE"];
   }
   graphics {
@@ -357,12 +432,12 @@ item (FEAT_RAILTYPES, er2s) {
   property {
     label: "ER2S";
     introduction_date: date(1963, 1, 1);
-    name: string(STR_NAME_ERDS);
-    toolbar_caption: string(STR_ERDS_TOOLBAR);
-    menu_text: string(STR_ERDS_MENU);
-    build_window_caption: string(STR_ERDS_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERDS_AUTOREPLACE);
-    new_engine_text: string(STR_ERDS_NEW_ENGINE);
+    name: string(STR_NAME_ERACDC);
+    toolbar_caption: string(STR_ERACDC_TOOLBAR);
+    menu_text: string(STR_ERACDC_MENU);
+    build_window_caption: string(STR_ERACDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERACDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERACDC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_ACDC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -371,7 +446,151 @@ item (FEAT_RAILTYPES, er2s) {
     speed_limit: 75 mph;                      //120 km/h;
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double + 2;
+    sort_order: 0x21;
+    alternative_railtype_list: ["ELRL", "BCAE"];
+  }
+  graphics {
+    gui: rail2_gui;
+    track_overlay: get_rail2_track_overlay;
+    underlay: get_rail2_underlay;
+    tunnels: get_rail2_tunnels;
+    bridge_surfaces: get_rail2_bridge_surfaces;
+    level_crossings: get_rail2_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: erds_catenary_wire;
+    catenary_pylons: erds_catenary_pylons;
+  }
+}
+
+// Двусистемная ж/д (double-system)
+item (FEAT_RAILTYPES, er2ac15dc) {
+  property {
+    label: "ER2s";
+    introduction_date: date(1963, 1, 1);
+    name: string(STR_NAME_ERAC15DC);
+    toolbar_caption: string(STR_ERAC15DC_TOOLBAR);
+    menu_text: string(STR_ERAC15DC_MENU);
+    build_window_caption: string(STR_ERAC15DC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAC15DC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAC15DC_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_AC15DC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    construction_cost: 384;
+    maintenance_cost: 10;
+    speed_limit: 75 mph;                      //120 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_double + 4;
+    sort_order: 0x22;
+    alternative_railtype_list: ["ELRL", "BCAE"];
+  }
+  graphics {
+    gui: rail2_gui;
+    track_overlay: get_rail2_track_overlay;
+    underlay: get_rail2_underlay;
+    tunnels: get_rail2_tunnels;
+    bridge_surfaces: get_rail2_bridge_surfaces;
+    level_crossings: get_rail2_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: erds_catenary_wire;
+    catenary_pylons: erds_catenary_pylons;
+  }
+}
+
+// Двусистемная ж/д (double-system)
+item (FEAT_RAILTYPES, er3acddc) {
+  property {
+    label: "ER3D";
+    introduction_date: date(1963, 1, 1);
+    name: string(STR_NAME_ERACDDC);
+    toolbar_caption: string(STR_ERACDDC_TOOLBAR);
+    menu_text: string(STR_ERACDDC_MENU);
+    build_window_caption: string(STR_ERACDDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERACDDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERACDDC_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_ACdDC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    construction_cost: 384;
+    maintenance_cost: 10;
+    speed_limit: 75 mph;                      //120 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_double + 6;
     sort_order: 0x23;
+    alternative_railtype_list: ["ELRL", "BCAE"];
+  }
+  graphics {
+    gui: rail2_gui;
+    track_overlay: get_rail2_track_overlay;
+    underlay: get_rail2_underlay;
+    tunnels: get_rail2_tunnels;
+    bridge_surfaces: get_rail2_bridge_surfaces;
+    level_crossings: get_rail2_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: erds_catenary_wire;
+    catenary_pylons: erds_catenary_pylons;
+  }
+}
+
+// Двусистемная ж/д (double-system)
+item (FEAT_RAILTYPES, er4aacddc) {
+  property {
+    label: "ER4S";
+    introduction_date: date(1963, 1, 1);
+    name: string(STR_NAME_ERAACDDC);
+    toolbar_caption: string(STR_ERAACDDC_TOOLBAR);
+    menu_text: string(STR_ERAACDDC_MENU);
+    build_window_caption: string(STR_ERAACDDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAACDDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAACDDC_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_aACdDC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    construction_cost: 384;
+    maintenance_cost: 10;
+    speed_limit: 75 mph;                      //120 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_double + 10;
+    sort_order: 0x25;
+    alternative_railtype_list: ["ELRL", "BCAE"];
+  }
+  graphics {
+    gui: rail2_gui;
+    track_overlay: get_rail2_track_overlay;
+    underlay: get_rail2_underlay;
+    tunnels: get_rail2_tunnels;
+    bridge_surfaces: get_rail2_bridge_surfaces;
+    level_crossings: get_rail2_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: erds_catenary_wire;
+    catenary_pylons: erds_catenary_pylons;
+  }
+}
+
+// Двусистемная ж/д (double-system)
+item (FEAT_RAILTYPES, er3aac15dc) {
+  property {
+    label: "ER3a";
+    introduction_date: date(1963, 1, 1);
+    name: string(STR_NAME_ERAAC15DC);
+    toolbar_caption: string(STR_ERAAC15DC_TOOLBAR);
+    menu_text: string(STR_ERAAC15DC_MENU);
+    build_window_caption: string(STR_ERAAC15DC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAAC15DC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAAC15DC_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_aAC15DC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    construction_cost: 384;
+    maintenance_cost: 10;
+    speed_limit: 75 mph;                      //120 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_double + 8;
+    sort_order: 0x24;
     alternative_railtype_list: ["ELRL", "BCAE"];
   }
   graphics {
@@ -464,19 +683,19 @@ item (FEAT_RAILTYPES, era2) {
   }
 }
 
-// электрифицированная железная дорога переменного тока 16кВ
-item (FEAT_RAILTYPES, er16ac2) {
+// электрифицированная железная дорога переменного тока 15кВ
+item (FEAT_RAILTYPES, er15ac2) {
   property {
     label: "ERa2";
     introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ER16AC2);
-    toolbar_caption: string(STR_ER16AC2_TOOLBAR);
-    menu_text: string(STR_ER16AC2_MENU);
-    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    name: string(STR_NAME_ER15AC2);
+    toolbar_caption: string(STR_ER15AC2_TOOLBAR);
+    menu_text: string(STR_ER15AC2_MENU);
+    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_AC_broad_rails()];
+    powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
     curve_speed_multiplier: 1;
     station_graphics: RAILTYPE_STATION_NORMAL;
@@ -484,7 +703,7 @@ item (FEAT_RAILTYPES, er16ac2) {
     maintenance_cost: 7;
     speed_limit: 87.5 mph;                      //140 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_16ac + 4;
+    map_colour: map_color_15ac + 4;
     sort_order: 0x19;
     alternative_railtype_list: ["ELRL", "BDAa"];
   }
@@ -497,8 +716,8 @@ item (FEAT_RAILTYPES, er16ac2) {
     level_crossings: get_rail2_level_crossings;
     fences: fences_none;
     depots: rail1_depots;
-    catenary_wire: er16ac_catenary_wire;
-    catenary_pylons: er16ac_catenary_pylons;
+    catenary_wire: er15ac_catenary_wire;
+    catenary_pylons: er15ac_catenary_pylons;
   }
 }
 
@@ -654,19 +873,19 @@ item (FEAT_RAILTYPES, era3) {
   }
 }
 
-// электрифицированная железная дорога переменного тока 16кВ
-item (FEAT_RAILTYPES, er16ac3) {
+// электрифицированная железная дорога переменного тока 15кВ
+item (FEAT_RAILTYPES, er15ac3) {
   property {
     label: "ERa3";
     introduction_date: date(1958, 1, 1);
-    name: string(STR_NAME_ER16AC3);
-    toolbar_caption: string(STR_ER16AC3_TOOLBAR);
-    menu_text: string(STR_ER16AC3_MENU);
-    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    name: string(STR_NAME_ER15AC3);
+    toolbar_caption: string(STR_ER15AC3_TOOLBAR);
+    menu_text: string(STR_ER15AC3_MENU);
+    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_aC_broad_rails()];
+    powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
     curve_speed_multiplier: 1;
     station_graphics: RAILTYPE_STATION_NORMAL;
@@ -674,7 +893,7 @@ item (FEAT_RAILTYPES, er16ac3) {
     maintenance_cost: 14;
     speed_limit: 250 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_16ac + 6;
+    map_colour: map_color_15ac + 6;
     sort_order: 0x1A;
     alternative_railtype_list: ["ELRL", "BEAa"];
   }
@@ -687,8 +906,8 @@ item (FEAT_RAILTYPES, er16ac3) {
     level_crossings: get_rail3_level_crossings;
     fences: fences;
     depots: rail1_depots;
-    catenary_wire: er16ac_catenary_wire;
-    catenary_pylons: er16ac_catenary_pylons;
+    catenary_wire: er15ac_catenary_wire;
+    catenary_pylons: er15ac_catenary_pylons;
   }
 }
 
@@ -808,19 +1027,19 @@ item (FEAT_RAILTYPES, era4) {
   }
 }
 
-// электрифицированная железная дорога переменного тока 16кВ
-item (FEAT_RAILTYPES, er16ac4) {
+// электрифицированная железная дорога переменного тока 15кВ
+item (FEAT_RAILTYPES, er15ac4) {
   property {
     label: "ERa4";
     introduction_date: date(2008, 1, 1);
-    name: string(STR_NAME_ER16AC4);
-    toolbar_caption: string(STR_ER16AC4_TOOLBAR);
-    menu_text: string(STR_ER16AC4_MENU);
-    build_window_caption: string(STR_ER16AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER16AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER16AC1_NEW_ENGINE);
+    name: string(STR_NAME_ER15AC4);
+    toolbar_caption: string(STR_ER15AC4_TOOLBAR);
+    menu_text: string(STR_ER15AC4_MENU);
+    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_aC_broad_rails()];
+    powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
     curve_speed_multiplier: 1;
     station_graphics: RAILTYPE_STATION_NORMAL;
@@ -828,7 +1047,7 @@ item (FEAT_RAILTYPES, er16ac4) {
     maintenance_cost: 19;
     speed_limit: 0 km/h;
     acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_16ac + 8;
+    map_colour: map_color_15ac + 8;
     sort_order: 0x1B;
     alternative_railtype_list: ["ELRL", "BFAa"];
   }
@@ -841,8 +1060,8 @@ item (FEAT_RAILTYPES, er16ac4) {
     level_crossings: get_rail4_level_crossings;
     fences: fences;
     depots: rail1_depots;
-    catenary_wire: er16ac_catenary_wire;
-    catenary_pylons: er16ac_catenary_pylons;
+    catenary_wire: er15ac_catenary_wire;
+    catenary_pylons: er15ac_catenary_pylons;
   }
 }
 
@@ -862,83 +1081,99 @@ if (grf_future_status("AKA\08")) {
   if (xUSSRset_disable_dmu && xUSSRset_disable_steamer && xUSSRset_disable_diesel) {
     item (FEAT_RAILTYPES, rla0) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, rla1) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, rla2) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, rla3) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
   }
   
   if (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric) {
     item (FEAT_RAILTYPES, er15dc0) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er15dc1) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, erd1) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, erd2) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, erd3) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er2d) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er2s) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
   }
   
   if (xUSSRset_disable_acemu && xUSSRset_disable_acelectric) {
     item (FEAT_RAILTYPES, era1) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, era2) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, era3) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, era4) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er2s) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
   }
 
   if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) {
     item (FEAT_RAILTYPES, er15dc2) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er15dc3) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
   }
 
   if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_acemu && xUSSRset_disable_acelectric)) {
-    item (FEAT_RAILTYPES, er16ac1) {
+    item (FEAT_RAILTYPES, er15ac1) {
       property {
-        railtype_flags: bitmask(2); } }
-    item (FEAT_RAILTYPES, er16ac2) {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15ac2) {
       property {
-        railtype_flags: bitmask(2); } }
-    item (FEAT_RAILTYPES, er16ac3) {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15ac3) {
       property {
-        railtype_flags: bitmask(2); } }
-    item (FEAT_RAILTYPES, er16ac4) {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15ac4) {
       property {
-        railtype_flags: bitmask(2); } }
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
   }
+
+  if (1 || (! grf_future_status("Meo\B0"))) {  
+// данные виды тока для предназначены для создания станций, а только для ПС 
+    item (FEAT_RAILTYPES, er2ac15dc) {
+      property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er3acddc) {
+      property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er4aacddc) {
+      property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er3aac15dc) {
+      property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+  } 
 }
 
 }
