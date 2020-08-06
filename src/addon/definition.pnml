@@ -42,21 +42,41 @@ disable_acdcemu      = 0;
   count_veh_id(tgv_duplex))  \
 
 // Шаблоны для родов тока
-#define is_ERAA_ds(name, nameERA, nameother)        \
-switch (FEAT_TRAINS, SELF, name, current_railtype)  \
-{ ERa1: nameERA;                                    \
-  ERa2: nameERA;                                    \
-  ERa3: nameERA;                                    \
-  ERa4: nameERA;                                    \
-  ER4S: nameERA;                                    \
-  ER3a: nameERA;                                    \
-        nameother; }                                \
+#define on_ERAA()                   \
+  ((current_railtype == ERa1) ||    \
+   (current_railtype == ERa2) ||    \
+   (current_railtype == ERa3) ||    \
+   (current_railtype == ERa4))      \
+
+#define on_any_ERAA()               \
+  (on_ERAA()                  ||    \
+   (current_railtype == ER3a) ||    \
+   (current_railtype == ER4S))      \
+
+#define is_ERAA_ds(name, nameERAA, nameother)     \
+switch (FEAT_TRAINS, SELF, name, on_any_ERAA())   \
+{ 1: nameERAA;                                    \
+     nameother; }                                 \
 
 // Определение мощности в зависимости от типа пути
 #define engine_power_change_AAC_DC(name)                       \
-is_ERAA_ds(name##_2_power, name##_AAC_power, name##_DC_power)  \
+is_ERAA_ds(name##_2_power, name##_15AC_power, name##_DC_power)  \
 is_ERA_ds(name##_power, name##_AC_power, name##_2_power)       \
-                        
+
+#define engine_power_change_AAC_DDC(name)                      \
+is_ERD_ds(name##_3_power, name##_DC_power, name##_15DC_power)  \
+is_ERAA_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
+is_ERA_ds(name##_power, name##_AC_power, name##_2_power)       \
+
+#define engine_speed_change_AAC_DC(name)                        \
+is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_DC_speed)  \
+is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)        \
+
+#define engine_speed_change_AAC_DDC(name)                       \
+is_ERD_ds(name##_3_speed, name##_DC_speed, name##_15DC_speed)   \
+is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_3_speed)   \
+is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)        \
+
 // общий шаблон свойств
 #define get_15ac_track_type()             ERa1
 #define get_15ac_track_type_emu()         ERa2

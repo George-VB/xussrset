@@ -194,6 +194,13 @@ switch (FEAT_TRAINS, SELF, tgv_rd_can_attach_wagon,
      return string(STR_CAN_ATTACH_TGV);
 }
 
+switch (FEAT_TRAINS, SELF, tgv_rd_cargo_subtype_text,
+  cargo_subtype)
+{
+  LV_SNCF_CARMILLON: return string(STR_REFIT_SNCF_CARMILLON);
+                     return string(STR_REFIT_SNCF_ATLANTIQUE);
+}
+
 RC_head_check_tgv_new(tgv_rd)
 switch (FEAT_TRAINS, SELF, tgv_rd_running_cost_factor,
 [  STORE_TEMP(1561, 0),      // Моторы
@@ -203,23 +210,18 @@ switch (FEAT_TRAINS, SELF, tgv_rd_running_cost_factor,
    STORE_TEMP(383, 4),       // ТО
    STORE_TEMP(27, 5),        // Сертификация
 
-   STORE_TEMP(320, 6),       // Скорость
-   STORE_TEMP(383, 7),       // Тара
-   STORE_TEMP(414, 8)])      // Максимальная масса
+   STORE_TEMP(on_any_ERA() ? 320 : 250, 6),  // Скорость
+   STORE_TEMP(383, 7),                       // Тара
+   STORE_TEMP(414, 8)])                      // Максимальная масса
 { tgv_rd_check_running_cost_factor; }
-
-switch (FEAT_TRAINS, SELF, tgv_rd_cargo_subtype_text,
-  cargo_subtype)
-{
-  LV_SNCF_CARMILLON: return string(STR_REFIT_SNCF_CARMILLON);
-                     return string(STR_REFIT_SNCF_ATLANTIQUE);
-}
 
 engine_capacity_MU_tgv(tgv_rd, 348)
 engine_power_MU_tgv(tgv_rd_DC, 5003)
 engine_power_MU_tgv(tgv_rd_AC, 11965)
 engine_power_change_AC_DC(tgv_rd)
-engine_speed(tgv_rd, 320)
+engine_speed(tgv_rd_DC, 250)
+engine_speed(tgv_rd_AC, 320)
+engine_speed_change_AC_DC(tgv_rd)
 hint_MU_comment(tgv_rd,
      calc_loading(max(348 / (4 * WAGON_DOOR), 197 / (3 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
@@ -228,7 +230,7 @@ hint_MU_comment(tgv_rd,
      1995, 1998, 
      string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
      string(STR_PURCHASE_HINT_LIST2_COMMENT,	                                    	
-            string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5003),
+            string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 250, 5003),
             string(STR_PURCHASE_HINT_TGV)))
 
 item (FEAT_TRAINS, tgv_rd, 665) {

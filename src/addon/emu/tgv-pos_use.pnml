@@ -219,6 +219,13 @@ switch (FEAT_TRAINS, SELF, tgv_pos_can_attach_wagon,
      return string(STR_CAN_ATTACH_TGV);
 }
 
+switch (FEAT_TRAINS, SELF, tgv_pos_cargo_subtype_text,
+  cargo_subtype)
+{
+  LV_SNCF_CARMILLON: return string(STR_REFIT_SNCF_CARMILLON);
+                     return string(STR_REFIT_SNCF_ATLANTIQUE);
+}
+
 RC_head_check_tgv_new(tgv_pos)
 switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor,
 [  STORE_TEMP(1561, 0),      // Моторы
@@ -228,24 +235,20 @@ switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor,
    STORE_TEMP(383, 4),       // ТО
    STORE_TEMP(27, 5),        // Сертификация
 
-   STORE_TEMP(320, 6),       // Скорость
-   STORE_TEMP(383, 7),       // Тара
-   STORE_TEMP(414, 8)])      // Максимальная масса
+   STORE_TEMP(on_any_ERA() ? 320 : on_any_ERAA() ? 320 : 250, 6),       // Скорость
+   STORE_TEMP(383, 7),                                                  // Тара
+   STORE_TEMP(414, 8)])                                                 // Максимальная масса
 { tgv_pos_check_running_cost_factor; }
-
-switch (FEAT_TRAINS, SELF, tgv_pos_cargo_subtype_text,
-  cargo_subtype)
-{
-  LV_SNCF_CARMILLON: return string(STR_REFIT_SNCF_CARMILLON);
-                     return string(STR_REFIT_SNCF_ATLANTIQUE);
-}
 
 engine_capacity_MU_tgv(tgv_pos, 257)
 engine_power_MU_tgv(tgv_pos_DC, 4935)
-engine_power_MU_tgv(tgv_pos_AAC, 9655)
+engine_power_MU_tgv(tgv_pos_15AC, 9655)
 engine_power_MU_tgv(tgv_pos_AC, 12873)
 engine_power_change_AAC_DC(tgv_pos)
-engine_speed(tgv_pos, 320)
+engine_speed(tgv_pos_DC, 250)
+engine_speed(tgv_pos_15AC, 320)
+engine_speed(tgv_pos_AC, 320)
+engine_speed_change_AAC_DC(tgv_pos)
 hint_MU_comment(tgv_pos,
      calc_loading(max(257 / (4 * WAGON_DOOR), 120 / (3 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
@@ -254,7 +257,7 @@ hint_MU_comment(tgv_pos,
      2006, 2007, 
      string(STR_PURCHASE_HINT_FACTORY_ALSTOM_TRANS),
      string(STR_PURCHASE_HINT_LIST2_COMMENT,	     
-            string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 9655),
+            string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 250, 9655),
             string(STR_PURCHASE_HINT_TGV)))
 
 item (FEAT_TRAINS, tgv_pos, 656) {

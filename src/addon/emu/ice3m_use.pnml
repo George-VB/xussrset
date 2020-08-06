@@ -148,38 +148,27 @@ switch (FEAT_TRAINS, SELF, ice3m_can_attach_wagon,
 }
 
 RC_head_check_new(ice3m, ice3m)
-switch (FEAT_TRAINS, SELF, ice3m_AC_running_cost_factor,
-[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
-   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
-   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
-   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
+switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(330, 6),       // Скорость
-   STORE_TEMP(423, 7),       // Тара
-   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
-{ ice3m_check_running_cost_factor; } // 1921+817
-switch (FEAT_TRAINS, SELF, ice3m_DC_running_cost_factor,
-[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
-   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
-   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
-   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
-
-   STORE_TEMP(220, 6),       // Скорость
-   STORE_TEMP(423, 7),       // Тара
-   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
-{ ice3m_check_running_cost_factor; } // 1921+817
-engine_RC_change_AC_DC(ice3m)
+   STORE_TEMP(on_any_ERA() ? 330 : on_any_ERAA() ? 330 : 250, 6),    // Скорость
+   STORE_TEMP(423, 7),                                               // Тара
+   STORE_TEMP(467, 8)])                                              // Максимальная масса
+{ ice3m_check_running_cost_factor; }                                 // 1921+817
 
 engine_power_MU(ice3m_DC, 5846, ice3m)
+engine_power_MU(ice3m_15AC, 10876, ice3m)
 engine_power_MU(ice3m_AC, 10876, ice3m)
-engine_power_change_AC_DC(ice3m)
+engine_power_change_AAC_DC(ice3m)
+engine_speed(ice3m_15AC, 330)
 engine_speed(ice3m_AC, 330)
 engine_speed(ice3m_DC, 220)
-engine_speed_change_AC_DC(ice3m)
+engine_speed_change_AAC_DC(ice3m)
 engine_capacity_MU(ice3m, 242, ice3m)
 hint_MU_with_subtype_noto_comment(ice3m,
      calc_loading(max(242 / (7 * WAGON_DOOR), 136 / (5 * WAGON_DOOR))),
@@ -188,9 +177,7 @@ hint_MU_with_subtype_noto_comment(ice3m,
      STR_SECTIONS_MU_S1_2of8,
      2002,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
-     string(STR_PURCHASE_HINT_LIST2_COMMENT,	     
-            string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DC, 220),
-            string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DC, 5846)))
+     string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 220, 5846))
 
 item (FEAT_TRAINS, ice3m, 138) {
   property { 

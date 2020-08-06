@@ -193,41 +193,27 @@ switch (FEAT_TRAINS, SELF, etr575_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-RC_head_check_new(etr575, etr575)
+RC_head_check_new(etr575, etr575)        
+switch (FEAT_TRAINS, SELF, etr575_running_cost_factor,
+[  STORE_TEMP(1561, 0),               // Моторы
+   STORE_TEMP(219, 1),                // Бригада
+   STORE_TEMP(548, 2),                // Износ
+   STORE_TEMP(0, 3),                  // Сопровождение
+   STORE_TEMP(383, 4),                // ТО
+   STORE_TEMP(27, 5),                 // Сертификация
 
-switch (FEAT_TRAINS, SELF, etr575_DC_running_cost_factor,
-[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
-   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
-   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
-   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
-
-   STORE_TEMP(250, 6),       // Скорость
-   STORE_TEMP(423, 7),       // Тара
-   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
+   STORE_TEMP(on_any_ERA() ? 360 : on_any_ERAA() ? 320 : on_any_ERD() ? 250 : 200, 6),                // Скорость
+   STORE_TEMP(423, 7),                // Тара
+   STORE_TEMP(467, 8)])               // Максимальная масса
 { etr575_check_running_cost_factor; } // 1921+817
-
-switch (FEAT_TRAINS, SELF, etr575_AC_running_cost_factor,
-[  STORE_TEMP(1561, 0),    		/* 2738*57/100 */	// Моторы
-   STORE_TEMP(219, 1),     		/* 2738*8/100 */	// Бригада
-   STORE_TEMP(548, 2),    		/* 2738*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(383, 4),    		/* 2738*14/100 */	// ТО
-   STORE_TEMP(27, 5),       		/* 2738/100 */	// Сертификация
-
-   STORE_TEMP(320, 6),       // Скорость
-   STORE_TEMP(423, 7),       // Тара
-   STORE_TEMP(467, 8)])      		/* 423+44 */	// Максимальная масса
-{ etr575_check_running_cost_factor; } // 1921+817
-
-engine_RC_change_AC_DC(etr575)
 
 engine_capacity_MU(etr575, 460, etr575)
 engine_power_MU(etr575, 8266, etr575)
-engine_speed(etr575_AC, 320)
+engine_speed(etr575_AC, 360)
+engine_speed(etr575_15AC, 320)
 engine_speed(etr575_DC, 250)
-engine_speed_change_AC_DC(etr575)
+engine_speed(etr575_15DC, 200)
+engine_speed_change_AAC_DDC(etr575)
 
 hint_MU_noto_comment(etr575,
      calc_loading(max(460 / (10 * WAGON_DOOR), 48 / (WAGON_DOOR))),
