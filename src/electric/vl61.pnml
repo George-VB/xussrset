@@ -5,108 +5,32 @@ purchase_sprites(vl61, 0, 0)
 electric1r_2_sprites(10, vl61_v1, 32,  40)
 electric1r_2_sprites(10, vl61_v2, 32, 375)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl61d.png"
-electric1r_2_sprites(10, vl61d_v1, 32,  40)
-electric1r_2_sprites(10, vl61d_v2, 32, 375)
-#undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl61_sprites_left_1,
+switch (FEAT_TRAINS, SELF, vl61_sprites_left,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl61_v1_sprites_left;
      vl61_v2_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, vl61d_sprites_left,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl61d_v1_sprites_left;
-     vl61d_v2_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, vl61_sprites_left,
-  cargo_subtype)
-{
-  0: vl61_sprites_left_1;
-  1: vl61d_sprites_left;
-     align_10_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, vl61_sprites_right_1,
+switch (FEAT_TRAINS, SELF, vl61_sprites_right,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl61_v1_sprites_right;
      vl61_v2_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, vl61d_sprites_right,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl61d_v1_sprites_right;
-     vl61d_v2_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, vl61_sprites_right,
-  cargo_subtype)
-{
-  0: vl61_sprites_right_1;
-  1: vl61d_sprites_right;
-     align_10_sprites;
-}
-
 engine_RNDany_direction_template(vl61, 5, 3)
 
 long_vehicle_sp(vl61)
-
-switch (FEAT_TRAINS, SELF, vl61_power1,
-  cargo_subtype)
-{
-  1: return get_power_in_cb(2660);
-     return get_power_in_cb(2);
-}
-
-is_ERA_ds(vl61_power, return get_power_in_cb(2660), vl61_power1)
 
 engine_speed_change_after(vl61, 75,
                                 85, 1960)
 engine_penalise_speed0(vl61)
 
-switch (FEAT_TRAINS, PARENT, vl61_bitmask_vehicle_info_advanced2,
-  (vehicle_type_id == vl61) && (cargo_subtype == 1))
-{
-  1: return 0;
-     return bitmask(FLAG_PENALISE_SPEED);
-}
-
-switch (FEAT_TRAINS, SELF, vl61_bitmask_vehicle_info_advanced1,
-  position_in_consist * vehicle_is_powered)
-{
-  0: return 0;
-  2: vl61_bitmask_vehicle_info_advanced2;
-     return bitmask(FLAG_PENALISE_SPEED);
-}
-
-switch (FEAT_TRAINS, SELF, vl61_bitmask_vehicle_info_advanced,
-  cargo_subtype == 1)
-{
-  1: vl61_bitmask_vehicle_info_advanced1;
-     vl61_bitmask_vehicle_info;
-}
-
-switch (FEAT_TRAINS, SELF, vl61_a1963_cargo_subtype_text,
-  cargo_subtype)
-{
-  1: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL61D), "");
-     return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_NAME_VL61), "");
-}
-
-  livery_template_none(vl61_b1963)
-livery_template_service_year(vl61, 1963)
-
-engine_refit_cost_for_e2_livery_change(vl61, 1, 14, 14)
 engine_electric1_2_effect(vl61_create_effect, -2, 4)
 
-switch (FEAT_TRAINS, SELF, vl61_v1_running_cost_factor,
+switch (FEAT_TRAINS, SELF, vl61_running_cost_factor,
 [  STORE_TEMP(158, 0),    		/* 278*57/100 */	// Моторы
    STORE_TEMP(22, 1),     		/* 278*8/100 */	// Бригада
    STORE_TEMP(56, 2),    		/* 278*20/100 */	// Износ
@@ -119,43 +43,18 @@ switch (FEAT_TRAINS, SELF, vl61_v1_running_cost_factor,
    STORE_TEMP(131, 8)])      // Максимальная масса
 { all_running_cost_factor; } // 278 // weight 131
 
-switch (FEAT_TRAINS, SELF, vl61d_running_cost_factor,
-[  STORE_TEMP(200, 0),    		/* 350*57/100 */	// Моторы
-   STORE_TEMP(28, 1),     		/* 350*8/100 */	// Бригада
-   STORE_TEMP(70, 2),    		/* 350*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(49, 4),    		/* 350*14/100 */	// ТО
-   STORE_TEMP(4, 5),       		/* 350/100 */	// Сертификация
-
-   STORE_TEMP(75 + 10 * (current_year >= 1960), 6),       // Скорость
-   STORE_TEMP(131, 7),       // Тара
-   STORE_TEMP(131, 8)])      // Максимальная масса
-{ all_running_cost_factor; } // 350
-
-switch (FEAT_TRAINS, SELF, vl61_running_cost_factor,
-  cargo_subtype == 1)
-{ 0: vl61_v1_running_cost_factor;
-     vl61d_running_cost_factor; }
-
-hint_engine(vl61_b1963,
+hint_engine(vl61,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_1,
      1954, 1957,
      fact_novocherkassk())
-hint_engine_comment(vl61_a1963,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
-     STR_PURCHASE_HINT_SECTIONS_1,
-     1954, 1957,
-     fact_novocherkassk(),
-     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_ACDC)))
-hint_change_after(vl61, 1963)
 
 item (FEAT_TRAINS, vl61, 189) {
   property {
     name: string(STR_NAME_VL61);
     vehicle_dates(1954, 1957, 20, 10, 8, 39)
     vehicle_passcargo()
-    vehicle_acdcelectric(2660, 131, 431.0)
+    vehicle_acelectric(2660, 131, 431.0)
   }
   graphics {
     default: vl61_sprites;
@@ -166,12 +65,8 @@ item (FEAT_TRAINS, vl61, 189) {
     additional_text: vl61_additional_text;
     speed: vl61_speed;
     purchase_speed: vl61_purchase_speed;
-    bitmask_vehicle_info: vl61_bitmask_vehicle_info_advanced;
+    bitmask_vehicle_info: vl61_bitmask_vehicle_info;
     cargo_capacity: return 0;
-    cargo_subtype_text: vl61_cargo_subtype_text;
-    refit_cost: vl61_refit_cost;
-    power: vl61_power;
-    purchase_power: get_power_in_cb(2660);
     create_effect: vl61_create_effect;
     running_cost_factor: vl61_running_cost_factor;
     colour_mapping: any_cc_colour;

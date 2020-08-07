@@ -20,9 +20,6 @@ switch (FEAT_TRAINS, SELF, vl19_a1933_sprites_left,
   LV_RAL6002: vl19_v2_sprites_left;
   LV_RAL6020: vl19_v3_sprites_left;
 
-  0xDD: vl19_v2_sprites_left;
-  0xDE: vl19_v3_sprites_left;
-  0xDF: vl19_v4_sprites_left;
   0xE0: vl19_v2_sprites_left;
   0xE1: vl19_v3_sprites_left;
   0xE2: vl19_v4_sprites_left;
@@ -37,9 +34,6 @@ switch (FEAT_TRAINS, SELF, vl19_a1933_sprites_right,
   LV_RAL6002: vl19_v2_sprites_right;
   LV_RAL6020: vl19_v3_sprites_right;
 
-  0xDD: vl19_v2_sprites_right;
-  0xDE: vl19_v3_sprites_right;
-  0xDF: vl19_v4_sprites_right;
   0xE0: vl19_v2_sprites_right;
   0xE1: vl19_v3_sprites_right;
   0xE2: vl19_v4_sprites_right;
@@ -51,16 +45,11 @@ engine_pre_template(vl19, 1933, right)
 engine_RNDany_direction_template(vl19, 5, 3)
 long_vehicle_sp(vl19)
 
-is_ERD_ds(vl19_power2, return get_power_in_cb(2447), return get_power_in_cb(2))
-is_ERD_ds(vl19_power3, return get_power_in_cb(2661), return get_power_in_cb(2))
-
 switch (FEAT_TRAINS, SELF, vl19_power,
-  (cargo_subtype >= 0xDD) +
   (cargo_subtype >= 0xE0))
 {
-  1: return get_power_in_cb(2447);
-  2: vl19_power3;
-     vl19_power2;
+  0: return get_power_in_cb(2447);
+     get_power_in_cb(2661);
 }
 
 switch (FEAT_TRAINS, SELF, vl19_weight,
@@ -89,46 +78,21 @@ switch (FEAT_TRAINS, SELF, vl19_speed,
   livery_template(vl19_a1933_b1947_alt, TTD_53, LV_RAL6020, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   livery_template_alt(vl19_a1933_b1947, TTD_96)
 
-  livery_template_refit3(vl19_a1933_a1947_3, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_VL19M, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_TTD_96, vl19_a1933_b1947)
-
-  switch (FEAT_TRAINS, SELF, vl19_a1933_a1947_cargo_subtype_text,
-  cargo_subtype)
-{
-  0xDD: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_VL19_1500), string(STR_REFIT_TTD_53));
-  0xDE: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_VL19_1500), string(STR_REFIT_TTD_59));
-  0xDF: return string(STR_REFIT_FACTORY_GENERAL_TYPE, string(STR_PURCHASE_HINT_VL19_1500), string(STR_REFIT_TTD_96));
-        vl19_a1933_a1947_3_cargo_subtype_text;
-}
-
+  livery_template_refit3(vl19_a1933_a1947, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_VL19M, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_TTD_96, vl19_a1933_b1947)
 livery_template_service_year(vl19_a1933, 1947)
 livery_template_prealt(vl19, 1933)
 
 engine_electric1_2_effect(vl19_create_effect, -2, 4)
 engine_penalise_speed(vl19, 2)
-
-switch (FEAT_TRAINS, SELF, vl19_refit_cost,                                     
-  ((extra_callback_info1 & 0xFF00) >= (0xDD << 8)) + 
-  ((extra_callback_info1 & 0xFF00) >= (0xE0 << 8)) + 
-   (((cargo_subtype >= 0xDD) + (cargo_subtype >= 0xE0)) * 3)) 
-{ 
-  1: return 2;  // 0 -> DD                                                                 
-  2: return 2;  // 0 -> E0                                                               
-  3: return 1;  // DD -> 0                                                    
-  4: return 0;  // DD -> DD                                                              
-  5: return 1;  // DD -> E0
-  6: return 1;  // E0 -> 0
-  7: return 1;  // E0 -> DD
-  8: return 0;  // E0 -> E0
-     return 0; 
-}                                                                  
+engine_refit_cost_for_e2_livery_change(vl19, 0xE0, 2, 4)
 
 switch (FEAT_TRAINS, SELF, vl19o_running_cost_factor,
-[  STORE_TEMP(137, 0),    		/* 241*57/100 */	// Моторы
-   STORE_TEMP(19, 1),     		/* 241*8/100 */	// Бригада
-   STORE_TEMP(48, 2),    		/* 241*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(34, 4),    		/* 241*14/100 */	// ТО
-   STORE_TEMP(2, 5),       		/* 241/100 */	// Сертификация
+[  STORE_TEMP(137, 0),        // Моторы
+   STORE_TEMP(19, 1),         // Бригада
+   STORE_TEMP(48, 2),         // Износ
+   STORE_TEMP(0, 3),          // Сопровождение
+   STORE_TEMP(34, 4),         // ТО
+   STORE_TEMP(2, 5),          // Сертификация
 
    STORE_TEMP(85, 6),        // Скорость
    STORE_TEMP(117, 7),       // Тара
@@ -136,12 +100,12 @@ switch (FEAT_TRAINS, SELF, vl19o_running_cost_factor,
 { all_running_cost_factor; } // 241
 
 switch (FEAT_TRAINS, SELF, vl19m_running_cost_factor,
-[  STORE_TEMP(138, 0),    		/* 242*57/100 */	// Моторы
-   STORE_TEMP(19, 1),     		/* 242*8/100 */	// Бригада
-   STORE_TEMP(48, 2),    		/* 242*20/100 */	// Износ
-   STORE_TEMP(0, 3),             // Сопровождение
-   STORE_TEMP(34, 4),    		/* 242*14/100 */	// ТО
-   STORE_TEMP(2, 5),       		/* 242/100 */	// Сертификация
+[  STORE_TEMP(138, 0),     // Моторы
+   STORE_TEMP(19, 1),      // Бригада
+   STORE_TEMP(48, 2),      // Износ
+   STORE_TEMP(0, 3),       // Сопровождение
+   STORE_TEMP(34, 4),      // ТО
+   STORE_TEMP(2, 5),       // Сертификация
 
    STORE_TEMP(90, 6),        // Скорость
    STORE_TEMP(117, 7),       // Тара
@@ -164,33 +128,22 @@ hint_engine_2fact(vl19_a1933,
      1933, 1938,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA), 
      string(STR_PURCHASE_HINT_FACTORY_DINAMO))
-hint_engine_2fact_comment(vl19_a1935,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
-     STR_PURCHASE_HINT_SECTIONS_1_2,
-     1933, 1938,
-     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA), 
-     string(STR_PURCHASE_HINT_FACTORY_DINAMO),
-     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, 
-            string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DDC)))
 hint_engine_2fact_comment(vl19_a1947,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
      1933, 1938,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA), 
      string(STR_PURCHASE_HINT_FACTORY_DINAMO),
-     string(STR_PURCHASE_HINT_LIST2_COMMENT, 
-            string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, 
-                   string(STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DDC)),
-            string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, 
-                   string(STR_NAME_VL19M))))
-hint_change_pre_after3(vl19, 1933, 1935, 1947)
+     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, 
+            string(STR_NAME_VL19M)))
+hint_change_pre_after2(vl19, 1933, 1947)
 
 item (FEAT_TRAINS, vl19, 312) {
   property {
     name: string(STR_NAME_VL19);
     vehicle_dates(1932, 1938, 40, 10, 8, 31)
     vehicle_passcargo()
-    vehicle_ddcelectric(2447, 117, 335.0)
+    vehicle_dcelectric(2447, 117, 335.0)
   }
   graphics {
     default: vl19_sprites;
