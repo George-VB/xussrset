@@ -12,65 +12,23 @@ engine_electric2_2_effect(_2ev120_DC_create_effect_sprites, 5, -2, 4)
 engine_electric1_1_effect(_2ev120_AC_create_effect_sprites, 4)
 engine_diesel_1r_effect(_2ev120_None_create_effect_sprites, 2, 1, 13)
 
-switch (FEAT_TRAINS, SELF, _2ev120_create_effect_sprites_left,
-  current_railtype)
-{
-  ERA1: return 0;
-  ERA2: return 0;
-  ERA3: return 0;
-  ERA4: return 0;
-  ER2S: return 0;
-  ERD1: _2ev120_DC_create_effect_sprites_left;
-  ERD2: _2ev120_DC_create_effect_sprites_left;
-  ERD3: _2ev120_DC_create_effect_sprites_left;
-        _2ev120_None_create_effect_sprites_left;
-}
-switch (FEAT_TRAINS, SELF, _2ev120_create_effect_sprites_right,
-  current_railtype)
-{
-  ERA1: _2ev120_AC_create_effect_sprites_left;
-  ERA2: _2ev120_AC_create_effect_sprites_left;
-  ERA3: _2ev120_AC_create_effect_sprites_left;
-  ERA4: _2ev120_AC_create_effect_sprites_left;
-  ER2S: _2ev120_AC_create_effect_sprites_left;
-  ERD1: _2ev120_DC_create_effect_sprites_right;
-  ERD2: _2ev120_DC_create_effect_sprites_right;
-  ERD3: _2ev120_DC_create_effect_sprites_right;
-        _2ev120_None_create_effect_sprites_right;
-}
+is_ERD_ds(_2ev120_create_effect_sprites_left2, _2ev120_DC_create_effect_sprites_left, _2ev120_None_create_effect_sprites_left) 
+is_ERA_ds(_2ev120_create_effect_sprites_left, return 0, _2ev120_create_effect_sprites_left2)
 
-switch (FEAT_TRAINS, SELF, _2ev120_power,
-  current_railtype)
-{
-  ERA1: return get_power_in_cb(5982);
-  ERA2: return get_power_in_cb(5982);
-  ERA3: return get_power_in_cb(5982);
-  ERA4: return get_power_in_cb(5982);
-  ER2S: return get_power_in_cb(5982);
-  ERD1: return get_power_in_cb(5982);
-  ERD2: return get_power_in_cb(5982);
-  ERD3: return get_power_in_cb(5982);
-        return get_power_in_cb(476);
-}
+is_ERD_ds(_2ev120_create_effect_sprites_right2, _2ev120_DC_create_effect_sprites_right, _2ev120_None_create_effect_sprites_right)
+is_ERA_ds(_2ev120_create_effect_sprites_right, _2ev120_AC_create_effect_sprites_left, _2ev120_create_effect_sprites_right2)
 
 engine_direction_template(_2ev120, _create_effect)
+
 engine_speed(_2ev120, 120)
 engine_speed(_2ev120_Diesel, 60) // TODO сделать пенальти по количеству ПС при эксплуатации на дизеле
 engine_penalise_speed(_2ev120, 4)
 
-switch (FEAT_TRAINS, SELF, _2ev120_speed_sp,
-  current_railtype)
-{
-  ERA1: _2ev120_speed;
-  ERA2: _2ev120_speed;
-  ERA3: _2ev120_speed;
-  ERA4: _2ev120_speed;
-  ER2S: _2ev120_speed;
-  ERD1: _2ev120_speed;
-  ERD2: _2ev120_speed;
-  ERD3: _2ev120_speed;
-        _2ev120_Diesel_speed;
-}
+is_ERD_ds(_2ev120_speed_sp2, _2ev120_speed, _2ev120_Diesel_speed)
+is_ERA_ds(_2ev120_speed_sp, _2ev120_speed, _2ev120_speed_sp2)
+
+is_ERD_ds(_2ev120_power2, return get_power_in_cb(5982), return get_power_in_cb(476))
+is_ERA_ds(_2ev120_power, return get_power_in_cb(5982), _2ev120_power2)
 
 switch (FEAT_TRAINS, SELF, _2ev120_AC_running_cost_factor,
 [  STORE_TEMP(573, 0),    		/* 1006*57/100 */	// Моторы
@@ -111,19 +69,8 @@ switch (FEAT_TRAINS, SELF, _2ev120_Diesel_running_cost_factor,
    STORE_TEMP(100, 8)])      // Максимальная масса
 { all_running_cost_factor; } // 1080
 
-switch (FEAT_TRAINS, SELF, _2ev120_running_cost_factor,
-  current_railtype)
-{
-  ERA1: _2ev120_AC_running_cost_factor;
-  ERA2: _2ev120_AC_running_cost_factor;
-  ERA3: _2ev120_AC_running_cost_factor;
-  ERA4: _2ev120_AC_running_cost_factor;
-  ER2S: _2ev120_AC_running_cost_factor;
-  ERD1: _2ev120_DC_running_cost_factor;
-  ERD2: _2ev120_DC_running_cost_factor;
-  ERD3: _2ev120_DC_running_cost_factor;
-        _2ev120_Diesel_running_cost_factor;
-}
+is_ERD_ds(_2ev120_running_cost_factor2, _2ev120_DC_running_cost_factor, _2ev120_Diesel_running_cost_factor)
+is_ERA_ds(_2ev120_running_cost_factor, _2ev120_AC_running_cost_factor, _2ev120_running_cost_factor2)
 
 hint_engine_noto(_2ev120,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_ACDC_DIESEL,
