@@ -1,0 +1,71 @@
+﻿// el1
+
+#define IMAGEFILE  "src/electric/el1.png"
+purchase_sprites(el1, 0, 0)
+electric2_1_sprites(6, el1, 32, 40)
+#undef IMAGEFILE
+
+engine_direction_template(el1, )
+long_vehicle(el1)
+
+switch (FEAT_TRAINS, SELF, el1_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy1;
+  2: return el1;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+engine_electric2_1_effect(el1_create_effect_sprites, -2, -1)
+engine_direction_template(el1, _create_effect)
+engine_speed(el1, 65)
+engine_penalise_speed0(el1)
+
+switch (FEAT_TRAINS, SELF, el1_running_cost_factor,
+[  STORE_TEMP(75, 0),  // Моторы
+   STORE_TEMP(11, 1),  // Бригада
+   STORE_TEMP(26, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(18, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(65, 6),         // Скорость
+   STORE_TEMP(150, 7),        // Тара
+   STORE_TEMP(150, 8)])       // Максимальная масса
+{ all_running_cost_factor; }  // 131
+
+hint_engine(el1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_15DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1957, 1980,
+     fact_hennigsdorf())
+
+item (FEAT_TRAINS, el1, 677) {
+  property {
+    name: string(STR_NAME_EL1);
+    vehicle_dates(1957, 1980, 40, 5, 5, 37)
+    vehicle_cargo()
+    vehicle_15dcelectric(2850, 150, 237.0)
+  }
+  graphics {
+    default: el1_sprites;
+    purchase: el1_purchase_sprites;
+    articulated_part: el1_articulated_part;
+    can_attach_wagon: any_can_attach_wagon;
+    start_stop: any_start_stop;
+    cargo_capacity: return 0;
+    speed: el1_speed;
+    purchase_speed: return 65;
+    bitmask_vehicle_info: el1_bitmask_vehicle_info;
+    create_effect: el1_create_effect_sprites_start;
+    running_cost_factor: el1_running_cost_factor;
+    additional_text: el1_additional_text;
+    cargo_subtype_text: pe_type_cargo_subtype_text;
+    colour_mapping: pe_type_colour_mapping;
+  }
+}
+
+long_name_template(el1, STR_LONGNAME_EL1)
+models_default_cargo_template(el1)
+allow_dcelectric(el1)
