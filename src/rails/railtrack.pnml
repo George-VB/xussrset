@@ -1,5 +1,8 @@
 ﻿  /// railtracks
 
+// TODO disallow low speed trains on high speed railsways
+// by disallowing speed Classes A for 250 kmh rails and ABC for unlim rails
+
 // axle load class (not intended, for fallback only)
 // A = 20 t
 // B = 22,5 t
@@ -24,7 +27,7 @@ map_color_double = 0xBB;
 #define all_broad_rails()                   \
   "RLA0", "RLA1", "RLA2", "RLA3",           \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
-          "ERa1", "ERa2", "ERa3", "ERa4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
   "ERd0", "ERd1", "ERd2", "ERd3",           \
           "ERD1", "ERD2", "ERD3",           \
                   "ER2D",                   \
@@ -43,7 +46,7 @@ map_color_double = 0xBB;
                   "ER4S"                    \
 
 #define all_15AC_broad_rails()              \
-          "ERa1", "ERa2", "ERa3", "ERa4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
                   "ER3a",                   \
                   "ER4S"                    \
 
@@ -104,7 +107,7 @@ map_color_double = 0xBB;
                   "ER4S"                    \
 
 #define all_aACdDC_broad_rails()            \
-          "ERa1", "ERa2", "ERa3", "ERa4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
   "ERd0", "ERd1", "ERd2", "ERd3",           \
           "ERD1", "ERD2", "ERD3",           \
@@ -116,7 +119,7 @@ map_color_double = 0xBB;
                   "ER4S"                    \
 
 #define all_aAC15DC_broad_rails()           \
-          "ERa1", "ERa2", "ERa3", "ERa4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
   "ERd0", "ERd1", "ERd2", "ERd3",           \
                   "ER2D",                   \
@@ -150,7 +153,9 @@ item (FEAT_RAILTYPES, rla0) {
     map_colour: map_color_rail;
     sort_order: 0x00;
     alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN",
+
                                 "SAAN", "SABN", "SACN", "SADN", "SAEN",
+
                                 "RAIL"];
   }
   graphics {
@@ -165,6 +170,48 @@ item (FEAT_RAILTYPES, rla0) {
   }
 }
 
+item (FEAT_RAILTYPES, er15ac0) {
+  property {
+    label: "ERa0";
+    introduction_date: date(1961, 1, 1);
+    name: string(STR_NAME_ER15AC0);
+    toolbar_caption: string(STR_ER15AC0_TOOLBAR);
+    menu_text: string(STR_ER15AC0_MENU);
+    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
+    compatible_railtype_list: [all_broad_rails()];
+    powered_railtype_list: [all_15AC_broad_rails()];
+    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
+    curve_speed_multiplier: 1;
+    station_graphics: RAILTYPE_STATION_NORMAL;
+    construction_cost: 75;
+    maintenance_cost: 3;
+    speed_limit: 37.5 mph;  // 60 km/h;
+    acceleration_model: ACC_MODEL_RAIL;
+    map_colour: map_color_15dc;
+    sort_order: 0x08;
+    alternative_railtype_list: ["BAAa", "BABa", "BACa", "BADa", "BAEa",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+
+                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
+  }
+  graphics {
+    gui: rail0_gui;
+    track_overlay: get_rail0_track_overlay;
+    underlay: get_rail0_underlay;
+    tunnels: get_rail0_tunnels;
+    bridge_surfaces: get_rail0_bridge_surfaces;
+    level_crossings: get_rail0_level_crossings;
+    fences: fences_none;
+    depots: rail1_depots;
+    catenary_wire: er15dc_catenary_wire;
+    catenary_pylons: er15dc_catenary_pylons;
+  }
+}
+
+
 item (FEAT_RAILTYPES, er15dc0) {
   property {
     label: "ERd0";
@@ -172,9 +219,9 @@ item (FEAT_RAILTYPES, er15dc0) {
     name: string(STR_NAME_ER15DC0);
     toolbar_caption: string(STR_ER15DC0_TOOLBAR);
     menu_text: string(STR_ER15DC0_MENU);
-    build_window_caption: string(STR_ER15DC0_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC0_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC0_NEW_ENGINE);
+    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_dC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -188,9 +235,9 @@ item (FEAT_RAILTYPES, er15dc0) {
     sort_order: 0x08;
     alternative_railtype_list: ["BAAd", "BABd", "BACd", "BADd", "BAEd",
                                 "BAAD", "BABD", "BACD", "BADD", "BAED",
+
                                 "SAAd", "SABd", "SACd", "SADd", "SAEd",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED",
-                                "ELRL", "RAIL"];
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
   }
   graphics {
     gui: rail0_gui;
@@ -230,8 +277,10 @@ item (FEAT_RAILTYPES, rla1) {
     map_colour: map_color_rail + 2;
     sort_order: 0x01;
     alternative_railtype_list: ["BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
+                                "BAAN", "BABN", "BACN", "BADN", "BAEN",
+
                                 "SBAN", "SBBN", "SBCN", "SBDN", "SBEN",
-                                "RAIL"];
+                                "SAAN", "SABN", "SACN", "SADN", "SAEN"];
   }
   graphics {
     gui: rail1_gui;
@@ -250,12 +299,12 @@ item (FEAT_RAILTYPES, era1) {
   property {
     label: "ERA1";
     introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ERA1);
-    toolbar_caption: string(STR_ERA1_TOOLBAR);
-    menu_text: string(STR_ERA1_MENU);
-    build_window_caption: string(STR_ERA1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERA1_AUTOREPLACE);
-    new_engine_text: string(STR_ERA1_NEW_ENGINE);
+    name: string(STR_NAME_ERAC1);
+    toolbar_caption: string(STR_ERAC1_TOOLBAR);
+    menu_text: string(STR_ERAC1_MENU);
+    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -268,8 +317,10 @@ item (FEAT_RAILTYPES, era1) {
     map_colour: map_color_ac + 2;
     sort_order: 0x1C;
     alternative_railtype_list: ["BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+
                                 "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "ELRL", "RAIL"];
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
   }
   graphics {
     gui: rail1_gui;
@@ -293,9 +344,9 @@ item (FEAT_RAILTYPES, er15ac1) {
     name: string(STR_NAME_ER15AC1);
     toolbar_caption: string(STR_ER15AC1_TOOLBAR);
     menu_text: string(STR_ER15AC1_MENU);
-    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
+    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -308,10 +359,16 @@ item (FEAT_RAILTYPES, er15ac1) {
     map_colour: map_color_15ac + 2;
     sort_order: 0x18;
     alternative_railtype_list: ["BBAa", "BBBa", "BBCa", "BBDa", "BBEa",
+                                "BAAa", "BABa", "BACa", "BADa", "BAEa",
+
                                 "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+
                                 "SBAa", "SBBa", "SBCa", "SBDa", "SBEa",
+                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
+
                                 "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "ELRL", "RAIL"];
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
   }
   graphics {
     gui: rail1_gui;
@@ -332,12 +389,12 @@ item (FEAT_RAILTYPES, erd1) {
   property {
     label: "ERD1";
     introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ERD1);
-    toolbar_caption: string(STR_ERD1_TOOLBAR);
-    menu_text: string(STR_ERD1_MENU);
-    build_window_caption: string(STR_ERD1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERD1_AUTOREPLACE);
-    new_engine_text: string(STR_ERD1_NEW_ENGINE);
+    name: string(STR_NAME_ERDC1);
+    toolbar_caption: string(STR_ERDC1_TOOLBAR);
+    menu_text: string(STR_ERDC1_MENU);
+    build_window_caption: string(STR_ERDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERDC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_DC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -350,8 +407,10 @@ item (FEAT_RAILTYPES, erd1) {
     map_colour: map_color_dc + 2;
     sort_order: 0x0C;
     alternative_railtype_list: ["BBAD", "BBBD", "BBCD", "BBDD", "BBED",
+                                "BAAD", "BABD", "BACD", "BADD", "BAED",
+
                                 "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-                                "ELRL", "RAIL"];
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
   }
   graphics {
     gui: rail1_gui;
@@ -375,9 +434,9 @@ item (FEAT_RAILTYPES, er15dc1) {
     name: string(STR_NAME_ER15DC1);
     toolbar_caption: string(STR_ER15DC1_TOOLBAR);
     menu_text: string(STR_ER15DC1_MENU);
-    build_window_caption: string(STR_ER15DC0_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC0_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC0_NEW_ENGINE);
+    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_dC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -390,10 +449,16 @@ item (FEAT_RAILTYPES, er15dc1) {
     map_colour: map_color_15dc + 2;
     sort_order: 0x09;
     alternative_railtype_list: ["BBAd", "BBBd", "BBCd", "BBDd", "BBEd",
+                                "BAAd", "BABd", "BACd", "BADd", "BAEd",
+
                                 "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
+                                "BAAD", "BABD", "BACD", "BADD", "BAED",
+
                                 "SBAd", "SBBd", "SBCd", "SBDd", "SBEd",
                                 "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-                                "ELRL", "RAIL"];
+
+                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
   }
   graphics {
     gui: rail1_gui;
@@ -429,9 +494,13 @@ item (FEAT_RAILTYPES, er2d) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double;
     sort_order: 0x20;
+/*
     alternative_railtype_list: ["BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
+                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
+
                                 "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "ELRL", "RAIL"];
+                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
+*/
   }
   graphics {
     gui: rail1_gui;
@@ -468,9 +537,15 @@ item (FEAT_RAILTYPES, er2s) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double + 2;
     sort_order: 0x21;
+/*
     alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
+                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
+                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
+
                                 "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "ELRL", "RAIL"];
+                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
+                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
+*/
   }
   graphics {
     gui: rail2_gui;
@@ -506,9 +581,15 @@ item (FEAT_RAILTYPES, er2ac15dc) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double + 4;
     sort_order: 0x22;
+/*
     alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
+                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
+                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
+
                                 "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "ELRL", "RAIL"];
+                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
+                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
+*/
   }
   graphics {
     gui: rail2_gui;
@@ -544,9 +625,15 @@ item (FEAT_RAILTYPES, er3acddc) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double + 6;
     sort_order: 0x23;
+/*
     alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
+                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
+                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
+
                                 "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "ELRL", "RAIL"];
+                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
+                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
+*/
   }
   graphics {
     gui: rail2_gui;
@@ -582,9 +669,16 @@ item (FEAT_RAILTYPES, er4aacddc) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double + 10;
     sort_order: 0x25;
+/*
     alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
+                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
+                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
+
                                 "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "ELRL", "RAIL"];
+                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
+                                "SAAE", "SABE", "SACE", "SADE", "SAEE",
+                                "ELRL"];
+*/
   }
   graphics {
     gui: rail2_gui;
@@ -620,9 +714,15 @@ item (FEAT_RAILTYPES, er3aac15dc) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_double + 8;
     sort_order: 0x24;
+/*
     alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
+                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
+                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
+
                                 "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "ELRL", "RAIL"];
+                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
+                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
+*/
   }
   graphics {
     gui: rail2_gui;
@@ -662,8 +762,14 @@ item (FEAT_RAILTYPES, rla2) {
     map_colour: map_color_rail + 4;
     sort_order: 0x02;
     alternative_railtype_list: ["BDAN", "BDBN", "BDCN", "BDDN", "BDEN",
+                                "BCAN", "BCBN", "BCCN", "BCDN", "BCEN",
+                                "BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
+                                "BAAN", "BABN", "BACN", "BADN", "BAEN",
+
                                 "SDAN", "SDBN", "SDCN", "SDDN", "SDEN",
-                                "RAIL"];
+                                "SCAN", "SCBN", "SCCN", "SCDN", "SCEN",
+                                "SBAN", "SBBN", "SBCN", "SBDN", "SBEN",
+                                "SAAN", "SABN", "SACN", "SADN", "SAEN"];
   }
   graphics {
     gui: rail2_gui;
@@ -682,12 +788,12 @@ item (FEAT_RAILTYPES, era2) {
   property {
     label: "ERA2";
     introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ERA2);
-    toolbar_caption: string(STR_ERA2_TOOLBAR);
-    menu_text: string(STR_ERA2_MENU);
-    build_window_caption: string(STR_ERA1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERA1_AUTOREPLACE);
-    new_engine_text: string(STR_ERA1_NEW_ENGINE);
+    name: string(STR_NAME_ERAC2);
+    toolbar_caption: string(STR_ERAC2_TOOLBAR);
+    menu_text: string(STR_ERAC2_MENU);
+    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -700,8 +806,14 @@ item (FEAT_RAILTYPES, era2) {
     map_colour: map_color_ac + 4;
     sort_order: 0x1D;
     alternative_railtype_list: ["BDAA", "BDBA", "BDCA", "BDDA", "BDEA",
+                                "BCAA", "BCBA", "BCCA", "BCDA", "BCEA",
+                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+
                                 "SDAA", "SDBA", "SDCA", "SDDA", "SDEA",
-                                "ELRL", "RAIL"];
+                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA",
+                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
   }
   graphics {
     gui: rail2_gui;
@@ -725,9 +837,9 @@ item (FEAT_RAILTYPES, er15ac2) {
     name: string(STR_NAME_ER15AC2);
     toolbar_caption: string(STR_ER15AC2_TOOLBAR);
     menu_text: string(STR_ER15AC2_MENU);
-    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
+    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -740,10 +852,24 @@ item (FEAT_RAILTYPES, er15ac2) {
     map_colour: map_color_15ac + 4;
     sort_order: 0x19;
     alternative_railtype_list: ["BDAa", "BDBa", "BDCa", "BDDa", "BDEa",
+                                "BCAa", "BCBa", "BCCa", "BCDa", "BCEa",
+                                "BBAa", "BBBa", "BBCa", "BBDa", "BBEa",
+                                "BAAa", "BABa", "BACa", "BADa", "BAEa",
+
                                 "BDAA", "BDBA", "BDCA", "BDDA", "BDEA",
+                                "BCAA", "BCBA", "BCCA", "BCDA", "BCEA",
+                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+
                                 "SDAa", "SDBa", "SDCa", "SDDa", "SDEa",
+                                "SCAa", "SCBa", "SCCa", "SCDa", "SCEa",
+                                "SBAa", "SBBa", "SBCa", "SBDa", "SBEa",
+                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
+
                                 "SDAA", "SDBA", "SDCA", "SDDA", "SDEA",
-                                "ELRL", "RAIL"];
+                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA",
+                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
   }
   graphics {
     gui: rail2_gui;
@@ -764,12 +890,12 @@ item (FEAT_RAILTYPES, erd2) {
   property {
     label: "ERD2";
     introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ERD2);
-    toolbar_caption: string(STR_ERD2_TOOLBAR);
-    menu_text: string(STR_ERD2_MENU);
-    build_window_caption: string(STR_ERD1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERD1_AUTOREPLACE);
-    new_engine_text: string(STR_ERD1_NEW_ENGINE);
+    name: string(STR_NAME_ERDC2);
+    toolbar_caption: string(STR_ERDC2_TOOLBAR);
+    menu_text: string(STR_ERDC2_MENU);
+    build_window_caption: string(STR_ERDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERDC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_DC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -782,8 +908,14 @@ item (FEAT_RAILTYPES, erd2) {
     map_colour: map_color_dc + 4;
     sort_order: 0x0D;
     alternative_railtype_list: ["BDAD", "BDBD", "BDCD", "BDDD", "BDED",
+                                "BCAD", "BCBD", "BCCD", "BCDD", "BCED",
+                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
+                                "BAAD", "BABD", "BACD", "BADD", "BAED",
+
                                 "SDAD", "SDBD", "SDCD", "SDDD", "SDED",
-                                "ELRL", "RAIL"];
+                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED",
+                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
   }
   graphics {
     gui: rail2_gui;
@@ -807,9 +939,9 @@ item (FEAT_RAILTYPES, er15dc2) {
     name: string(STR_NAME_ER15DC2);
     toolbar_caption: string(STR_ER15DC2_TOOLBAR);
     menu_text: string(STR_ER15DC2_MENU);
-    build_window_caption: string(STR_ER15DC0_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC0_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC0_NEW_ENGINE);
+    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_DC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
@@ -822,10 +954,24 @@ item (FEAT_RAILTYPES, er15dc2) {
     map_colour: map_color_15dc + 4;
     sort_order: 0x0A;
     alternative_railtype_list: ["BDAd", "BDBd", "BDCd", "BDDd", "BDEd",
+                                "BCAd", "BCBd", "BCCd", "BCDd", "BCEd",
+                                "BBAd", "BBBd", "BBCd", "BBDd", "BBEd",
+                                "BAAd", "BABd", "BACd", "BADd", "BAEd",
+
                                 "BDAD", "BDBD", "BDCD", "BDDD", "BDED",
+                                "BCAD", "BCBD", "BCCD", "BCDD", "BCED",
+                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
+                                "BAAD", "BABD", "BACD", "BADD", "BAED",
+
                                 "SDAd", "SDBd", "SDCd", "SDDd", "SDEd",
+                                "SCAd", "SCBd", "SCCd", "SCDd", "SCEd",
+                                "SBAd", "SBBd", "SBCd", "SBDd", "SBEd",
+                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
+
                                 "SDAD", "SDBD", "SDCD", "SDDD", "SDED",
-                                "ELRL", "RAIL"];
+                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED",
+                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
   }
   graphics {
     gui: rail2_gui;
@@ -865,8 +1011,16 @@ item (FEAT_RAILTYPES, rla3) {
     map_colour: map_color_rail + 6;
     sort_order: 0x03;
     alternative_railtype_list: ["BEAN", "BEBN", "BECN",
+                                "BDAN", "BDBN", "BDCN",
+                                "BCAN", "BCBN", "BCCN",
+                                "BBAN", "BBBN", "BBCN",
+                                "BAAN", "BABN", "BACN",
+
                                 "SEAN", "SEBN", "SECN",
-                                "ELRL", "RAIL"];
+                                "SDAN", "SDBN", "SDCN",
+                                "SCAN", "SCBN", "SCCN",
+                                "SBAN", "SBBN", "SBCN",
+                                "SAAN", "SABN", "SACN"];
   }
   graphics {
     gui: rail3_gui;
@@ -885,12 +1039,12 @@ item (FEAT_RAILTYPES, era3) {
   property {
     label: "ERA3";
     introduction_date: date(1958, 1, 1);
-    name: string(STR_NAME_ERA3);
-    toolbar_caption: string(STR_ERA3_TOOLBAR);
-    menu_text: string(STR_ERA3_MENU);
-    build_window_caption: string(STR_ERA1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERA1_AUTOREPLACE);
-    new_engine_text: string(STR_ERA1_NEW_ENGINE);
+    name: string(STR_NAME_ERAC3);
+    toolbar_caption: string(STR_ERAC3_TOOLBAR);
+    menu_text: string(STR_ERAC3_MENU);
+    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
@@ -903,8 +1057,16 @@ item (FEAT_RAILTYPES, era3) {
     map_colour: map_color_ac + 6;
     sort_order: 0x1E;
     alternative_railtype_list: ["BEAA", "BEBA", "BECA",
+                                "BDAA", "BDBA", "BDCA",
+                                "BCAA", "BCBA", "BCCA",
+                                "BBAA", "BBBA", "BBCA",
+                                "BAAA", "BABA", "BACA",
+
                                 "SEAA", "SEBA", "SECA",
-                                "ELRL", "RAIL"];
+                                "SDAA", "SDBA", "SDCA",
+                                "SCAA", "SCBA", "SCCA",
+                                "SBAA", "SBBA", "SBCA",
+                                "SAAA", "SABA", "SACA"];
   }
   graphics {
     gui: rail3_gui;
@@ -928,9 +1090,9 @@ item (FEAT_RAILTYPES, er15ac3) {
     name: string(STR_NAME_ER15AC3);
     toolbar_caption: string(STR_ER15AC3_TOOLBAR);
     menu_text: string(STR_ER15AC3_MENU);
-    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
+    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
@@ -943,10 +1105,28 @@ item (FEAT_RAILTYPES, er15ac3) {
     map_colour: map_color_15ac + 6;
     sort_order: 0x1A;
     alternative_railtype_list: ["BEAa", "BEBa", "BECa",
+                                "BDAa", "BDBa", "BDCa",
+                                "BCAa", "BCBa", "BCCa",
+                                "BBAa", "BBBa", "BBCa",
+                                "BAAa", "BABa", "BACa",
+
                                 "BEAA", "BEBA", "BECA",
+                                "BDAA", "BDBA", "BDCA",
+                                "BCAA", "BCBA", "BCCA",
+                                "BBAA", "BBBA", "BBCA",
+                                "BAAA", "BABA", "BACA",
+
                                 "SEAa", "SEBa", "SECa",
+                                "SDAa", "SDBa", "SDCa",
+                                "SCAa", "SCBa", "SCCa",
+                                "SBAa", "SBBa", "SBCa",
+                                "SAAa", "SABa", "SACa",
+
                                 "SEAA", "SEBA", "SECA",
-                                "ELRL", "RAIL"];
+                                "SDAA", "SDBA", "SDCA",
+                                "SCAA", "SCBA", "SCCA",
+                                "SBAA", "SBBA", "SBCA",
+                                "SAAA", "SABA", "SACA"];
   }
   graphics {
     gui: rail3_gui;
@@ -967,12 +1147,12 @@ item (FEAT_RAILTYPES, erd3) {
   property {
     label: "ERD3";
     introduction_date: date(1956, 1, 1);
-    name: string(STR_NAME_ERD3);
-    toolbar_caption: string(STR_ERD3_TOOLBAR);
-    menu_text: string(STR_ERD3_MENU);
-    build_window_caption: string(STR_ERD1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERD1_AUTOREPLACE);
-    new_engine_text: string(STR_ERD1_NEW_ENGINE);
+    name: string(STR_NAME_ERDC3);
+    toolbar_caption: string(STR_ERDC3_TOOLBAR);
+    menu_text: string(STR_ERDC3_MENU);
+    build_window_caption: string(STR_ERDC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERDC_AUTOREPLACE);
+    new_engine_text: string(STR_ERDC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_DC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
@@ -985,8 +1165,16 @@ item (FEAT_RAILTYPES, erd3) {
     map_colour: map_color_dc + 6;
     sort_order: 0x0E;
     alternative_railtype_list: ["BEAD", "BEBD", "BECD",
+                                "BDAD", "BDBD", "BDCD",
+                                "BCAD", "BCBD", "BCCD",
+                                "BBAD", "BBBD", "BBCD",
+                                "BAAD", "BABD", "BACD",
+
                                 "SEAD", "SEBD", "SECD",
-                                "ELRL", "RAIL"];
+                                "SDAD", "SDBD", "SDCD",
+                                "SCAD", "SCBD", "SCCD",
+                                "SBAD", "SBBD", "SBCD",
+                                "SAAD", "SABD", "SACD"];
   }
   graphics {
     gui: rail3_gui;
@@ -1010,9 +1198,9 @@ item (FEAT_RAILTYPES, er15dc3) {
     name: string(STR_NAME_ER15DC3);
     toolbar_caption: string(STR_ER15DC3_TOOLBAR);
     menu_text: string(STR_ER15DC3_MENU);
-    build_window_caption: string(STR_ER15DC0_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC0_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC0_NEW_ENGINE);
+    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_DC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
@@ -1025,10 +1213,28 @@ item (FEAT_RAILTYPES, er15dc3) {
     map_colour: map_color_15dc + 6;
     sort_order: 0x0B;
     alternative_railtype_list: ["BEAd", "BEBd", "BECd",
+                                "BDAd", "BDBd", "BDCd",
+                                "BCAd", "BCBd", "BCCd",
+                                "BBAd", "BBBd", "BBCd",
+                                "BAAd", "BABd", "BACd",
+
                                 "BEAD", "BEBD", "BECD",
+                                "BDAD", "BDBD", "BDCD",
+                                "BCAD", "BCBD", "BCCD",
+                                "BBAD", "BBBD", "BBCD",
+                                "BAAD", "BABD", "BACD",
+
                                 "SEAd", "SEBd", "SECd",
+                                "SDAd", "SDBd", "SDCd",
+                                "SCAd", "SCBd", "SCCd",
+                                "SBAd", "SBBd", "SBCd",
+                                "SAAd", "SABd", "SACd",
+
                                 "SEAD", "SEBD", "SECD",
-                                "ELRL", "RAIL"];
+                                "SDAD", "SDBD", "SDCD",
+                                "SCAD", "SCBD", "SCCD",
+                                "SBAD", "SBBD", "SBCD",
+                                "SAAD", "SABD", "SACD"];
   }
   graphics {
     gui: rail3_gui;
@@ -1050,12 +1256,12 @@ item (FEAT_RAILTYPES, era4) {
   property {
     label: "ERA4";
     introduction_date: date(2008, 1, 1);
-    name: string(STR_NAME_ERA4);
-    toolbar_caption: string(STR_ERA4_TOOLBAR);
-    menu_text: string(STR_ERA4_MENU);
-    build_window_caption: string(STR_ERA1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERA1_AUTOREPLACE);
-    new_engine_text: string(STR_ERA1_NEW_ENGINE);
+    name: string(STR_NAME_ERAC4);
+    toolbar_caption: string(STR_ERAC4_TOOLBAR);
+    menu_text: string(STR_ERAC4_MENU);
+    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
+    new_engine_text: string(STR_ERAC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
@@ -1067,7 +1273,19 @@ item (FEAT_RAILTYPES, era4) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_ac + 8;
     sort_order: 0x1F;
-    alternative_railtype_list: ["BFAA", "SFAA", "ELRL", "RAIL"];
+    alternative_railtype_list: ["BFAA",
+                                "BEAA",
+                                "BDAA",
+                                "BCAA",
+                                "BBAA",
+                                "BAAA",
+
+                                "SFAA",
+                                "SEAA",
+                                "SDAA",
+                                "SCAA",
+                                "SBAA",
+                                "SAAA"];
   }
   graphics {
     gui: rail4_gui;
@@ -1091,9 +1309,9 @@ item (FEAT_RAILTYPES, er15ac4) {
     name: string(STR_NAME_ER15AC4);
     toolbar_caption: string(STR_ER15AC4_TOOLBAR);
     menu_text: string(STR_ER15AC4_MENU);
-    build_window_caption: string(STR_ER15AC1_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC1_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC1_NEW_ENGINE);
+    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
+    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
+    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
     compatible_railtype_list: [all_broad_rails()];
     powered_railtype_list: [all_15AC_broad_rails()];
     railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
@@ -1105,7 +1323,33 @@ item (FEAT_RAILTYPES, er15ac4) {
     acceleration_model: ACC_MODEL_RAIL;
     map_colour: map_color_15ac + 8;
     sort_order: 0x1B;
-    alternative_railtype_list: ["BFAa", "BFAA", "SFAa", "SFAA", "ELRL", "RAIL"];
+    alternative_railtype_list: ["BFAa",
+                                "BEAa",
+                                "BDAa",
+                                "BCAa",
+                                "BBAa",
+                                "BAAa",
+
+                                "BFAA",
+                                "BEAA",
+                                "BDAA",
+                                "BCAA",
+                                "BBAA",
+                                "BAAA",
+
+                                "SFAa",
+                                "SEAa",
+                                "SDAa",
+                                "SCAa",
+                                "SBAa",
+                                "SAAa",
+
+                                "SFAA",
+                                "SEAA",
+                                "SDAA",
+                                "SCAA",
+                                "SBAA",
+                                "SAAA"];
   }
   graphics {
     gui: rail4_gui;
