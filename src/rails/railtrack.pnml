@@ -12,7 +12,7 @@
 
 map_color_rail = 0x07;
 map_color_ac = 0x91;
-map_color_15ac = 0x87;
+map_color_15ac = 0x85;
 map_color_dc = 0x73;
 map_color_15dc = 0x2B;  //0xB2;
 map_color_double = 0xBB;
@@ -28,8 +28,8 @@ map_color_double = 0xBB;
   "RLA0", "RLA1", "RLA2", "RLA3",           \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
   "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
-  "ERd0", "ERd1", "ERd2", "ERd3",           \
           "ERD1", "ERD2", "ERD3",           \
+  "ERd0", "ERd1", "ERd2", "ERd3",           \
                   "ER2D",                   \
                   "ER2S",                   \
                   "ER2s",                   \
@@ -57,7 +57,7 @@ map_color_double = 0xBB;
                   "ER3D",           \
                   "ER4S"            \
 
-#define all_dC_broad_rails()        \
+#define all_15DC_broad_rails()      \
   "ERd0", "ERd1", "ERd2", "ERd3",   \
                   "ER2D",           \
                   "ER2s",           \
@@ -87,8 +87,8 @@ map_color_double = 0xBB;
 
 #define all_ACdDC_broad_rails()             \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
-  "ERd0", "ERd1", "ERd2", "ERd3",           \
           "ERD1", "ERD2", "ERD3",           \
+  "ERd0", "ERd1", "ERd2", "ERd3",           \
                   "ER2D",                   \
                   "ER2S",                   \
                   "ER2s",                   \
@@ -107,10 +107,10 @@ map_color_double = 0xBB;
                   "ER4S"                    \
 
 #define all_aACdDC_broad_rails()            \
-  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
-  "ERd0", "ERd1", "ERd2", "ERd3",           \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
           "ERD1", "ERD2", "ERD3",           \
+  "ERd0", "ERd1", "ERd2", "ERd3",           \
                   "ER2D",                   \
                   "ER2S",                   \
                   "ER2s",                   \
@@ -119,8 +119,8 @@ map_color_double = 0xBB;
                   "ER4S"                    \
 
 #define all_aAC15DC_broad_rails()           \
-  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
   "ERd0", "ERd1", "ERd2", "ERd3",           \
                   "ER2D",                   \
                   "ER2S",                   \
@@ -129,1241 +129,238 @@ map_color_double = 0xBB;
                   "ER3D",                   \
                   "ER4S"                    \
 
- /// Industrial rails
-// Unelectrified rails
-item (FEAT_RAILTYPES, rla0) {
-  property {
-    label: "RLA0";
-    introduction_date: date(1800, 1, 1);
-    name: string(STR_NAME_RLA0);
-    toolbar_caption: string(STR_RLA0_TOOLBAR);
-    menu_text: string(STR_RLA0_MENU);
-    build_window_caption: string(STR_RAIL_BUILD_CAPTION);
-    autoreplace_text: string(STR_RAIL_AUTOREPLACE);
-    new_engine_text: string(STR_RAIL_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_broad_rails()];
-    railtype_flags: 0;
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 49;
-    maintenance_cost: 2;
-    speed_limit: 37.5 mph;  // 60 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_rail;
-    sort_order: 0x00;
+#define new_broad_rails(rail_name, rail_label, year, strname, strnamebase, powered, cost, RCcost, speed, colour, sort_oder, rails_graphics, fences_graphics, depots_graphics, flags)   \
+item (FEAT_RAILTYPES, rail_name) {                                                                                                                                                     \
+  property {                                                                                                                                                                           \
+    label: rail_label;                                                                                                                                                                 \
+    introduction_date: date(year, 1, 1);                                                                                                                                               \
+    name: string(STR_NAME_##strname);                                                                                                                                                  \
+    toolbar_caption: string(STR_##strname##_TOOLBAR);                                                                                                                                  \
+    menu_text: string(STR_##strname##_MENU);                                                                                                                                           \
+    build_window_caption: string(STR_##strnamebase##_BUILD_CAPTION);                                                                                                                   \
+    autoreplace_text: string(STR_##strnamebase##_AUTOREPLACE);                                                                                                                         \
+    new_engine_text: string(STR_##strnamebase##_NEW_ENGINE);                                                                                                                           \
+    compatible_railtype_list: [all_broad_rails()];                                                                                                                                     \
+    powered_railtype_list: [powered##_broad_rails()];                                                                                                                                  \
+    railtype_flags: flags;                                                                                                                                                             \
+    curve_speed_multiplier: 1;                                                                                                                                                         \
+    station_graphics: RAILTYPE_STATION_NORMAL;                                                                                                                                         \
+    construction_cost: cost;                                                                                                                                                           \
+    maintenance_cost: RCcost;                                                                                                                                                          \
+    speed_limit: speed;                                                                                                                                                                \
+    acceleration_model: ACC_MODEL_RAIL;                                                                                                                                                \
+    map_colour: colour;                                                                                                                                                                \
+    sort_order: sort_oder;                                                                                                                                                             \
+  }                                                                                                                                                                                    \
+  graphics {                                                                                                                                                                           \
+    gui: rails_graphics##_gui;                                                                                                                                                         \
+    track_overlay: get_##rails_graphics##_track_overlay;                                                                                                                               \
+    underlay: get_##rails_graphics##_underlay;                                                                                                                                         \
+    tunnels: get_##rails_graphics##_tunnels;                                                                                                                                           \
+    bridge_surfaces: get_##rails_graphics##_bridge_surfaces;                                                                                                                           \
+    level_crossings: get_##rails_graphics##_level_crossings;                                                                                                                           \
+    fences: fences_graphics;                                                                                                                                                           \
+    depots: depots_graphics;                                                                                                                                                           \
+  }                                                                                                                                                                                    \
+}                                                                                                                                                                                      \
+
+#define electric_rails(rail_name, catenary_graphics)          \
+item (FEAT_RAILTYPES, rail_name) {                            \
+ graphics {                                                   \
+   catenary_wire: catenary_graphics##_catenary_wire;          \
+   catenary_pylons: catenary_graphics##_catenary_pylons; }}   \
+
+
+new_broad_rails(rla0      , "RLA0", 1800, RLA0     , RAIL     , all        ,  49,  2, 37.5 mph, map_color_rail+0,    0x00, rail0, fences_none, rail1_depots, 0)                                         // Unelectrified Industrial rails
+new_broad_rails(rla1      , "RLA1", 1880, RLA1     , RAIL     , all        ,  64,  2, 62.5 mph, map_color_rail+2,    0x01, rail1, fences_none, rail1_depots, 0)                                         // Unelectrified rails
+new_broad_rails(rla2      , "RLA2", 1920, RLA2     , RAIL     , all        , 128,  4, 87.5 mph, map_color_rail+4,    0x02, rail2, fences_none, rail1_depots, 0)                                         // Unelectrified Trunk rails
+new_broad_rails(rla3      , "RLA3", 1930, RLA3     , RAIL     , all        , 256,  8, 250 km/h, map_color_rail+6,    0x03, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Unelectrified High-speed rails
+
+new_broad_rails(erac1     , "ERA1", 1952, ERAC1    , ERAC     , all_AC     , 115,  4, 62.5 mph, map_color_ac+2,      0x1C, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails AC 25kV
+new_broad_rails(erac2     , "ERA2", 1952, ERAC2    , ERAC     , all_AC     , 230,  7, 87.5 mph, map_color_ac+4,      0x1D, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails AC 25kV
+new_broad_rails(erac3     , "ERA3", 1958, ERAC3    , ERAC     , all_AC     , 461, 14, 250 km/h, map_color_ac+6,      0x1E, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails AC 25kV
+new_broad_rails(erac4     , "ERA4", 2008, ERAC4    , ERAC     , all_AC     , 640, 19,   0 km/h, map_color_ac+8,      0x1F, rail4, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified Unlimited-speed rails AC 25kV
+new_broad_rails(er15ac0   , "ERa0", 1961, ER15AC0  , ER15AC   , all_15AC   ,  75,  3, 37.5 mph, map_color_15ac+0,    0x17, rail0, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Industrial rails AC 15kV
+new_broad_rails(er15ac1   , "ERa1", 1961, ER15AC1  , ER15AC   , all_15AC   , 115,  4, 62.5 mph, map_color_15ac+2,    0x18, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails AC 15kV
+new_broad_rails(er15ac2   , "ERa2", 1961, ER15AC2  , ER15AC   , all_15AC   , 230,  7, 87.5 mph, map_color_15ac+4,    0x19, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails AC 15kV
+new_broad_rails(er15ac3   , "ERa3", 1961, ER15AC3  , ER15AC   , all_15AC   , 461, 14, 250 km/h, map_color_15ac+6,    0x1A, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails AC 15kV
+new_broad_rails(er15ac4   , "ERa4", 2008, ER15AC4  , ER15AC   , all_15AC   , 640, 19,   0 km/h, map_color_15ac+8,    0x1B, rail4, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified Unlimited-speed rails AC 15kV
+
+new_broad_rails(erdc1     , "ERD1", 1930, ERDC1    , ERDC     , all_DC     , 128,  5, 62.5 mph, map_color_dc+2,      0x0C, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails DC 3 kV
+new_broad_rails(erdc2     , "ERD2", 1930, ERDC2    , ERDC     , all_DC     , 256,  8, 87.5 mph, map_color_dc+4,      0x0D, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails DC 3kV
+new_broad_rails(erdc3     , "ERD3", 1956, ERDC3    , ERDC     , all_DC     , 512, 16, 250 km/h, map_color_dc+6,      0x0E, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails DC 3kV
+new_broad_rails(er15dc0   , "ERd0", 1924, ER15DC0  , ER15DC   , all_15DC   ,  75,  3, 37.5 mph, map_color_15dc+0,    0x08, rail0, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Industrial rails DC 1.5kV
+new_broad_rails(er15dc1   , "ERd1", 1924, ER15DC1  , ER15DC   , all_15DC   , 100,  4, 62.5 mph, map_color_15dc+2,    0x09, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails DC 1,5 kV
+new_broad_rails(er15dc2   , "ERd2", 1930, ER15DC2  , ER15DC   , all_15DC   , 256,  8, 87.5 mph, map_color_15dc+4,    0x0A, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails DC 1,5kV
+new_broad_rails(er15dc3   , "ERd3", 1956, ER15DC3  , ER15DC   , all_15DC   , 512, 16, 250 km/h, map_color_15dc+6,    0x0B, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails DC 1,5kV
+
+new_broad_rails(er2d      , "ER2D", 1930, ERDDC    , ERDDC    , all_dDC    , 192,  7, 62.5 mph, map_color_double+0,  0x20, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified rails DC 1,5 kV + DC 3 kV
+new_broad_rails(er2s      , "ER2S", 1963, ERACDC   , ERACDC   , all_ACDC   , 384, 10,   75 mph, map_color_double+2,  0x21, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + DC 3 kV
+
+new_broad_rails(er2ac15dc , "ER2s", 1963, ERAC15DC , ERAC15DC , all_AC15DC , 384, 10,   75 mph, map_color_double+4,  0x22, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + DC 1,5 kV
+new_broad_rails(er3acddc  , "ER3D", 1963, ERACDDC  , ERACDDC  , all_ACdDC  , 384, 10,   75 mph, map_color_double+6,  0x23, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + DC 3 kV + DC 1,5 kV
+new_broad_rails(er3aac15dc, "ER3a", 1963, ERAAC15DC, ERAAC15DC, all_aAC15DC, 384, 10,   75 mph, map_color_double+8,  0x24, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + AC 15 kV + DC 1,5 kV
+new_broad_rails(er4aacddc , "ER4S", 1963, ERAACDDC , ERAACDDC , all_aACdDC , 384, 10,   75 mph, map_color_double+10, 0x25, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + AC 15 kV + DC 3 kV + DC 1,5 kV
+
+electric_rails(erac1, erac)
+electric_rails(erac2, erac)
+electric_rails(erac3, erac)
+electric_rails(erac4, erac)
+electric_rails(er15ac0, er15ac)
+electric_rails(er15ac1, er15ac)
+electric_rails(er15ac2, er15ac)
+electric_rails(er15ac3, er15ac)
+electric_rails(er15ac4, er15ac)
+electric_rails(erdc1, erdc)
+electric_rails(erdc2, erdc)
+electric_rails(erdc3, erdc)
+electric_rails(er15dc0, er15dc)
+electric_rails(er15dc1, er15dc)
+electric_rails(er15dc2, er15dc)
+electric_rails(er15dc3, er15dc)
+electric_rails(er2d, erds)
+electric_rails(er2s, erds)
+electric_rails(er2ac15dc, erds)
+electric_rails(er3acddc, erds)
+electric_rails(er3aac15dc, erds)
+electric_rails(er4aacddc, erds)
+
+item (FEAT_RAILTYPES, rla0) { property {
     alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN",
-
-                                "SAAN", "SABN", "SACN", "SADN", "SAEN",
-
-                                "RAIL"];
-  }
-  graphics {
-    gui: rail0_gui;
-    track_overlay: get_rail0_track_overlay;
-    underlay: get_rail0_underlay;
-    tunnels: get_rail0_tunnels;
-    bridge_surfaces: get_rail0_bridge_surfaces;
-    level_crossings: get_rail0_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-  }
-}
-
-item (FEAT_RAILTYPES, er15ac0) {
-  property {
-    label: "ERa0";
-    introduction_date: date(1961, 1, 1);
-    name: string(STR_NAME_ER15AC0);
-    toolbar_caption: string(STR_ER15AC0_TOOLBAR);
-    menu_text: string(STR_ER15AC0_MENU);
-    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_15AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 75;
-    maintenance_cost: 3;
-    speed_limit: 37.5 mph;  // 60 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15dc;
-    sort_order: 0x08;
-    alternative_railtype_list: ["BAAa", "BABa", "BACa", "BADa", "BAEa",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
-
-                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-  }
-  graphics {
-    gui: rail0_gui;
-    track_overlay: get_rail0_track_overlay;
-    underlay: get_rail0_underlay;
-    tunnels: get_rail0_tunnels;
-    bridge_surfaces: get_rail0_bridge_surfaces;
-    level_crossings: get_rail0_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: er15dc_catenary_wire;
-    catenary_pylons: er15dc_catenary_pylons;
-  }
-}
-
-
-item (FEAT_RAILTYPES, er15dc0) {
-  property {
-    label: "ERd0";
-    introduction_date: date(1924, 1, 1);
-    name: string(STR_NAME_ER15DC0);
-    toolbar_caption: string(STR_ER15DC0_TOOLBAR);
-    menu_text: string(STR_ER15DC0_MENU);
-    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_dC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 75;
-    maintenance_cost: 3;
-    speed_limit: 37.5 mph;  // 60 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15dc;
-    sort_order: 0x08;
-    alternative_railtype_list: ["BAAd", "BABd", "BACd", "BADd", "BAEd",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-
-                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-  }
-  graphics {
-    gui: rail0_gui;
-    track_overlay: get_rail0_track_overlay;
-    underlay: get_rail0_underlay;
-    tunnels: get_rail0_tunnels;
-    bridge_surfaces: get_rail0_bridge_surfaces;
-    level_crossings: get_rail0_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: er15dc_catenary_wire;
-    catenary_pylons: er15dc_catenary_pylons;
-  }
-}
-
- /// Rails
-// Unelectrified rails
-item (FEAT_RAILTYPES, rla1) {
-  property {
-    label: "RLA1";
-    introduction_date: date(1880, 1, 1);
-    name: string(STR_NAME_RLA1);
-    toolbar_caption: string(STR_RLA1_TOOLBAR);
-    menu_text: string(STR_RLA1_MENU);
-    build_window_caption: string(STR_RAIL_BUILD_CAPTION);
-    autoreplace_text: string(STR_RAIL_AUTOREPLACE);
-    new_engine_text: string(STR_RAIL_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_broad_rails()];
-    railtype_flags: 0;
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 64;
-    maintenance_cost: 2;
-    speed_limit: 62.5 mph;  // 100 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_rail + 2;
-    sort_order: 0x01;
-    alternative_railtype_list: ["BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
-                                "BAAN", "BABN", "BACN", "BADN", "BAEN",
-
-                                "SBAN", "SBBN", "SBCN", "SBDN", "SBEN",
                                 "SAAN", "SABN", "SACN", "SADN", "SAEN"];
-  }
-  graphics {
-    gui: rail1_gui;
-    track_overlay: get_rail1_track_overlay;
-    underlay: get_rail1_underlay;
-    tunnels: get_rail1_tunnels;
-    bridge_surfaces: get_rail1_bridge_surfaces;
-    level_crossings: get_rail1_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-  }
-}
+} }
 
-// Electrified rails AC 25kV
-item (FEAT_RAILTYPES, era1) {
-  property {
-    label: "ERA1";
-    introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ERAC1);
-    toolbar_caption: string(STR_ERAC1_TOOLBAR);
-    menu_text: string(STR_ERAC1_MENU);
-    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 115;
-    maintenance_cost: 4;
-    speed_limit: 62.5 mph;  // 100 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_ac + 2;
-    sort_order: 0x1C;
-    alternative_railtype_list: ["BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+item (FEAT_RAILTYPES, rla1) { property {
+    alternative_railtype_list: ["BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
+                                "SBAN", "SBBN", "SBCN", "SBDN", "SBEN"];
+} }
 
-                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-  }
-  graphics {
-    gui: rail1_gui;
-    track_overlay: get_rail1_track_overlay;
-    underlay: get_rail1_underlay;
-    tunnels: get_rail1_tunnels;
-    bridge_surfaces: get_rail1_bridge_surfaces;
-    level_crossings: get_rail1_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erac_catenary_wire;
-    catenary_pylons: erac_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 15kV
-item (FEAT_RAILTYPES, er15ac1) {
-  property {
-    label: "ERa1";
-    introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ER15AC1);
-    toolbar_caption: string(STR_ER15AC1_TOOLBAR);
-    menu_text: string(STR_ER15AC1_MENU);
-    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_15AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 115;
-    maintenance_cost: 4;
-    speed_limit: 62.5 mph;  // 100 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15ac + 2;
-    sort_order: 0x18;
-    alternative_railtype_list: ["BBAa", "BBBa", "BBCa", "BBDa", "BBEa",
-                                "BAAa", "BABa", "BACa", "BADa", "BAEa",
-
-                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
-
-                                "SBAa", "SBBa", "SBCa", "SBDa", "SBEa",
-                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
-
-                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-  }
-  graphics {
-    gui: rail1_gui;
-    track_overlay: get_rail1_track_overlay;
-    underlay: get_rail1_underlay;
-    tunnels: get_rail1_tunnels;
-    bridge_surfaces: get_rail1_bridge_surfaces;
-    level_crossings: get_rail1_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: er15ac_catenary_wire;
-    catenary_pylons: er15ac_catenary_pylons;
-  }
-}
-
-// Electrified rails DC 3 kV
-item (FEAT_RAILTYPES, erd1) {
-  property {
-    label: "ERD1";
-    introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ERDC1);
-    toolbar_caption: string(STR_ERDC1_TOOLBAR);
-    menu_text: string(STR_ERDC1_MENU);
-    build_window_caption: string(STR_ERDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 128;
-    maintenance_cost: 5;
-    speed_limit: 62.5 mph;  // 100 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_dc + 2;
-    sort_order: 0x0C;
-    alternative_railtype_list: ["BBAD", "BBBD", "BBCD", "BBDD", "BBED",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-
-                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-  }
-  graphics {
-    gui: rail1_gui;
-    track_overlay: get_rail1_track_overlay;
-    underlay: get_rail1_underlay;
-    tunnels: get_rail1_tunnels;
-    bridge_surfaces: get_rail1_bridge_surfaces;
-    level_crossings: get_rail1_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erdc_catenary_wire;
-    catenary_pylons: erdc_catenary_pylons;
-  }
-}
-
-// Electrified rails DC 1,5 kV
-item (FEAT_RAILTYPES, er15dc1) {
-  property {
-    label: "ERd1";
-    introduction_date: date(1924, 1, 1);
-    name: string(STR_NAME_ER15DC1);
-    toolbar_caption: string(STR_ER15DC1_TOOLBAR);
-    menu_text: string(STR_ER15DC1_MENU);
-    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_dC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 100;
-    maintenance_cost: 4;
-    speed_limit: 62.5 mph;  // 100 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15dc + 2;
-    sort_order: 0x09;
-    alternative_railtype_list: ["BBAd", "BBBd", "BBCd", "BBDd", "BBEd",
-                                "BAAd", "BABd", "BACd", "BADd", "BAEd",
-
-                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-
-                                "SBAd", "SBBd", "SBCd", "SBDd", "SBEd",
-                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-
-                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-  }
-  graphics {
-    gui: rail1_gui;
-    track_overlay: get_rail1_track_overlay;
-    underlay: get_rail1_underlay;
-    tunnels: get_rail1_tunnels;
-    bridge_surfaces: get_rail1_bridge_surfaces;
-    level_crossings: get_rail1_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: er15dc_catenary_wire;
-    catenary_pylons: er15dc_catenary_pylons;
-  }
-}
-
-// Electrified rails DC 1,5 kV + DC 3 kV
-item (FEAT_RAILTYPES, er2d) {
-  property {
-    label: "ER2D";
-    introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ERDDC);
-    toolbar_caption: string(STR_ERDDC_TOOLBAR);
-    menu_text: string(STR_ERDDC_MENU);
-    build_window_caption: string(STR_ERDDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERDDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERDDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_dDC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    construction_cost: 192;
-    maintenance_cost: 7;
-    speed_limit: 62.5 mph;  // 100 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_double;
-    sort_order: 0x20;
-/*
-    alternative_railtype_list: ["BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
-                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
-
-                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
-*/
-  }
-  graphics {
-    gui: rail1_gui;
-    track_overlay: get_rail1_track_overlay;
-    underlay: get_rail1_underlay;
-    tunnels: get_rail1_tunnels;
-    bridge_surfaces: get_rail1_bridge_surfaces;
-    level_crossings: get_rail1_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erds_catenary_wire;
-    catenary_pylons: erds_catenary_pylons;
-  }
-}
-
- /// Trunk rails
-// Electrified rails AC 25 kV + DC 3 kV
-item (FEAT_RAILTYPES, er2s) {
-  property {
-    label: "ER2S";
-    introduction_date: date(1963, 1, 1);
-    name: string(STR_NAME_ERACDC);
-    toolbar_caption: string(STR_ERACDC_TOOLBAR);
-    menu_text: string(STR_ERACDC_MENU);
-    build_window_caption: string(STR_ERACDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERACDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERACDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_ACDC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    construction_cost: 384;
-    maintenance_cost: 10;
-    speed_limit: 75 mph;  //120 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_double + 2;
-    sort_order: 0x21;
-/*
-    alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
-                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
-                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
-
-                                "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
-*/
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erds_catenary_wire;
-    catenary_pylons: erds_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 25 kV + DC 1,5 kV
-item (FEAT_RAILTYPES, er2ac15dc) {
-  property {
-    label: "ER2s";
-    introduction_date: date(1963, 1, 1);
-    name: string(STR_NAME_ERAC15DC);
-    toolbar_caption: string(STR_ERAC15DC_TOOLBAR);
-    menu_text: string(STR_ERAC15DC_MENU);
-    build_window_caption: string(STR_ERAC15DC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAC15DC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAC15DC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_AC15DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    construction_cost: 384;
-    maintenance_cost: 10;
-    speed_limit: 75 mph;  //120 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_double + 4;
-    sort_order: 0x22;
-/*
-    alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
-                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
-                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
-
-                                "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
-*/
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erds_catenary_wire;
-    catenary_pylons: erds_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 25 kV + DC 3 kV + DC 1,5 kV
-item (FEAT_RAILTYPES, er3acddc) {
-  property {
-    label: "ER3D";
-    introduction_date: date(1963, 1, 1);
-    name: string(STR_NAME_ERACDDC);
-    toolbar_caption: string(STR_ERACDDC_TOOLBAR);
-    menu_text: string(STR_ERACDDC_MENU);
-    build_window_caption: string(STR_ERACDDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERACDDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERACDDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_ACdDC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    construction_cost: 384;
-    maintenance_cost: 10;
-    speed_limit: 75 mph;  //120 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_double + 6;
-    sort_order: 0x23;
-/*
-    alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
-                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
-                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
-
-                                "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
-*/
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erds_catenary_wire;
-    catenary_pylons: erds_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 25 kV + AC 15 kV + DC 3 kV + DC 1,5 kV
-item (FEAT_RAILTYPES, er4aacddc) {
-  property {
-    label: "ER4S";
-    introduction_date: date(1963, 1, 1);
-    name: string(STR_NAME_ERAACDDC);
-    toolbar_caption: string(STR_ERAACDDC_TOOLBAR);
-    menu_text: string(STR_ERAACDDC_MENU);
-    build_window_caption: string(STR_ERAACDDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAACDDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAACDDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_aACdDC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    construction_cost: 384;
-    maintenance_cost: 10;
-    speed_limit: 75 mph;  //120 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_double + 10;
-    sort_order: 0x25;
-/*
-    alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
-                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
-                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
-
-                                "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "SAAE", "SABE", "SACE", "SADE", "SAEE",
-                                "ELRL"];
-*/
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erds_catenary_wire;
-    catenary_pylons: erds_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 25 kV + AC 15 kV + DC 1,5 kV
-item (FEAT_RAILTYPES, er3aac15dc) {
-  property {
-    label: "ER3a";
-    introduction_date: date(1963, 1, 1);
-    name: string(STR_NAME_ERAAC15DC);
-    toolbar_caption: string(STR_ERAAC15DC_TOOLBAR);
-    menu_text: string(STR_ERAAC15DC_MENU);
-    build_window_caption: string(STR_ERAAC15DC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAAC15DC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAAC15DC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_aAC15DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    construction_cost: 384;
-    maintenance_cost: 10;
-    speed_limit: 75 mph;  //120 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_double + 8;
-    sort_order: 0x24;
-/*
-    alternative_railtype_list: ["BCAE", "BCBE", "BCCE", "BCDE", "BCEE",
-                                "BBAE", "BBBE", "BBCE", "BBDE", "BBEE",
-                                "BAAE", "BABE", "BACE", "BADE", "BAEE",
-
-                                "SCAE", "SCBE", "SCCE", "SCDE", "SCEE",
-                                "SBAE", "SBBE", "SBCE", "SBDE", "SBEE",
-                                "SAAE", "SABE", "SACE", "SADE", "SAEE"];
-*/
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erds_catenary_wire;
-    catenary_pylons: erds_catenary_pylons;
-  }
-}
-
- /// High-speed rails
-// Unelectrified rails
-item (FEAT_RAILTYPES, rla2) {
-  property {
-    label: "RLA2";
-    introduction_date: date(1920, 1, 1);
-    name: string(STR_NAME_RLA2);
-    toolbar_caption: string(STR_RLA2_TOOLBAR);
-    menu_text: string(STR_RLA2_MENU);
-    build_window_caption: string(STR_RAIL_BUILD_CAPTION);
-    autoreplace_text: string(STR_RAIL_AUTOREPLACE);
-    new_engine_text: string(STR_RAIL_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_broad_rails()];
-    railtype_flags: 0;
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 128;
-    maintenance_cost: 4;
-    speed_limit: 87.5 mph;  //140 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_rail + 4;
-    sort_order: 0x02;
+item (FEAT_RAILTYPES, rla2) { property {
     alternative_railtype_list: ["BDAN", "BDBN", "BDCN", "BDDN", "BDEN",
                                 "BCAN", "BCBN", "BCCN", "BCDN", "BCEN",
-                                "BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
-                                "BAAN", "BABN", "BACN", "BADN", "BAEN",
-
                                 "SDAN", "SDBN", "SDCN", "SDDN", "SDEN",
-                                "SCAN", "SCBN", "SCCN", "SCDN", "SCEN",
-                                "SBAN", "SBBN", "SBCN", "SBDN", "SBEN",
-                                "SAAN", "SABN", "SACN", "SADN", "SAEN"];
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-  }
-}
+                                "SCAN", "SCBN", "SCCN", "SCDN", "SCEN"];
+} }
 
-// Electrified rails AC 25kV
-item (FEAT_RAILTYPES, era2) {
-  property {
-    label: "ERA2";
-    introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ERAC2);
-    toolbar_caption: string(STR_ERAC2_TOOLBAR);
-    menu_text: string(STR_ERAC2_MENU);
-    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 230;
-    maintenance_cost: 7;
-    speed_limit: 87.5 mph;  //140 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_ac + 4;
-    sort_order: 0x1D;
+item (FEAT_RAILTYPES, rla3) { property {
+    alternative_railtype_list: ["BEAN", "BEBN", "BECN",
+                                "SEAN", "SEBN", "SECN"];
+} }
+
+item (FEAT_RAILTYPES, erac1) { property {
+    alternative_railtype_list: ["BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
+} }
+
+item (FEAT_RAILTYPES, erac2) { property {
     alternative_railtype_list: ["BDAA", "BDBA", "BDCA", "BDDA", "BDEA",
                                 "BCAA", "BCBA", "BCCA", "BCDA", "BCEA",
-                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
-
                                 "SDAA", "SDBA", "SDCA", "SDDA", "SDEA",
-                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA",
-                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erac_catenary_wire;
-    catenary_pylons: erac_catenary_pylons;
-  }
-}
+                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA"];
+} }
 
-// Electrified rails AC 15kV
-item (FEAT_RAILTYPES, er15ac2) {
-  property {
-    label: "ERa2";
-    introduction_date: date(1952, 1, 1);
-    name: string(STR_NAME_ER15AC2);
-    toolbar_caption: string(STR_ER15AC2_TOOLBAR);
-    menu_text: string(STR_ER15AC2_MENU);
-    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_15AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 230;
-    maintenance_cost: 7;
-    speed_limit: 87.5 mph;  //140 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15ac + 4;
-    sort_order: 0x19;
+item (FEAT_RAILTYPES, erac3) { property {
+    alternative_railtype_list: ["BEAA", "BEBA", "BECA",
+                                "SEAA", "SEBA", "SECA"];
+} }
+
+item (FEAT_RAILTYPES, erac4) { property {
+    alternative_railtype_list: ["BFAA",
+                                "SFAA"];
+} }
+
+item (FEAT_RAILTYPES, er15ac0) { property {
+    alternative_railtype_list: ["BAAa", "BABa", "BACa", "BADa", "BAEa",
+                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
+                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
+                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
+} }
+
+item (FEAT_RAILTYPES, er15ac1) { property {
+    alternative_railtype_list: ["BBAa", "BBBa", "BBCa", "BBDa", "BBEa",
+                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
+                                "SBAa", "SBBa", "SBCa", "SBDa", "SBEa",
+                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA"];
+} }
+
+item (FEAT_RAILTYPES, er15ac2) { property {
     alternative_railtype_list: ["BDAa", "BDBa", "BDCa", "BDDa", "BDEa",
                                 "BCAa", "BCBa", "BCCa", "BCDa", "BCEa",
-                                "BBAa", "BBBa", "BBCa", "BBDa", "BBEa",
-                                "BAAa", "BABa", "BACa", "BADa", "BAEa",
-
                                 "BDAA", "BDBA", "BDCA", "BDDA", "BDEA",
                                 "BCAA", "BCBA", "BCCA", "BCDA", "BCEA",
-                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
-
                                 "SDAa", "SDBa", "SDCa", "SDDa", "SDEa",
                                 "SCAa", "SCBa", "SCCa", "SCDa", "SCEa",
-                                "SBAa", "SBBa", "SBCa", "SBDa", "SBEa",
-                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
-
                                 "SDAA", "SDBA", "SDCA", "SDDA", "SDEA",
-                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA",
-                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: er15ac_catenary_wire;
-    catenary_pylons: er15ac_catenary_pylons;
-  }
-}
+                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA"];
+} }
 
-// Electrified rails DC 3kV
-item (FEAT_RAILTYPES, erd2) {
-  property {
-    label: "ERD2";
-    introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ERDC2);
-    toolbar_caption: string(STR_ERDC2_TOOLBAR);
-    menu_text: string(STR_ERDC2_MENU);
-    build_window_caption: string(STR_ERDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 256;
-    maintenance_cost: 8;
-    speed_limit: 87.5 mph;  //140 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_dc + 4;
-    sort_order: 0x0D;
+item (FEAT_RAILTYPES, er15ac3) { property {
+    alternative_railtype_list: ["BEAa", "BEBa", "BECa",
+                                "BEAA", "BEBA", "BECA",
+                                "SEAa", "SEBa", "SECa",
+                                "SEAA", "SEBA", "SECA"];
+} }
+
+item (FEAT_RAILTYPES, er15ac4) { property {
+    alternative_railtype_list: ["BFAa",
+                                "BFAA",
+                                "SFAa",
+                                "SFAA"];
+} }
+
+
+item (FEAT_RAILTYPES, erdc1) { property {
+    alternative_railtype_list: ["BBAD", "BBBD", "BBCD", "BBDD", "BBED",
+                                "BAAD", "BABD", "BACD", "BADD", "BAED",
+                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
+} }
+
+item (FEAT_RAILTYPES, erdc2) { property {
     alternative_railtype_list: ["BDAD", "BDBD", "BDCD", "BDDD", "BDED",
                                 "BCAD", "BCBD", "BCCD", "BCDD", "BCED",
-                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-
                                 "SDAD", "SDBD", "SDCD", "SDDD", "SDED",
-                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED",
-                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: erdc_catenary_wire;
-    catenary_pylons: erdc_catenary_pylons;
-  }
-}
+                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED"];
+} }
 
-// Electrified rails DC 1,5kV
-item (FEAT_RAILTYPES, er15dc2) {
-  property {
-    label: "ERd2";
-    introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_ER15DC2);
-    toolbar_caption: string(STR_ER15DC2_TOOLBAR);
-    menu_text: string(STR_ER15DC2_MENU);
-    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 256;
-    maintenance_cost: 8;
-    speed_limit: 87.5 mph;  //140 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15dc + 4;
-    sort_order: 0x0A;
+item (FEAT_RAILTYPES, erdc3) { property {
+    alternative_railtype_list: ["BEAD", "BEBD", "BECD",
+                                "SEAD", "SEBD", "SECD"];
+} }
+
+item (FEAT_RAILTYPES, er15dc0) { property {
+    alternative_railtype_list: ["BAAd", "BABd", "BACd", "BADd", "BAEd",
+                                "BAAD", "BABD", "BACD", "BADD", "BAED",
+                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
+                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
+} }
+
+item (FEAT_RAILTYPES, er15dc1) { property {
+    alternative_railtype_list: ["BBAd", "BBBd", "BBCd", "BBDd", "BBEd",
+                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
+                                "SBAd", "SBBd", "SBCd", "SBDd", "SBEd",
+                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED"];
+} }
+
+item (FEAT_RAILTYPES, er15dc2) { property {
     alternative_railtype_list: ["BDAd", "BDBd", "BDCd", "BDDd", "BDEd",
                                 "BCAd", "BCBd", "BCCd", "BCDd", "BCEd",
-                                "BBAd", "BBBd", "BBCd", "BBDd", "BBEd",
-                                "BAAd", "BABd", "BACd", "BADd", "BAEd",
-
                                 "BDAD", "BDBD", "BDCD", "BDDD", "BDED",
                                 "BCAD", "BCBD", "BCCD", "BCDD", "BCED",
-                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-
                                 "SDAd", "SDBd", "SDCd", "SDDd", "SDEd",
                                 "SCAd", "SCBd", "SCCd", "SCDd", "SCEd",
-                                "SBAd", "SBBd", "SBCd", "SBDd", "SBEd",
-                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
-
                                 "SDAD", "SDBD", "SDCD", "SDDD", "SDED",
-                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED",
-                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-  }
-  graphics {
-    gui: rail2_gui;
-    track_overlay: get_rail2_track_overlay;
-    underlay: get_rail2_underlay;
-    tunnels: get_rail2_tunnels;
-    bridge_surfaces: get_rail2_bridge_surfaces;
-    level_crossings: get_rail2_level_crossings;
-    fences: fences_none;
-    depots: rail1_depots;
-    catenary_wire: er15dc_catenary_wire;
-    catenary_pylons: er15dc_catenary_pylons;
-  }
-}
+                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED"];
+} }
 
- /// High-speed rails
-// Unelectrified rails
-item (FEAT_RAILTYPES, rla3) {
-  property {
-    label: "RLA3";
-    introduction_date: date(1930, 1, 1);
-    name: string(STR_NAME_RLA3);
-    toolbar_caption: string(STR_RLA3_TOOLBAR);
-    menu_text: string(STR_RLA3_MENU);
-    build_window_caption: string(STR_RAIL_BUILD_CAPTION);
-    autoreplace_text: string(STR_RAIL_AUTOREPLACE);
-    new_engine_text: string(STR_RAIL_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 256;
-    maintenance_cost: 8;
-    speed_limit: 250 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_rail + 6;
-    sort_order: 0x03;
-    alternative_railtype_list: ["BEAN", "BEBN", "BECN",
-                                "BDAN", "BDBN", "BDCN",
-                                "BCAN", "BCBN", "BCCN",
-                                "BBAN", "BBBN", "BBCN",
-                                "BAAN", "BABN", "BACN",
-
-                                "SEAN", "SEBN", "SECN",
-                                "SDAN", "SDBN", "SDCN",
-                                "SCAN", "SCBN", "SCCN",
-                                "SBAN", "SBBN", "SBCN",
-                                "SAAN", "SABN", "SACN"];
-  }
-  graphics {
-    gui: rail3_gui;
-    track_overlay: get_rail3_track_overlay;
-    underlay: get_rail3_underlay;
-    tunnels: get_rail3_tunnels;
-    bridge_surfaces: get_rail3_bridge_surfaces;
-    level_crossings: get_rail3_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-  }
-}
-
-// Electrified rails AC 25kV
-item (FEAT_RAILTYPES, era3) {
-  property {
-    label: "ERA3";
-    introduction_date: date(1958, 1, 1);
-    name: string(STR_NAME_ERAC3);
-    toolbar_caption: string(STR_ERAC3_TOOLBAR);
-    menu_text: string(STR_ERAC3_MENU);
-    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 461;
-    maintenance_cost: 14;
-    speed_limit: 250 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_ac + 6;
-    sort_order: 0x1E;
-    alternative_railtype_list: ["BEAA", "BEBA", "BECA",
-                                "BDAA", "BDBA", "BDCA",
-                                "BCAA", "BCBA", "BCCA",
-                                "BBAA", "BBBA", "BBCA",
-                                "BAAA", "BABA", "BACA",
-
-                                "SEAA", "SEBA", "SECA",
-                                "SDAA", "SDBA", "SDCA",
-                                "SCAA", "SCBA", "SCCA",
-                                "SBAA", "SBBA", "SBCA",
-                                "SAAA", "SABA", "SACA"];
-  }
-  graphics {
-    gui: rail3_gui;
-    track_overlay: get_rail3_track_overlay;
-    underlay: get_rail3_underlay;
-    tunnels: get_rail3_tunnels;
-    bridge_surfaces: get_rail3_bridge_surfaces;
-    level_crossings: get_rail3_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-    catenary_wire: erac_catenary_wire;
-    catenary_pylons: erac_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 15kV
-item (FEAT_RAILTYPES, er15ac3) {
-  property {
-    label: "ERa3";
-    introduction_date: date(1958, 1, 1);
-    name: string(STR_NAME_ER15AC3);
-    toolbar_caption: string(STR_ER15AC3_TOOLBAR);
-    menu_text: string(STR_ER15AC3_MENU);
-    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_15AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 461;
-    maintenance_cost: 14;
-    speed_limit: 250 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15ac + 6;
-    sort_order: 0x1A;
-    alternative_railtype_list: ["BEAa", "BEBa", "BECa",
-                                "BDAa", "BDBa", "BDCa",
-                                "BCAa", "BCBa", "BCCa",
-                                "BBAa", "BBBa", "BBCa",
-                                "BAAa", "BABa", "BACa",
-
-                                "BEAA", "BEBA", "BECA",
-                                "BDAA", "BDBA", "BDCA",
-                                "BCAA", "BCBA", "BCCA",
-                                "BBAA", "BBBA", "BBCA",
-                                "BAAA", "BABA", "BACA",
-
-                                "SEAa", "SEBa", "SECa",
-                                "SDAa", "SDBa", "SDCa",
-                                "SCAa", "SCBa", "SCCa",
-                                "SBAa", "SBBa", "SBCa",
-                                "SAAa", "SABa", "SACa",
-
-                                "SEAA", "SEBA", "SECA",
-                                "SDAA", "SDBA", "SDCA",
-                                "SCAA", "SCBA", "SCCA",
-                                "SBAA", "SBBA", "SBCA",
-                                "SAAA", "SABA", "SACA"];
-  }
-  graphics {
-    gui: rail3_gui;
-    track_overlay: get_rail3_track_overlay;
-    underlay: get_rail3_underlay;
-    tunnels: get_rail3_tunnels;
-    bridge_surfaces: get_rail3_bridge_surfaces;
-    level_crossings: get_rail3_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-    catenary_wire: er15ac_catenary_wire;
-    catenary_pylons: er15ac_catenary_pylons;
-  }
-}
-
-// Electrified rails DC 3kV
-item (FEAT_RAILTYPES, erd3) {
-  property {
-    label: "ERD3";
-    introduction_date: date(1956, 1, 1);
-    name: string(STR_NAME_ERDC3);
-    toolbar_caption: string(STR_ERDC3_TOOLBAR);
-    menu_text: string(STR_ERDC3_MENU);
-    build_window_caption: string(STR_ERDC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERDC_AUTOREPLACE);
-    new_engine_text: string(STR_ERDC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 512;
-    maintenance_cost: 16;
-    speed_limit: 250 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_dc + 6;
-    sort_order: 0x0E;
-    alternative_railtype_list: ["BEAD", "BEBD", "BECD",
-                                "BDAD", "BDBD", "BDCD",
-                                "BCAD", "BCBD", "BCCD",
-                                "BBAD", "BBBD", "BBCD",
-                                "BAAD", "BABD", "BACD",
-
-                                "SEAD", "SEBD", "SECD",
-                                "SDAD", "SDBD", "SDCD",
-                                "SCAD", "SCBD", "SCCD",
-                                "SBAD", "SBBD", "SBCD",
-                                "SAAD", "SABD", "SACD"];
-  }
-  graphics {
-    gui: rail3_gui;
-    track_overlay: get_rail3_track_overlay;
-    underlay: get_rail3_underlay;
-    tunnels: get_rail3_tunnels;
-    bridge_surfaces: get_rail3_bridge_surfaces;
-    level_crossings: get_rail3_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-    catenary_wire: erdc_catenary_wire;
-    catenary_pylons: erdc_catenary_pylons;
-  }
-}
-
-// Electrified rails DC 1,5kV
-item (FEAT_RAILTYPES, er15dc3) {
-  property {
-    label: "ERd3";
-    introduction_date: date(1956, 1, 1);
-    name: string(STR_NAME_ER15DC3);
-    toolbar_caption: string(STR_ER15DC3_TOOLBAR);
-    menu_text: string(STR_ER15DC3_MENU);
-    build_window_caption: string(STR_ER15DC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15DC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15DC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_DC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 512;
-    maintenance_cost: 16;
-    speed_limit: 250 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15dc + 6;
-    sort_order: 0x0B;
+item (FEAT_RAILTYPES, er15dc3) { property {
     alternative_railtype_list: ["BEAd", "BEBd", "BECd",
-                                "BDAd", "BDBd", "BDCd",
-                                "BCAd", "BCBd", "BCCd",
-                                "BBAd", "BBBd", "BBCd",
-                                "BAAd", "BABd", "BACd",
-
                                 "BEAD", "BEBD", "BECD",
-                                "BDAD", "BDBD", "BDCD",
-                                "BCAD", "BCBD", "BCCD",
-                                "BBAD", "BBBD", "BBCD",
-                                "BAAD", "BABD", "BACD",
-
                                 "SEAd", "SEBd", "SECd",
-                                "SDAd", "SDBd", "SDCd",
-                                "SCAd", "SCBd", "SCCd",
-                                "SBAd", "SBBd", "SBCd",
-                                "SAAd", "SABd", "SACd",
-
-                                "SEAD", "SEBD", "SECD",
-                                "SDAD", "SDBD", "SDCD",
-                                "SCAD", "SCBD", "SCCD",
-                                "SBAD", "SBBD", "SBCD",
-                                "SAAD", "SABD", "SACD"];
-  }
-  graphics {
-    gui: rail3_gui;
-    track_overlay: get_rail3_track_overlay;
-    underlay: get_rail3_underlay;
-    tunnels: get_rail3_tunnels;
-    bridge_surfaces: get_rail3_bridge_surfaces;
-    level_crossings: get_rail3_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-    catenary_wire: er15dc_catenary_wire;
-    catenary_pylons: er15dc_catenary_pylons;
-  }
-}
-
- /// Unlimited-speed line
-// Electrified rails AC 25kV
-item (FEAT_RAILTYPES, era4) {
-  property {
-    label: "ERA4";
-    introduction_date: date(2008, 1, 1);
-    name: string(STR_NAME_ERAC4);
-    toolbar_caption: string(STR_ERAC4_TOOLBAR);
-    menu_text: string(STR_ERAC4_MENU);
-    build_window_caption: string(STR_ERAC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ERAC_AUTOREPLACE);
-    new_engine_text: string(STR_ERAC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 640;
-    maintenance_cost: 19;
-    speed_limit: 0 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_ac + 8;
-    sort_order: 0x1F;
-    alternative_railtype_list: ["BFAA",
-                                "BEAA",
-                                "BDAA",
-                                "BCAA",
-                                "BBAA",
-                                "BAAA",
-
-                                "SFAA",
-                                "SEAA",
-                                "SDAA",
-                                "SCAA",
-                                "SBAA",
-                                "SAAA"];
-  }
-  graphics {
-    gui: rail4_gui;
-    track_overlay: get_rail4_track_overlay;
-    underlay: get_rail4_underlay;
-    tunnels: get_rail4_tunnels;
-    bridge_surfaces: get_rail4_bridge_surfaces;
-    level_crossings: get_rail4_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-    catenary_wire: erac_catenary_wire;
-    catenary_pylons: erac_catenary_pylons;
-  }
-}
-
-// Electrified rails AC 15kV
-item (FEAT_RAILTYPES, er15ac4) {
-  property {
-    label: "ERa4";
-    introduction_date: date(2008, 1, 1);
-    name: string(STR_NAME_ER15AC4);
-    toolbar_caption: string(STR_ER15AC4_TOOLBAR);
-    menu_text: string(STR_ER15AC4_MENU);
-    build_window_caption: string(STR_ER15AC_BUILD_CAPTION);
-    autoreplace_text: string(STR_ER15AC_AUTOREPLACE);
-    new_engine_text: string(STR_ER15AC_NEW_ENGINE);
-    compatible_railtype_list: [all_broad_rails()];
-    powered_railtype_list: [all_15AC_broad_rails()];
-    railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING);
-    curve_speed_multiplier: 1;
-    station_graphics: RAILTYPE_STATION_NORMAL;
-    construction_cost: 640;
-    maintenance_cost: 19;
-    speed_limit: 0 km/h;
-    acceleration_model: ACC_MODEL_RAIL;
-    map_colour: map_color_15ac + 8;
-    sort_order: 0x1B;
-    alternative_railtype_list: ["BFAa",
-                                "BEAa",
-                                "BDAa",
-                                "BCAa",
-                                "BBAa",
-                                "BAAa",
-
-                                "BFAA",
-                                "BEAA",
-                                "BDAA",
-                                "BCAA",
-                                "BBAA",
-                                "BAAA",
-
-                                "SFAa",
-                                "SEAa",
-                                "SDAa",
-                                "SCAa",
-                                "SBAa",
-                                "SAAa",
-
-                                "SFAA",
-                                "SEAA",
-                                "SDAA",
-                                "SCAA",
-                                "SBAA",
-                                "SAAA"];
-  }
-  graphics {
-    gui: rail4_gui;
-    track_overlay: get_rail4_track_overlay;
-    underlay: get_rail4_underlay;
-    tunnels: get_rail4_tunnels;
-    bridge_surfaces: get_rail4_bridge_surfaces;
-    level_crossings: get_rail4_level_crossings;
-    fences: fences;
-    depots: rail1_depots;
-    catenary_wire: er15ac_catenary_wire;
-    catenary_pylons: er15ac_catenary_pylons;
-  }
-}
+                                "SEAD", "SEBD", "SECD"];
+} }
 
 // Adjust for xUSSR Railways Set
 if (grf_future_status("AKA\08")) {
@@ -1400,13 +397,13 @@ if (grf_future_status("AKA\08")) {
     item (FEAT_RAILTYPES, er15dc1) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erd1) {
+    item (FEAT_RAILTYPES, erdc1) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erd2) {
+    item (FEAT_RAILTYPES, erdc2) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erd3) {
+    item (FEAT_RAILTYPES, erdc3) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er2d) {
@@ -1418,16 +415,19 @@ if (grf_future_status("AKA\08")) {
   }
 
   if (xUSSRset_disable_acemu && xUSSRset_disable_acelectric) {
-    item (FEAT_RAILTYPES, era1) {
+    item (FEAT_RAILTYPES, er15ac0) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, era2) {
+    item (FEAT_RAILTYPES, erac1) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, era3) {
+    item (FEAT_RAILTYPES, erac2) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, era4) {
+    item (FEAT_RAILTYPES, erac3) {
+      property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, erac4) {
       property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
     item (FEAT_RAILTYPES, er2s) {
@@ -1478,3 +478,128 @@ if (1) {
     property {
       railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
 }
+
+/*
+STR_NAME_RLA0
+STR_NAME_RLA1
+STR_NAME_RLA2
+STR_NAME_RLA3
+STR_RAIL_AUTOREPLACE
+STR_RAIL_BUILD_CAPTION
+STR_RAIL_NEW_ENGINE
+STR_RAIL_NEW_ENGINE.gen
+STR_RLA0_MENU
+STR_RLA0_TOOLBAR
+STR_RLA1_MENU
+STR_RLA1_TOOLBAR
+STR_RLA2_MENU
+STR_RLA2_TOOLBAR
+STR_RLA3_MENU
+STR_RLA3_TOOLBAR
+STR_ERAC1_MENU
+STR_ERAC1_TOOLBAR
+STR_ERAC2_MENU
+STR_ERAC2_TOOLBAR
+STR_ERAC3_MENU
+STR_ERAC3_TOOLBAR
+STR_ERAC4_MENU
+STR_ERAC4_TOOLBAR
+STR_ERAC_AUTOREPLACE
+STR_ERAC_BUILD_CAPTION
+STR_ERAC_NEW_ENGINE
+STR_ERAC_NEW_ENGINE.gen
+STR_NAME_ERAC1
+STR_NAME_ERAC2
+STR_NAME_ERAC3
+STR_NAME_ERAC4
+STR_ER15AC0_MENU
+STR_ER15AC0_TOOLBAR
+STR_ER15AC1_MENU
+STR_ER15AC1_TOOLBAR
+STR_ER15AC2_MENU
+STR_ER15AC2_TOOLBAR
+STR_ER15AC3_MENU
+STR_ER15AC3_TOOLBAR
+STR_ER15AC4_MENU
+STR_ER15AC4_TOOLBAR
+STR_ER15AC_AUTOREPLACE
+STR_ER15AC_BUILD_CAPTION
+STR_ER15AC_NEW_ENGINE
+STR_ER15AC_NEW_ENGINE.gen
+STR_ER15DC0_MENU
+STR_ER15DC0_TOOLBAR
+STR_ER15DC1_MENU
+STR_ER15DC1_TOOLBAR
+STR_ER15DC2_MENU
+STR_ER15DC2_TOOLBAR
+STR_ER15DC3_MENU
+STR_ER15DC3_TOOLBAR
+STR_ER15DC_AUTOREPLACE
+STR_ER15DC_BUILD_CAPTION
+STR_ER15DC_NEW_ENGINE
+STR_ER15DC_NEW_ENGINE.gen
+STR_ERDC1_MENU
+STR_ERDC1_TOOLBAR
+STR_ERDC2_MENU
+STR_ERDC2_TOOLBAR
+STR_ERDC3_MENU
+STR_ERDC3_TOOLBAR
+STR_ERDC_AUTOREPLACE
+STR_ERDC_BUILD_CAPTION
+STR_ERDC_NEW_ENGINE
+STR_ERDC_NEW_ENGINE.gen
+STR_NAME_ER15AC0
+STR_NAME_ER15AC1
+STR_NAME_ER15AC2
+STR_NAME_ER15AC3
+STR_NAME_ER15AC4
+STR_NAME_ER15DC0
+STR_NAME_ER15DC1
+STR_NAME_ER15DC2
+STR_NAME_ER15DC3
+STR_NAME_ERDC1
+STR_NAME_ERDC2
+STR_NAME_ERDC3
+STR_ERAC15DC_AUTOREPLACE
+STR_ERAC15DC_BUILD_CAPTION
+STR_ERAC15DC_MENU
+STR_ERAC15DC_NEW_ENGINE
+STR_ERAC15DC_NEW_ENGINE.gen
+STR_ERAC15DC_TOOLBAR
+STR_ERACDC_AUTOREPLACE
+STR_ERACDC_BUILD_CAPTION
+STR_ERACDC_MENU
+STR_ERACDC_NEW_ENGINE
+STR_ERACDC_NEW_ENGINE.gen
+STR_ERACDC_TOOLBAR
+STR_ERACDDC_AUTOREPLACE
+STR_ERACDDC_BUILD_CAPTION
+STR_ERACDDC_MENU
+STR_ERACDDC_NEW_ENGINE
+STR_ERACDDC_NEW_ENGINE.gen
+STR_ERACDDC_TOOLBAR
+STR_ERDDC_AUTOREPLACE
+STR_ERDDC_BUILD_CAPTION
+STR_ERDDC_MENU
+STR_ERDDC_NEW_ENGINE
+STR_ERDDC_NEW_ENGINE.gen
+STR_ERDDC_TOOLBAR
+STR_NAME_ERAC15DC
+STR_NAME_ERACDC
+STR_NAME_ERACDDC
+STR_NAME_ERDDC
+STR_ERAAC15DC_AUTOREPLACE
+STR_ERAAC15DC_BUILD_CAPTION
+STR_ERAAC15DC_MENU
+STR_ERAAC15DC_NEW_ENGINE
+STR_ERAAC15DC_NEW_ENGINE.gen
+STR_ERAAC15DC_TOOLBAR
+STR_ERAACDDC_AUTOREPLACE
+STR_ERAACDDC_BUILD_CAPTION
+STR_ERAACDDC_MENU
+STR_ERAACDDC_NEW_ENGINE
+STR_ERAACDDC_NEW_ENGINE.gen
+STR_ERAACDDC_TOOLBAR
+STR_NAME_ERAAC15DC
+STR_NAME_ERAACDDC
+*/
