@@ -12,7 +12,7 @@
 
 map_color_rail = 0x07;
 map_color_ac = 0x91;
-map_color_15ac = 0x85;
+map_color_15ac = 0x80;
 map_color_dc = 0x73;
 map_color_15dc = 0x2B;  //0xB2;
 map_color_double = 0xBB;
@@ -25,7 +25,7 @@ map_color_double = 0xBB;
 // 4S = A + D + a + d (ETR575, ICE-3M)
 
 #define all_broad_rails()                   \
-  "RLA0", "RLA1", "RLA2", "RLA3",           \
+  "RLA0", "RLA1", "RLA2", "RLA3", "RLAN",   \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
   "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
           "ERD1", "ERD2", "ERD3",           \
@@ -36,6 +36,32 @@ map_color_double = 0xBB;
                   "ER3a",                   \
                   "ER3D",                   \
                   "ER4S"                    \
+
+#define all_broad_lowspeed_rails()   \
+  "RLA0", "RLA1", "RLA2", "RLAN",    \
+          "ERA1", "ERA2",            \
+  "ERa0", "ERa1", "ERa2",            \
+          "ERD1", "ERD2",            \
+  "ERd0", "ERd1", "ERd2",            \
+                  "ER2D",            \
+                  "ER2S",            \
+                  "ER2s",            \
+                  "ER3a",            \
+                  "ER3D",            \
+                  "ER4S"             \
+
+#define all_broad_highspeed_rails()   \
+  "RLA2", "RLA3", "RLAN",             \
+  "ERA2", "ERA3", "ERA4",             \
+  "ERa2", "ERa3", "ERa4",             \
+  "ERD2", "ERD3",                     \
+  "ERd2", "ERd3",                     \
+  "ER2D",                             \
+  "ER2S",                             \
+  "ER2s",                             \
+  "ER3a",                             \
+  "ER3D",                             \
+  "ER4S"                              \
 
 #define all_AC_broad_rails()                \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
@@ -48,6 +74,15 @@ map_color_double = 0xBB;
 #define all_15AC_broad_rails()              \
   "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
                   "ER3a",                   \
+                  "ER4S"                    \
+
+#define all_aAC_broad_rails()               \
+          "ERA1", "ERA2", "ERA3", "ERA4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
+                  "ER2S",                   \
+                  "ER2s",                   \
+                  "ER3a",                   \
+                  "ER3D",                   \
                   "ER4S"                    \
 
 #define all_DC_broad_rails()        \
@@ -170,313 +205,170 @@ item (FEAT_RAILTYPES, rail_name) {                            \
    catenary_wire: catenary_graphics##_catenary_wire;          \
    catenary_pylons: catenary_graphics##_catenary_pylons; }}   \
 
-
-new_broad_rails(rla0      , "RLA0", 1800, RLA0     , RAIL     , all        ,  49,  2, 37.5 mph, map_color_rail+0,    0x00, rail0, fences_none, rail1_depots, 0)                                         // Unelectrified Industrial rails
-new_broad_rails(rla1      , "RLA1", 1880, RLA1     , RAIL     , all        ,  64,  2, 62.5 mph, map_color_rail+2,    0x01, rail1, fences_none, rail1_depots, 0)                                         // Unelectrified rails
-new_broad_rails(rla2      , "RLA2", 1920, RLA2     , RAIL     , all        , 128,  4, 87.5 mph, map_color_rail+4,    0x02, rail2, fences_none, rail1_depots, 0)                                         // Unelectrified Trunk rails
-new_broad_rails(rla3      , "RLA3", 1930, RLA3     , RAIL     , all        , 256,  8, 250 km/h, map_color_rail+6,    0x03, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Unelectrified High-speed rails
-
-new_broad_rails(erac1     , "ERA1", 1952, ERAC1    , ERAC     , all_AC     , 115,  4, 62.5 mph, map_color_ac+2,      0x1C, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails AC 25kV
-new_broad_rails(erac2     , "ERA2", 1952, ERAC2    , ERAC     , all_AC     , 230,  7, 87.5 mph, map_color_ac+4,      0x1D, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails AC 25kV
-new_broad_rails(erac3     , "ERA3", 1958, ERAC3    , ERAC     , all_AC     , 461, 14, 250 km/h, map_color_ac+6,      0x1E, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails AC 25kV
-new_broad_rails(erac4     , "ERA4", 2008, ERAC4    , ERAC     , all_AC     , 640, 19,   0 km/h, map_color_ac+8,      0x1F, rail4, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified Unlimited-speed rails AC 25kV
-new_broad_rails(er15ac0   , "ERa0", 1961, ER15AC0  , ER15AC   , all_15AC   ,  75,  3, 37.5 mph, map_color_15ac+0,    0x17, rail0, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Industrial rails AC 15kV
-new_broad_rails(er15ac1   , "ERa1", 1961, ER15AC1  , ER15AC   , all_15AC   , 115,  4, 62.5 mph, map_color_15ac+2,    0x18, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails AC 15kV
-new_broad_rails(er15ac2   , "ERa2", 1961, ER15AC2  , ER15AC   , all_15AC   , 230,  7, 87.5 mph, map_color_15ac+4,    0x19, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails AC 15kV
-new_broad_rails(er15ac3   , "ERa3", 1961, ER15AC3  , ER15AC   , all_15AC   , 461, 14, 250 km/h, map_color_15ac+6,    0x1A, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails AC 15kV
-new_broad_rails(er15ac4   , "ERa4", 2008, ER15AC4  , ER15AC   , all_15AC   , 640, 19,   0 km/h, map_color_15ac+8,    0x1B, rail4, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified Unlimited-speed rails AC 15kV
-
-new_broad_rails(erdc1     , "ERD1", 1930, ERDC1    , ERDC     , all_DC     , 128,  5, 62.5 mph, map_color_dc+2,      0x0C, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails DC 3 kV
-new_broad_rails(erdc2     , "ERD2", 1930, ERDC2    , ERDC     , all_DC     , 256,  8, 87.5 mph, map_color_dc+4,      0x0D, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails DC 3kV
-new_broad_rails(erdc3     , "ERD3", 1956, ERDC3    , ERDC     , all_DC     , 512, 16, 250 km/h, map_color_dc+6,      0x0E, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails DC 3kV
-new_broad_rails(er15dc0   , "ERd0", 1924, ER15DC0  , ER15DC   , all_15DC   ,  75,  3, 37.5 mph, map_color_15dc+0,    0x08, rail0, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Industrial rails DC 1.5kV
-new_broad_rails(er15dc1   , "ERd1", 1924, ER15DC1  , ER15DC   , all_15DC   , 100,  4, 62.5 mph, map_color_15dc+2,    0x09, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified rails DC 1,5 kV
-new_broad_rails(er15dc2   , "ERd2", 1930, ER15DC2  , ER15DC   , all_15DC   , 256,  8, 87.5 mph, map_color_15dc+4,    0x0A, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))                                   // Electrified Trunk rails DC 1,5kV
-new_broad_rails(er15dc3   , "ERd3", 1956, ER15DC3  , ER15DC   , all_15DC   , 512, 16, 250 km/h, map_color_15dc+6,    0x0B, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Electrified High-speed rails DC 1,5kV
-
-new_broad_rails(er2d      , "ER2D", 1930, ERDDC    , ERDDC    , all_dDC    , 192,  7, 62.5 mph, map_color_double+0,  0x20, rail1, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified rails DC 1,5 kV + DC 3 kV
-new_broad_rails(er2s      , "ER2S", 1963, ERACDC   , ERACDC   , all_ACDC   , 384, 10,   75 mph, map_color_double+2,  0x21, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + DC 3 kV
-
-new_broad_rails(er2ac15dc , "ER2s", 1963, ERAC15DC , ERAC15DC , all_AC15DC , 384, 10,   75 mph, map_color_double+4,  0x22, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + DC 1,5 kV
-new_broad_rails(er3acddc  , "ER3D", 1963, ERACDDC  , ERACDDC  , all_ACdDC  , 384, 10,   75 mph, map_color_double+6,  0x23, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + DC 3 kV + DC 1,5 kV
-new_broad_rails(er3aac15dc, "ER3a", 1963, ERAAC15DC, ERAAC15DC, all_aAC15DC, 384, 10,   75 mph, map_color_double+8,  0x24, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + AC 15 kV + DC 1,5 kV
-new_broad_rails(er4aacddc , "ER4S", 1963, ERAACDDC , ERAACDDC , all_aACdDC , 384, 10,   75 mph, map_color_double+10, 0x25, rail2, fences_none, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified Trunk rails AC 25 kV + AC 15 kV + DC 3 kV + DC 1,5 kV
-
-electric_rails(erac1, erac)
-electric_rails(erac2, erac)
-electric_rails(erac3, erac)
-electric_rails(erac4, erac)
-electric_rails(er15ac0, er15ac)
-electric_rails(er15ac1, er15ac)
-electric_rails(er15ac2, er15ac)
-electric_rails(er15ac3, er15ac)
-electric_rails(er15ac4, er15ac)
-electric_rails(erdc1, erdc)
-electric_rails(erdc2, erdc)
-electric_rails(erdc3, erdc)
-electric_rails(er15dc0, er15dc)
-electric_rails(er15dc1, er15dc)
-electric_rails(er15dc2, er15dc)
-electric_rails(er15dc3, er15dc)
-electric_rails(er2d, erds)
-electric_rails(er2s, erds)
-electric_rails(er2ac15dc, erds)
-electric_rails(er3acddc, erds)
-electric_rails(er3aac15dc, erds)
-electric_rails(er4aacddc, erds)
-
-item (FEAT_RAILTYPES, rla0) { property {
-    alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN",
-                                "SAAN", "SABN", "SACN", "SADN", "SAEN"];
-} }
-
-item (FEAT_RAILTYPES, rla1) { property {
-    alternative_railtype_list: ["BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
-                                "SBAN", "SBBN", "SBCN", "SBDN", "SBEN"];
-} }
-
-item (FEAT_RAILTYPES, rla2) { property {
-    alternative_railtype_list: ["BDAN", "BDBN", "BDCN", "BDDN", "BDEN",
-                                "BCAN", "BCBN", "BCCN", "BCDN", "BCEN",
-                                "SDAN", "SDBN", "SDCN", "SDDN", "SDEN",
-                                "SCAN", "SCBN", "SCCN", "SCDN", "SCEN"];
-} }
-
-item (FEAT_RAILTYPES, rla3) { property {
-    alternative_railtype_list: ["BEAN", "BEBN", "BECN",
-                                "SEAN", "SEBN", "SECN"];
-} }
-
-item (FEAT_RAILTYPES, erac1) { property {
-    alternative_railtype_list: ["BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
-                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-} }
-
-item (FEAT_RAILTYPES, erac2) { property {
-    alternative_railtype_list: ["BDAA", "BDBA", "BDCA", "BDDA", "BDEA",
-                                "BCAA", "BCBA", "BCCA", "BCDA", "BCEA",
-                                "SDAA", "SDBA", "SDCA", "SDDA", "SDEA",
-                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA"];
-} }
-
-item (FEAT_RAILTYPES, erac3) { property {
-    alternative_railtype_list: ["BEAA", "BEBA", "BECA",
-                                "SEAA", "SEBA", "SECA"];
-} }
-
-item (FEAT_RAILTYPES, erac4) { property {
-    alternative_railtype_list: ["BFAA",
-                                "SFAA"];
-} }
-
-item (FEAT_RAILTYPES, er15ac0) { property {
-    alternative_railtype_list: ["BAAa", "BABa", "BACa", "BADa", "BAEa",
-                                "BAAA", "BABA", "BACA", "BADA", "BAEA",
-                                "SAAa", "SABa", "SACa", "SADa", "SAEa",
-                                "SAAA", "SABA", "SACA", "SADA", "SAEA"];
-} }
-
-item (FEAT_RAILTYPES, er15ac1) { property {
-    alternative_railtype_list: ["BBAa", "BBBa", "BBCa", "BBDa", "BBEa",
-                                "BBAA", "BBBA", "BBCA", "BBDA", "BBEA",
-                                "SBAa", "SBBa", "SBCa", "SBDa", "SBEa",
-                                "SBAA", "SBBA", "SBCA", "SBDA", "SBEA"];
-} }
-
-item (FEAT_RAILTYPES, er15ac2) { property {
-    alternative_railtype_list: ["BDAa", "BDBa", "BDCa", "BDDa", "BDEa",
-                                "BCAa", "BCBa", "BCCa", "BCDa", "BCEa",
-                                "BDAA", "BDBA", "BDCA", "BDDA", "BDEA",
-                                "BCAA", "BCBA", "BCCA", "BCDA", "BCEA",
-                                "SDAa", "SDBa", "SDCa", "SDDa", "SDEa",
-                                "SCAa", "SCBa", "SCCa", "SCDa", "SCEa",
-                                "SDAA", "SDBA", "SDCA", "SDDA", "SDEA",
-                                "SCAA", "SCBA", "SCCA", "SCDA", "SCEA"];
-} }
-
-item (FEAT_RAILTYPES, er15ac3) { property {
-    alternative_railtype_list: ["BEAa", "BEBa", "BECa",
-                                "BEAA", "BEBA", "BECA",
-                                "SEAa", "SEBa", "SECa",
-                                "SEAA", "SEBA", "SECA"];
-} }
-
-item (FEAT_RAILTYPES, er15ac4) { property {
-    alternative_railtype_list: ["BFAa",
-                                "BFAA",
-                                "SFAa",
-                                "SFAA"];
-} }
-
-
-item (FEAT_RAILTYPES, erdc1) { property {
-    alternative_railtype_list: ["BBAD", "BBBD", "BBCD", "BBDD", "BBED",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-} }
-
-item (FEAT_RAILTYPES, erdc2) { property {
-    alternative_railtype_list: ["BDAD", "BDBD", "BDCD", "BDDD", "BDED",
-                                "BCAD", "BCBD", "BCCD", "BCDD", "BCED",
-                                "SDAD", "SDBD", "SDCD", "SDDD", "SDED",
-                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED"];
-} }
-
-item (FEAT_RAILTYPES, erdc3) { property {
-    alternative_railtype_list: ["BEAD", "BEBD", "BECD",
-                                "SEAD", "SEBD", "SECD"];
-} }
-
-item (FEAT_RAILTYPES, er15dc0) { property {
-    alternative_railtype_list: ["BAAd", "BABd", "BACd", "BADd", "BAEd",
-                                "BAAD", "BABD", "BACD", "BADD", "BAED",
-                                "SAAd", "SABd", "SACd", "SADd", "SAEd",
-                                "SAAD", "SABD", "SACD", "SADD", "SAED"];
-} }
-
-item (FEAT_RAILTYPES, er15dc1) { property {
-    alternative_railtype_list: ["BBAd", "BBBd", "BBCd", "BBDd", "BBEd",
-                                "BBAD", "BBBD", "BBCD", "BBDD", "BBED",
-                                "SBAd", "SBBd", "SBCd", "SBDd", "SBEd",
-                                "SBAD", "SBBD", "SBCD", "SBDD", "SBED"];
-} }
-
-item (FEAT_RAILTYPES, er15dc2) { property {
-    alternative_railtype_list: ["BDAd", "BDBd", "BDCd", "BDDd", "BDEd",
-                                "BCAd", "BCBd", "BCCd", "BCDd", "BCEd",
-                                "BDAD", "BDBD", "BDCD", "BDDD", "BDED",
-                                "BCAD", "BCBD", "BCCD", "BCDD", "BCED",
-                                "SDAd", "SDBd", "SDCd", "SDDd", "SDEd",
-                                "SCAd", "SCBd", "SCCd", "SCDd", "SCEd",
-                                "SDAD", "SDBD", "SDCD", "SDDD", "SDED",
-                                "SCAD", "SCBD", "SCCD", "SCDD", "SCED"];
-} }
-
-item (FEAT_RAILTYPES, er15dc3) { property {
-    alternative_railtype_list: ["BEAd", "BEBd", "BECd",
-                                "BEAD", "BEBD", "BECD",
-                                "SEAd", "SEBd", "SECd",
-                                "SEAD", "SEBD", "SECD"];
-} }
-
-// Adjust for xUSSR Railways Set
-if (grf_future_status("AKA\08")) {
-
-  xUSSRset_disable_steamer      = (param["AKA\08", 2] >> 0) & 0x01;
-  xUSSRset_disable_diesel       = (param["AKA\08", 2] >> 1) & 0x01;
-  xUSSRset_disable_acelectric   = (param["AKA\08", 2] >> 2) & 0x01;
-  xUSSRset_disable_dcelectric   = (param["AKA\08", 2] >> 3) & 0x01;
-  xUSSRset_disable_acdcelectric = (param["AKA\08", 2] >> 4) & 0x01;
-  xUSSRset_disable_dmu          = (param["AKA\08", 2] >> 5) & 0x01;
-  xUSSRset_disable_acemu        = (param["AKA\08", 2] >> 6) & 0x01;
-  xUSSRset_disable_dcemu        = (param["AKA\08", 2] >> 7) & 0x01;
-  xUSSRset_disable_acdcemu      = (param["AKA\08", 3] >> 0) & 0x01;
-
-  if (xUSSRset_disable_dmu && xUSSRset_disable_steamer && xUSSRset_disable_diesel) {
-    item (FEAT_RAILTYPES, rla0) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, rla1) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, rla2) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, rla3) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+if (speedlimit_mode == 2) {
+  new_broad_rails(rla1, "RLA1", 1880, RLA1, RAIL, all ,  64,  2, 0 mph, map_color_rail+2, 0x01, rail1, fences_none, rail1_depots, 0)  // Unelectrified rails
+  if ((gauge_mode == 0) || (gauge_mode == 1)) {
+    item (FEAT_RAILTYPES, rla1) { property {
+      alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN",
+                                  "SAAN", "SABN", "SACN", "SADN", "SAEN"]; } }
   }
-
-  if (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric) {
-    item (FEAT_RAILTYPES, er15dc0) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, er15dc1) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erdc1) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erdc2) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erdc3) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, er2d) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, er2s) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+  if (gauge_mode == 2) {
+    item (FEAT_RAILTYPES, rla1) { property {
+      alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN"]; } }
   }
-
-  if (xUSSRset_disable_acemu && xUSSRset_disable_acelectric) {
-    item (FEAT_RAILTYPES, er15ac0) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erac1) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erac2) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erac3) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, erac4) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-    item (FEAT_RAILTYPES, er2s) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+  if (gauge_mode == 3) {
+    item (FEAT_RAILTYPES, rla1) { property {
+      alternative_railtype_list: ["SAAN", "SABN", "SACN", "SADN", "SAEN"]; } }
   }
-
-// Adjust for xUSSR Railways Set & add-on
-  if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) {
-    item (FEAT_RAILTYPES, er15dc3) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, er15dc2) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-  }
-
-  if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_acemu && xUSSRset_disable_acelectric)) {
-    item (FEAT_RAILTYPES, er15ac4) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-  }
-
-// Unnecessary for add-on
-    item (FEAT_RAILTYPES, er15ac1) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, er15ac2) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    item (FEAT_RAILTYPES, er15ac3) {
-      property {
-        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
 }
 
-if (1) {
-// trains only, no rails are required
-  item (FEAT_RAILTYPES, er2ac15dc) {
-    property {
-      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-  item (FEAT_RAILTYPES, er3acddc) {
-    property {
-      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-  item (FEAT_RAILTYPES, er4aacddc) {
-    property {
-      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-  item (FEAT_RAILTYPES, er3aac15dc) {
-    property {
-      railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+if ((speedlimit_mode == 0) || (speedlimit_mode == 1) || (speedlimit_mode == 3)) {
+
+  new_broad_rails(rla0, "RLA0", 1800, RLA0, RAIL, all ,  49,  2, 37.5 mph, map_color_rail+0, 0x00, rail0, fences_none, rail1_depots, 0)                                         // Unelectrified Industrial rails
+  new_broad_rails(rla1, "RLA1", 1880, RLA1, RAIL, all ,  64,  2, 62.5 mph, map_color_rail+2, 0x01, rail1, fences_none, rail1_depots, 0)                                         // Unelectrified rails
+  new_broad_rails(rla2, "RLA2", 1920, RLA2, RAIL, all , 128,  4, 87.5 mph, map_color_rail+4, 0x02, rail2, fences_none, rail1_depots, 0)                                         // Unelectrified Trunk rails
+  new_broad_rails(rla3, "RLA3", 1930, RLA3, RAIL, all , 256,  8, 250 km/h, map_color_rail+6, 0x03, rail3, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_NO_LEVEL_CROSSING))  // Unelectrified High-speed rails
+  new_broad_rails(rlan, "RAIL", 1800, RLA1, RAIL, all , 256,  8, 250 km/h, map_color_rail+8, 0x04, rail1, fences     , rail1_depots, bitmask(RAILTYPE_FLAG_HIDDEN))             // RAIL
+
+  if (speedlimit_mode == 3) {
+    item (FEAT_RAILTYPES, rla0) { property {
+      compatible_railtype_list: [all_broad_lowspeed_rails()]; } }
+    item (FEAT_RAILTYPES, rla3) { property {
+      compatible_railtype_list: [all_broad_highspeed_rails()]; } }
+  }
+
+  if ((gauge_mode == 0) || (gauge_mode == 1)) {
+    item (FEAT_RAILTYPES, rla0) { property {
+      alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN",
+                                  "SAAN", "SABN", "SACN", "SADN", "SAEN"]; } }
+    item (FEAT_RAILTYPES, rla1) { property {
+      alternative_railtype_list: ["BBAN", "BBBN", "BBCN", "BBDN", "BBEN",
+                                  "SBAN", "SBBN", "SBCN", "SBDN", "SBEN"]; } }
+    item (FEAT_RAILTYPES, rla2) { property {
+      alternative_railtype_list: ["BDAN", "BDBN", "BDCN", "BDDN", "BDEN",  "BCAN", "BCBN", "BCCN", "BCDN", "BCEN",
+                                  "SDAN", "SDBN", "SDCN", "SDDN", "SDEN",  "SCAN", "SCBN", "SCCN", "SCDN", "SCEN"]; } }
+    item (FEAT_RAILTYPES, rla3) { property {
+      alternative_railtype_list: ["BEAN", "BEBN", "BECN",
+                                  "SEAN", "SEBN", "SECN"]; } }
+    item (FEAT_RAILTYPES, rlan) { property {
+      alternative_railtype_list: ["RLAN"]; } }
+  }
+  if (gauge_mode == 2) {
+    item (FEAT_RAILTYPES, rla0) { property {
+      alternative_railtype_list: ["BAAN", "BABN", "BACN", "BADN", "BAEN"]; } }
+    item (FEAT_RAILTYPES, rla1) { property {
+      alternative_railtype_list: ["BBAN", "BBBN", "BBCN", "BBDN", "BBEN"]; } }
+    item (FEAT_RAILTYPES, rla2) { property {
+      alternative_railtype_list: ["BDAN", "BDBN", "BDCN", "BDDN", "BDEN",  "BCAN", "BCBN", "BCCN", "BCDN", "BCEN"]; } }
+    item (FEAT_RAILTYPES, rla3) { property {
+      alternative_railtype_list: ["BEAN", "BEBN", "BECN"]; } }
+    item (FEAT_RAILTYPES, rlan) { property {
+      alternative_railtype_list: ["RLAN"]; } }
+  }
+  if (gauge_mode == 3) {
+    item (FEAT_RAILTYPES, rla0) { property {
+      alternative_railtype_list: ["SAAN", "SABN", "SACN", "SADN", "SAEN"]; } }
+    item (FEAT_RAILTYPES, rla1) { property {
+      alternative_railtype_list: ["SBAN", "SBBN", "SBCN", "SBDN", "SBEN"]; } }
+    item (FEAT_RAILTYPES, rla2) { property {
+      alternative_railtype_list: ["SDAN", "SDBN", "SDCN", "SDDN", "SDEN",  "SCAN", "SCBN", "SCCN", "SCDN", "SCEN"]; } }
+    item (FEAT_RAILTYPES, rla3) { property {
+      alternative_railtype_list: ["SEAN", "SEBN", "SECN"]; } }
+    item (FEAT_RAILTYPES, rlan) { property {
+      alternative_railtype_list: ["RLAN"]; } }
+  }
+}
+
+// Use currents_mode 1 if currents_mode is 0 or 4 and xUSSR set is not loaded
+if ((currents_mode == 1) || (currents_mode == 0) || (currents_mode == 4)) {
+  #include "railtrack-mode1.pnml"
+}
+if (currents_mode == 2) {
+  #include "railtrack-mode2.pnml"
+}
+if (currents_mode == 3) {
+  #include "railtrack-mode3.pnml"
+}
+
+// Adjust for xUSSR Railways Set
+if (grf_future_status("AKA\08") && ((currents_mode == 0) || (currents_mode == 4))) {
+
+    item (FEAT_RAILTYPES, er2d) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY); } }  // Enable ER2D
+
+    xUSSRset_disable_steamer      = (param["AKA\08", 2] >> 0) & 0x01;
+    xUSSRset_disable_diesel       = (param["AKA\08", 2] >> 1) & 0x01;
+    xUSSRset_disable_acelectric   = (param["AKA\08", 2] >> 2) & 0x01;
+    xUSSRset_disable_dcelectric   = (param["AKA\08", 2] >> 3) & 0x01;
+    xUSSRset_disable_acdcelectric = (param["AKA\08", 2] >> 4) & 0x01;
+    xUSSRset_disable_dmu          = (param["AKA\08", 2] >> 5) & 0x01;
+    xUSSRset_disable_acemu        = (param["AKA\08", 2] >> 6) & 0x01;
+    xUSSRset_disable_dcemu        = (param["AKA\08", 2] >> 7) & 0x01;
+    xUSSRset_disable_acdcemu      = (param["AKA\08", 3] >> 0) & 0x01;
+
+    if (xUSSRset_disable_dmu && xUSSRset_disable_steamer && xUSSRset_disable_diesel) {
+      item (FEAT_RAILTYPES, rla0) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, rla1) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, rla2) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, rla3) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    }
+
+    if (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric) {
+      item (FEAT_RAILTYPES, er15dc0) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er15dc1) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er3dc1) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er3dc2) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er3dc3) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+      item (FEAT_RAILTYPES, er2d) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er2s) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    }
+
+    if (xUSSRset_disable_acemu && xUSSRset_disable_acelectric) {
+      item (FEAT_RAILTYPES, er15ac0) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er25ac1) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er25ac2) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er25ac3) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+      item (FEAT_RAILTYPES, er25ac4) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+      item (FEAT_RAILTYPES, er2s) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    }
+
+// Adjust for xUSSR Railways Set & add-on
+    if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) {
+      item (FEAT_RAILTYPES, er15dc3) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+      item (FEAT_RAILTYPES, er15dc2) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    }
+
+    if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_acemu && xUSSRset_disable_acelectric)) {
+      item (FEAT_RAILTYPES, er15ac4) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    }
+
+// Unnecessary for add-on
+      item (FEAT_RAILTYPES, er15ac1) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er15ac2) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+      item (FEAT_RAILTYPES, er15ac3) { property {
+          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
 }
 
 /*
@@ -496,110 +388,4 @@ STR_RLA2_MENU
 STR_RLA2_TOOLBAR
 STR_RLA3_MENU
 STR_RLA3_TOOLBAR
-STR_ERAC1_MENU
-STR_ERAC1_TOOLBAR
-STR_ERAC2_MENU
-STR_ERAC2_TOOLBAR
-STR_ERAC3_MENU
-STR_ERAC3_TOOLBAR
-STR_ERAC4_MENU
-STR_ERAC4_TOOLBAR
-STR_ERAC_AUTOREPLACE
-STR_ERAC_BUILD_CAPTION
-STR_ERAC_NEW_ENGINE
-STR_ERAC_NEW_ENGINE.gen
-STR_NAME_ERAC1
-STR_NAME_ERAC2
-STR_NAME_ERAC3
-STR_NAME_ERAC4
-STR_ER15AC0_MENU
-STR_ER15AC0_TOOLBAR
-STR_ER15AC1_MENU
-STR_ER15AC1_TOOLBAR
-STR_ER15AC2_MENU
-STR_ER15AC2_TOOLBAR
-STR_ER15AC3_MENU
-STR_ER15AC3_TOOLBAR
-STR_ER15AC4_MENU
-STR_ER15AC4_TOOLBAR
-STR_ER15AC_AUTOREPLACE
-STR_ER15AC_BUILD_CAPTION
-STR_ER15AC_NEW_ENGINE
-STR_ER15AC_NEW_ENGINE.gen
-STR_ER15DC0_MENU
-STR_ER15DC0_TOOLBAR
-STR_ER15DC1_MENU
-STR_ER15DC1_TOOLBAR
-STR_ER15DC2_MENU
-STR_ER15DC2_TOOLBAR
-STR_ER15DC3_MENU
-STR_ER15DC3_TOOLBAR
-STR_ER15DC_AUTOREPLACE
-STR_ER15DC_BUILD_CAPTION
-STR_ER15DC_NEW_ENGINE
-STR_ER15DC_NEW_ENGINE.gen
-STR_ERDC1_MENU
-STR_ERDC1_TOOLBAR
-STR_ERDC2_MENU
-STR_ERDC2_TOOLBAR
-STR_ERDC3_MENU
-STR_ERDC3_TOOLBAR
-STR_ERDC_AUTOREPLACE
-STR_ERDC_BUILD_CAPTION
-STR_ERDC_NEW_ENGINE
-STR_ERDC_NEW_ENGINE.gen
-STR_NAME_ER15AC0
-STR_NAME_ER15AC1
-STR_NAME_ER15AC2
-STR_NAME_ER15AC3
-STR_NAME_ER15AC4
-STR_NAME_ER15DC0
-STR_NAME_ER15DC1
-STR_NAME_ER15DC2
-STR_NAME_ER15DC3
-STR_NAME_ERDC1
-STR_NAME_ERDC2
-STR_NAME_ERDC3
-STR_ERAC15DC_AUTOREPLACE
-STR_ERAC15DC_BUILD_CAPTION
-STR_ERAC15DC_MENU
-STR_ERAC15DC_NEW_ENGINE
-STR_ERAC15DC_NEW_ENGINE.gen
-STR_ERAC15DC_TOOLBAR
-STR_ERACDC_AUTOREPLACE
-STR_ERACDC_BUILD_CAPTION
-STR_ERACDC_MENU
-STR_ERACDC_NEW_ENGINE
-STR_ERACDC_NEW_ENGINE.gen
-STR_ERACDC_TOOLBAR
-STR_ERACDDC_AUTOREPLACE
-STR_ERACDDC_BUILD_CAPTION
-STR_ERACDDC_MENU
-STR_ERACDDC_NEW_ENGINE
-STR_ERACDDC_NEW_ENGINE.gen
-STR_ERACDDC_TOOLBAR
-STR_ERDDC_AUTOREPLACE
-STR_ERDDC_BUILD_CAPTION
-STR_ERDDC_MENU
-STR_ERDDC_NEW_ENGINE
-STR_ERDDC_NEW_ENGINE.gen
-STR_ERDDC_TOOLBAR
-STR_NAME_ERAC15DC
-STR_NAME_ERACDC
-STR_NAME_ERACDDC
-STR_NAME_ERDDC
-STR_ERAAC15DC_AUTOREPLACE
-STR_ERAAC15DC_BUILD_CAPTION
-STR_ERAAC15DC_MENU
-STR_ERAAC15DC_NEW_ENGINE
-STR_ERAAC15DC_NEW_ENGINE.gen
-STR_ERAAC15DC_TOOLBAR
-STR_ERAACDDC_AUTOREPLACE
-STR_ERAACDDC_BUILD_CAPTION
-STR_ERAACDDC_MENU
-STR_ERAACDDC_NEW_ENGINE
-STR_ERAACDDC_NEW_ENGINE.gen
-STR_ERAACDDC_TOOLBAR
-STR_NAME_ERAAC15DC
-STR_NAME_ERAACDDC
 */
