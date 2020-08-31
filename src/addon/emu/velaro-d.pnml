@@ -1,0 +1,309 @@
+﻿// velaro_d
+
+#define IMAGEFILE  "src/addon/emu/velaro-d_01.png"
+purchase_sprites(velaro_d, 0, 0)
+MU_head_middle_sp_sprites(15, velaro_d_01, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_02.png"
+EMU_motor1_middle_sprites(14, velaro_d_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_03.png"
+MU_car_sprites(14, velaro_d_03, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_04.png"
+EMU_motor1_middle_sprites(14, velaro_d_04, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_05.png"
+EMU_motor1_middle_sprites(14, velaro_d_05, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_06.png"
+MU_car_sprites(14, velaro_d_06, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_07.png"
+EMU_motor1_middle_sprites(14, velaro_d_07, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/velaro-d_08.png"
+MU_head_middle_sp_sprites(15, velaro_d_08, 32, 40)
+#undef IMAGEFILE
+
+is_ERDD_ds(velaro_d_02_sprites_left_railcheck2,  velaro_d_02_sprites_left,  velaro_d_02_notpowered_normal_sprites_left)
+is_ERDD_ds(velaro_d_02_sprites_right_railcheck2, velaro_d_02_sprites_right, velaro_d_02_notpowered_normal_sprites_right)
+is_ERD_ds(velaro_d_02_sprites_left_railcheck,  velaro_d_02_sprites_left,  velaro_d_02_sprites_left_railcheck2)
+is_ERD_ds(velaro_d_02_sprites_right_railcheck, velaro_d_02_sprites_right, velaro_d_02_sprites_right_railcheck2)
+is_ERDD_ds(velaro_d_07_sprites_left_railcheck2,  velaro_d_07_sprites_left,  velaro_d_07_notpowered_normal_sprites_left)
+is_ERDD_ds(velaro_d_07_sprites_right_railcheck2, velaro_d_07_sprites_right, velaro_d_07_notpowered_normal_sprites_right)
+is_ERD_ds(velaro_d_07_sprites_left_railcheck,  velaro_d_07_sprites_left,  velaro_d_07_sprites_left_railcheck2)
+is_ERD_ds(velaro_d_07_sprites_right_railcheck, velaro_d_07_sprites_right, velaro_d_07_sprites_right_railcheck2)
+
+is_ERAA_ds(velaro_d_04_sprites_left_railcheck,  velaro_d_04_sprites_left,  velaro_d_04_notpowered_normal_sprites_left)
+is_ERAA_ds(velaro_d_04_sprites_right_railcheck, velaro_d_04_sprites_right, velaro_d_04_notpowered_normal_sprites_right)
+is_ERA_ds(velaro_d_05_sprites_left_railcheck,  velaro_d_05_sprites_left,  velaro_d_05_notpowered_normal_sprites_left)
+is_ERA_ds(velaro_d_05_sprites_right_railcheck, velaro_d_05_sprites_right, velaro_d_05_notpowered_normal_sprites_right)
+
+switch (FEAT_TRAINS, SELF, velaro_d_01_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: velaro_d_01_sprites_left;
+     velaro_d_01_middle_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, velaro_d_01_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: velaro_d_01_sprites_left_check;
+  1: velaro_d_01_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: velaro_d_08_sprites_left;
+     velaro_d_08_middle_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  dependent: velaro_d_01_sprites_start;
+  1: velaro_d_08_sprites_left_check;
+  1: velaro_d_08_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_01_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: velaro_d_01_sprites_right;
+     velaro_d_01_middle_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: velaro_d_08_sprites_right;
+     velaro_d_08_middle_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != velaro_d) * 200) +
+   (prev_vehicle_randombits() % 2) * 100 +
+   position_in_articulated_veh])
+{
+   0: velaro_d_01_sprites_start;
+   2: velaro_d_02_sprites_left_railcheck;
+   4: velaro_d_03_sprites_left;
+   6: velaro_d_04_sprites_left_railcheck;
+   8: velaro_d_05_sprites_left_railcheck;
+  10: velaro_d_06_sprites_right;
+  12: velaro_d_07_sprites_right_railcheck;
+  14: velaro_d_08_sprites_right_check;
+
+ 100: velaro_d_08_sprites_start;
+ 102: velaro_d_07_sprites_left_railcheck;
+ 104: velaro_d_06_sprites_left;
+ 106: velaro_d_05_sprites_right_railcheck;
+ 108: velaro_d_04_sprites_right_railcheck;
+ 110: velaro_d_03_sprites_right;
+ 112: velaro_d_02_sprites_right_railcheck;
+ 114: velaro_d_01_sprites_right_check;
+
+ 200: velaro_d_01_sprites_start;
+ 202: velaro_d_02_notpowered_sprites_left;
+ 204: velaro_d_03_notpowered_sprites_left;
+ 206: velaro_d_04_notpowered_sprites_left;
+ 208: velaro_d_05_notpowered_sprites_left;
+ 210: velaro_d_06_notpowered_sprites_right;
+ 212: velaro_d_07_notpowered_sprites_right;
+ 214: velaro_d_08_sprites_right;
+
+ 300: velaro_d_08_sprites_start;
+ 302: velaro_d_07_notpowered_sprites_left;
+ 304: velaro_d_06_notpowered_sprites_left;
+ 306: velaro_d_05_notpowered_sprites_right;
+ 308: velaro_d_04_notpowered_sprites_right;
+ 310: velaro_d_03_notpowered_sprites_right;
+ 312: velaro_d_02_notpowered_sprites_right;
+ 314: velaro_d_01_sprites_right;
+
+      align_15_sprites;
+}
+
+long_vehicle_RND(velaro_d, velaro_d_01_sprites_start)
+
+switch (FEAT_TRAINS, SELF, velaro_d_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy7;
+  2: return velaro_d_part2;
+  3: return dummy6;
+  4: return velaro_d_part3;
+  5: return dummy6;
+  6: return velaro_d_part3;
+  7: return dummy6;
+  8: return velaro_d_part3;
+  9: return dummy6;
+ 10: return velaro_d_part3;
+ 11: return dummy6;
+ 12: return velaro_d_part3;
+ 13: return dummy6;
+ 14: return velaro_d_part3;
+ 15: return dummy7;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_create_effect_left, electric_create_effect(6)) { return 1; }
+switch (FEAT_TRAINS, SELF, velaro_d_create_effect_right, electric_create_effect(-1))  { return 1; }
+
+// DC 1.5kV/3kV only
+is_ERDD_ds(velaro_d_create_effect_02_2, velaro_d_create_effect_left,  return disable_create_effect())
+is_ERDD_ds(velaro_d_create_effect_07_2, velaro_d_create_effect_right, return disable_create_effect())
+is_ERD_ds(velaro_d_create_effect_02, velaro_d_create_effect_left,  velaro_d_create_effect_02_2)
+is_ERD_ds(velaro_d_create_effect_07, velaro_d_create_effect_right, velaro_d_create_effect_07_2)
+// AC 15kV
+is_ERAA_ds(velaro_d_create_effect_04AAC, velaro_d_create_effect_left,  return disable_create_effect())
+is_ERAA_ds(velaro_d_create_effect_05AAC, velaro_d_create_effect_right, return disable_create_effect())
+// AC 25kV
+is_ERA_ds(velaro_d_create_effect_05AC, velaro_d_create_effect_left,  return disable_create_effect())
+is_ERA_ds(velaro_d_create_effect_04AC, velaro_d_create_effect_right, return disable_create_effect())
+
+random_switch (FEAT_TRAINS, FORWARD_SELF(6), velaro_d_create_effect_04, 0)
+{
+  1: velaro_d_create_effect_04AAC;
+  1: velaro_d_create_effect_04AC;
+}
+
+random_switch (FEAT_TRAINS, FORWARD_SELF(8), velaro_d_create_effect_05, 0)
+{
+  1: velaro_d_create_effect_05AC;
+  1: velaro_d_create_effect_05AAC;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_create_effect0,
+  position_in_articulated_veh)
+{
+   2: velaro_d_create_effect_02;
+   6: velaro_d_create_effect_04;
+   8: velaro_d_create_effect_05;
+  12: velaro_d_create_effect_07;
+
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, velaro_d_create_effect,
+  vehicle_type_id == velaro_d)
+{
+  1: velaro_d_create_effect0;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_can_attach_wagon2,
+  LOAD_TEMP(0) <= 1)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, velaro_d_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(velaro_d), 0))
+{
+  velaro_d_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, velaro_d_can_attach_wagon,
+  vehicle_type_id == velaro_d)
+{
+  1: velaro_d_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+RC_head_check_new(velaro_d, velaro_d)
+switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
+
+   STORE_TEMP(on_any_ERA() ? 320 : on_any_ERAA() ? 320 : 200, 6),  // Скорость
+   STORE_TEMP(454, 7),                                             // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 333 / 16 + 111 / 8, 8)])              // Максимальная масса
+{ velaro_d_check_running_cost_factor; }
+
+engine_power_MU(velaro_d_DC, kw2hp(4200), velaro_d)
+engine_power_MU(velaro_d_15AC, kw2hp(8000), velaro_d)
+engine_power_MU(velaro_d_AC, kw2hp(8000), velaro_d)
+engine_power_change_AAC_DC(velaro_d)
+engine_speed(velaro_d_15AC, 320)
+engine_speed(velaro_d_AC, 320)
+engine_speed(velaro_d_DC, 200)
+engine_speed_change_AAC_DC(velaro_d)
+engine_capacity_MU(velaro_d, 333, velaro_d)
+hint_MU_with_subtype_comment(velaro_d,
+     calc_loading(max(333 / (5 * WAGON_DOOR), 111 / (5 * WAGON_DOOR))),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_AACDDC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
+     STR_SECTIONS_MU_S1_2of8,
+     2009, 2012,
+     string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
+     string(STR_PURCHASE_HINT_LIST2_COMMENT,
+            string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 200, kw2hp(4200)),
+            string(STR_PURCHASE_HINT_TGV)))
+
+item (FEAT_TRAINS, velaro_d, 691) {
+  property {
+    name: string(STR_NAME_VELARO_D);
+    vehicle_dates(2009, 2012, 30, 10, 8, 1500)
+    vehicle_emu(aacddc, kw2hp(8000), 454, 300.0, 333, 5 * WAGON_DOOR)
+  }
+  graphics {
+    default: velaro_d_sprites;
+    purchase_speed: return 330;
+    purchase_power: return get_power_in_cb(kw2hp(8000));
+    cost_factor: return 1500;
+    cargo_age_period: return 174;
+    purchase: velaro_d_purchase_sprites;
+    speed: velaro_d_speed;
+    running_cost_factor: velaro_d_running_cost_factor;
+    articulated_part: velaro_d_articulated_part;
+    can_attach_wagon: velaro_d_can_attach_wagon;
+    power: velaro_d_power;
+    cargo_capacity: velaro_d_cargo_capacity;
+    colour_mapping: any_cc_colour;
+    create_effect: velaro_d_create_effect;
+    additional_text: velaro_d_additional_text;
+  }
+}
+
+long_name_template(velaro_d, STR_LONGNAME_VELARO_D)
+
+engine_capacity_MU(velaro_d_part2, 111, velaro_d)
+
+item (FEAT_TRAINS, velaro_d_part2, 692) {
+  property {
+    vehicle_no_dates(2009, 2012, 30, 10, 8, 0)
+    vehicle_emu_c(aacddc, 0, 111, 5 * WAGON_DOOR)
+    vehicle_allow_tourists()
+    default_cargo_type: TOUR;
+  }
+  graphics {
+    default: velaro_d_sprites;
+    cargo_age_period: return 370;
+    create_effect: velaro_d_create_effect;
+    cargo_capacity: velaro_d_part2_cargo_capacity;
+    refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, velaro_d_part3, 693) {
+  property {
+    vehicle_no_dates(2009, 2012, 30, 10, 8, 0)
+    vehicle_emu_empty(aacddc)
+  }
+  graphics {
+    default: velaro_d_sprites;
+    create_effect: velaro_d_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
