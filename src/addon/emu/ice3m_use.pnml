@@ -11,13 +11,17 @@ MU_car_sprites(14, ice3m_04, 32, 40)
 MU_car_nd_sprites(14, ice3m_05, 32, 40)
 #undef IMAGEFILE
 
-is_ERA_ds(ice3m_03_sprites_left_railcheck,  ice3m_03_notpowered_normal_sprites_left,  ice3m_03_sprites_left                  )
-is_ERA_ds(ice3m_03_sprites_right_railcheck, ice3m_03_notpowered_normal_sprites_right, ice3m_03_sprites_right                 )
-is_ERA_ds(ice3_02_sprites_right_railcheck,  ice3_02_sprites_right,                    ice3_02_notpowered_normal_sprites_right)
+is_ERDD_ds(ice3m_03_sprites_left_railcheck2,  ice3m_03_sprites_left,  ice3m_03_notpowered_normal_sprites_left)
+is_ERDD_ds(ice3m_03_sprites_right_railcheck2, ice3m_03_sprites_right, ice3m_03_notpowered_normal_sprites_right)
+is_ERD_ds(ice3m_03_sprites_left_railcheck,  ice3m_03_sprites_left,  ice3m_03_sprites_left_railcheck2)
+is_ERD_ds(ice3m_03_sprites_right_railcheck, ice3m_03_sprites_right, ice3m_03_sprites_right_railcheck2)
+
+is_ERAA_ds(ice3_02_sprites_right_railcheck2,  ice3_02_sprites_right, ice3_02_notpowered_normal_sprites_right)
+is_ERA_ds(ice3_02_sprites_right_railcheck,  ice3_02_sprites_right, ice3_02_sprites_right_railcheck2)
 
 switch (FEAT_TRAINS, SELF, ice3m_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
-   ((LOAD_TEMP(4) != ice3m) * 200) +
+   (no_ice3_inR4() * 200) +
    (prev_vehicle_randombits() % 2) * 100 +
    position_in_articulated_veh])
 {
@@ -85,43 +89,28 @@ switch (FEAT_TRAINS, SELF, ice3m_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, ice3m_create_effect_03,
-  electric_create_effect(-1))
-{
-  return 1;
-}
-
-switch (FEAT_TRAINS, SELF, ice3m_create_effect_06,
-  electric_create_effect(6))
-{
-  return 1;
-}
-
-switch (FEAT_TRAINS, SELF, ice3m_create_effect_07,
-  electric_create_effect(-1))
-{
-  return 1;
-}
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_right, electric_create_effect(-1)) { return 1; }
+switch (FEAT_TRAINS, SELF, ice3m_create_effect_left, electric_create_effect(6)) { return 1; }
 
 switch (FEAT_TRAINS, SELF, ice3m_create_effect_ERA,
   position_in_articulated_veh)
 {
-  12: ice3m_create_effect_07;
+  12: ice3m_create_effect_right;
       return disable_create_effect();
 }
 
 switch (FEAT_TRAINS, SELF, ice3m_create_effect_ERD,
   position_in_articulated_veh)
 {
-   4: ice3m_create_effect_03;
-  10: ice3m_create_effect_06;
+   4: ice3m_create_effect_right;
+  10: ice3m_create_effect_left;
       return disable_create_effect();
 }
 
 is_ERA_ds(ice3m_create_effect0, ice3m_create_effect_ERA, ice3m_create_effect_ERD)
 
 switch (FEAT_TRAINS, PARENT, ice3m_create_effect,
-  vehicle_type_id == ice3m)
+  any_ice3())
 {
   1: ice3m_create_effect0;
      return disable_create_effect();
@@ -135,19 +124,19 @@ switch (FEAT_TRAINS, SELF, ice3m_can_attach_wagon2,
 }
 
 switch (FEAT_TRAINS, PARENT, ice3m_can_attach_wagon1,
-  STORE_TEMP(count_veh_id(ice3m), 0))
+  STORE_TEMP(ice3s_count(), 0))
 {
   ice3m_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, SELF, ice3m_can_attach_wagon,
-  vehicle_type_id == ice3m)
+  any_ice3())
 {
   1: ice3m_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-RC_head_check_new(ice3m, ice3m)
+RC_head_check_ice3_new(ice3m)
 switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
@@ -161,15 +150,15 @@ switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor,
    STORE_TEMP(LOAD_TEMP(7) + 242 / 16 + 136 / 8, 8)])              // Максимальная масса
 { ice3m_check_running_cost_factor; }                               // 1921+817
 
-engine_power_MU(ice3m_DC, kw2hp(4300), ice3m)
-engine_power_MU(ice3m_15AC, kw2hp(8000), ice3m)
-engine_power_MU(ice3m_AC, kw2hp(8000), ice3m)
+engine_power_MU_ice3(ice3m_DC, kw2hp(4300))
+engine_power_MU_ice3(ice3m_15AC, kw2hp(8000))
+engine_power_MU_ice3(ice3m_AC, kw2hp(8000))
 engine_power_change_AAC_DC(ice3m)
 engine_speed(ice3m_15AC, 330)
 engine_speed(ice3m_AC, 330)
 engine_speed(ice3m_DC, 220)
 engine_speed_change_AAC_DC(ice3m)
-engine_capacity_MU(ice3m, 242, ice3m)
+engine_capacity_MU_ice3(ice3m, 242)
 hint_MU_with_subtype_comment(ice3m,
      calc_loading(max(242 / (7 * WAGON_DOOR), 136 / (5 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
@@ -177,7 +166,9 @@ hint_MU_with_subtype_comment(ice3m,
      STR_SECTIONS_MU_S1_2of8,
      2002, 2009,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
-     string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 220, kw2hp(4300)))
+     string(STR_PURCHASE_HINT_LIST2_COMMENT,
+            string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 220, kw2hp(4300)),
+            string(STR_PURCHASE_HINT_ICE3)))
 
 item (FEAT_TRAINS, ice3m, 138) {
   property {
@@ -206,7 +197,7 @@ item (FEAT_TRAINS, ice3m, 138) {
 
 long_name_template(ice3m, STR_LONGNAME_ICE3M)
 
-engine_capacity_MU(ice3m_part2, 136, ice3m)
+engine_capacity_MU_ice3(ice3m_part2, 136)
 
 item (FEAT_TRAINS, ice3m_part2, 139) {
   property {

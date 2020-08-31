@@ -85,7 +85,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_right_check,
 
 switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
-   ((LOAD_TEMP(4) != velaro_d) * 200) +
+   (no_ice3_inR4() * 200) +
    (prev_vehicle_randombits() % 2) * 100 +
    position_in_articulated_veh])
 {
@@ -152,7 +152,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_articulated_part,
 }
 
 switch (FEAT_TRAINS, SELF, velaro_d_create_effect_left, electric_create_effect(6)) { return 1; }
-switch (FEAT_TRAINS, SELF, velaro_d_create_effect_right, electric_create_effect(-1))  { return 1; }
+switch (FEAT_TRAINS, SELF, velaro_d_create_effect_right, electric_create_effect(-1)) { return 1; }
 
 // DC 1.5kV/3kV only
 is_ERDD_ds(velaro_d_create_effect_02_2, velaro_d_create_effect_left,  return disable_create_effect())
@@ -190,7 +190,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_create_effect0,
 }
 
 switch (FEAT_TRAINS, PARENT, velaro_d_create_effect,
-  vehicle_type_id == velaro_d)
+  any_ice3())
 {
   1: velaro_d_create_effect0;
      return disable_create_effect();
@@ -204,19 +204,19 @@ switch (FEAT_TRAINS, SELF, velaro_d_can_attach_wagon2,
 }
 
 switch (FEAT_TRAINS, PARENT, velaro_d_can_attach_wagon1,
-  STORE_TEMP(count_veh_id(velaro_d), 0))
+  STORE_TEMP(ice3s_count(), 0))
 {
   velaro_d_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, SELF, velaro_d_can_attach_wagon,
-  vehicle_type_id == velaro_d)
+  any_ice3())
 {
   1: velaro_d_can_attach_wagon1;
-     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+     return string(STR_CAN_ATTACH_ICE3);
 }
 
-RC_head_check_new(velaro_d, velaro_d)
+RC_head_check_ice3_new(velaro_d)
 switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
@@ -230,15 +230,15 @@ switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor,
    STORE_TEMP(LOAD_TEMP(7) + 333 / 16 + 111 / 8, 8)])              // Максимальная масса
 { velaro_d_check_running_cost_factor; }
 
-engine_power_MU(velaro_d_DC, kw2hp(4200), velaro_d)
-engine_power_MU(velaro_d_15AC, kw2hp(8000), velaro_d)
-engine_power_MU(velaro_d_AC, kw2hp(8000), velaro_d)
+engine_power_MU_ice3(velaro_d_DC, kw2hp(4200))
+engine_power_MU_ice3(velaro_d_15AC, kw2hp(8000))
+engine_power_MU_ice3(velaro_d_AC, kw2hp(8000))
 engine_power_change_AAC_DC(velaro_d)
 engine_speed(velaro_d_15AC, 320)
 engine_speed(velaro_d_AC, 320)
 engine_speed(velaro_d_DC, 200)
 engine_speed_change_AAC_DC(velaro_d)
-engine_capacity_MU(velaro_d, 333, velaro_d)
+engine_capacity_MU_ice3(velaro_d, 333)
 hint_MU_with_subtype_comment(velaro_d,
      calc_loading(max(333 / (5 * WAGON_DOOR), 111 / (5 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
@@ -248,7 +248,7 @@ hint_MU_with_subtype_comment(velaro_d,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
      string(STR_PURCHASE_HINT_LIST2_COMMENT,
             string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_DC, 200, kw2hp(4200)),
-            string(STR_PURCHASE_HINT_TGV)))
+            string(STR_PURCHASE_HINT_ICE3)))
 
 item (FEAT_TRAINS, velaro_d, 691) {
   property {
@@ -277,7 +277,7 @@ item (FEAT_TRAINS, velaro_d, 691) {
 
 long_name_template(velaro_d, STR_LONGNAME_VELARO_D)
 
-engine_capacity_MU(velaro_d_part2, 111, velaro_d)
+engine_capacity_MU_ice3(velaro_d_part2, 111)
 
 item (FEAT_TRAINS, velaro_d_part2, 692) {
   property {

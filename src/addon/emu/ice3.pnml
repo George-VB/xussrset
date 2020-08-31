@@ -44,7 +44,7 @@ switch (FEAT_TRAINS, SELF, ice3_never_train, 0)
 
 switch (FEAT_TRAINS, SELF, ice3_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
-   ((LOAD_TEMP(4) != ice3) * 200) +
+   (no_ice3_inR4() * 200) +
    (prev_vehicle_randombits() % 2) * 100 +
    position_in_articulated_veh])
 {
@@ -113,10 +113,7 @@ switch (FEAT_TRAINS, SELF, ice3_articulated_part,
 }
 
 switch (FEAT_TRAINS, SELF, ice3_create_effect3,
-  electric_create_effect(-1))
-{
-  return 1;
-}
+  electric_create_effect(-1)) { return 1; }
 
 switch (FEAT_TRAINS, SELF, ice3_create_effect0,
   position_in_articulated_veh)
@@ -126,7 +123,7 @@ switch (FEAT_TRAINS, SELF, ice3_create_effect0,
 }
 
 switch (FEAT_TRAINS, PARENT, ice3_create_effect,
-  vehicle_type_id == ice3)
+  any_ice3())
 {
   1: ice3_create_effect0;
      return disable_create_effect();
@@ -140,19 +137,19 @@ switch (FEAT_TRAINS, SELF, ice3_can_attach_wagon2,
 }
 
 switch (FEAT_TRAINS, PARENT, ice3_can_attach_wagon1,
-  STORE_TEMP(count_veh_id(ice3), 0))
+  STORE_TEMP(ice3s_count(), 0))
 {
   ice3_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, SELF, ice3_can_attach_wagon,
-  vehicle_type_id == ice3)
+  any_ice3())
 {
   1: ice3_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-RC_head_check_new(ice3, ice3)
+RC_head_check_ice3_new(ice3)
 switch (FEAT_TRAINS, SELF, ice3_running_cost_factor,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
@@ -166,16 +163,17 @@ switch (FEAT_TRAINS, SELF, ice3_running_cost_factor,
    STORE_TEMP(LOAD_TEMP(7) + 248 / 16 + 141 / 8, 8)])  // Максимальная масса
 { ice3_check_running_cost_factor; }                    // 1921+817
 
-engine_capacity_MU(ice3, 248, ice3)
-engine_power_MU(ice3, kw2hp(8000), ice3)
+engine_capacity_MU_ice3(ice3, 248)
+engine_power_MU_ice3(ice3, kw2hp(8000))
 engine_speed(ice3, 330)
-hint_MU_with_subtype(ice3,
+hint_MU_with_subtype_comment(ice3,
      calc_loading(max(248 / (5 * WAGON_DOOR), 141 / (5 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_15AC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
      STR_SECTIONS_MU_S1_2of8,
      1997, 2006,
-     string(STR_PURCHASE_HINT_FACTORY_SIEMENS))
+     string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
+     string(STR_PURCHASE_HINT_ICE3))
 
 item (FEAT_TRAINS, ice3, 177) {
   property {
@@ -203,7 +201,7 @@ item (FEAT_TRAINS, ice3, 177) {
 
 long_name_template(ice3, STR_LONGNAME_ICE3)
 
-engine_capacity_MU(ice3_part2, 141, ice3)
+engine_capacity_MU_ice3(ice3_part2, 141)
 
 item (FEAT_TRAINS, ice3_part2, 179) {
   property {
