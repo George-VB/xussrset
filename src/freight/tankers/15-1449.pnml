@@ -8,12 +8,12 @@ long_vehicle_RND(tanker_15_1449, tanker_15_1449_sprites_start)
 
 switch (FEAT_TRAINS, SELF, tanker_15_1449_random,
 [ set_offset_to(1),
-   prev_vehicle_randombits() & 0x03])
+   prev_vehicle_randombits() & 0x0F])
 {
-  0: return ttdall_cc + 0x08;
-  1: return ttdall_cc + 0x0A;
-  2: return ttdall_cc + 0x25;
-     return ttdall_cc + 0x42;
+    0..6: return ttdall_cc + 0x08;
+   7..12: return ttdall_cc + 0x0A;
+  13..14: return ttdall_cc + 0x25;
+          return ttdall_cc + 0x42;
 }
 
 switch (FEAT_TRAINS, SELF, tanker_15_1449_colour_mapping,
@@ -42,7 +42,7 @@ switch (FEAT_TRAINS, SELF, tanker_15_1449_loading_speed,
 [  STORE_TEMP(0, 0),
    STORE_TEMP(0, 1),
    STORE_TEMP(15, 2),
-   STORE_TEMP(10, 3)])
+   STORE_TEMP(5, 3)])
 { all_wagons_tanker_loading_speed; }
 
 switch (FEAT_TRAINS, SELF, tanker_15_1449_cargo_capacity,
@@ -61,19 +61,19 @@ switch (FEAT_TRAINS, SELF, tanker_15_1449_running_cost_factor,
    STORE_TEMP(12, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                                 // Скорость
-   STORE_TEMP(31, 7),                                  // Тара
-   STORE_TEMP(93, 8)])                    /* 31+62 */  // Максимальная масса
-{ all_running_cost_factor; }                           // 28
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(31, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 62, 8)])  // Максимальная масса
+{ all_running_cost_factor; }
 
 hint_wagon_with_uspeed_noto(tanker_15_1449,
-           62, 105,
-           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-           string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-           STR_PURCHASE_HINT_WAGON_TYPE_TANK_BULK,
-           1989,
-           fact_azovmach())
+     62, 105,
+     calc_loading(62 / (15)),
+     calc_loading(62 / (5)),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_TANK_BULK,
+     1989,
+     fact_azovmach())
 
 item (FEAT_TRAINS, tanker_15_1449, 563) {
   property {

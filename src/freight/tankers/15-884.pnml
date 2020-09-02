@@ -1,0 +1,100 @@
+﻿// tanker_15_884
+
+#define IMAGEFILE  "src/freight/tankers/15-884.png"
+purchase_sprites(tanker_15_884, 0, 0)
+tanker_layout_template(tanker_15_884, 9, 32, 40)
+#undef IMAGEFILE
+long_vehicle_RND(tanker_15_884, tanker_15_884_sprites_start)
+
+switch (FEAT_TRAINS, SELF, tanker_15_884_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+    0..6: return ttdall_cc + 0x08;
+   7..12: return ttdall_cc + 0x0A;
+  13..14: return ttdall_cc + 0x25;
+          return ttdall_cc + 0x42;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_884_colour_mapping,
+  cargo_subtype)
+{
+  0: tanker_15_884_random;
+  1: return ttdall_cc + 0x08;
+  2: return ttdall_cc + 0x0A;
+  3: return ttdall_cc + 0x25;
+  4: return ttdall_cc + 0x42;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_884_cargo_subtype_text,
+    cargo_subtype )
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_08);
+  2: return string(STR_REFIT_TTD_0A);
+  3: return string(STR_REFIT_TTD_25);
+  4: return string(STR_REFIT_TTD_42);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_15_884_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(5, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_884_cargo_capacity,
+[  STORE_TEMP(54, 0),   // т
+   STORE_TEMP(102, 1),  // м³
+   STORE_TEMP(0, 2),    // м²
+   STORE_TEMP(0, 3),    // палетомест
+   STORE_TEMP(9, 4)])   // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_884_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(19, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(12, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),               // Скорость
+   STORE_TEMP(29, 7),                // Тара
+   STORE_TEMP(LOAD_TEMP(7)+54, 8)])  // Максимальная масса
+{ all_running_cost_factor; }
+
+hint_wagon_with_uspeed(tanker_15_884,
+     54, 102,
+     calc_loading(58 / (15)),
+     calc_loading(58 / (5)),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_TANK_BULK,
+     1963, 1988,
+     fact_azovmach())
+
+item (FEAT_TRAINS, tanker_15_884, 697) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 15, 884);
+    vehicle_dates(1963, 1988, 24, 10, 8, 80)
+    vehicle_wagon(29, 120)
+    default_cargo_type: SASH;
+    cargo_allow_refit: [cargo_all_cement_tanker()];
+  }
+  graphics {
+    default: tanker_15_884_sprites;
+    purchase: tanker_15_884_purchase_sprites;
+    articulated_part: articulated_part_dummy1;
+    running_cost_factor: tanker_15_884_running_cost_factor;
+    cargo_subtype_text: tanker_15_884_cargo_subtype_text;
+    refit_cost: tanker_refit_cost;
+    colour_mapping: tanker_15_884_colour_mapping;
+    additional_text: tanker_15_884_additional_text;
+    cargo_capacity: tanker_15_884_cargo_capacity;
+    loading_speed: tanker_15_884_loading_speed;
+  }
+}
+
+long_name_template(tanker_15_884, STR_LONGNAME_TANKER_15_884)
