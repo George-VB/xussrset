@@ -1,0 +1,182 @@
+﻿// emu_sv
+
+#define IMAGEFILE  "src/emu/sv_h.png"
+purchase_sprites(emu_sv, 0, 0)
+MU_head_middle_sprites(12, emu_sv_h_v1, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/sv_h-bag.png"
+MU_head_middle_sprites(12, emu_sv_h_v1u, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, emu_sv_h_sprites_left_check,
+  (position_in_consist == 0) * 100 +
+  (random_bits % 2))
+{
+    0: emu_sv_h_v1u_notpowered_normal_sprites_left;
+    1: emu_sv_h_v1_notpowered_normal_sprites_left;
+  100: emu_sv_h_v1u_sprites_left;
+  101: emu_sv_h_v1_sprites_left;
+       align_12_sprites;
+}
+
+random_switch (FEAT_TRAINS, SELF, emu_sv_a_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: emu_sv_h_sprites_left_check;
+  1: emu_sv_h_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_b_sprites_start,
+[  set_offset_to(-2),
+  ((LOAD_TEMP(4) != emu_sv) * 100) +
+  (prev_vehicle_randombits() % 2) ])
+{
+    0: emu_sd_m_v1_sprites_left;
+    1: emu_sd_m_v1_sprites_right;
+  100: emu_sd_m_v1_notpowered_sprites_left;
+  101: emu_sd_m_v1_notpowered_sprites_right;
+       align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_c_sprites_start,
+[ set_offset_to(-4),
+  ((position_in_consist_from_end == 1) * 100) +
+  (prev_vehicle_randombits() % 2) ])
+{
+    0: emu_sv_h_v1_notpowered_normal_sprites_right;
+    1: emu_sv_h_v1u_notpowered_normal_sprites_right;
+  100: emu_sv_h_v1_sprites_right;
+  101: emu_sv_h_v1u_sprites_right;
+       align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_sprites_start,
+  position_in_articulated_veh)
+{
+  0: emu_sv_a_sprites_start;
+  2: emu_sv_b_sprites_start;
+  4: emu_sv_c_sprites_start;
+     dummy_sprites;
+}
+
+long_vehicle_RND(emu_sv, emu_sv_a_sprites_start)
+
+switch (FEAT_TRAINS, PARENT, emu_sv_can_attach_wagon1,
+  count_veh_id(emu_sv) < (2 * (2 + (current_year >= 1939))))
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_can_attach_wagon,
+  vehicle_type_id == emu_sv)
+{
+  1: emu_sv_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy4;
+  2: return emu_sv;
+  3: return dummy4;
+  4: return emu_sv_part2;
+  5: return dummy4;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_create_effect2,
+  electric_create_effect(4)) { return 1; }
+
+switch (FEAT_TRAINS, PARENT, emu_sv_create_effect1,
+  vehicle_type_id == emu_sv)
+{
+  1: emu_sv_create_effect2;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, emu_sv_create_effect,
+  position_in_articulated_veh)
+{
+  2: emu_sv_create_effect1;
+     return disable_create_effect();
+}
+
+engine_speed(emu_sv, 85)
+engine_capacity_MU(emu_sv_2, 306, emu_sv)
+engine_capacity_arv0(emu_sv, emu_sv_2)
+engine_power_MU(emu_sv, 613, emu_sv)
+
+RC_head_check_new(emu_sv, emu_sv)
+switch (FEAT_TRAINS, SELF, emu_sv_running_cost_factor,
+[  STORE_TEMP(83, 0),  // Моторы
+   STORE_TEMP(12, 1),  // Бригада
+   STORE_TEMP(29, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(20, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(85, 6),                                  // Скорость
+   STORE_TEMP(57+37+37, 7),                            // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 306 / 16 + 20 / 4 , 8)])  // Максимальная масса
+{ emu_sv_check_running_cost_factor; }                  // 54 + 46 + 46
+
+hint_MU_2fact(emu_sv_b1939,
+     calc_loading(306 / (3 * 2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_15DC,
+     STR_SECTIONS_MU_S1_2of3,
+     1929, 1934,
+     fact_mytishchi(),
+     string(STR_PURCHASE_HINT_FACTORY_DINAMO))
+hint_MU_2fact(emu_sv_a1939,
+     calc_loading(306 / (3 * 2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_15DC,
+     STR_SECTIONS_MU_S1_3of3,
+     1929, 1934,
+     fact_mytishchi(),
+     string(STR_PURCHASE_HINT_FACTORY_DINAMO))
+hint_change_after(emu_sv, 1939)
+
+item (FEAT_TRAINS, emu_sv, 702) {
+  property {
+    name: string(STR_NAME_SV);
+    vehicle_dates(1929, 1934, 20, 10, 8, 7 + 6 + 6)
+    vehicle_emu(15dc, 613, 57 + 37 + 37, 90.0, 306, 3 * 2 * DOUBLE_DOOR)
+  }
+  graphics {
+    default: emu_sv_sprites;
+    purchase: emu_sv_purchase_sprites;
+    speed: emu_sv_speed;
+    cargo_age_period: return 60;
+    running_cost_factor: emu_sv_running_cost_factor;
+    articulated_part: emu_sv_articulated_part;
+    can_attach_wagon: emu_sv_can_attach_wagon;
+    additional_text: emu_sv_additional_text;
+    cargo_capacity: emu_sv_cargo_capacity;
+    purchase_cargo_capacity: return 306/2;
+    power: emu_sv_power;
+    create_effect: emu_sv_create_effect;
+    colour_mapping: any_cc_colour;
+    purchase_speed: return 85;
+  }
+}
+
+long_name_template(emu_sv, STR_LONGNAME_SV)
+allow_dcemu(emu_sv)
+
+item (FEAT_TRAINS, emu_sv_part2, 703) {
+  property {
+    vehicle_no_dates(1932, 1945, 20, 10, 8, 0)
+    vehicle_emu_c(15dc, 0, 20, 10)
+    cargo_allow_refit: [MAIL];
+  }
+  graphics {
+    default: emu_sv_sprites;
+    cargo_age_period: return 60;
+    create_effect: emu_sv_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
