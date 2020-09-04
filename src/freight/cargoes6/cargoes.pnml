@@ -242,60 +242,88 @@ switch (FEAT_TRAINS, SELF, cargo6_good_all_sprites,
      cargo6_good2_sprites;
 }
 
-#define IMAGEFILE  "src/freight/cargoes6/stel-1.png"
-cargo_layout_template(cargo6_stel1_1, 6, 32, 40)
-cargo_layout_template(cargo6_stel1_2, 6, 32, 107)
+switch (FEAT_TRAINS, SELF, cargo6_piece_good_loading_speed, 0)
+{  return (cargo_capacity / 2 + 1);  }
+
+#define IMAGEFILE  "src/freight/cargoes6/stel-h-coils.png"
+cargo_layout_template(cargo6_h_coils_1, 6, 32, 40)
+cargo_layout_template(cargo6_h_coils_2, 6, 32, 107)
 #undef IMAGEFILE
-switch (FEAT_TRAINS, SELF, cargo6_stel1_sprites,
- cargo_count)
+switch (FEAT_TRAINS, SELF, cargo6_h_coils_sprites,
+ cargo_count * 100 / cargo_capacity)
 {
- 0..5: dummy_sprites;
-6..16: cargo6_stel1_1_sprites;
-       cargo6_stel1_2_sprites;
+   0..4: dummy_sprites;
+  5..54: cargo6_h_coils_1_sprites;
+         cargo6_h_coils_2_sprites;
 }
 
-#define IMAGEFILE  "src/freight/cargoes6/stel-2.png"
-cargo_layout_template(cargo6_stel2_1, 6, 32, 40)
-cargo_layout_template(cargo6_stel2_2, 6, 32, 107)
-cargo_layout_template(cargo6_stel2_3, 6, 32, 174)
+#define IMAGEFILE  "src/freight/cargoes6/stel-v-coils.png"
+cargo_layout_template(cargo6_v_coils_1, 6, 32, 40)
+cargo_layout_template(cargo6_v_coils_2, 6, 32, 107)
 #undef IMAGEFILE
-switch (FEAT_TRAINS, SELF, cargo6_stel2_sprites,
+switch (FEAT_TRAINS, SELF, cargo6_v_coils_sprites,
+ cargo_count * 100 / cargo_capacity)
+{
+   0..4: dummy_sprites;
+  5..54: cargo6_v_coils_1_sprites;
+         cargo6_v_coils_2_sprites;
+}
+
+#define IMAGEFILE  "src/freight/cargoes6/stel-pipes.png"
+cargo_layout_template(cargo6_pipes_1, 6, 32, 40)
+cargo_layout_template(cargo6_pipes_2, 6, 32, 107)
+cargo_layout_template(cargo6_pipes_3, 6, 32, 174)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, cargo6_pipes_sprites,
  cargo_count)
 {
   0..5: dummy_sprites;
- 6..16: cargo6_stel2_1_sprites;
-17..28: cargo6_stel2_2_sprites;
-        cargo6_stel2_3_sprites;
+ 6..16: cargo6_pipes_1_sprites;
+17..28: cargo6_pipes_2_sprites;
+        cargo6_pipes_3_sprites;
 }
 
-#define IMAGEFILE  "src/freight/cargoes6/stel-3.png"
-cargo_layout_template(cargo6_stel3_1, 6, 32, 40)
-cargo_layout_template(cargo6_stel3_2, 6, 32, 107)
-cargo_layout_template(cargo6_stel3_3, 6, 32, 174)
+#define IMAGEFILE  "src/freight/cargoes6/stel-pipes-cup.png"
+cargo_layout_template(cargo6_pipes_cup_1, 6, 32, 40)
+cargo_layout_template(cargo6_pipes_cup_2, 6, 32, 107)
+cargo_layout_template(cargo6_pipes_cup_3, 6, 32, 174)
 #undef IMAGEFILE
-switch (FEAT_TRAINS, SELF, cargo6_stel3_sprites,
+switch (FEAT_TRAINS, SELF, cargo6_pipes_cup_sprites,
  cargo_count)
 {
   0..5: dummy_sprites;
- 6..16: cargo6_stel3_1_sprites;
-17..28: cargo6_stel3_2_sprites;
-        cargo6_stel3_3_sprites;
+ 6..16: cargo6_pipes_cup_1_sprites;
+17..28: cargo6_pipes_cup_2_sprites;
+        cargo6_pipes_cup_3_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, cargo6_stel_all_sprites,
-  (random_bits >> 1) & 0x07)
+  (random_bits >> 1) & 0x03)
 {
-  0..1: cargo6_stel1_sprites;
-  2..4: cargo6_stel2_sprites;
-        cargo6_stel3_sprites;
+  0: cargo6_h_coils_sprites;
+  1: cargo6_v_coils_sprites;
+  2: cargo6_pipes_sprites;
+     cargo6_pipes_cup_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, cargo6_stel_loading_speed,
+  (random_bits >> 1) & 0x03)
+{
+  0: return (cargo_capacity / 2 + 1);  // H Coils
+  1: return (cargo_capacity / 2 + 1);  // V Coils
+  2: return (cargo_capacity / 3 + 1);  // Pipes
+     return (cargo_capacity / 3 + 1);  // Pipes cup
 }
 
 switch (FEAT_TRAINS, SELF, cargo6_pipe_all_sprites,
   (random_bits >> 1) & 0x01)
 {
-  0: cargo6_stel2_sprites;
-     cargo6_stel3_sprites;
+  0: cargo6_pipes_sprites;
+     cargo6_pipes_cup_sprites;
 }
+
+switch (FEAT_TRAINS, SELF, cargo6_pipe_loading_speed, 0)
+{  return (cargo_capacity / 3 + 1);  }
 
 #define IMAGEFILE  "src/freight/cargoes6/wdpr-1.png"
 cargo_layout_template(cargo6_wdpr1_1, 6, 32, 40)
@@ -361,34 +389,20 @@ switch (FEAT_TRAINS, SELF, cargo6_vehi_all_sprites,
      cargo6_vehi2_sprites;
 }
 
-// loading speed
-switch (FEAT_TRAINS, SELF, cargo6_piece_stel_loading_speed,
-  (random_bits >> 1) & 0x07)
-{
-  0..1: return (cargo_capacity / 2 + 1);
-        return (cargo_capacity / 3 + 1);  // Pipes
-}
-
-switch (FEAT_TRAINS, SELF, cargo6_piece_good_loading_speed,
-  (random_bits >> 1) & 0x0F)
-{
-  return (cargo_capacity / 2 + 1);
-}
-
 switch (FEAT_TRAINS, SELF, cargo6_piece_loading_speed,
   cargo_type_in_veh)
 {
   VEHI: return 3;
-  COPR: cargo6_piece_stel_loading_speed;
-  IRON: cargo6_piece_stel_loading_speed;
-  METL: cargo6_piece_stel_loading_speed;
-  PIPE: cargo6_piece_stel_loading_speed;
-  STEL: cargo6_piece_stel_loading_speed;
-  STAL: cargo6_piece_stel_loading_speed;
-  STST: cargo6_piece_stel_loading_speed;
-  STCB: cargo6_piece_stel_loading_speed;
-  CSTI: cargo6_piece_stel_loading_speed;
-  ZINC: cargo6_piece_stel_loading_speed;
+  COPR: cargo6_stel_loading_speed;
+  IRON: cargo6_stel_loading_speed;
+  METL: cargo6_stel_loading_speed;
+  PIPE: cargo6_pipe_loading_speed;
+  STEL: cargo6_stel_loading_speed;
+  STAL: cargo6_stel_loading_speed;
+  STST: cargo6_stel_loading_speed;
+  STCB: cargo6_stel_loading_speed;
+  CSTI: cargo6_stel_loading_speed;
+  ZINC: cargo6_stel_loading_speed;
   GOOD: cargo6_piece_good_loading_speed;
         all_wagons_bulk_loading_speed;
 }
@@ -503,16 +517,16 @@ switch (FEAT_TRAINS, SELF, cargo6all_sprites,
   WDPR: cargo6_wdpr_all_sprites;
   WOOD: cargo6_wood_all_sprites;
 // Навал: Стали
-  COPR: cargo6_stel3_sprites;
+  COPR: cargo6_pipes_cup_sprites;
   CSTI: cargo6_stel_all_sprites;
-  IRON: cargo6_stel1_sprites;
+  IRON: cargo6_h_coils_sprites;
   METL: cargo6_stel_all_sprites;
   PIPE: cargo6_pipe_all_sprites;
   STAL: cargo6_stel_all_sprites;
   STCB: cargo6_stel_all_sprites;
   STEL: cargo6_stel_all_sprites;
   STST: cargo6_stel_all_sprites;
-  ZINC: cargo6_stel1_sprites;
+  ZINC: cargo6_h_coils_sprites;
 // Штучный груз
   ENSP: cargo6_good_all_sprites;
   FMSP: cargo6_good_all_sprites;
