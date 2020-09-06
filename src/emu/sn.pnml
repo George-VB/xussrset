@@ -37,13 +37,6 @@ switch (FEAT_TRAINS, SELF, emu_sn_h_sprites_left_check,
      emu_sn_h_sprites_left_1;
 }
 
-random_switch (FEAT_TRAINS, SELF, emu_sn_a_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: emu_sn_h_sprites_left_check;
-  1: emu_sn_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, emu_sn_m_sprites_left_1,
 [ set_offset_to(-2),
   prev_vehicle_cargo_subtype() ])
@@ -87,7 +80,7 @@ switch (FEAT_TRAINS, SELF, emu_sn_m_notpowered_sprites_right,
 switch (FEAT_TRAINS, SELF, emu_sn_b_sprites_start,
 [ set_offset_to(-2),
   ((LOAD_TEMP(4) != emu_sn) * 10) +
-  (prev_vehicle_randombits() % 2) ])
+  (prev_vehicle_randombits() & 0x01) ])
 {
    0: emu_sn_m_sprites_left_1;
    1: emu_sn_m_sprites_right_1;
@@ -126,13 +119,13 @@ switch (FEAT_TRAINS, SELF, emu_sn_c_sprites_start,
 switch (FEAT_TRAINS, SELF, emu_sn_sprites_start,
   position_in_articulated_veh)
 {
-  0: emu_sn_a_sprites_start;
+  0: emu_sn_h_sprites_left_check;
   2: emu_sn_b_sprites_start;
   4: emu_sn_c_sprites_start;
      dummy_sprites;
 }
 
-long_vehicle_RND(emu_sn, emu_sn_a_sprites_start)
+long_vehicle(emu_sn)
 
 switch (FEAT_TRAINS, PARENT, emu_sn_can_attach_wagon1,
   count_veh_id(emu_sn) < 3)

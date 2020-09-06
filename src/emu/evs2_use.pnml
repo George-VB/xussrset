@@ -7,13 +7,6 @@ switch (FEAT_TRAINS, SELF, evs2_h_gbt_sprites_left_check,
      evs1_h_gbt_middle_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, evs2_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: evs2_h_gbt_sprites_left_check;
-  1: evs2_h_gbt_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, evs2_h_gbt_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -36,10 +29,10 @@ is_ERD_ds(evs2_m_dt_sprites_left_railcheck,   evs1_m_dt_sprites_left,   evs1_m_d
 switch (FEAT_TRAINS, SELF, evs2_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != evs2) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: evs2_h_sprites_start;
+   0: evs2_h_gbt_sprites_left_check;
    2: evs2_m_dt_sprites_left_railcheck;
    4: evs1_m_ttr_notpowered_normal_sprites_left;
    6: evs1_c_tt_sprites_left;
@@ -50,7 +43,7 @@ switch (FEAT_TRAINS, SELF, evs2_sprites_start,
   16: evs2_m_dt_sprites_right_railcheck;
   18: evs2_h_gbt_sprites_right_check;
 
- 100: evs2_h_sprites_start;
+ 100: evs2_h_gbt_sprites_left_check;
  102: evs2_m_dt_sprites_left_railcheck;
  104: evs1_m_ttr_notpowered_normal_sprites_left;
  106: evs1_c_tt_sprites_left;
@@ -61,7 +54,7 @@ switch (FEAT_TRAINS, SELF, evs2_sprites_start,
  116: evs2_m_dt_sprites_right_railcheck;
  118: evs2_h_gbt_sprites_right_check;
 
- 200: evs2_h_sprites_start;
+ 200: evs2_h_gbt_sprites_left_check;
  202: evs1_m_dt_notpowered_sprites_left;
  204: evs1_m_ttr_notpowered_sprites_left;
  206: evs1_c_tt_notpowered_sprites_left;
@@ -72,7 +65,7 @@ switch (FEAT_TRAINS, SELF, evs2_sprites_start,
  216: evs1_m_dt_notpowered_sprites_right;
  218: evs2_h_gbt_notpowered_sprites_right_check;
 
- 300: evs2_h_sprites_start;
+ 300: evs2_h_gbt_sprites_left_check;
  302: evs1_m_dt_notpowered_sprites_left;
  304: evs1_m_ttr_notpowered_sprites_left;
  306: evs1_c_tt_notpowered_sprites_left;
@@ -86,7 +79,7 @@ switch (FEAT_TRAINS, SELF, evs2_sprites_start,
       align_14_sprites;
 }
 
-long_vehicle_RND(evs2, evs2_h_sprites_start)
+long_vehicle(evs2)
 
 switch (FEAT_TRAINS, SELF, evs2_articulated_part,
   extra_callback_info1)

@@ -18,13 +18,6 @@ switch (FEAT_TRAINS, SELF, es250_h_sprites_left_check,
      es250_h_notpowered_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, es250_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: es250_h_sprites_left_check;
-  1: es250_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, es250_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -42,31 +35,31 @@ switch (FEAT_TRAINS, SELF, es250_never_train, 0)
 switch (FEAT_TRAINS, SELF, es250_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != es250) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: es250_h_sprites_start;
+   0: es250_h_sprites_left_check;
    2: es250_02_sprites_left;
    4: es250_03_notpowered_normal_sprites_left;
    6: es250_03_sprites_right;
    8: es250_02_sprites_right;
   10: es250_h_sprites_right_check;
 
- 100: es250_h_sprites_start;
+ 100: es250_h_sprites_left_check;
  102: es250_02_sprites_left;
  104: es250_03_notpowered_normal_sprites_left;
  106: es250_03_sprites_right;
  108: es250_02_sprites_right;
  110: es250_h_sprites_right_check;
 
- 200: es250_h_sprites_start;
+ 200: es250_h_sprites_left_check;
  202: es250_02_notpowered_sprites_left;
  204: es250_03_notpowered_sprites_left;
  206: es250_03_notpowered_sprites_right;
  208: es250_02_notpowered_sprites_right;
  210: es250_h_sprites_right_check;
 
- 300: es250_h_sprites_start;
+ 300: es250_h_sprites_left_check;
  302: es250_02_notpowered_sprites_left;
  304: es250_03_notpowered_sprites_left;
  306: es250_03_notpowered_sprites_right;
@@ -78,7 +71,7 @@ switch (FEAT_TRAINS, SELF, es250_sprites_start,
       align_15_sprites;
 }
 
-long_vehicle_RND(es250, es250_h_sprites_start)
+long_vehicle(es250)
 
 switch (FEAT_TRAINS, SELF, es250_articulated_part,
   extra_callback_info1)

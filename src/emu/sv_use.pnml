@@ -10,7 +10,7 @@ MU_head_middle_sprites(12, emu_sv_h_v1u, 32, 40)
 
 switch (FEAT_TRAINS, SELF, emu_sv_h_sprites_left_check,
   (position_in_consist == 0) * 100 +
-  (random_bits % 2))
+  (random_bits & 0x01))
 {
     0: emu_sv_h_v1u_notpowered_normal_sprites_left;
     1: emu_sv_h_v1_notpowered_normal_sprites_left;
@@ -19,17 +19,10 @@ switch (FEAT_TRAINS, SELF, emu_sv_h_sprites_left_check,
        align_12_sprites;
 }
 
-random_switch (FEAT_TRAINS, SELF, emu_sv_a_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: emu_sv_h_sprites_left_check;
-  1: emu_sv_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, emu_sv_b_sprites_start,
 [  set_offset_to(-2),
   ((LOAD_TEMP(4) != emu_sv) * 100) +
-  (prev_vehicle_randombits() % 2) ])
+  (prev_vehicle_randombits() & 0x01) ])
 {
     0: emu_sd_m_v1_sprites_left;
     1: emu_sd_m_v1_sprites_right;
@@ -41,7 +34,7 @@ switch (FEAT_TRAINS, SELF, emu_sv_b_sprites_start,
 switch (FEAT_TRAINS, SELF, emu_sv_c_sprites_start,
 [ set_offset_to(-4),
   ((position_in_consist_from_end == 1) * 100) +
-  (prev_vehicle_randombits() % 2) ])
+  (prev_vehicle_randombits() & 0x01) ])
 {
     0: emu_sv_h_v1_notpowered_normal_sprites_right;
     1: emu_sv_h_v1u_notpowered_normal_sprites_right;
@@ -53,13 +46,13 @@ switch (FEAT_TRAINS, SELF, emu_sv_c_sprites_start,
 switch (FEAT_TRAINS, SELF, emu_sv_sprites_start,
   position_in_articulated_veh)
 {
-  0: emu_sv_a_sprites_start;
+  0: emu_sv_h_sprites_left_check;
   2: emu_sv_b_sprites_start;
   4: emu_sv_c_sprites_start;
      dummy_sprites;
 }
 
-long_vehicle_RND(emu_sv, emu_sv_a_sprites_start)
+long_vehicle(emu_sv)
 
 switch (FEAT_TRAINS, PARENT, emu_sv_can_attach_wagon1,
   count_veh_id(emu_sv) < (2 * (2 + (current_year >= 1939))))

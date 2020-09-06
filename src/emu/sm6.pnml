@@ -27,13 +27,6 @@ switch (FEAT_TRAINS, SELF, sm6_01_h_sprites_left_check,
      sm6_01_h_middle_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, sm6_01_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: sm6_01_h_sprites_left_check;
-  1: sm6_01_h_sprites_left_check;
-}
-
 is_ERD_ds(sm6_05_m_sprites_right_railcheck, sm6_05_m_sprites_right, sm6_05_m_notpowered_normal_sprites_right)
 is_ERA_ds(sm6_03_m_sprites_right_railcheck, sm6_03_m_sprites_right, sm6_03_m_notpowered_sprites_right)
 is_ERA_ds(sm6_06_m_sprites_left_railcheck,  sm6_06_m_sprites_left,  sm6_06_m_notpowered_normal_sprites_left)
@@ -68,10 +61,10 @@ switch (FEAT_TRAINS, SELF, sm6_never_train, 0)
 switch (FEAT_TRAINS, SELF, sm6_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != sm6) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: sm6_01_h_sprites_start;
+   0: sm6_01_h_sprites_left_check;
    2: sm6_06_m_notpowered_normal_sprites_right;
    4: sm6_05_m_sprites_right_railcheck;
    6: sm6_04_m_notpowered_normal_sprites_right;
@@ -79,7 +72,7 @@ switch (FEAT_TRAINS, SELF, sm6_sprites_start,
   10: sm6_02_c_sprites_right;
   12: sm6_01_h_sprites_right_check;
 
- 100: sm6_01_h_sprites_start;
+ 100: sm6_01_h_sprites_left_check;
  102: sm6_02_c_sprites_left;
  104: sm6_03_m_notpowered_sprites_left;
  106: sm6_04_m_sprites_left_railcheck;
@@ -87,7 +80,7 @@ switch (FEAT_TRAINS, SELF, sm6_sprites_start,
  110: sm6_06_m_sprites_left_railcheck;
  112: sm6_01_h_sprites_right_check;
 
- 200: sm6_01_h_sprites_start;
+ 200: sm6_01_h_sprites_left_check;
  202: sm6_06_m_notpowered_sprites_right;
  204: sm6_05_m_notpowered_sprites_right;
  206: sm6_04_m_notpowered_sprites_right;
@@ -95,7 +88,7 @@ switch (FEAT_TRAINS, SELF, sm6_sprites_start,
  210: sm6_02_c_notpowered_sprites_right;
  212: sm6_01_h_notpowered_sprites_right_check;
 
- 300: sm6_01_h_sprites_start;
+ 300: sm6_01_h_sprites_left_check;
  302: sm6_02_c_notpowered_sprites_left;
  304: sm6_03_m_notpowered_sprites_left;
  306: sm6_04_m_notpowered_sprites_left;
@@ -108,7 +101,7 @@ switch (FEAT_TRAINS, SELF, sm6_sprites_start,
       align_14_sprites;
 }
 
-long_vehicle_RND(sm6, sm6_01_h_sprites_start)
+long_vehicle(sm6)
 
 switch (FEAT_TRAINS, SELF, sm6_articulated_part,
   extra_callback_info1)
@@ -140,27 +133,35 @@ is_ERD_ds(sm6_05_create_effect, sm6_create_effect7, return disable_create_effect
 is_ERA_ds(sm6_06_create_effect, sm6_create_effect3, return disable_create_effect())
 is_ERA_ds(sm6_03_create_effect, sm6_create_effect3, return disable_create_effect())
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(8), sm6_03_create_effect_rnd, 0)
+switch (FEAT_TRAINS, SELF, sm6_03_create_effect_rnd,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: sm6_03_create_effect;
-  1: return disable_create_effect();
+  0: sm6_03_create_effect;
+     return disable_create_effect();
 }
-random_switch (FEAT_TRAINS, FORWARD_SELF(4), sm6_05_create_effect_rnd, 0)
+switch (FEAT_TRAINS, SELF, sm6_05_create_effect_rnd,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: sm6_05_create_effect;
-  1: return disable_create_effect();
-}
-
-random_switch (FEAT_TRAINS, FORWARD_SELF(6), sm6_04_create_effect_rnd, 0)
-{
-  1: return disable_create_effect();
-  1: sm6_04_create_effect;
+  0: sm6_05_create_effect;
+     return disable_create_effect();
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(10), sm6_06_create_effect_rnd, 0)
+switch (FEAT_TRAINS, SELF, sm6_04_create_effect_rnd,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: return disable_create_effect();
-  1: sm6_06_create_effect;
+  0: return disable_create_effect();
+     sm6_04_create_effect;
+}
+
+switch (FEAT_TRAINS, SELF, sm6_06_create_effect_rnd,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: return disable_create_effect();
+     sm6_06_create_effect;
 }
 
 switch (FEAT_TRAINS, SELF, sm6_create_effect0,

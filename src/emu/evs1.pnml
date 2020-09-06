@@ -31,13 +31,6 @@ switch (FEAT_TRAINS, SELF, evs1_h_gbt_sprites_left_check,
      evs1_h_gbt_middle_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, evs1_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: evs1_h_gbt_sprites_left_check;
-  1: evs1_h_gbt_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, evs1_h_gbt_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -63,10 +56,10 @@ switch (FEAT_TRAINS, SELF, evs_never_train, 0)
 switch (FEAT_TRAINS, SELF, evs1_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != evs1) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: evs1_h_sprites_start;
+   0: evs1_h_gbt_sprites_left_check;
    2: evs1_m_dt_sprites_left;
    4: evs1_c_t_sprites_left;
    6: evs1_c_tt_sprites_left;
@@ -77,7 +70,7 @@ switch (FEAT_TRAINS, SELF, evs1_sprites_start,
   16: evs1_m_dt_sprites_right;
   18: evs1_h_gbt_sprites_right_check;
 
- 100: evs1_h_sprites_start;
+ 100: evs1_h_gbt_sprites_left_check;
  102: evs1_m_dt_sprites_left;
  104: evs1_c_t_sprites_left;
  106: evs1_c_tt_sprites_left;
@@ -88,7 +81,7 @@ switch (FEAT_TRAINS, SELF, evs1_sprites_start,
  116: evs1_m_dt_sprites_right;
  118: evs1_h_gbt_sprites_right_check;
 
- 200: evs1_h_sprites_start;
+ 200: evs1_h_gbt_sprites_left_check;
  202: evs1_m_dt_notpowered_sprites_left;
  204: evs1_c_t_notpowered_sprites_left;
  206: evs1_c_tt_notpowered_sprites_left;
@@ -99,7 +92,7 @@ switch (FEAT_TRAINS, SELF, evs1_sprites_start,
  216: evs1_m_dt_notpowered_sprites_right;
  218: evs1_h_gbt_notpowered_sprites_right_check;
 
- 300: evs1_h_sprites_start;
+ 300: evs1_h_gbt_sprites_left_check;
  302: evs1_m_dt_notpowered_sprites_left;
  304: evs1_c_t_notpowered_sprites_left;
  306: evs1_c_tt_notpowered_sprites_left;
@@ -115,7 +108,7 @@ switch (FEAT_TRAINS, SELF, evs1_sprites_start,
       align_14_sprites;
 }
 
-long_vehicle_RND(evs1, evs1_h_sprites_start)
+long_vehicle(evs1)
 
 switch (FEAT_TRAINS, SELF, evs1_articulated_part,
   extra_callback_info1)
