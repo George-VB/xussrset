@@ -28,6 +28,24 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
 { 1: return 0;                                                    \
      name##_bitmask_vehicle_info2; }                              \
 
+// Определение пенальти на скорость (схема без альтернатив в СМЕ) для случая с изменениями в сме (имя и ид различаются)
+#define engine_penalise_speed_altname(name, num, vehid)           \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,          \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid), 0),              \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&   \
+    LOAD_TEMP(0) < num)])                                         \
+{ 1: return 0;                                                    \
+     return bitmask(FLAG_PENALISE_SPEED); }                       \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,        \
+[ STORE_TEMP(count_veh_id(vehid), 0),                             \
+  STORE_TEMP(vehicle_type_id == vehid, 1) ])                      \
+{ name##_bitmask_vehicle_info3; }                                 \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||       \
+   (position_in_articulated_veh > 0))                             \
+{ 1: return 0;                                                    \
+     name##_bitmask_vehicle_info2; }                              \
+
 // Определение пенальти на скорость (схема без альтернатив в СМЕ с модернизацией СМЕ)
 #define engine_penalise_speed_2up3(name, shift)                                                  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                     \
@@ -261,14 +279,15 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                         
 // Определение пенальти на скорость (схема несовместимости СМЕ с заданного года)
 #define engine_penalise_speed_build_after(name, year)                                   \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, build_year >= year)   \
-{ 0: name##_bitmask_vehicle_info;                                                       \
+{ 0: name##_b##year##_bitmask_vehicle_info;                                             \
      return bitmask(FLAG_PENALISE_SPEED); }                                             \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, build_year >= year)   \
 { 0: return bitmask(FLAG_PENALISE_SPEED);                                               \
-     name##_bitmask_vehicle_info; }                                                     \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, build_year >= year)      \
+     name##_a##year##_bitmask_vehicle_info; }                                           \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info, build_year >= year)             \
 { 0: name##_bitmask_vehicle_info_change2;                                               \
      name##_bitmask_vehicle_info_change1; }                                             \
+/*
 
 #define engine_penalise_speed_build_after2(name, year, year2)                                                     \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change3, (build_year >= year) + (build_year >= year2))   \
@@ -305,6 +324,7 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= ye
 { 0: name##_bitmask_vehicle_info_change3;                                                                         \
   1: name##_bitmask_vehicle_info_change2;                                                                         \
      name##_bitmask_vehicle_info_change1; }                                                                       \
+*/
 
 // Определение скорости без вариантов
 #define engine_speed(name, speed)                             \
