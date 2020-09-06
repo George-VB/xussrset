@@ -24,13 +24,6 @@ switch (FEAT_TRAINS, SELF, crh380a_h_sprites_left_check,
      crh380a_h_notpowered_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, crh380a_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: crh380a_h_sprites_left_check;
-  1: crh380a_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, crh380a_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -50,10 +43,10 @@ switch (FEAT_TRAINS, SELF, crh380a_never_train, 0)
 switch (FEAT_TRAINS, SELF, crh380a_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != crh380a) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: crh380a_h_sprites_start;
+   0: crh380a_h_sprites_left_check;
    2: crh380a_02_sprites_left;
    4: crh380a_02_sprites_left;
    6: crh380a_04_sprites_left;
@@ -62,7 +55,7 @@ switch (FEAT_TRAINS, SELF, crh380a_sprites_start,
   12: crh380a_02_sprites_left;
   14: crh380a_h_sprites_right_check;
 
- 100: crh380a_h_sprites_start;
+ 100: crh380a_h_sprites_left_check;
  102: crh380a_02_sprites_right;
  104: crh380a_06_sprites_right;
  106: crh380a_05_sprites_right;
@@ -71,7 +64,7 @@ switch (FEAT_TRAINS, SELF, crh380a_sprites_start,
  112: crh380a_02_sprites_right;
  114: crh380a_h_sprites_right_check;
 
- 200: crh380a_h_sprites_start;
+ 200: crh380a_h_sprites_left_check;
  202: crh380a_02_notpowered_sprites_left;
  204: crh380a_02_notpowered_sprites_left;
  206: crh380a_04_notpowered_sprites_left;
@@ -80,7 +73,7 @@ switch (FEAT_TRAINS, SELF, crh380a_sprites_start,
  212: crh380a_02_notpowered_sprites_left;
  214: crh380a_h_sprites_right_check;
 
- 300: crh380a_h_sprites_start;
+ 300: crh380a_h_sprites_left_check;
  302: crh380a_02_notpowered_sprites_right;
  304: crh380a_06_notpowered_sprites_right;
  306: crh380a_05_sprites_right;
@@ -94,7 +87,7 @@ switch (FEAT_TRAINS, SELF, crh380a_sprites_start,
       align_11_sprites;
 }
 
-long_vehicle_RND(crh380a, crh380a_h_sprites_start)
+long_vehicle(crh380a)
 
 switch (FEAT_TRAINS, SELF, crh380a_articulated_part,
   extra_callback_info1)
@@ -123,16 +116,20 @@ switch (FEAT_TRAINS, SELF, crh380a_06_create_effect,
 switch (FEAT_TRAINS, SELF, crh380a_04_create_effect,
   electric_create_effect(-2)) { return 1; }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(6), crh380a_04_create_effect_rnd, 0)
+switch (FEAT_TRAINS, SELF, crh380a_04_create_effect_rnd, 
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: crh380a_04_create_effect;
-  1: return disable_create_effect();
+  0: crh380a_04_create_effect;
+     return disable_create_effect();
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(4), crh380a_06_create_effect_rnd, 0)
+switch (FEAT_TRAINS, SELF, crh380a_06_create_effect_rnd, 
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: return disable_create_effect();
-  1: crh380a_06_create_effect;
+  0: return disable_create_effect();
+     crh380a_06_create_effect;
 }
 
 switch (FEAT_TRAINS, SELF, crh380a_create_effect0,

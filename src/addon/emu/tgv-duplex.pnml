@@ -85,13 +85,6 @@ switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_left_check,
      tgv_duplex_h_middle_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: tgv_duplex_h_sprites_left_check;
-  1: tgv_duplex_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -102,10 +95,10 @@ switch (FEAT_TRAINS, SELF, tgv_duplex_h_sprites_right_check,
 switch (FEAT_TRAINS, SELF, tgv_duplex_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    (no_tgv_inR4() * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: tgv_duplex_h_sprites_start;
+   0: tgv_duplex_h_sprites_left_check;
    2: tgv_duplex_02_sprites_left;
    4: tgv_duplex_03_sprites_left;
    6: tgv_duplex_04_sprites_left;
@@ -116,7 +109,7 @@ switch (FEAT_TRAINS, SELF, tgv_duplex_sprites_start,
   16: tgv_duplex_09_sprites_right;
   18: tgv_duplex_h_sprites_right_check;
 
- 100: tgv_duplex_h_sprites_start;
+ 100: tgv_duplex_h_sprites_left_check;
  102: tgv_duplex_09_sprites_left;
  104: tgv_duplex_06_sprites_left;
  106: tgv_duplex_07_sprites_left;
@@ -127,7 +120,7 @@ switch (FEAT_TRAINS, SELF, tgv_duplex_sprites_start,
  116: tgv_duplex_02_sprites_right;
  118: tgv_duplex_h_sprites_right_check;
 
- 200: tgv_duplex_h_sprites_start;
+ 200: tgv_duplex_h_sprites_left_check;
  202: tgv_duplex_02_notpowered_sprites_left;
  204: tgv_duplex_03_notpowered_sprites_left;
  206: tgv_duplex_04_notpowered_sprites_left;
@@ -138,7 +131,7 @@ switch (FEAT_TRAINS, SELF, tgv_duplex_sprites_start,
  216: tgv_duplex_09_notpowered_sprites_right;
  218: tgv_duplex_h_sprites_right_check;
 
- 300: tgv_duplex_h_sprites_start;
+ 300: tgv_duplex_h_sprites_left_check;
  302: tgv_duplex_09_notpowered_sprites_left;
  304: tgv_duplex_06_notpowered_sprites_left;
  306: tgv_duplex_07_notpowered_sprites_left;
@@ -152,7 +145,7 @@ switch (FEAT_TRAINS, SELF, tgv_duplex_sprites_start,
       align_11_sprites;
 }
 
-long_vehicle_RND(tgv_duplex, tgv_duplex_h_sprites_start)
+long_vehicle(tgv_duplex)
 
 switch (FEAT_TRAINS, SELF, tgv_duplex_articulated_part,
   extra_callback_info1)

@@ -47,26 +47,11 @@ switch (FEAT_TRAINS, SELF, velaro_d_01_sprites_left_check,
      velaro_d_01_middle_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, velaro_d_01_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: velaro_d_01_sprites_left_check;
-  1: velaro_d_01_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_left_check,
   position_in_consist == 0)
 {
   1: velaro_d_08_sprites_left;
      velaro_d_08_middle_sprites_left;
-}
-
-random_switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  dependent: velaro_d_01_sprites_start;
-  1: velaro_d_08_sprites_left_check;
-  1: velaro_d_08_sprites_left_check;
 }
 
 switch (FEAT_TRAINS, SELF, velaro_d_01_sprites_right_check,
@@ -86,10 +71,10 @@ switch (FEAT_TRAINS, SELF, velaro_d_08_sprites_right_check,
 switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    (no_ice3_inR4() * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: velaro_d_01_sprites_start;
+   0: velaro_d_01_sprites_left_check;
    2: velaro_d_02_sprites_left_railcheck;
    4: velaro_d_03_sprites_left;
    6: velaro_d_04_sprites_left_railcheck;
@@ -98,7 +83,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
   12: velaro_d_07_sprites_right_railcheck;
   14: velaro_d_08_sprites_right_check;
 
- 100: velaro_d_08_sprites_start;
+ 100: velaro_d_08_sprites_left_check;
  102: velaro_d_07_sprites_left_railcheck;
  104: velaro_d_06_sprites_left;
  106: velaro_d_05_sprites_right_railcheck;
@@ -107,7 +92,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
  112: velaro_d_02_sprites_right_railcheck;
  114: velaro_d_01_sprites_right_check;
 
- 200: velaro_d_01_sprites_start;
+ 200: velaro_d_01_sprites_left_check;
  202: velaro_d_02_notpowered_sprites_left;
  204: velaro_d_03_notpowered_sprites_left;
  206: velaro_d_04_notpowered_sprites_left;
@@ -116,7 +101,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
  212: velaro_d_07_notpowered_sprites_right;
  214: velaro_d_08_sprites_right;
 
- 300: velaro_d_08_sprites_start;
+ 300: velaro_d_08_sprites_left_check;
  302: velaro_d_07_notpowered_sprites_left;
  304: velaro_d_06_notpowered_sprites_left;
  306: velaro_d_05_notpowered_sprites_right;
@@ -128,7 +113,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_sprites_start,
       align_15_sprites;
 }
 
-long_vehicle_RND(velaro_d, velaro_d_01_sprites_start)
+long_vehicle(velaro_d)
 
 switch (FEAT_TRAINS, SELF, velaro_d_articulated_part,
   extra_callback_info1)
@@ -166,16 +151,20 @@ is_ERAA_ds(velaro_d_create_effect_05AAC, velaro_d_create_effect_right, return di
 is_ERA_ds(velaro_d_create_effect_05AC, velaro_d_create_effect_left,  return disable_create_effect())
 is_ERA_ds(velaro_d_create_effect_04AC, velaro_d_create_effect_right, return disable_create_effect())
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(6), velaro_d_create_effect_04, 0)
+switch (FEAT_TRAINS, SELF, velaro_d_create_effect_04, 
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: velaro_d_create_effect_04AAC;
-  1: velaro_d_create_effect_04AC;
+  0: velaro_d_create_effect_04AAC;
+     velaro_d_create_effect_04AC;
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(8), velaro_d_create_effect_05, 0)
+switch (FEAT_TRAINS, SELF, velaro_d_create_effect_05,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: velaro_d_create_effect_05AC;
-  1: velaro_d_create_effect_05AAC;
+  0: velaro_d_create_effect_05AC;
+     velaro_d_create_effect_05AAC;
 }
 
 switch (FEAT_TRAINS, SELF, velaro_d_create_effect0,

@@ -21,13 +21,6 @@ switch (FEAT_TRAINS, SELF, ice3_h_sprites_left_check,
      ice3_h_notpowered_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, ice3_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: ice3_h_sprites_left_check;
-  1: ice3_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, ice3_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -45,10 +38,10 @@ switch (FEAT_TRAINS, SELF, ice3_never_train, 0)
 switch (FEAT_TRAINS, SELF, ice3_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    (no_ice3_inR4() * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: ice3_h_sprites_start;
+   0: ice3_h_sprites_left_check;
    2: ice3_02_notpowered_normal_sprites_left;
    4: ice3_03_sprites_left;
    6: ice3_03_sprites_left;
@@ -57,7 +50,7 @@ switch (FEAT_TRAINS, SELF, ice3_sprites_start,
   12: ice3_02_sprites_right;
   14: ice3_h_sprites_right_check;
 
- 100: ice3_h_sprites_start;
+ 100: ice3_h_sprites_left_check;
  102: ice3_02_notpowered_normal_sprites_left;
  104: ice3_03_sprites_left;
  106: ice3_05_sprites_left;
@@ -66,7 +59,7 @@ switch (FEAT_TRAINS, SELF, ice3_sprites_start,
  112: ice3_02_sprites_right;
  114: ice3_h_sprites_right_check;
 
- 200: ice3_h_sprites_start;
+ 200: ice3_h_sprites_left_check;
  202: ice3_02_notpowered_sprites_left;
  204: ice3_03_notpowered_sprites_left;
  206: ice3_03_notpowered_sprites_left;
@@ -75,7 +68,7 @@ switch (FEAT_TRAINS, SELF, ice3_sprites_start,
  212: ice3_02_notpowered_sprites_right;
  214: ice3_h_sprites_right_check;
 
- 300: ice3_h_sprites_start;
+ 300: ice3_h_sprites_left_check;
  302: ice3_02_notpowered_sprites_left;
  304: ice3_03_notpowered_sprites_left;
  306: ice3_05_sprites_left;
@@ -89,7 +82,7 @@ switch (FEAT_TRAINS, SELF, ice3_sprites_start,
       align_11_sprites;
 }
 
-long_vehicle_RND(ice3, ice3_h_sprites_start)
+long_vehicle(ice3)
 
 switch (FEAT_TRAINS, SELF, ice3_articulated_part,
   extra_callback_info1)

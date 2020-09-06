@@ -21,13 +21,6 @@ switch (FEAT_TRAINS, SELF, etr500_h_sprites_left_check,
      etr500_h_notpowered_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, etr500_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: etr500_h_sprites_left_check;
-  1: etr500_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, etr500_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -38,10 +31,10 @@ switch (FEAT_TRAINS, SELF, etr500_h_sprites_right_check,
 switch (FEAT_TRAINS, SELF, etr500_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != etr500) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: etr500_h_sprites_start;
+   0: etr500_h_sprites_left_check;
    2: etr500_02_sprites_left;
    4: etr500_02_sprites_left;
    6: etr500_02_sprites_left;
@@ -55,7 +48,7 @@ switch (FEAT_TRAINS, SELF, etr500_sprites_start,
   22: etr500_07_sprites_left;
   24: etr500_h_sprites_right_check;
 
- 100: etr500_h_sprites_start;
+ 100: etr500_h_sprites_left_check;
  102: etr500_07_sprites_right;
  104: etr500_07_sprites_right;
  106: etr500_07_sprites_right;
@@ -69,7 +62,7 @@ switch (FEAT_TRAINS, SELF, etr500_sprites_start,
  122: etr500_02_sprites_right;
  124: etr500_h_sprites_right_check;
 
- 200: etr500_h_sprites_start;
+ 200: etr500_h_sprites_left_check;
  202: etr500_02_notpowered_sprites_left;
  204: etr500_02_notpowered_sprites_left;
  206: etr500_02_notpowered_sprites_left;
@@ -83,7 +76,7 @@ switch (FEAT_TRAINS, SELF, etr500_sprites_start,
  222: etr500_07_notpowered_sprites_left;
  224: etr500_h_sprites_right_check;
 
- 300: etr500_h_sprites_start;
+ 300: etr500_h_sprites_left_check;
  302: etr500_07_notpowered_sprites_right;
  304: etr500_07_notpowered_sprites_right;
  306: etr500_07_notpowered_sprites_right;
@@ -100,7 +93,7 @@ switch (FEAT_TRAINS, SELF, etr500_sprites_start,
       align_15_sprites;
 }
 
-long_vehicle_RND(etr500, etr500_h_sprites_start)
+long_vehicle(etr500)
 
 switch (FEAT_TRAINS, SELF, etr500_articulated_part,
   extra_callback_info1)

@@ -30,13 +30,6 @@ switch (FEAT_TRAINS, SELF, e320_h_sprites_left_check,
      e320_h_notpowered_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, e320_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: e320_h_sprites_left_check;
-  1: e320_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, e320_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -61,10 +54,10 @@ is_ERA_ds(e320_05AC_sprites_left_railcheck,    e320_04_sprites_left,  e320_05AC_
 switch (FEAT_TRAINS, SELF, e320_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != e320) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: e320_h_sprites_start;
+   0: e320_h_sprites_left_check;
    2: e320_02_sprites_left_railcheck;
    4: e320_03_sprites_left;
    6: e320_04DC_sprites_left_railcheck;
@@ -81,7 +74,7 @@ switch (FEAT_TRAINS, SELF, e320_sprites_start,
   28: e320_02_sprites_right_railcheck;
   30: e320_h_sprites_right_check;
 
- 100: e320_h_sprites_start;
+ 100: e320_h_sprites_left_check;
  102: e320_02_sprites_left_railcheck;
  104: e320_03_sprites_left;
  106: e320_05AC_sprites_left_railcheck;
@@ -98,7 +91,7 @@ switch (FEAT_TRAINS, SELF, e320_sprites_start,
  128: e320_02_sprites_right_railcheck;
  130: e320_h_sprites_right_check;
 
- 200: e320_h_sprites_start;
+ 200: e320_h_sprites_left_check;
  202: e320_02_notpowered_sprites_left;
  204: e320_03_sprites_left;
  206: e320_04_notpowered_sprites_left;
@@ -115,7 +108,7 @@ switch (FEAT_TRAINS, SELF, e320_sprites_start,
  228: e320_02_notpowered_sprites_right;
  230: e320_h_sprites_right_check;
 
- 300: e320_h_sprites_start;
+ 300: e320_h_sprites_left_check;
  302: e320_02_notpowered_sprites_left;
  304: e320_03_sprites_left;
  306: e320_04_notpowered_sprites_left;
@@ -135,7 +128,7 @@ switch (FEAT_TRAINS, SELF, e320_sprites_start,
       align_15_sprites;
 }
 
-long_vehicle_RND(e320, e320_h_sprites_start)
+long_vehicle(e320)
 
 switch (FEAT_TRAINS, SELF, e320_articulated_part,
   extra_callback_info1)
@@ -197,28 +190,36 @@ is_ERA_ds(e320_create_effect_13AC, e320_create_effect_right, e320_create_effect_
 is_ERA_ds(e320_create_effect_04AC, e320_create_effect_left,  e320_create_effect_04AC_2)
 is_ERA_ds(e320_create_effect_12AC, e320_create_effect_right, e320_create_effect_12AC_2)
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(6), e320_create_effect_04, 0)
+switch (FEAT_TRAINS, SELF, e320_create_effect_04, 
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: e320_create_effect_04DC;
-  1: e320_create_effect_04AC;
+  0: e320_create_effect_04DC;
+     e320_create_effect_04AC;
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(8), e320_create_effect_05, 0)
+switch (FEAT_TRAINS, SELF, e320_create_effect_05, 
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: e320_create_effect_05AC;
-  1: e320_create_effect_05DC;
+  0: e320_create_effect_05AC;
+     e320_create_effect_05DC;
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(22), e320_create_effect_12, 0)
+switch (FEAT_TRAINS, SELF, e320_create_effect_12, 
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: e320_create_effect_12DC;
-  1: e320_create_effect_12AC;
+  0: e320_create_effect_12DC;
+     e320_create_effect_12AC;
 }
 
-random_switch (FEAT_TRAINS, FORWARD_SELF(24), e320_create_effect_13, 0)
+switch (FEAT_TRAINS, SELF, e320_create_effect_13,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
 {
-  1: e320_create_effect_13AC;
-  1: e320_create_effect_13DC;
+  0: e320_create_effect_13AC;
+     e320_create_effect_13DC;
 }
 
 switch (FEAT_TRAINS, SELF, e320_create_effect0,

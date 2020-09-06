@@ -24,13 +24,6 @@ switch (FEAT_TRAINS, SELF, acela_h_sprites_left_check,
      acela_h_notpowered_sprites_left;
 }
 
-random_switch (FEAT_TRAINS, SELF, acela_h_sprites_start,
-  bitmask(TRIGGER_VEHICLE_SERVICE))
-{
-  1: acela_h_sprites_left_check;
-  1: acela_h_sprites_left_check;
-}
-
 switch (FEAT_TRAINS, SELF, acela_h_sprites_right_check,
   position_in_consist_from_end == 1)
 {
@@ -41,10 +34,10 @@ switch (FEAT_TRAINS, SELF, acela_h_sprites_right_check,
 switch (FEAT_TRAINS, SELF, acela_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != acela) * 200) +
-   (prev_vehicle_randombits() % 2) * 100 +
+   (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: acela_h_sprites_start;
+   0: acela_h_sprites_left_check;
    2: acela_02_sprites_left;
    4: acela_03_sprites_left;
    6: acela_04_sprites_left;
@@ -53,7 +46,7 @@ switch (FEAT_TRAINS, SELF, acela_sprites_start,
   12: acela_07_sprites_right;
   14: acela_h_sprites_right_check;
 
- 100: acela_h_sprites_start;
+ 100: acela_h_sprites_left_check;
  102: acela_07_sprites_left;
  104: acela_03_sprites_left;
  106: acela_03_sprites_right;
@@ -62,7 +55,7 @@ switch (FEAT_TRAINS, SELF, acela_sprites_start,
  112: acela_02_sprites_right;
  114: acela_h_sprites_right_check;
 
- 200: acela_h_sprites_start;
+ 200: acela_h_sprites_left_check;
  202: acela_02_notpowered_sprites_left;
  204: acela_03_notpowered_sprites_left;
  206: acela_04_sprites_left;
@@ -71,7 +64,7 @@ switch (FEAT_TRAINS, SELF, acela_sprites_start,
  212: acela_07_notpowered_sprites_right;
  214: acela_h_sprites_right_check;
 
- 300: acela_h_sprites_start;
+ 300: acela_h_sprites_left_check;
  302: acela_07_notpowered_sprites_left;
  304: acela_03_notpowered_sprites_left;
  306: acela_03_notpowered_sprites_right;
@@ -83,7 +76,7 @@ switch (FEAT_TRAINS, SELF, acela_sprites_start,
       align_11_sprites;
 }
 
-long_vehicle_RND(acela, acela_h_sprites_start)
+long_vehicle(acela)
 
 switch (FEAT_TRAINS, SELF, acela_articulated_part,
   extra_callback_info1)
