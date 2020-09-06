@@ -1,23 +1,91 @@
 ﻿// ice3m
 
-#define IMAGEFILE  "src/addon/emu/ice3m_03.png"
+#define IMAGEFILE  "src/addon/emu/ice3m_01.png"
 purchase_sprites(ice3m, 0, 0)
+MU_head_middle_sp_sprites(15, ice3m_01, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice3m_02.png"
+EMU_motor1_middle_sprites(14, ice3m_02, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice3m_03.png"
 EMU_motor1_middle_sprites(14, ice3m_03, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/ice3m_04.png"
-MU_car_sprites(14, ice3m_04, 32, 40)
+EMU_motor1_middle_sprites(14, ice3m_04, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/addon/emu/ice3m_05.png"
-MU_car_nd_sprites(14, ice3m_05, 32, 40)
+EMU_motor1_nd_sprites(14, ice3m_05, 32, 40)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice3m_07.png"
+EMU_motor1_middle_sprites(14, ice3m_07, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/addon/emu/ice3m_08.png"
+MU_head_middle_sp_sprites(15, ice3m_08, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ice3m_01_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: ice3m_01_sprites_left;
+     ice3m_01_middle_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, ice3m_01_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ice3m_01_sprites_left_check;
+  1: ice3m_01_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_01_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: ice3m_01_sprites_right;
+     ice3m_01_middle_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_08_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: ice3m_08_sprites_left;
+     ice3m_08_middle_sprites_left;
+}
+
+random_switch (FEAT_TRAINS, SELF, ice3m_08_sprites_start,
+  bitmask(TRIGGER_VEHICLE_SERVICE))
+{
+  1: ice3m_08_sprites_left_check;
+  1: ice3m_08_sprites_left_check;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_08_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: ice3m_08_sprites_right;
+     ice3m_08_middle_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, ice3m_never_train, 0)
+{
+   1: ice3m_02_sprites_left;
+   2: ice3m_02_normal_sprites;
+   3: ice3m_04_sprites_left;
+   4: ice3m_04_normal_sprites;
+   5: ice3m_05_sprites_left;
+   6: ice3m_07_sprites_left;
+   7: ice3m_07_normal_sprites;
+      align_14_sprites;
+}
 
 is_ERDD_ds(ice3m_03_sprites_left_railcheck2,  ice3m_03_sprites_left,  ice3m_03_notpowered_normal_sprites_left)
 is_ERDD_ds(ice3m_03_sprites_right_railcheck2, ice3m_03_sprites_right, ice3m_03_notpowered_normal_sprites_right)
-is_ERD_ds(ice3m_03_sprites_left_railcheck,  ice3m_03_sprites_left,  ice3m_03_sprites_left_railcheck2)
-is_ERD_ds(ice3m_03_sprites_right_railcheck, ice3m_03_sprites_right, ice3m_03_sprites_right_railcheck2)
+is_ERD_ds(ice3m_03_sprites_left_railcheck,    ice3m_03_sprites_left,  ice3m_03_sprites_left_railcheck2)
+is_ERD_ds(ice3m_03_sprites_right_railcheck,   ice3m_03_sprites_right, ice3m_03_sprites_right_railcheck2)
 
-is_ERAA_ds(ice3_02_sprites_right_railcheck2,  ice3_02_sprites_right, ice3_02_notpowered_normal_sprites_right)
-is_ERA_ds(ice3_02_sprites_right_railcheck,  ice3_02_sprites_right, ice3_02_sprites_right_railcheck2)
+is_ERAA_ds(ice3m_02_sprites_right_railcheck,  ice3m_02_sprites_right, ice3m_02_notpowered_normal_sprites_right)
+is_ERAA_ds(ice3m_07_sprites_right_railcheck,  ice3m_07_sprites_right, ice3m_07_notpowered_normal_sprites_right)
+is_ERA_ds(ice3m_04_sprites_right_railcheck,   ice3m_04_sprites_right, ice3m_04_notpowered_normal_sprites_right)
+is_ERA_ds(ice3m_05_sprites_right_railcheck,   ice3m_05_sprites_right, ice3m_05_notpowered_sprites_right)
 
 switch (FEAT_TRAINS, SELF, ice3m_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
@@ -25,48 +93,48 @@ switch (FEAT_TRAINS, SELF, ice3m_sprites_start,
    (prev_vehicle_randombits() % 2) * 100 +
    position_in_articulated_veh])
 {
-   0: ice3_h_sprites_start;
-   2: ice3_02_notpowered_normal_sprites_left;
+   0: ice3m_01_sprites_start;
+   2: ice3m_02_notpowered_normal_sprites_left;
    4: ice3m_03_sprites_left_railcheck;
-   6: ice3m_04_sprites_left;
-   8: ice3m_05_sprites_right;
+   6: ice3m_04_notpowered_normal_sprites_left;
+   8: ice3m_05_sprites_right_railcheck;
   10: ice3m_03_sprites_right_railcheck;
-  12: ice3_02_sprites_right_railcheck;
-  14: ice3_h_sprites_right_check;
+  12: ice3m_07_sprites_right_railcheck;
+  14: ice3m_08_sprites_right_check;
 
- 100: ice3_h_sprites_start;
- 102: ice3_02_notpowered_normal_sprites_left;
+ 100: ice3m_08_sprites_start;
+ 102: ice3m_07_notpowered_normal_sprites_left;
  104: ice3m_03_sprites_left_railcheck;
- 106: ice3m_05_sprites_left;
- 108: ice3m_04_sprites_right;
+ 106: ice3m_05_notpowered_sprites_left;
+ 108: ice3m_04_sprites_right_railcheck;
  110: ice3m_03_sprites_right_railcheck;
- 112: ice3_02_sprites_right_railcheck;
- 114: ice3_h_sprites_right_check;
+ 112: ice3m_02_sprites_right_railcheck;
+ 114: ice3m_01_sprites_right_check;
 
- 200: ice3_h_sprites_start;
- 202: ice3_02_notpowered_sprites_left;
+ 200: ice3m_01_sprites_start;
+ 202: ice3m_02_notpowered_sprites_left;
  204: ice3m_03_notpowered_sprites_left;
  206: ice3m_04_notpowered_sprites_left;
- 208: ice3m_05_sprites_right;
+ 208: ice3m_05_notpowered_sprites_right;
  210: ice3m_03_notpowered_sprites_right;
- 212: ice3_02_notpowered_sprites_right;
- 214: ice3_h_sprites_right_check;
+ 212: ice3m_07_notpowered_sprites_right;
+ 214: ice3m_08_sprites_right_check;
 
- 300: ice3_h_sprites_start;
- 302: ice3_02_notpowered_sprites_left;
+ 300: ice3m_08_sprites_start;
+ 302: ice3m_07_notpowered_sprites_left;
  304: ice3m_03_notpowered_sprites_left;
- 306: ice3m_05_sprites_left;
+ 306: ice3m_05_notpowered_sprites_left;
  308: ice3m_04_notpowered_sprites_right;
  310: ice3m_03_notpowered_sprites_right;
- 312: ice3_02_notpowered_sprites_right;
- 314: ice3_h_sprites_right_check;
+ 312: ice3m_02_notpowered_sprites_right;
+ 314: ice3m_01_sprites_right_check;
 
- 777: ice3_never_train;
+ 777: ice3m_never_train;
 
       align_15_sprites;
 }
 
-long_vehicle_RND(ice3m, ice3_h_sprites_start)
+long_vehicle_RND(ice3m, ice3m_01_sprites_start)
 
 switch (FEAT_TRAINS, SELF, ice3m_articulated_part,
   extra_callback_info1)
@@ -92,22 +160,23 @@ switch (FEAT_TRAINS, SELF, ice3m_articulated_part,
 switch (FEAT_TRAINS, SELF, ice3m_create_effect_right, electric_create_effect(-1)) { return 1; }
 switch (FEAT_TRAINS, SELF, ice3m_create_effect_left, electric_create_effect(6)) { return 1; }
 
-switch (FEAT_TRAINS, SELF, ice3m_create_effect_ERA,
+is_ERDD_ds(ice3m_create_effect_03_DDC_2, ice3m_create_effect_right, return disable_create_effect())
+is_ERDD_ds(ice3m_create_effect_06_DDC_2, ice3m_create_effect_left,  return disable_create_effect())
+is_ERD_ds(ice3m_create_effect_03_DDC,    ice3m_create_effect_right, ice3m_create_effect_03_DDC_2)
+is_ERD_ds(ice3m_create_effect_06_DDC,    ice3m_create_effect_left,  ice3m_create_effect_06_DDC_2)
+
+is_ERAA_ds(ice3m_create_effect_07_15AC, ice3m_create_effect_right, return disable_create_effect())
+is_ERA_ds(ice3m_create_effect_05_AC,    ice3m_create_effect_left,  return disable_create_effect())
+
+switch (FEAT_TRAINS, SELF, ice3m_create_effect0,
   position_in_articulated_veh)
 {
-  12: ice3m_create_effect_right;
+   4: ice3m_create_effect_03_DDC;
+   8: ice3m_create_effect_05_AC;
+  10: ice3m_create_effect_06_DDC;
+  12: ice3m_create_effect_07_15AC;
       return disable_create_effect();
 }
-
-switch (FEAT_TRAINS, SELF, ice3m_create_effect_ERD,
-  position_in_articulated_veh)
-{
-   4: ice3m_create_effect_right;
-  10: ice3m_create_effect_left;
-      return disable_create_effect();
-}
-
-is_ERA_ds(ice3m_create_effect0, ice3m_create_effect_ERA, ice3m_create_effect_ERD)
 
 switch (FEAT_TRAINS, PARENT, ice3m_create_effect,
   any_ice3())
