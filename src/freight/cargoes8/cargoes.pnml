@@ -360,7 +360,8 @@ switch (FEAT_TRAINS, SELF, cargo8_stel_pipes_cup_sprites,
         cargo8_stel_pipes_cup_4_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, cargo8_stel_all_sprites,
+
+switch (FEAT_TRAINS, PARENT, cargo8_stel_all_sprites_2,
   (random_bits >> 1) & 0x3F)
 {
     0..6: cargo8_stel_h_coils_sprites;    // 4
@@ -371,15 +372,40 @@ switch (FEAT_TRAINS, SELF, cargo8_stel_all_sprites,
           cargo8_stel_pipes_cup_sprites;  // 4
 }
 
-switch (FEAT_TRAINS, SELF, cargo8_stel_loading_speed,
+switch (FEAT_TRAINS, SELF, cargo8_stel_all_sprites,
   (random_bits >> 1) & 0x3F)
 {
-    0..6: return (cargo_capacity / 3 + 1);  // Coils
-   7..18: return (cargo_capacity / 3 + 1);  // Coils
-  19..33: return (cargo_capacity / 2 + 1);  // Sheet
-  34..41: return (cargo_capacity / 2 + 1);  // Sheet
-  42..56: return (cargo_capacity / 4 + 1);  // Pipes
-          return (cargo_capacity / 4 + 1);  // Pipes
+    0..1: cargo8_stel_h_coils_sprites;    // 4
+    2..4: cargo8_stel_v_coils_sprites;    // 7
+    5..7: cargo8_stel_sheet_sprites;      // 9
+   8..10: cargo8_stel_sheet_cup_sprites;  // 5
+  11..13: cargo8_stel_pipes_sprites;      // 9
+  14..15: cargo8_stel_pipes_cup_sprites;  // 4
+          cargo8_stel_all_sprites_2;
+}
+
+switch (FEAT_TRAINS, PARENT, cargo8_stel_loading_speed_2,
+  (random_bits >> 1) & 0x3F)
+{
+    0..6: return (LOAD_TEMP(10) / 3 + 1);  // Coils
+   7..18: return (LOAD_TEMP(10) / 3 + 1);  // Coils
+  19..33: return (LOAD_TEMP(10) / 2 + 1);  // Sheet
+  34..41: return (LOAD_TEMP(10) / 2 + 1);  // Sheet
+  42..56: return (LOAD_TEMP(10) / 4 + 1);  // Pipes
+          return (LOAD_TEMP(10) / 4 + 1);  // Pipes
+}
+
+switch (FEAT_TRAINS, SELF, cargo8_stel_loading_speed,
+  [STORE_TEMP(cargo_capacity, 10),
+   (random_bits >> 1) & 0x3F])
+{
+    0..1: return (cargo_capacity / 3 + 1);  // Coils
+    2..4: return (cargo_capacity / 3 + 1);  // Coils
+    5..7: return (cargo_capacity / 2 + 1);  // Sheet
+   8..10: return (cargo_capacity / 2 + 1);  // Sheet
+  11..13: return (cargo_capacity / 4 + 1);  // Pipes
+  14..15: return (cargo_capacity / 4 + 1);  // Pipes
+          cargo8_stel_loading_speed_2;
 }
 
 switch (FEAT_TRAINS, SELF, cargo8_pipe_all_sprites,
