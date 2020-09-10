@@ -31,13 +31,12 @@ switch (FEAT_TRAINS, SELF, es1_h_sprites_right_check,
 switch (FEAT_TRAINS, SELF, es1_never_train, 0)
 {
    1: es1_m_sprites_right;
-   2: es1_m_r_normal_sprites;
+   2: es1_m_normal_sprites_right;
       align_14_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, es1_sprites_start,
+switch (FEAT_TRAINS, SELF, es1_sprites_start_es1,
 [  set_offset_to(-position_in_articulated_veh),
-   ((LOAD_TEMP(4) != es1) * 200) +
    (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
@@ -53,21 +52,71 @@ switch (FEAT_TRAINS, SELF, es1_sprites_start,
  106: es1_m_sprites_left;
  108: es1_h_sprites_right_check;
 
- 200: es1_h_sprites_left_check;
- 202: es1_m_notpowered_sprites_right;
- 204: es1_c_notpowered_sprites_left;
- 206: es1_m_notpowered_sprites_left;
- 208: es1_h_notpowered_sprites_right;
-
- 300: es1_h_sprites_left_check;
- 302: es1_m_notpowered_sprites_right;
- 304: es1_c_notpowered_sprites_right;
- 306: es1_m_notpowered_sprites_left;
- 308: es1_h_notpowered_sprites_right;
-
  777: es1_never_train;
 
       align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, es1_h_notpowered_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: es1_h_traveling_sprites_right;
+     es1_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, es1_sprites_start_none,
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01) * 100 +
+   position_in_articulated_veh])
+{
+   0: es1_h_notpowered_sprites_left;
+   2: es1_m_notpowered_sprites_right;
+   4: es1_c_notpowered_sprites_left;
+   6: es1_m_notpowered_sprites_left;
+   8: es1_h_notpowered_sprites_right_check;
+
+ 100: es1_h_notpowered_sprites_left;
+ 102: es1_m_notpowered_sprites_right;
+ 104: es1_c_notpowered_sprites_right;
+ 106: es1_m_notpowered_sprites_left;
+ 108: es1_h_notpowered_sprites_right_check;
+
+      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, es1_h_notpowered_normal_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: es1_h_sprites_right;
+     es1_h_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, es1_sprites_start_tep70bs,
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01) * 100 +
+   position_in_articulated_veh])
+{
+   0: es1_h_notpowered_normal_sprites_left;
+   2: es1_m_notpowered_normal_sprites_right;
+   4: es1_c_sprites_left;
+   6: es1_m_notpowered_normal_sprites_left;
+   8: es1_h_notpowered_normal_sprites_right_check;
+
+ 100: es1_h_notpowered_normal_sprites_left;
+ 102: es1_m_notpowered_normal_sprites_right;
+ 104: es1_c_sprites_right;
+ 106: es1_m_notpowered_normal_sprites_left;
+ 108: es1_h_notpowered_normal_sprites_right_check;
+
+      align_14_sprites;
+}
+
+switch (FEAT_TRAINS, PARENT, es1_sprites_start,
+  tep70bs_es1_2() + 2 * (vehicle_type_id == es1))
+{
+  1: es1_sprites_start_tep70bs;
+  2: es1_sprites_start_es1;
+     es1_sprites_start_none;
 }
 
 long_vehicle(es1)
@@ -129,23 +178,29 @@ switch (FEAT_TRAINS, SELF, es1_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
+switch (FEAT_TRAINS, PARENT, es1_cargo_capacity,
+  (vehicle_type_id == es1) || tep70bs_es1_2())
+{
+  1: return 443;
+     return 0;
+}
+
 engine_speed(es1, 160)
-engine_capacity_MU(es1, 443, es1)
 engine_power_MU(es1, 3467, es1)
 
 RC_head_check_new(es1, es1)
 switch (FEAT_TRAINS, SELF, es1_running_cost_factor,
-[  STORE_TEMP((687*2+312*2+301)*57/100, 0),  // Моторы
-   STORE_TEMP(55, 1),                        // Бригада
-   STORE_TEMP((687*2+312*2+301)*20/100, 2),  // Износ
-   STORE_TEMP(0, 3),                         // Сопровождение
-   STORE_TEMP((687*2+312*2+301)*14/100, 4),  // ТО
-   STORE_TEMP((687*2+312*2+301)/100, 5),     // Сертификация
+[  STORE_TEMP(1310, 0),  // Моторы
+   STORE_TEMP(55, 1),    // Бригада
+   STORE_TEMP(460, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(322, 4),   // ТО
+   STORE_TEMP(23, 5),    // Сертификация
 
-   STORE_TEMP(160, 6),                                     // Скорость
-   STORE_TEMP(263, 7),                                     // Тара
-   STORE_TEMP(320, 8)])                      /* 263+57 */  // Максимальная масса
-{ es1_check_running_cost_factor; }                         // 687*2+312*2+301
+   STORE_TEMP(160, 6),                       // Скорость
+   STORE_TEMP(263, 7),                       // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 443 / 16, 8)])  // Максимальная масса
+{ es1_check_running_cost_factor; }
 
 hint_MU_with_subtype_noto(es1_b2014,
      calc_loading(443 / (5 * 2 * WIDERST_D_DOOR)),
@@ -161,7 +216,15 @@ hint_MU_with_subtype_noto(es1_a2014,
      STR_SECTIONS_MU_S1_2of5,
      2011,
      string(STR_PURCHASE_HINT_FACTORY_URAL))
-hint_change_after(es1, 2014)
+hint_MU_with_subtype_noto_comment(es1_a2018,
+     calc_loading(443 / (5 * 2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_2_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SR_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
+     STR_SECTIONS_MU_S1_2of5,
+     2011,
+     string(STR_PURCHASE_HINT_FACTORY_URAL),
+     string(STR_PURCHASE_HINT_TEP70BS))
+hint_change_after2(es1, 2014, 2018)
 
 item (FEAT_TRAINS, es1, 413) {
   property {

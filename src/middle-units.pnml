@@ -1,14 +1,29 @@
 // Список средних секций
-#define all_mid_section()                         \
-( (prev_vehicle_type_id() == _3te10m_m) ||        \
-     (prev_vehicle_type_id() == _3te10u_m) ||     \
-     (prev_vehicle_type_id() == _4te10s_m) ||     \
-     (prev_vehicle_type_id() == _3m62u_m) ||      \
-     (prev_vehicle_type_id() == _3te25k2m_m) ||   \
-     (prev_vehicle_type_id() == _2es10_m) ||      \
-     (prev_vehicle_type_id() == _3es4k_m) ||      \
-     (prev_vehicle_type_id() == _3es5k_m) ||      \
-     (prev_vehicle_type_id() == _4es5k_m))        \
+#define all_mid_section()                     \
+((prev_vehicle_type_id() == _3te10m_m) ||     \
+ (prev_vehicle_type_id() == _3te10u_m) ||     \
+ (prev_vehicle_type_id() == _4te10s_m) ||     \
+ (prev_vehicle_type_id() == _3m62u_m) ||      \
+ (prev_vehicle_type_id() == _3te25k2m_m) ||   \
+ (prev_vehicle_type_id() == _2es10_m) ||      \
+ (prev_vehicle_type_id() == _3es4k_m) ||      \
+ (prev_vehicle_type_id() == _3es5k_m) ||      \
+ (prev_vehicle_type_id() == _4es5k_m))        \
+
+// Список средних МВПС
+#define all_mid_emu_section()             \
+((prev_vehicle_type_id() == es2g_mn) ||   \
+ (prev_vehicle_type_id() == es2g_c) ||    \
+ (prev_vehicle_type_id() == es2g_cp) ||   \
+ (prev_vehicle_type_id() == er200_m) ||   \
+ (prev_vehicle_type_id() == er200_c) ||   \
+ (prev_vehicle_type_id() == esh2_m1) ||   \
+ (prev_vehicle_type_id() == esh2_m2) ||   \
+ (prev_vehicle_type_id() == esh2_c) ||    \
+ (prev_vehicle_type_id() == ep2d_m) ||    \
+ (prev_vehicle_type_id() == ep2d_c) ||    \
+ (prev_vehicle_type_id() == ep3d_m) ||    \
+ (prev_vehicle_type_id() == ep3d_c))      \
 
 // Специальная проверка для локомтивов, требующих 2+ головы (ВЛ80С, 2ЕС5К, 3ЕС5К, ВЛ11, 2ЭС4К, 2ЭС6, ВЛ82, ВЛ15)
 
@@ -748,13 +763,14 @@ switch (FEAT_TRAINS, PARENT, double_start_stop,
 }
 
 // для средней секции необходимо проверить, что в конце она не одинока
+// в том числе вагоны МВПС
 
-switch (FEAT_TRAINS, SELF, any_start_stop_mid,
-[
-   set_offset_to(num_vehs_in_consist-2),
-   all_mid_section() ])
+switch (FEAT_TRAINS, PARENT, any_start_stop_mid,
+[  set_offset_to(num_vehs_in_consist-2),
+   all_mid_section() + 2 * all_mid_emu_section() ])
 {
   1: return string(STR_START_STOP_MIDDLE_MUST_NOT_BE_LAST);
+  2: return string(STR_START_STOP_DUAL_END_REQUIRED);
      double_start_stop;
 }
 
