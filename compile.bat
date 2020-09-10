@@ -185,6 +185,11 @@ rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
 echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
 
+cd src 
 start /min MonaLisa.pl 
+cd ..
+cd lang 
+start /min MonaLisa.pl 
+cd ..
 
 :EOF
