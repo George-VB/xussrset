@@ -18,8 +18,34 @@ MU_car_sprites(13, ep2d_c_mu, 32, 40)
 #undef IMAGEFILE
 
 MU_head_middle_direction_template2(ep2d_h, ep2d_h, ep2d_hm)
-engine_direction_template4m2(ep2d_h, ep2d_hm, ep2d_m, ep2d_c, )
-long_vehicle(ep2d_h)
+
+switch (FEAT_TRAINS, SELF, ep2d_h_sprites_start_sp2,
+  ((LOAD_TEMP(0) - count_veh_id(ep2d_h) - count_veh_id(ep2d_hm)) % 2))
+{
+  0: ep2d_h_sprites_left;
+     ep2d_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ep2d_h_sprites_start_sp,
+[  STORE_TEMP(LOAD_TEMP(0) + count_veh_id(ep2d_hm), 0) ])
+{  ep2d_h_sprites_start_sp2; }
+
+long_vehicle_sp(ep2d_h)
+
+MU_head_middle_sp_direction_template2(ep2d_hm, ep2d_h, ep2d_hm)
+
+switch (FEAT_TRAINS, SELF, ep2d_hm_sprites_start_sp2,
+  ((LOAD_TEMP(0) - count_veh_id(ep2d_h) - count_veh_id(ep2d_hm)) % 2))
+{
+  0: ep2d_hm_sprites_left;
+     ep2d_hm_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ep2d_hm_sprites_start_sp,
+[  STORE_TEMP(LOAD_TEMP(0) + count_veh_id(ep2d_h), 0) ])
+{  ep2d_hm_sprites_start_sp2; }
+
+long_vehicle_sp(ep2d_hm)
 
 EMU_motor_direction_template2(ep2d_m, ep2d_h, ep2d_hm)
 EMU_4_12_m_template(ep2d)
@@ -30,10 +56,6 @@ EMU_motor_direction_template2(ep2d_c, ep2d_h, ep2d_hm)
 EMU_4_12_c_template(ep2d)
 EMU_direction_calculation_template2(ep2d, _c)
 long_vehicle_dir(ep2d_c)
-
-MU_head_middle_sp_direction_template2(ep2d_hm, ep2d_h, ep2d_hm)
-engine_direction_template4m2(ep2d_hm, ep2d_h, ep2d_m, ep2d_c, )
-long_vehicle(ep2d_hm)
 
 EMU_4_12_MH_can_attach_wagon_template(ep2d)
 EMU_attach_calculation_template2(ep2d)

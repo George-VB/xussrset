@@ -10,23 +10,7 @@
  (prev_vehicle_type_id() == _3es5k_m) ||      \
  (prev_vehicle_type_id() == _4es5k_m))        \
 
-// Список средних МВПС
-#define all_mid_emu_section()             \
-((prev_vehicle_type_id() == es2g_mn) ||   \
- (prev_vehicle_type_id() == es2g_c) ||    \
- (prev_vehicle_type_id() == es2g_cp) ||   \
- (prev_vehicle_type_id() == er200_m) ||   \
- (prev_vehicle_type_id() == er200_c) ||   \
- (prev_vehicle_type_id() == esh2_m1) ||   \
- (prev_vehicle_type_id() == esh2_m2) ||   \
- (prev_vehicle_type_id() == esh2_c) ||    \
- (prev_vehicle_type_id() == ep2d_m) ||    \
- (prev_vehicle_type_id() == ep2d_c) ||    \
- (prev_vehicle_type_id() == ep3d_m) ||    \
- (prev_vehicle_type_id() == ep3d_c))      \
-
 // Специальная проверка для локомтивов, требующих 2+ головы (ВЛ80С, 2ЕС5К, 3ЕС5К, ВЛ11, 2ЭС4К, 2ЭС6, ВЛ82, ВЛ15)
-
 switch (FEAT_TRAINS, PARENT, q_2ev120_can_attach_wagon,
 [  set_offset_to(num_vehs_in_consist-2),
    STORE_TEMP (prev_vehicle_type_id(), 3),
@@ -208,7 +192,6 @@ switch (FEAT_TRAINS, PARENT, q_2es10_can_attach_wagon,
 }
 
 // Специальная проверка для локомтивов, требующих 2 головы (Н8/ВЛ8/ВЛ8м, Т8/ВЛ10/ВЛ10у, ЧС6, ЧС7, ЧС200, Н81/ВЛ80/ВЛ80к/т/р, ЧС8)
-
 switch (FEAT_TRAINS, PARENT, double_can_attach_wagon_check2,
    (LOAD_TEMP(5) != LOAD_TEMP(3)) &&
    ((LOAD_TEMP(4) % 2) == 1) &&
@@ -285,7 +268,6 @@ switch (FEAT_TRAINS, PARENT, double_can_attach_wagon,
 }
 
 // Специальная проверка для управления присоединением 3ТЭ10М, 3ТЭ10У, 4ТЭ10С, 3М62У, 3ЭС5К, 2ЭС10
-
 switch (FEAT_TRAINS, PARENT, _4te10s_buster_required,
 [  set_offset_to(num_vehs_in_consist-4),
    (prev_vehicle_type_id() == _4te10s_m) ])
@@ -538,7 +520,6 @@ switch (FEAT_TRAINS, SELF, any_can_attach_wagon,
 
 // для локомотивов, требующих 2+ часть, необходимо проверить, что в конце он не одинок
 // (ВЛ80С, 2ЕС5К, 3ЕС5К, ВЛ11, 2ЭС4К, 2ЭС6, ВЛ82, ВЛ15)
-
 switch (FEAT_TRAINS, PARENT, q_2ev120_start_stop,
 [  set_offset_to(num_vehs_in_consist-2),
    STORE_TEMP (prev_vehicle_type_id(), 3),
@@ -685,7 +666,6 @@ switch (FEAT_TRAINS, PARENT, q_4es5k_start_stop,
 }
 
 // для локомотивов, требующих 2-ю часть, необходимо проверить, что в конце он не одинок
-
 switch (FEAT_TRAINS, PARENT, double_start_stop_check2,
    ((LOAD_TEMP(4) % 2) == 1) &&
    ((LOAD_TEMP(3) == tg100) || (LOAD_TEMP(3) == tg102) ||
@@ -762,16 +742,52 @@ switch (FEAT_TRAINS, PARENT, double_start_stop,
      double_start_stop_check;
 }
 
-// для средней секции необходимо проверить, что в конце она не одинока
-// в том числе вагоны МВПС
-
-switch (FEAT_TRAINS, PARENT, any_start_stop_mid,
+// для средней секции необходимо проверить, что в конце она не одинока, в том числе вагоны МВПС
+// кроме того надо проверить, что для голов с беззазорным устройством они не одиноки
+switch (FEAT_TRAINS, PARENT, any_start_stop_mid3,
 [  set_offset_to(num_vehs_in_consist-2),
-   all_mid_section() + 2 * all_mid_emu_section() ])
+   all_mid_section()])
 {
   1: return string(STR_START_STOP_MIDDLE_MUST_NOT_BE_LAST);
-  2: return string(STR_START_STOP_DUAL_END_REQUIRED);
      double_start_stop;
+}
+
+switch (FEAT_TRAINS, PARENT, any_start_stop_mid2,
+[  set_offset_to(num_vehs_in_consist-2),
+   ((prev_vehicle_type_id() == dpkr2_c) ||
+    (prev_vehicle_type_id() == ra2_c) ||
+    (prev_vehicle_type_id() == es2g_mn) ||
+    (prev_vehicle_type_id() == es2g_c) ||
+    (prev_vehicle_type_id() == es2g_cp) ||
+    (prev_vehicle_type_id() == er200_m) ||
+    (prev_vehicle_type_id() == er200_c) ||
+    (prev_vehicle_type_id() == esh2_m1) ||
+    (prev_vehicle_type_id() == esh2_m2) ||
+    (prev_vehicle_type_id() == esh2_c) ||
+    (prev_vehicle_type_id() == ep2d_m) ||
+    (prev_vehicle_type_id() == ep2d_c) ||
+    (prev_vehicle_type_id() == ep3d_m) ||
+    (prev_vehicle_type_id() == ep3d_c)) ])
+{
+  1: return string(STR_START_STOP_DUAL_END_REQUIRED);
+     any_start_stop_mid3;
+}
+
+// головы с беззазорным устройством можно проверять по общей сумме, так как при присоединении проверяется чётность предыдущих голов.
+switch (FEAT_TRAINS, PARENT, any_start_stop_mid,
+  (count_veh_id(dpkr2_h1) +
+   count_veh_id(dpkr2_h2) +
+   count_veh_id(ra2_h) +
+   count_veh_id(es2g_hm) +
+   count_veh_id(er200_h) +
+   count_veh_id(esh2_h1) +
+   count_veh_id(esh2_h2) +
+   count_veh_id(ep2d_hm) +
+   count_veh_id(ep2d_h) +
+   count_veh_id(ep3d_h)) % 2)
+{
+  1: return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+     any_start_stop_mid2;
 }
 
 // некорректные грузы
