@@ -10,8 +10,12 @@ MU_head_middle_sprites(13, ed4m_h_v4_mu, 32, 844)
 #define IMAGEFILE  "src/emu/ed4m_h-part2.png"
 MU_head_middle_sprites(13, ed4m_h_v5_mu, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/emu/ed4m_h-a2012.png"
+#define IMAGEFILE  "src/emu/ed4m_h-a2010.png"
 purchase_sprites(ed4m_h_v2, 0, 0)
+MU_head_middle_sprites(13, ed4m_h_a2010_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed4m_h-a2012.png"
+purchase_sprites(ed4m_h_v3, 0, 0)
 MU_head_middle_sprites(13, ed4m_h_a2012_mu, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/ed4m_m-part1.png"
@@ -24,8 +28,12 @@ EMU_motor1_sprites(13, ed4m_m_v4_mu, 32, 844)
 #define IMAGEFILE  "src/emu/ed4m_m-part2.png"
 EMU_motor1_sprites(13, ed4m_m_v5_mu, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/emu/ed4m_m-a2012.png"
+#define IMAGEFILE  "src/emu/ed4m_m-a2010.png"
 purchase_sprites(ed4m_m_v2, 0, 0)
+EMU_motor1_sprites(13, ed4m_m_a2010_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed4m_m-a2012.png"
+purchase_sprites(ed4m_m_v3, 0, 0)
 EMU_motor1_sprites(13, ed4m_m_a2012_mu, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/ed4m_c-part1.png"
@@ -38,22 +46,27 @@ MU_car_sprites(13, ed4m_c_v4_mu, 32, 844)
 #define IMAGEFILE  "src/emu/ed4m_c-part2.png"
 MU_car_sprites(13, ed4m_c_v5_mu, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/emu/ed4m_c-a2012.png"
+#define IMAGEFILE  "src/emu/ed4m_c-a2010.png"
 purchase_sprites(ed4m_c_v2, 0, 0)
+MU_car_sprites(13, ed4m_c_a2010_mu, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/ed4m_c-a2012.png"
+purchase_sprites(ed4m_c_v3, 0, 0)
 MU_car_sprites(13, ed4m_c_a2012_mu, 32, 40)
 #undef IMAGEFILE
-purchase_sprites_select(ed4m_h, 2012)
-purchase_sprites_select(ed4m_m, 2012)
-purchase_sprites_select(ed4m_c, 2012)
+purchase_sprites_select2(ed4m_h, 2010, 2012)
+purchase_sprites_select2(ed4m_m, 2010, 2012)
+purchase_sprites_select2(ed4m_c, 2010, 2012)
 
 MU_head_middle_direction_template(ed4m_h_v1, ed4m_h)
 MU_head_middle_direction_template(ed4m_h_v2, ed4m_h)
 MU_head_middle_direction_template(ed4m_h_v3, ed4m_h)
 MU_head_middle_direction_template(ed4m_h_v4, ed4m_h)
 MU_head_middle_direction_template(ed4m_h_v5, ed4m_h)
+MU_head_middle_direction_template(ed4m_h_a2010, ed4m_h)
 MU_head_middle_direction_template(ed4m_h_a2012, ed4m_h)
 
-switch (FEAT_TRAINS, SELF, ed4m_h_b2012_sprites_left,
+switch (FEAT_TRAINS, SELF, ed4m_h_b2010_sprites_left,
   cargo_subtype)
 {
                          0: ed4m_h_v1_sprites_left;
@@ -64,7 +77,7 @@ switch (FEAT_TRAINS, SELF, ed4m_h_b2012_sprites_left,
   align_13_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, ed4m_h_b2012_sprites_right,
+switch (FEAT_TRAINS, SELF, ed4m_h_b2010_sprites_right,
   cargo_subtype)
 {
                          0: ed4m_h_v1_sprites_right;
@@ -75,20 +88,40 @@ switch (FEAT_TRAINS, SELF, ed4m_h_b2012_sprites_right,
   align_13_sprites;
 }
 
-engine_build_year_template(ed4m_h, 2012, left, )
-engine_build_year_template(ed4m_h, 2012, right, )
+engine_build_year2_template(ed4m_h, 2010, 2012, left, )
+engine_build_year2_template(ed4m_h, 2010, 2012, right, )
 
 engine_direction_template3m2(ed4m_h, ed4m_m, ed4m_c, )
-long_vehicle(ed4m_h)
+
+switch (FEAT_TRAINS, SELF, ed4m_h_sprites_start_sp3,
+  ((LOAD_TEMP(0) - count_veh_id(ed4m_h)) % 2))
+{
+  0: ed4m_h_sprites_left;
+     ed4m_h_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, ed4m_h_sprites_start_sp2,
+[  STORE_TEMP(LOAD_TEMP(0) + count_veh_id(ed4m_h), 0) ])
+{  ed4m_h_sprites_start_sp3; }
+
+switch (FEAT_TRAINS, SELF, ed4m_h_sprites_start_sp,
+  build_year >= 2010)
+{
+  1: ed4m_h_sprites_start_sp2;
+     ed4m_h_sprites_start;
+}
+
+long_vehicle_sp(ed4m_h)
 
 EMU_motor_direction_template(ed4m_m_v1, ed4m_h)
 EMU_motor_direction_template(ed4m_m_v2, ed4m_h)
 EMU_motor_direction_template(ed4m_m_v3, ed4m_h)
 EMU_motor_direction_template(ed4m_m_v4, ed4m_h)
 EMU_motor_direction_template(ed4m_m_v5, ed4m_h)
+EMU_motor_direction_template(ed4m_m_a2010, ed4m_h)
 EMU_motor_direction_template(ed4m_m_a2012, ed4m_h)
 
-switch (FEAT_TRAINS, SELF, ed4m_m_b2012_direction_left,
+switch (FEAT_TRAINS, SELF, ed4m_m_b2010_direction_left,
   cargo_subtype)
 {
                          0: ed4m_m_v1_direction_left;
@@ -99,7 +132,7 @@ switch (FEAT_TRAINS, SELF, ed4m_m_b2012_direction_left,
   align_13_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, ed4m_m_b2012_direction_right,
+switch (FEAT_TRAINS, SELF, ed4m_m_b2010_direction_right,
   cargo_subtype)
 {
                          0: ed4m_m_v1_direction_right;
@@ -111,16 +144,20 @@ switch (FEAT_TRAINS, SELF, ed4m_m_b2012_direction_right,
 }
 
 switch (FEAT_TRAINS, SELF, ed4m_m_direction_left,
-  build_year >= 2012)
+  (build_year >= 2010) +
+  (build_year >= 2012))
 {
-  0: ed4m_m_b2012_direction_left;
+  0: ed4m_m_b2010_direction_left;
+  1: ed4m_m_a2010_direction_left;
      ed4m_m_a2012_direction_left;
 }
 
 switch (FEAT_TRAINS, SELF, ed4m_m_direction_right,
-  build_year >= 2012)
+  (build_year >= 2010) +
+  (build_year >= 2012))
 {
-  0: ed4m_m_b2012_direction_right;
+  0: ed4m_m_b2010_direction_right;
+  1: ed4m_m_a2010_direction_right;
      ed4m_m_a2012_direction_right;
 }
 
@@ -133,9 +170,10 @@ EMU_motor_direction_template(ed4m_c_v2, ed4m_h)
 EMU_motor_direction_template(ed4m_c_v3, ed4m_h)
 EMU_motor_direction_template(ed4m_c_v4, ed4m_h)
 EMU_motor_direction_template(ed4m_c_v5, ed4m_h)
+EMU_motor_direction_template(ed4m_c_a2010, ed4m_h)
 EMU_motor_direction_template(ed4m_c_a2012, ed4m_h)
 
-switch (FEAT_TRAINS, SELF, ed4m_c_b2012_direction_left,
+switch (FEAT_TRAINS, SELF, ed4m_c_b2010_direction_left,
   cargo_subtype)
 {
                          0: ed4m_c_v1_direction_left;
@@ -146,7 +184,7 @@ switch (FEAT_TRAINS, SELF, ed4m_c_b2012_direction_left,
   align_13_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, ed4m_c_b2012_direction_right,
+switch (FEAT_TRAINS, SELF, ed4m_c_b2010_direction_right,
   cargo_subtype)
 {
                          0: ed4m_c_v1_direction_right;
@@ -158,15 +196,18 @@ switch (FEAT_TRAINS, SELF, ed4m_c_b2012_direction_right,
 }
 
 switch (FEAT_TRAINS, SELF, ed4m_c_direction_left,
-  build_year >= 2012)
+  (build_year >= 2010) +
+  (build_year >= 2012))
 {
-  0: ed4m_c_b2012_direction_left;
+  0: ed4m_c_b2010_direction_left;
+  1: ed4m_c_a2010_direction_left;
      ed4m_c_a2012_direction_left;
 }
 switch (FEAT_TRAINS, SELF, ed4m_c_direction_right,
   build_year >= 2012)
 {
-  0: ed4m_c_b2012_direction_right;
+  0: ed4m_c_b2010_direction_right;
+  1: ed4m_c_a2010_direction_right;
      ed4m_c_a2012_direction_right;
 }
 
@@ -177,21 +218,34 @@ long_vehicle_dir(ed4m_c)
 EMU_46789101112_can_attach_wagon_template(ed4m)
 EMU_attach_calculation_template(ed4m)
 
-switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon1, vehicle_type_id)
-{
-  ed4m_h: ed4m_can_attach_wagon_template;
-  ed4m_m: ed4m_can_attach_wagon_template;
-  ed4m_c: ed4m_can_attach_wagon_template;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, ed4m_can_attach_wagon, count_veh_id(ed4m_h))
+switch (FEAT_TRAINS, PARENT, ed4m_can_attach_wagon3, count_veh_id(ed4m_h))
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-  1: ed4m_can_attach_wagon1;
+  1: ed4m_can_attach_wagon_template;
   2: ed4m_can_attach_wagon_head;
-  3: ed4m_can_attach_wagon1;
+  3: ed4m_can_attach_wagon_template;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon2,
+  (LOAD_TEMP(0) >= 2010) +
+  ((build_year >= 2010) * 10))
+{
+   1: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2010","2010-...");
+  10: return string(STR_CAN_ATTACH_WRONG_YEAR,"2010-...","...-2010");
+      ed4m_can_attach_wagon3;
+}
+
+switch (FEAT_TRAINS, PARENT, ed4m_can_attach_wagon1,
+[  STORE_TEMP(build_year, 0) ])
+{ ed4m_can_attach_wagon2; }
+
+switch (FEAT_TRAINS, SELF, ed4m_can_attach_wagon, vehicle_type_id)
+{
+  ed4m_h: ed4m_can_attach_wagon1;
+  ed4m_m: ed4m_can_attach_wagon1;
+  ed4m_c: ed4m_can_attach_wagon1;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, ed4m_h_start_stop,
@@ -202,11 +256,11 @@ switch (FEAT_TRAINS, PARENT, ed4m_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-  livery_template(ed4m_b2012_alt, FACTORY, LV_MOSCOW_RAILWAY, LV_WEST_SIBERIAN_RAILWAY, LV_RZD_PID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  livery_template_alt(ed4m_b2012, RZD_TCH4_ZHELEZNODOROZHNAIA)
+  livery_template(ed4m_b2010_alt, FACTORY, LV_MOSCOW_RAILWAY, LV_WEST_SIBERIAN_RAILWAY, LV_RZD_PID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  livery_template_alt(ed4m_b2010, RZD_TCH4_ZHELEZNODOROZHNAIA)
 
-  livery_template_none(ed4m_a2012)
-livery_template_build_year(ed4m, 2012)
+  livery_template_none(ed4m_a2010)
+livery_template_build_year(ed4m, 2010)
 
 EMU_4_12_m_create_effect_template(ed4m, -1, 6)
 EMU_direction_calculation_template(ed4m, _m_create_effect)
@@ -258,27 +312,54 @@ switch (FEAT_TRAINS, SELF, ed4m_c_running_cost_factor,
    STORE_TEMP(56, 8)])                      /* 41+15 */  // Максимальная масса
 { ed4m_c_check_running_cost_factor; }                    // 62
 
-hint_MU_with_model2(ed4m_h,
+hint_MU_with_model2(ed4m_h_b2010,
      calc_loading(86 / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, 62, 303,
      STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
      1997, 2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
-hint_MU_with_model2(ed4m_m,
+hint_MU_with_model2_comment(ed4m_h_a2010,
+     calc_loading(86 / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, 62, 303,
+     STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
+     1997, 2016,
+     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII),
+     string(STR_PURCHASE_HINT_ATTACH_YEAR,"...-2010","2010-..."))
+hint_MU_with_model2(ed4m_m_b2010,
      calc_loading(116 / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_DC_WITH_SUBTYPE, 62, 302,
      STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
      1997, 2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
-hint_MU_with_model2(ed4m_c,
+hint_MU_with_model2_comment(ed4m_m_a2010,
+     calc_loading(116 / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_DC_WITH_SUBTYPE, 62, 302,
+     STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
+     1997, 2016,
+     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII),
+     string(STR_PURCHASE_HINT_ATTACH_YEAR,"...-2010","2010-..."))
+hint_MU_with_model2(ed4m_c_b2010,
      calc_loading(116 / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, 62, 304,
      STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
      1997, 2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
+hint_MU_with_model2_comment(ed4m_c_a2010,
+     calc_loading(116 / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, 62, 304,
+     STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
+     1997, 2016,
+     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII),
+     string(STR_PURCHASE_HINT_ATTACH_YEAR,"...-2010","2010-..."))
+hint_change_after(ed4m_h, 2010)
+hint_change_after(ed4m_m, 2010)
+hint_change_after(ed4m_c, 2010)
 
 item (FEAT_TRAINS, ed4m_h, 409) {
   property {

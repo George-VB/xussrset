@@ -754,8 +754,100 @@ switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ep3d_c,
            return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_EP3D));
 }
 
+ /// проверка ed4m
+// проверка нечётности количества голов в составе
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_ed4m_h_h_check,
+  count_veh_id(ed4m_h) % 2)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_HEAD_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_ed4m_h_h_check0,
+  count_veh_id(ed4m_h) % 2)
+{
+  1: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_ED4M));
+     return CB_RESULT_ATTACH_ALLOW;
+}
+
+// проверка ed4m_h-ed4m_h+(*)
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_h_h,
+  vehicle_type_id)
+{
+   ed4m_m: return loco_limit_can_attach_wagon_ed4m_h_h_check;
+   ed4m_c: return loco_limit_can_attach_wagon_ed4m_h_h_check;
+   ed4m_h: return CB_RESULT_ATTACH_ALLOW;
+           loco_limit_can_attach_wagon_ed4m_h_h_check0;
+}
+
+// проверка ed4m_c-ed4m_h+(*)
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_c_h,
+  vehicle_type_id)
+{
+   ed4m_m: return string(STR_CAN_ATTACH_HEAD_ONLY);
+   ed4m_c: return string(STR_CAN_ATTACH_HEAD_ONLY);
+   ed4m_h: return CB_RESULT_ATTACH_ALLOW;
+           loco_limit_can_attach_wagon_all_c;
+}
+
+// проверка (not ed4m)-ed4m_h+(*)
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_0_h,
+  vehicle_type_id)
+{
+   ed4m_m: return CB_RESULT_ATTACH_ALLOW;
+   ed4m_c: return CB_RESULT_ATTACH_ALLOW;
+   ed4m_h: return CB_RESULT_ATTACH_ALLOW;
+           return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_ED4M));
+}
+
+// проверка (*)-ed4m_h
+// для головных вагонов ЭД4М не осуществляется проверка года постройки, так как код проверки
+// возможности выпуска ПС из депо проверяет только сумму голов по ID, так как не знает, на каких позициях стоит ПС
+// поэтому для голов ЭД4М годов постройки до 2010 используются те же правила (только парная сборка) что и для после 2010
+switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon_ed4m_h,
+[ set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+   ed4m_m: loco_limit_can_attach_wagon_ed4m_c_h;
+   ed4m_c: loco_limit_can_attach_wagon_ed4m_c_h;
+   ed4m_h: loco_limit_can_attach_wagon_ed4m_h_h;
+           loco_limit_can_attach_wagon_ed4m_0_h;
+}
+
+// проверка ed4m_c+(*)
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_c2,
+  vehicle_type_id)
+{
+   ed4m_m: return CB_RESULT_ATTACH_ALLOW;
+   ed4m_c: return CB_RESULT_ATTACH_ALLOW;
+   ed4m_h: return CB_RESULT_ATTACH_ALLOW;
+           return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_ED4M));
+}
+
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_c,
+  build_year >= 2010)
+{
+  1: loco_limit_can_attach_wagon_ed4m_c2;
+     loco_limit_can_attach_wagon0;
+}
+
  /// проверка са-3
 // проверка (са-3 veh)+(*)
+// ЭД4М нельзя присоединять только для моделей, построенных с 2010 года
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_after_other_c,
+  build_year >= 2010)
+{
+  1: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_ED4M));
+     loco_limit_can_attach_wagon0;
+}
+
+switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_ed4m_after_other_h,
+  build_year >= 2010)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     loco_limit_can_attach_wagon0;
+}
+
 switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_after_other,
   vehicle_type_id)
 {
@@ -783,6 +875,9 @@ switch (FEAT_TRAINS, SELF, loco_limit_can_attach_wagon_after_other,
     ep3d_m: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_EP3D));
     ep3d_c: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_EP3D));
     ep3d_h: return CB_RESULT_ATTACH_ALLOW;
+    ed4m_m: loco_limit_can_attach_wagon_ed4m_after_other_c;
+    ed4m_c: loco_limit_can_attach_wagon_ed4m_after_other_c;
+    ed4m_h: loco_limit_can_attach_wagon_ed4m_after_other_h;
             loco_limit_can_attach_wagon0;
 }
 
@@ -813,6 +908,9 @@ switch (FEAT_TRAINS, PARENT, loco_limit_can_attach_wagon,
         ep3d_c: loco_limit_can_attach_wagon_ep3d_c;
         ep3d_m: loco_limit_can_attach_wagon_ep3d_c;
         ep3d_h: loco_limit_can_attach_wagon_ep3d_h;
+        ed4m_c: loco_limit_can_attach_wagon_ed4m_c;
+        ed4m_m: loco_limit_can_attach_wagon_ed4m_c;
+        ed4m_h: loco_limit_can_attach_wagon_ed4m_h;
                 loco_limit_can_attach_wagon_after_other;
 }
 
