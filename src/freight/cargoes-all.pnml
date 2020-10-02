@@ -250,4 +250,200 @@ cargo_tank_containerlist()          \
 cargo_gen_containerlist(),          \
 cargo_ref_containerlist()           \
 
+// Vehicles graphics selection code
+
+/*
+switch (FEAT_TRAINS, SELF, cargo9_vehi12rnd_sprites, (random_bits >> 6) & 0x01)
+{ 0: cargo9_vehi1rnd_sprites;
+     cargo9_vehi2rnd_sprites; }
+switch (FEAT_TRAINS, SELF, cargo9_vehi23rnd_sprites, (random_bits >> 6) & 0x01)
+{ 0: cargo9_vehi2rnd_sprites;
+     cargo9_vehi3rnd_sprites; }
+switch (FEAT_TRAINS, SELF, cargo9_vehi34rnd_sprites, (random_bits >> 6) & 0x01)
+{ 0: cargo9_vehi3rnd_sprites;
+     cargo9_vehi4rnd_sprites; }
+
+switch (FEAT_TRAINS, SELF, cargo9_vehi456rnd_sprites, (random_bits >> 4) & 0x07)
+{ 0..4: cargo9_vehi4rnd_sprites;
+  5..6: cargo9_vehi6rnd_sprites;
+        cargo9_vehi5_sprites; }
+
+
+*/
+
+// TODO
+// сделать груз зависящим от года, а после FUTURE_YEAR сделать доступными все равновероятно
+// обеспечить, чтобы у разной длины платформы "по локомотиву" совпадали
+
+#define vehicle_cargoes(num)                                             \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_b1954,            \
+  (random_bits >> 1) & 0x3F)                                             \
+{ cargo##num##_vehi_tatra_111_sprites; }                                 \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a1954_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+    0..31: cargo##num##_vehi_mtz_5_sprites;                              \
+          cargo##num##_vehi_tatra_111_sprites;                           \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a1954,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..7: cargo##num##_vehi_mtz_5_sprites;                                 \
+ 8..15: cargo##num##_vehi_tatra_111_sprites;                             \
+        cargo##num##_vehi_sprites_a1954_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a1962_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+   0..15: cargo##num##_vehi_mtz_5_sprites;                               \
+  16..31: cargo##num##_vehi_mtz_50_sprites;                              \
+          cargo##num##_vehi_gaz_53_sprites;                              \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a1962,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..3: cargo##num##_vehi_mtz_5_sprites;                                 \
+  4..7: cargo##num##_vehi_mtz_50_sprites;                                \
+ 8..15: cargo##num##_vehi_gaz_53_sprites;                                \
+        cargo##num##_vehi_sprites_a1962_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a1974_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+   0..15: cargo##num##_vehi_mtz_50_sprites;                              \
+  16..31: cargo##num##_vehi_mtz_80_sprites;                              \
+          cargo##num##_vehi_gaz_53_sprites;                              \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a1974,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..3: cargo##num##_vehi_mtz_50_sprites;                                \
+  4..7: cargo##num##_vehi_mtz_80_sprites;                                \
+ 8..15: cargo##num##_vehi_gaz_53_sprites;                                \
+        cargo##num##_vehi_sprites_a1974_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a1982_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+   0..21: cargo##num##_vehi_mtz_80_sprites;                              \
+  22..43: cargo##num##_vehi_gaz_53_sprites;                              \
+          cargo##num##_vehi_tatra_815_sprites;                           \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a1982,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..4: cargo##num##_vehi_mtz_80_sprites;                                \
+  5..9: cargo##num##_vehi_gaz_53_sprites;                                \
+10..15: cargo##num##_vehi_tatra_815_sprites;                             \
+        cargo##num##_vehi_sprites_a1982_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a2000_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+   0..31: cargo##num##_vehi_belarus_80_sprites;                          \
+          cargo##num##_vehi_tatra_815_sprites;                           \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a2000,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..6: cargo##num##_vehi_belarus_80_sprites;                            \
+  7..8: cargo##num##_vehi_volvo_ec460blc_sprites;                        \
+ 9..15: cargo##num##_vehi_tatra_815_sprites;                             \
+        cargo##num##_vehi_sprites_a2000_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a2003_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+   0..20: cargo##num##_vehi_belarus_80_sprites;                          \
+  21..40: cargo##num##_vehi_volvo_l45b_sprites;                          \
+          cargo##num##_vehi_tatra_815_sprites;                           \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a2003,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..5: cargo##num##_vehi_belarus_80_sprites;                            \
+  6..9: cargo##num##_vehi_volvo_l45b_sprites;                            \
+10..15: cargo##num##_vehi_tatra_815_sprites;                             \
+        cargo##num##_vehi_sprites_a2003_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_a2011_2,          \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+   0..31: cargo##num##_vehi_belarus_80_sprites;                          \
+          cargo##num##_vehi_tatra_815_sprites;                           \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_a2011,              \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..7: cargo##num##_vehi_belarus_80_sprites;                            \
+ 8..15: cargo##num##_vehi_tatra_815_sprites;                             \
+        cargo##num##_vehi_sprites_a2011_2;                               \
+}                                                                        \
+switch (FEAT_TRAINS, PARENT, cargo##num##_vehi_sprites_aFUTURE_YEAR_2,   \
+  (random_bits >> 1) & 0x3F)                                             \
+{                                                                        \
+    0..6: cargo##num##_vehi_mtz_5_sprites;                               \
+   7..13: cargo##num##_vehi_mtz_50_sprites;                              \
+  14..20: cargo##num##_vehi_mtz_80_sprites;                              \
+  21..27: cargo##num##_vehi_belarus_80_sprites;                          \
+  28..35: cargo##num##_vehi_volvo_ec460blc_sprites;                      \
+  36..42: cargo##num##_vehi_volvo_l45b_sprites;                          \
+  43..49: cargo##num##_vehi_gaz_53_sprites;                              \
+  50..56: cargo##num##_vehi_tatra_815_sprites;                           \
+          cargo##num##_vehi_tatra_111_sprites;                           \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_sprites_aFUTURE_YEAR,       \
+[  set_offset_to(-2),                                                    \
+  (prev_vehicle_randombits() >> 1) & 0x3F])                              \
+{                                                                        \
+  0..1: cargo##num##_vehi_mtz_5_sprites;                                 \
+  2..3: cargo##num##_vehi_mtz_50_sprites;                                \
+  4..4: cargo##num##_vehi_mtz_80_sprites;                                \
+  5..6: cargo##num##_vehi_belarus_80_sprites;                            \
+  7..8: cargo##num##_vehi_volvo_ec460blc_sprites;                        \
+ 9..10: cargo##num##_vehi_volvo_l45b_sprites;                            \
+11..11: cargo##num##_vehi_gaz_53_sprites;                                \
+12..13: cargo##num##_vehi_tatra_815_sprites;                             \
+14..15: cargo##num##_vehi_tatra_111_sprites;                             \
+        cargo##num##_vehi_sprites_aFUTURE_YEAR_2;                        \
+}                                                                        \
+switch (FEAT_TRAINS, SELF, cargo##num##_vehi_all_sprites,                \
+  (date_of_last_service >= date(1954,1,1)) +                             \
+  (date_of_last_service >= date(1962,1,1)) +                             \
+  (date_of_last_service >= date(1974,1,1)) +                             \
+  (date_of_last_service >= date(1982,1,1)) +                             \
+  (date_of_last_service >= date(2000,1,1)) +                             \
+  (date_of_last_service >= date(2003,1,1)) +                             \
+  (date_of_last_service >= date(2011,1,1)) +                             \
+  (date_of_last_service >= date(FUTURE_YEAR,1,1)))                       \
+{                                                                        \
+  0: cargo##num##_vehi_sprites_b1954;                                    \
+  1: cargo##num##_vehi_sprites_a1954;                                    \
+  2: cargo##num##_vehi_sprites_a1962;                                    \
+  3: cargo##num##_vehi_sprites_a1974;                                    \
+  4: cargo##num##_vehi_sprites_a1982;                                    \
+  5: cargo##num##_vehi_sprites_a2000;                                    \
+  6: cargo##num##_vehi_sprites_a2003;                                    \
+  7: cargo##num##_vehi_sprites_a2011;                                    \
+     cargo##num##_vehi_sprites_aFUTURE_YEAR;                             \
+}                                                                        \
+
+//                                         1954 1962 1974 1982 2000 2003 2011
+// 9 - TATRA 111 (1942-1962)              +  | +  |    |    |    |    |    |
+// 1 - MTZ-2/MTZ-5 (1954-1972[4])            | +  | +  |    |    |    |    |
+// 2 - MTZ-50 (1962-1985[2])                 |    | +  | +  |    |    |    |
+// 7 - ГАЗ 53 (1962-1993[00])                |    | +  | +  | +  |    |    |
+// 3 - MTZ-80 (1974-1999[00])                |    |    | +  | +  |    |    |
+// 8 - TATRA 815 (1982-...)                  |    |    |    | +  | +  | +  | +
+// 4 - Belarus 80 (2000-...)                 |    |    |    |    | +  | +  | +
+// 5 - Volvo EC460BLC (2000-2002[3])         |    |    |    |    | +  |    |
+// 6 - Volvo L45B (2003-2011)                |    |    |    |    |    | +  |
+
 // end
