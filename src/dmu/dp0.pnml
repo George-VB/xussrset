@@ -1,0 +1,215 @@
+﻿// dp0
+
+#define IMAGEFILE  "src/dmu/dp0_h.png"
+purchase_sprites(dp0, 0, 0)
+MU_head_sprites(16, dp0_h_v1, 32, 40)
+MU_head_sprites(16, dp0_h_v2, 32, 308)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/dmu/dp0_c.png"
+MU_car_sprites(15, dp0_c_v1, 32, 40)
+MU_car_sprites(15, dp0_c_v2, 32, 308)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/dmu/dp0_cb.png"
+MU_car_sprites(15, dp0_cb_v1, 32, 40)
+MU_car_sprites(15, dp0_cb_v2, 32, 308)
+#undef IMAGEFILE
+
+#define dp0_graphics_template(name, suffix)                \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_left,    \
+  check_year(1955))                                        \
+{ 0: name##_v1##suffix##_sprites_left;                     \
+     name##_v2##suffix##_sprites_left; }                   \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,   \
+  check_year(1955))                                        \
+{ 0: name##_v1##suffix##_sprites_right;                    \
+     name##_v2##suffix##_sprites_right; }                  \
+
+dp0_graphics_template(dp0_h, )
+dp0_graphics_template(dp0_h, _notpowered)
+dp0_graphics_template(dp0_c, )
+dp0_graphics_template(dp0_c, _notpowered)
+dp0_graphics_template(dp0_cb, )
+dp0_graphics_template(dp0_cb, _notpowered)
+
+switch (FEAT_TRAINS, SELF, dp0_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: dp0_h_sprites_left;
+     dp0_h_notpowered_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, dp0_h_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: dp0_h_sprites_right;
+     dp0_h_notpowered_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, dp0_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   ((LOAD_TEMP(4) != dp0) * 200) +
+   (prev_vehicle_randombits() & 0x01) * 100 +
+   position_in_articulated_veh])
+{
+   0: dp0_h_sprites_left_check;
+   2: dp0_c_sprites_left;
+   4: dp0_c_sprites_left;
+   6: dp0_cb_sprites_right;
+   8: dp0_c_sprites_right;
+  10: dp0_h_sprites_right_check;
+
+ 100: dp0_h_sprites_left_check;
+ 102: dp0_c_sprites_left;
+ 104: dp0_cb_sprites_left;
+ 106: dp0_c_sprites_right;
+ 108: dp0_c_sprites_right;
+ 110: dp0_h_sprites_right_check;
+
+ 200: dp0_h_sprites_left_check;
+ 202: dp0_c_notpowered_sprites_left;
+ 204: dp0_c_notpowered_sprites_left;
+ 206: dp0_cb_notpowered_sprites_right;
+ 208: dp0_c_notpowered_sprites_right;
+ 210: dp0_h_sprites_right_check;
+
+ 300: dp0_h_sprites_left_check;
+ 302: dp0_c_notpowered_sprites_left;
+ 304: dp0_cb_notpowered_sprites_left;
+ 306: dp0_c_notpowered_sprites_right;
+ 308: dp0_c_notpowered_sprites_right;
+ 310: dp0_h_sprites_right_check;
+
+      align_15_sprites;
+}
+
+long_vehicle(dp0)
+
+switch (FEAT_TRAINS, SELF, dp0_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy8;
+  2: return dp0_part2;
+  3: return dummy7;
+  4: return dp0_part3;
+  5: return dummy7;
+  6: return dp0_part4;
+  7: return dummy7;
+  8: return dp0_part4;
+  9: return dummy7;
+ 10: return dp0_part4;
+ 11: return dummy8;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+engine_diesel_1r_effect(dp0_h_create_effect, -2, 7, 12)
+
+switch (FEAT_TRAINS, SELF, dp0_create_effect0,
+  position_in_articulated_veh)
+{
+   0: dp0_h_create_effect_left;
+  10: dp0_h_create_effect_right;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, dp0_create_effect,
+  vehicle_type_id == dp0)
+{
+  1: dp0_create_effect0;
+     return disable_create_effect();
+}
+
+RC_head_check_new(dp0, dp0)
+switch (FEAT_TRAINS, SELF, dp0_running_cost_factor,
+[  STORE_TEMP(238, 0),  // Моторы
+   STORE_TEMP(33, 1),   // Бригада
+   STORE_TEMP(84, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(69, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(105, 6),                                // Скорость
+   STORE_TEMP(354, 7),                                // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 152 / 16 + 12 / 8, 8)])  // Максимальная масса
+{ dp0_check_running_cost_factor; }
+
+engine_capacity_MU(dp0, 152, dp0)
+engine_power_MU(dp0, 1100, dp0)
+engine_speed(dp0, 105)
+hint_MU(dp0,
+     calc_loading(152 / (9 * WAGON_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU,
+     STR_SECTIONS_MU_S1of6,
+     1950, 1952,
+     fact_mavag())
+
+item (FEAT_TRAINS, dp0, 709) {
+  property {
+    name: string(STR_NAME_DP0);
+    vehicle_dates(1950, 1952, 13, 10, 8, 54)
+    vehicle_dmu(1100, 354, 91.6, 152, 9 * WAGON_DOOR)
+  }
+  graphics {
+                default: dp0_sprites;
+               purchase: dp0_purchase_sprites;
+       cargo_age_period: return 174;
+                  speed: dp0_speed;
+    running_cost_factor: dp0_running_cost_factor;
+       articulated_part: dp0_articulated_part;
+       can_attach_wagon: return string(STR_CAN_ATTACH_NO_MORE);
+                  power: dp0_power;
+         cargo_capacity: dp0_cargo_capacity;
+         colour_mapping: any_cc_colour;
+          create_effect: dp0_create_effect;
+         purchase_speed: return 105;
+        additional_text: dp0_additional_text;
+  }
+}
+
+long_name_template(dp0, STR_LONGNAME_DP0)
+
+engine_capacity_MU(dp0_part2, 12, dp0)
+
+item (FEAT_TRAINS, dp0_part2, 710) {
+  property {
+    vehicle_no_dates(1950, 1952, 13, 10, 8, 0)
+    vehicle_dmu_c(0, 12, 9 * WAGON_DOOR)
+    vehicle_allow_tourists()
+    default_cargo_type: TOUR;
+  }
+  graphics {
+             default: dp0_sprites;
+    cargo_age_period: return 370;
+       create_effect: dp0_create_effect;
+      cargo_capacity: dp0_part2_cargo_capacity;
+          refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+      colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, dp0_part3, 711) {
+  property {
+    vehicle_no_dates(1950, 1952, 13, 10, 8, 0)
+    vehicle_dmu_c(0, 6, 6)
+    cargo_allow_refit: [MAIL];
+  }
+  graphics {
+             default: dp0_sprites;
+    cargo_age_period: return 60;
+       create_effect: dp0_create_effect;
+      colour_mapping: any_cc_colour;
+  }
+}
+
+
+item (FEAT_TRAINS, dp0_part4, 712) {
+  property {
+    vehicle_no_dates(1950, 1952, 13, 10, 8, 0)
+    vehicle_dmu_c(0, 0, 0)
+  }
+  graphics {
+           default: dp0_sprites;
+     create_effect: dp0_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}
