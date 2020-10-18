@@ -188,8 +188,8 @@ echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.s
 cd src 
 start /min MonaLisa.pl 
 cd ..
-cd lang 
-start /min MonaLisa.pl 
-cd ..
+rem cd lang 
+rem start /min MonaLisa.pl 
+rem cd ..
 
 :EOF
