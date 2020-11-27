@@ -87,9 +87,10 @@ change.pl xussr.nml "0\s+\|\|\s+0" "0"
 change.pl xussr.nml "0\s+\|\|\s+0" "0"
 change.pl xussr.nml "0\s+\|\|\s+0" "0"
 change.pl xussr.nml "\(\(build_year \>\=\s*[0-9]+\) \|\| \(current_year \>\=\s*[0-9]+\)\) \&\& \(\s*0\)" "0"
-change.pl xussr.nml "\) \{" "\)\n\{"
-change.pl xussr.nml "\} switch" "\}\nswitch"
-change.pl xussr.nml "\; " "\;\n"
+change.pl xussr.nml "\s*\{\s*" "\n\{\n"
+change.pl xussr.nml "\s*\}\s*" "\n\}\n"
+change.pl xussr.nml "\;" "\;\n"
+change.pl xussr.nml "\n\r*\n" "\n"
 
 del xussr.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
