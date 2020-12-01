@@ -1,0 +1,71 @@
+// diesel_db
+
+#define IMAGEFILE  "src/diesel/db.png"
+purchase_sprites(diesel_db, 0, 0)
+diesel2nol_sprites(10, diesel_db, 32, 40)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, diesel_db_sprites_start, 0)
+{  diesel_db_sprites_left;  }
+
+long_vehicle(diesel_db)
+
+switch (FEAT_TRAINS, SELF, diesel_db_colour_mapping,
+  cargo_subtype)
+{
+  0: return ttdall_cc + 0x63;
+  1: return ttdall_cc + 0x54;
+     return CB_FAILED;
+}
+livery_template1(diesel_db_alt, TTD_63)
+livery_template_alt(diesel_db, TTD_54)
+
+engine_diesel_1_effect(diesel_db_create_effect, 1, 10)
+engine_speed(diesel_db, 96)
+engine_penalise_speed(diesel_db, 2)
+switch (FEAT_TRAINS, SELF, diesel_db_running_cost_factor,
+[  STORE_TEMP(139, 0),  // Моторы
+   STORE_TEMP(20, 1),   // Бригада
+   STORE_TEMP(49, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(34, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(96, 6),         // Скорость
+   STORE_TEMP(121, 7),        // Тара
+   STORE_TEMP(121, 8)])       // Максимальная масса
+{ all_running_cost_factor; }  // 244
+
+hint_engine_in(diesel_db,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     1946,
+     string(STR_PURCHASE_HINT_FACTORY_BALDWIN))
+
+item (FEAT_TRAINS, diesel_db, 722) {
+  property {
+    name: string(STR_NAME_DB);
+    vehicle_dates(1946, 1946, 20, 10, 8, 25)
+    vehicle_passcargo()
+    vehicle_diesel(1000, 121, 353.0)
+  }
+  graphics {
+                        default: diesel_db_sprites;
+                       purchase: diesel_db_purchase_sprites;
+               articulated_part: articulated_part_dummy2;
+               can_attach_wagon: any_can_attach_wagon;
+                     start_stop: any_start_stop;
+                          speed: diesel_db_speed;
+            running_cost_factor: diesel_db_running_cost_factor;
+           bitmask_vehicle_info: diesel_db_bitmask_vehicle_info;
+                 cargo_capacity: return 0;
+                  create_effect: diesel_db_create_effect;
+                 colour_mapping: diesel_db_colour_mapping;
+             cargo_subtype_text: diesel_db_cargo_subtype_text;
+                 purchase_speed: return 96;
+                additional_text: diesel_db_additional_text;
+  }
+}
+
+long_name_template(diesel_db, STR_LONGNAME_DB)
+models_default_cargo_template(diesel_db)
+allow_diesel(diesel_db)
