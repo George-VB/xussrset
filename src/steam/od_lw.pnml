@@ -1,0 +1,70 @@
+// steam_od_lw
+
+#define IMAGEFILE  "src/steam/od_lw.png"
+purchase_sprites(steam_od_lw, 0, 0)
+steam_sprites(6, steam_od_lw_engine, 32,  40)
+tender_sprites(4, steam_od_lw_tender, 447,  40)
+#undef IMAGEFILE
+steamer_direction_template(steam_od_lw, _sprites_start)
+long_vehicle(steam_od_lw)
+
+switch (FEAT_TRAINS, SELF, steam_od_lw_running_cost_factor,
+[  STORE_TEMP(67, 0),  // Моторы
+   STORE_TEMP(9, 1),   // Бригада
+   STORE_TEMP(23, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(16, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(45 - 3 * (current_year >= 1928) + 10 * (current_year >= 1956), 6),  // Скорость
+   STORE_TEMP(99, 7),                                                             // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                                  // Максимальная масса
+{ all_running_cost_factor; }                                                      // 117
+
+engine_tender(steam_od_lw)
+engine_tender_length(steam_od_lw, 5, 1, 3, 1)
+engine_steam_1_effect(steam_od_lw_create_effect, -3, 11)
+engine_speed_change_after2(steam_od_lw, 45,
+                                     42, 1928,
+                                     52, 1956)
+engine_penalise_speed0(steam_od_lw)
+
+hint_engine_6fact(steam_od_lw,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1897, 1902,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv())
+
+item (FEAT_TRAINS, steam_od_lw, 726) {
+  property {
+    name: string(STR_NAME_OD_LW);
+    vehicle_dates(1897, 1902, 40, 10, 5, 5)
+    vehicle_cargo()
+    vehicle_steam(704, 52+47, 94.0)
+  }
+  graphics {
+                 default: steam_od_lw_sprites;
+                purchase: steam_od_lw_purchase_sprites;
+        articulated_part: steam_od_lw_articulated_part;
+                  length: steam_od_lw_length;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+                   speed: steam_od_lw_speed;
+          purchase_speed: steam_od_lw_purchase_speed;
+    bitmask_vehicle_info: steam_od_lw_bitmask_vehicle_info;
+          cargo_capacity: return 0;
+           create_effect: steam_od_lw_create_effect;
+     running_cost_factor: steam_od_lw_running_cost_factor;
+          colour_mapping: any_cc_colour;
+         additional_text: steam_od_lw_additional_text;
+  }
+}
+
+long_name_template(steam_od_lw, STR_LONGNAME_OD_LW)
+models_default_cargo_template(steam_od_lw)
+allow_steamer(steam_od_lw)
