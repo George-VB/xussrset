@@ -74,10 +74,9 @@ goto :END
 :GetHgRev
 
 :: определяем текущую ревизию
-for /F %%i in ('hg id -n') do set REPO_REVISION=%%i
-
-:: убираем +, если он есть
-if "%REPO_REVISION:~-1%" == "+" set REPO_REVISION=%REPO_REVISION:~0,-1%
+for /F %%i in (%NMLNAME%.ver) do set REPO_REVISION=%%i
+set /a REPO_REVISION=%REPO_REVISION%+1
+echo %REPO_REVISION%>%NMLNAME%.ver
 
 goto :EOF
 
