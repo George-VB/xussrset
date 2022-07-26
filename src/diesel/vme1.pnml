@@ -1,0 +1,84 @@
+﻿// vme1
+
+#define IMAGEFILE  "src/diesel/vme1.png"
+purchase_sprites(vme1_v1, 0, 0)
+diesel1r_sprites(8, vme1_b1959, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/vme1-a1959.png"
+purchase_sprites(vme1_v2, 0, 0)
+diesel1r_sprites(8, vme1_a1959, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(vme1, 1959)
+
+engine_build_year_template(vme1, 1959, left, )
+engine_build_year_template(vme1, 1959, right, )
+engine_direction_template(vme1, )
+engine_RND_direction_template(vme1, 1, 3)
+long_vehicle_sp(vme1)
+
+switch (FEAT_TRAINS, SELF, vme1_colour_mapping,
+  cargo_subtype)
+{
+  0: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x59;
+  2: return ttdall_cc + 0x83;
+     return CB_FAILED;
+}
+
+livery_template1(vme1_alt, TTD_53)
+livery_template_alt2(vme1, TTD_59, TTD_83)
+engine_diesel_1r_effect(vme1_create_effect_sprites, -1, 0, 10)
+engine_direction_template(vme1, _create_effect)
+engine_RND_effect_direction_template(vme1, 1, 3)
+
+engine_penalise_speed_altname(vme1_b1961, 3, vme1)
+engine_penalise_speed_altname(vme1_a1961, 2, vme1)
+engine_penalise_speed_build_after(vme1, 1961)
+
+switch (FEAT_TRAINS, SELF, vme1_running_cost_factor,
+[  STORE_TEMP(39, 0),  // Моторы
+   STORE_TEMP(5, 1),   // Бригада
+   STORE_TEMP(14, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(10, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(80, 6),         // Скорость
+   STORE_TEMP(74, 7),         // Тара
+   STORE_TEMP(74, 8)])        // Максимальная масса
+{ all_running_cost_factor; }  // 68
+engine_speed(vme1, 80)
+hint_engine(vme1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     1958, 1962,
+     fact_mavag())
+
+item (FEAT_TRAINS, vme1, 731) {
+  property {
+    name: string(STR_NAME_VME1);
+    vehicle_dates(1958, 1962, 20, 10, 7, 9)
+    vehicle_cargo()
+    vehicle_diesel(390, 80, 181.4)
+  }
+  graphics {
+                 default: vme1_sprites;
+                purchase: vme1_purchase_sprites;
+        articulated_part: articulated_part_dummy1;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+                   speed: vme1_speed;
+     running_cost_factor: vme1_running_cost_factor;
+    bitmask_vehicle_info: vme1_bitmask_vehicle_info;
+          cargo_capacity: return 0;
+           create_effect: vme1_create_effect;
+      cargo_subtype_text: vme1_cargo_subtype_text;
+          colour_mapping: vme1_colour_mapping;
+          purchase_speed: return 80;
+         additional_text: vme1_additional_text;
+  }
+}
+
+long_name_template(vme1, STR_LONGNAME_VME1)
+models_default_cargo_template(vme1)
+allow_diesel(vme1)
