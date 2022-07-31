@@ -1,0 +1,108 @@
+// steam_a
+
+#define IMAGEFILE  "src/steam/a.png"
+purchase_sprites(steam_a, 0, 0)
+steam_sprites0(4, steam_a_engine_v1, 32,  40)
+steam_sprites0(4, steam_a_engine_v2, 32, 308)
+tender_sprites(3, steam_a_tender, 447,  40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, steam_a_engine_sprites_start,
+  cargo_subtype)
+{
+     0: steam_a_engine_v1_sprites_start;
+  0xE0: steam_a_engine_v2_sprites_start;
+  0xE1: steam_a_engine_v2_sprites_start;
+    align_4_sprites;
+}
+
+steamer_direction_template(steam_a, _sprites_start)
+long_vehicle(steam_a)
+
+switch (FEAT_TRAINS, SELF, steam_a_engine_colour_mapping,
+  cargo_subtype)
+{
+           0: return ttdall_cc + 0x53;
+  LV_RAL6002: return ttdall_cc + 0x53;
+  LV_RAL6020: return ttdall_cc + 0x61;
+        0xE0: return ttdall_cc + 0x53;
+        0xE1: return ttdall_cc + 0x61;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, steam_a_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+           0: return ttdall_cc + 0x53;
+  LV_RAL6002: return ttdall_cc + 0x53;
+  LV_RAL6020: return ttdall_cc + 0x61;
+        0xE0: return ttdall_cc + 0x53;
+        0xE1: return ttdall_cc + 0x61;
+     return CB_FAILED;
+}
+
+steamer_direction_template(steam_a, _colour_mapping)
+
+  livery_template(steam_a_b1875, TTD_53, LV_RAL6020, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+  livery_template_refit2(steam_a_a1875, STR_REFIT_FACTORY_GENERAL_TYPE, STR_REFIT_WITH_ROOF, STR_REFIT_TTD_53, STR_REFIT_TTD_59, steam_a_b1875)
+livery_template_service_year(steam_a, 1875)
+engine_refit_cost_for_a_livery_change(steam_a, 0xE0, 1)
+
+switch (FEAT_TRAINS, SELF, steam_a_running_cost_factor,
+[  STORE_TEMP(241, 0),  // Моторы
+   STORE_TEMP(34, 1),   // Бригада
+   STORE_TEMP(84, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(59, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(82, 6),         // Скорость
+   STORE_TEMP(31+20, 7),      // Тара
+   STORE_TEMP(31+20, 8)])     // Максимальная масса
+{ all_running_cost_factor; }  // 422
+
+engine_tender(steam_a)
+engine_tender_length(steam_a, 3, 1, 2, 1)
+
+engine_speed(steam_a, 82)
+engine_steam_1_effect(steam_a_create_effect, -4, 9)
+engine_penalise_speed0(steam_a)
+hint_engine_comment(steam_a,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1861, 1872,
+     fact_cail(),
+     string(STR_PURCHASE_HINT_UPGRADE))
+
+item (FEAT_TRAINS, steam_a, 736) {
+  property {
+    name: string(STR_NAME_A_A);
+    vehicle_dates(1861, 1872, 25, 15, 3, 10)
+    vehicle_pass()
+    vehicle_steam(250, 31+20, 20.0)
+  }
+  graphics {
+                 default: steam_a_sprites;
+                purchase: steam_a_purchase_sprites;
+        articulated_part: steam_a_articulated_part;
+                  length: steam_a_length;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+                   speed: steam_a_speed;
+          purchase_speed: return 82;
+    bitmask_vehicle_info: steam_a_bitmask_vehicle_info;
+          cargo_capacity: return 0;
+              refit_cost: steam_a_refit_cost;
+           create_effect: steam_a_create_effect;
+     running_cost_factor: steam_a_running_cost_factor;
+          colour_mapping: steam_a_colour_mapping;
+      cargo_subtype_text: steam_a_cargo_subtype_text;
+         additional_text: steam_a_additional_text;
+  }
+}
+
+long_name_template(steam_a, STR_LONGNAME_A_A)
+models_default_cargo_template(steam_a)
+allow_steamer(steam_a)
