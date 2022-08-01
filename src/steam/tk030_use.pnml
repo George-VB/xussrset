@@ -1,0 +1,103 @@
+// tk030 uses steam_nd
+
+#define IMAGEFILE  "src/steam/tk030-b1875.png"
+purchase_sprites(tk030_v1, 0, 0)
+steam_sprites0(5, tk030_engine_b1875, 32,  40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/steam/tk030-a1875.png"
+purchase_sprites(tk030_v2, 0, 0)
+steam_sprites0(5, tk030_engine_a1875, 32,  40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/steam/tk030-a1892.png"
+purchase_sprites(tk030_v3, 0, 0)
+steam_sprites1(5, tk030_engine_a1892, 32,  40)
+#undef IMAGEFILE
+purchase_sprites_select2(tk030, 1875, 1892)
+
+switch (FEAT_TRAINS, SELF, tk030_tender_sprites_start, 0)
+{
+  steam_nd_v1_tender_sprites_start;
+}
+
+engine_build_year2_template(tk030_engine, 1875, 1892, start, )
+steamer_direction_template(tk030, _sprites_start)
+long_vehicle(tk030)
+
+livery_template(tk030, FACTORY, LV_RAL6020, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+switch (FEAT_TRAINS, SELF, tk030_running_cost_factor,
+[  STORE_TEMP(25 +  9 * (build_year >= 1892), 0),  // Моторы
+   STORE_TEMP(4  +  1 * (build_year >= 1892), 1),  // Бригада
+   STORE_TEMP(9  +  3 * (build_year >= 1892), 2),  // Износ
+   STORE_TEMP(0, 3),                               // Сопровождение
+   STORE_TEMP(6  +  2 * (build_year >= 1892), 4),  // ТО
+   STORE_TEMP(1, 5),                               // Сертификация
+
+   STORE_TEMP(48  + 9 * (build_year >= 1892), 6),  // Скорость
+   STORE_TEMP(56  - 1 * (build_year >= 1892), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                   // Максимальная масса
+{ all_running_cost_factor; }                       // 44 + 15
+
+engine_steam_1_effect(tk030_create_effect, -3, 12)
+engine_speed_change_build_after2(tk030, 52,
+                                        48, 1875,
+                                        57, 1892)
+engine_penalise_speed0(tk030)
+engine_TE_change_build_after2(tk030, get_tec_int(30.0, 32+20),
+                                     get_tec_int(33.0, 36+20), 1875,
+                                     get_tec_int(50.0, 35+20), 1892)
+engine_weight_change_build_after2(tk030, 32+20,
+                                         36+20, 1875,
+                                         35+20, 1892)
+engine_tender(tk030)
+engine_tender_length(tk030, 4, 1, 3, 1)
+
+hint_engine_with_subtype(tk030_b1875,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_TYPE_1,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1870, 1875,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+hint_engine_with_subtype(tk030_a1875,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_TYPE_13,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1875, 1891,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+hint_engine_with_subtype_2fact(tk030_a1892,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_TYPE_51,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1892, 1896,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY))
+hint_change_after2(tk030, 1875, 1892)
+
+item (FEAT_TRAINS, tk030, 513) {
+  property {
+    name: string(STR_NAME_TK030);
+    vehicle_dates(1870, 1896, 40, 10, 4, 2)
+    vehicle_cargo()
+    vehicle_steam(370, 36+20, 33.0)
+  }
+  graphics {
+                        default: tk030_sprites;
+                       purchase: tk030_purchase_sprites;
+               articulated_part: tk030_articulated_part;
+               can_attach_wagon: any_can_attach_wagon;
+                     start_stop: any_start_stop;
+                          speed: tk030_speed;
+                 purchase_speed: tk030_purchase_speed;
+           bitmask_vehicle_info: tk030_bitmask_vehicle_info;
+                 cargo_capacity: return 0;
+                  create_effect: tk030_create_effect;
+    tractive_effort_coefficient: tk030_tractive_effort_coefficient;
+            running_cost_factor: tk030_running_cost_factor;
+             cargo_subtype_text: tk030_cargo_subtype_text;
+                 colour_mapping: steam_freight_colour_mapping;
+                         weight: tk030_weight;
+                         length: tk030_length;
+                additional_text: tk030_additional_text;
+  }
+}
+
+long_name_template(tk030, STR_LONGNAME_TK030)
+models_default_cargo_template(tk030)
+allow_steamer(tk030)
