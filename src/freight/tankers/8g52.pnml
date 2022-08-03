@@ -1,0 +1,66 @@
+﻿// tanker_8g52
+
+#define IMAGEFILE  "src/freight/tankers/15-558c-04.png"
+purchase_sprites(tanker_8g52, 0, 0)
+tanker_layout_template(tanker_8g52, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_8g52)
+
+switch (FEAT_TRAINS, SELF, tanker_8g52_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(5, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_8g52_cargo_capacity,
+[  STORE_TEMP(34, 0),  // т
+   STORE_TEMP(30, 1),  // м³
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(7, 4)])  // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_8g52_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(55, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(27, 4),  // ТО
+   STORE_TEMP(4, 5),   // Сертификация
+
+   STORE_TEMP(100, 6),                 // Скорость
+   STORE_TEMP(38, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 34, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 86
+
+hint_wagon_with_uspeed_noto_fact2(tanker_8g52,
+           34, 30,
+           calc_loading(34 / (15)),
+           calc_loading(34 / (5)),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK_CRYO,
+           1953,
+           fact_azovmach(),
+           fact_uralcryomash())
+
+item (FEAT_TRAINS, tanker_8g52, 739) {
+  property {
+    name: string(STR_NAME_TANKER_8G52);
+    vehicle_dates(1953, 2050, 28, 10, 6, 85)
+    vehicle_wagon(38, 100)
+    cargo_allow_refit: [cargo_all_special_tanker()];
+  }
+  graphics {
+                    default: tanker_8g52_sprites;
+                   purchase: tanker_8g52_purchase_sprites;
+           articulated_part: articulated_part_dummy1;
+        running_cost_factor: tanker_8g52_running_cost_factor;
+                 refit_cost: tanker_refit_cost;
+            additional_text: tanker_8g52_additional_text;
+             cargo_capacity: tanker_8g52_cargo_capacity;
+              loading_speed: tanker_8g52_loading_speed;
+  }
+}
+
+long_name_template(tanker_8g52, STR_LONGNAME_TANKER_8G52)
