@@ -8,11 +8,11 @@ MU_head_middle_sprites(13, dt1_h_v1_mu, 32, 40)
 MU_head_middle_sprites(13, dt1_h_v2_mu, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/dmu/dt1_m.png"
-purchase_sprites(dt1_m, 0, 0)
-EMU_motor1_middle_sprites(13, dt1_m_v1_mu, 32, 40)
+purchase_sprites(dt1_mp, 0, 0)
+EMU_motor1_middle_sprites(13, dt1_mp_v1_mu, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE "src/dmu/dt1_m-pid.png"
-EMU_motor1_middle_sprites(13, dt1_m_v2_mu, 32, 40)
+EMU_motor1_middle_sprites(13, dt1_mp_v2_mu, 32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/dmu/dt1_c.png"
 purchase_sprites(dt1_c, 0, 0)
@@ -41,34 +41,30 @@ switch (FEAT_TRAINS, SELF, dt1_h_sprites_right,
   align_13_sprites;
 }
 
-engine_direction_template3m2(dt1_h, dt1_m, dt1_c, )
-long_vehicle_sp(dt1_h)
+engine_direction_template3m2(dt1_h, dt1_mp, dt1_c, )
+long_vehicle(dt1_h)
 
-EMU_motor_direction_template(dt1_m_v1, dt1_h)
-EMU_motor_direction_template(dt1_m_v2, dt1_h)
+DEMU_motor_direction_template(dt1_mp_v1, dt1_h)
+DEMU_motor_direction_template(dt1_mp_v2, dt1_h)
 
-switch (FEAT_TRAINS, SELF, dt1_m_direction_left,
+switch (FEAT_TRAINS, SELF, dt1_mp_direction_left,
   cargo_subtype)
 {
-           0: dt1_m_v1_direction_left;
-  LV_RZD_PID: dt1_m_v2_direction_left;
+           0: dt1_mp_v1_direction_left;
+  LV_RZD_PID: dt1_mp_v2_direction_left;
   align_13_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, dt1_m_direction_right,
+switch (FEAT_TRAINS, SELF, dt1_mp_direction_right,
   cargo_subtype)
 {
-           0: dt1_m_v1_direction_right;
-  LV_RZD_PID: dt1_m_v2_direction_right;
+           0: dt1_mp_v1_direction_right;
+  LV_RZD_PID: dt1_mp_v2_direction_right;
   align_13_sprites;
 }
 
-
-  dt1_m_direction_template
-
-EMU_direction_calculation_template2(dt1, _m)
-
-long_vehicle_dir(dt1_m)
+EMU_direction_calculation_template_s(dt1_mp, dt1_h, )
+long_vehicle_dir(dt1_mp)
 
 EMU_motor_direction_template(dt1_c_v1, dt1_h)
 EMU_motor_direction_template(dt1_c_v2, dt1_h)
@@ -89,29 +85,82 @@ switch (FEAT_TRAINS, SELF, dt1_c_direction_right,
   align_13_sprites;
 }
 
-  dt1_c_direction_template
-
+EMU_direction_calculation_template_s(dt1_c, dt1_h, )
 long_vehicle_dir(dt1_c)
 
-EMU_4_12_MH_can_attach_wagon_template(dt1)
-EMU_attach_calculation_template2(dt1)
-
-switch (FEAT_TRAINS, SELF, dt1_can_attach_wagon1, vehicle_type_id)
+switch (FEAT_TRAINS, SELF, dt1_can_attach_wagon_head, vehicle_type_id)
 {
-   dt1_h: dt1_can_attach_wagon_template;
-   dt1_m: dt1_can_attach_wagon_template;
-   dt1_c: dt1_can_attach_wagon_template;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  dt1_h: return CB_RESULT_ATTACH_ALLOW;
+         return string(STR_CAN_ATTACH_HEAD_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, dt1_can_attach_wagon,
+switch (FEAT_TRAINS, SELF, dt1_can_attach_wagon_mc, vehicle_type_id)
+{
+  dt1_mp: return CB_RESULT_ATTACH_ALLOW;
+   dt1_c: return CB_RESULT_ATTACH_ALLOW;
+         return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, dt1_can_attach_wagon_m, vehicle_type_id)
+{
+  dt1_mp: return CB_RESULT_ATTACH_ALLOW;
+         return string(STR_CAN_ATTACH_MCARP_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, dt1_can_attach_wagon_ch, vehicle_type_id)
+{
+  dt1_c: return CB_RESULT_ATTACH_ALLOW;
+  dt1_h: return CB_RESULT_ATTACH_ALLOW;
+         return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dt1_can_attach_wagon4_c,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  dt1_mp: dt1_can_attach_wagon_head;
+   dt1_h: dt1_can_attach_wagon_m;
+        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dt1_can_attach_wagon3_m,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  dt1_c: dt1_can_attach_wagon_head;
+  dt1_h: dt1_can_attach_wagon_ch;
+        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dt1_can_attach_wagon2,
+[
+  set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+   dt1_c: dt1_can_attach_wagon4_c;
+  dt1_mp: dt1_can_attach_wagon3_m;
+   dt1_h: dt1_can_attach_wagon_mc;
+        return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dt1_can_attach_wagon1,
   count_veh_id(dt1_h))
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-  1: dt1_can_attach_wagon1;
-  2: dt1_can_attach_wagon_anyhead;
-  3: dt1_can_attach_wagon1;
+  1: dt1_can_attach_wagon2;
+  2: dt1_can_attach_wagon_head;
+  3: dt1_can_attach_wagon2;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, SELF, dt1_can_attach_wagon, vehicle_type_id)
+{
+    dt1_h: dt1_can_attach_wagon1;
+   dt1_mp: dt1_can_attach_wagon1;
+    dt1_c: dt1_can_attach_wagon1;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, dt1_h_start_stop,
@@ -122,12 +171,19 @@ switch (FEAT_TRAINS, PARENT, dt1_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-EMU_4_12_m_create_effect_template(dt1, -1, 6)
-EMU_direction_calculation_template2(dt1, _m_create_effect)
-engine_effects_MU(dt1_m, _create_effect_direction_template, dt1_h)
-engine_power_MU(dt1_m, 1105, dt1_h)
+engine_diesel_1r_effect(dt1_h_create_effect_sprites, -2, 7, 12)
+engine_direction_template3m2(dt1_h, dt1_mp, dt1_c, _create_effect)
+is_ERD_ds(dt1_h_create_effect_DC, return 0, dt1_h_create_effect_sprites_start)
+engine_effects_MU(dt1_h, _create_effect_DC, dt1_h)
+
+engine_electric1r_1_effect(dt1_mp_create_effect_direction, -2, 7)
+EMU_direction_calculation_template_s(dt1_mp, dt1_h, _create_effect)
+is_ERD_ds(dt1_mp_create_effect_DC, dt1_mp_create_effect_direction_template, return 0)
+engine_effects_MU(dt1_mp, _create_effect_DC, dt1_h)
+
+engine_power_MU(dt1_mp, 1108, dt1_h)
 engine_capacity_MU(dt1_h, 76, dt1_h)
-engine_capacity_MU(dt1_m, 73, dt1_h)
+engine_capacity_MU(dt1_mp, 73, dt1_h)
 engine_capacity_MU(dt1_c, 145, dt1_h)
 
 engine_speed(dt1, 120)
@@ -135,74 +191,100 @@ engine_speed(dt1, 120)
 livery_template_FP(dt1)
 
 RC_head_check_new(dt1_h, dt1_h)
-switch (FEAT_TRAINS, SELF, dt1_h_running_cost_factor,
-[  STORE_TEMP(123, 0),  // Моторы
-   STORE_TEMP(17, 1),   // Бригада
-   STORE_TEMP(43, 2),   // Износ
-   STORE_TEMP(0, 3),    // Сопровождение
-   STORE_TEMP(30, 4),   // ТО
-   STORE_TEMP(2, 5),    // Сертификация
-
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(44, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])   // Максимальная масса
-{ dt1_h_check_running_cost_factor; }  // 215
-
-RC_head_check_new(dt1_m, dt1_h)
-switch (FEAT_TRAINS, SELF, dt1_m_running_cost_factor,
-[  STORE_TEMP(131, 0),  // Моторы
-   STORE_TEMP(0, 1),    // Бригада
-   STORE_TEMP(46, 2),   // Износ
-   STORE_TEMP(0, 3),    // Сопровождение
-   STORE_TEMP(32, 4),   // ТО
-   STORE_TEMP(2, 5),    // Сертификация
-
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(58, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 15, 8)])  // Максимальная масса
-{ dt1_m_check_running_cost_factor; }  // 230
-
-RC_head_check_new(dt1_c, dt1_h)
-switch (FEAT_TRAINS, SELF, dt1_c_running_cost_factor,
-[  STORE_TEMP(78, 0),  // Моторы
-   STORE_TEMP(0, 1),   // Бригада
-   STORE_TEMP(27, 2),  // Износ
+switch (FEAT_TRAINS, SELF, dt1_h_running_cost_factor_DC,
+[  STORE_TEMP(80, 0),  // Моторы
+   STORE_TEMP(11, 1),  // Бригада
+   STORE_TEMP(28, 2),  // Износ
    STORE_TEMP(0, 3),   // Сопровождение
-   STORE_TEMP(19, 4),  // ТО
+   STORE_TEMP(20, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                // Скорость
+   STORE_TEMP(58, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ dt1_h_check_running_cost_factor; }  // 141
+switch (FEAT_TRAINS, SELF, dt1_h_running_cost_factor_D,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(11, 1),  // Бригада
+   STORE_TEMP(28, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(20, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                // Скорость
+   STORE_TEMP(58, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ dt1_h_check_running_cost_factor; }  // 141
+is_ERD_ds(dt1_h_running_cost_factor, dt1_h_running_cost_factor_DC, dt1_h_running_cost_factor_D)
+
+RC_head_check_new(dt1_mp, dt1_h)
+switch (FEAT_TRAINS, SELF, dt1_mp_running_cost_factor_DC,
+[  STORE_TEMP(55, 0),  // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(19, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(14, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
    STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(41, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 15, 8)])  // Максимальная масса
-{ dt1_c_check_running_cost_factor; }  // 136
+   STORE_TEMP(66, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])   // Максимальная масса
+{ dt1_mp_check_running_cost_factor; }  // 97
+switch (FEAT_TRAINS, SELF, dt1_mp_running_cost_factor_D,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(19, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(14, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
 
-hint_MU_with_model2(dt1_h,
-     calc_loading(61 / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, 62, 379,
-     STR_SECTIONS_EMU_dt1,
-     2016, 2050,
-     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
-hint_MU_with_model2(dt1_m,
-     calc_loading(116 / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_DC_WITH_SUBTYPE, 62, 380,
-     STR_SECTIONS_EMU_dt1,
-     2016, 2050,
-     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
-hint_MU_with_model2(dt1_c,
-     calc_loading(116 / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, 62, 381,
-     STR_SECTIONS_EMU_dt1,
-     2016, 2050,
-     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(66, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])   // Максимальная масса
+{ dt1_mp_check_running_cost_factor; }  // 97
+is_ERD_ds(dt1_mp_running_cost_factor, dt1_mp_running_cost_factor_DC, dt1_mp_running_cost_factor_D)
 
-item (FEAT_TRAINS, dt1_h, 544) {
+RC_head_check_new(dt1_c, dt1_h)
+switch (FEAT_TRAINS, SELF, dt1_c_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(18, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(13, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                // Скорость
+   STORE_TEMP(39, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 9, 8)])  // Максимальная масса
+{ dt1_c_check_running_cost_factor; }  // 91
+
+hint_MU(dt1_h,
+     calc_loading(76 / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DEMU_H_E,
+     STR_SECTIONS_DEMU_DT1,
+     2008, 2013,
+     string(STR_PURCHASE_HINT_FACTORY_TORZHOK_CW))
+hint_MU(dt1_mp,
+     calc_loading(73 / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DEMU_MP,
+     STR_SECTIONS_DEMU_DT1,
+     2008, 2013,
+     string(STR_PURCHASE_HINT_FACTORY_TORZHOK_CW))
+hint_MU(dt1_c,
+     calc_loading(145 / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DEMU_C,
+     STR_SECTIONS_DEMU_DT1,
+     2008, 2013,
+     string(STR_PURCHASE_HINT_FACTORY_TORZHOK_CW))
+
+item (FEAT_TRAINS, dt1_h, 741) {
   property {
-    name: string(STR_NAME_dt1);
-    vehicle_dates(2016, 2050, 30, 10, 8, 28)
-    vehicle_emu_c(dc, 99.9, 61, 2 * WIDERST_D_DOOR)
+    name: string(STR_NAME_DT1);
+    vehicle_dates(2008, 2013, 25, 10, 8, 19)
+    vehicle_dmu_c(58, 76, 2 * WIDERST_D_DOOR)
   }
   graphics {
                     default: dt1_h_sprites;
@@ -216,42 +298,43 @@ item (FEAT_TRAINS, dt1_h, 544) {
                       speed: dt1_speed;
              cargo_capacity: dt1_h_cargo_capacity;
          cargo_subtype_text: dt1_cargo_subtype_text;
+              create_effect: dt1_h_create_effect;
              colour_mapping: any_cc_colour;
              purchase_speed: return 120;
             additional_text: dt1_h_additional_text;
   }
 }
 
-item (FEAT_TRAINS, dt1_m, 545) {
+item (FEAT_TRAINS, dt1_mp, 742) {
   property {
-    name: string(STR_NAME_dt1);
-    vehicle_dates(2016, 2050, 30, 10, 8, 29)
-    vehicle_emu(dc, 1105, 99.9, 55.0, 116, 2 * WIDERST_D_DOOR)
+    name: string(STR_NAME_DT1);
+    vehicle_dates(2008, 2013, 25, 10, 8, 25)
+    vehicle_dmu(1108, 66, 70.0, 73, 2 * WIDERST_D_DOOR)
   }
   graphics {
-                    default: dt1_m_sprites;
-                   purchase: dt1_m_purchase_sprites;
+                    default: dt1_mp_sprites;
+                   purchase: dt1_mp_purchase_sprites;
            cargo_age_period: return 60;
-        running_cost_factor: dt1_m_running_cost_factor;
+        running_cost_factor: dt1_mp_running_cost_factor;
            articulated_part: articulated_part_dummy5;
            can_attach_wagon: dt1_can_attach_wagon;
                  start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
-                      power: dt1_m_power;
+                      power: dt1_mp_power;
                       speed: dt1_speed;
-             cargo_capacity: dt1_m_cargo_capacity;
+             cargo_capacity: dt1_mp_cargo_capacity;
          cargo_subtype_text: dt1_cargo_subtype_text;
-              create_effect: dt1_m_create_effect;
+              create_effect: dt1_mp_create_effect;
              colour_mapping: any_cc_colour;
              purchase_speed: return 120;
-            additional_text: dt1_m_additional_text;
+            additional_text: dt1_mp_additional_text;
   }
 }
 
-item (FEAT_TRAINS, dt1_c, 546) {
+item (FEAT_TRAINS, dt1_c, 743) {
   property {
-    name: string(STR_NAME_dt1);
-    vehicle_dates(2016, 2050, 30, 10, 8, 17)
-    vehicle_emu_c(dc, 99.9, 116, 2 * WIDERST_D_DOOR)
+    name: string(STR_NAME_DT1);
+    vehicle_dates(2008, 2013, 25, 10, 8, 7)
+    vehicle_dmu_c(39, 145, 2 * WIDERST_D_DOOR)
   }
   graphics {
                     default: dt1_c_sprites;
@@ -271,9 +354,9 @@ item (FEAT_TRAINS, dt1_c, 546) {
   }
 }
 
-long_name_template(dt1_h, STR_LONGNAME_dt1_H)
-long_name_template(dt1_m, STR_LONGNAME_dt1_M)
-long_name_template(dt1_c, STR_LONGNAME_dt1_C)
+long_name_template(dt1_h, STR_LONGNAME_DT1_H)
+long_name_template(dt1_mp, STR_LONGNAME_DT1_MP)
+long_name_template(dt1_c, STR_LONGNAME_DT1_C)
 allow_dmu(dt1_h)
-allow_dmu(dt1_m)
+allow_dmu(dt1_mp)
 allow_dmu(dt1_c)
