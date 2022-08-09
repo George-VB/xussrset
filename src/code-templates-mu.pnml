@@ -1225,20 +1225,26 @@ switch (FEAT_TRAINS, SELF, name##_sprites_right,                     \
   1: name##_mu_middle_sprites_right;                                 \
      name##_mu_sprites_right; }                                      \
 
-// прицепной моторный дизель-электрического поезда
-#define DEMU_motor_direction_template(name, vehid)    \
-switch (FEAT_TRAINS, SELF, name##_direction_left,     \
-  (LOAD_TEMP(4) == vehid) + 2 * vehicle_is_powered)   \
-{ 0: name##_mu_notpowered_sprites_left;               \
-  1: name##_mu_notpowered_normal_sprites_left;        \
-  2: name##_mu_notpowered_sprites_left;               \
-     name##_mu_sprites_left; }                        \
-switch (FEAT_TRAINS, SELF, name##_direction_right,    \
-  (LOAD_TEMP(4) == vehid) + 2 * vehicle_is_powered)   \
-{ 0: name##_mu_notpowered_sprites_right;              \
-  1: name##_mu_notpowered_normal_sprites_right;       \
-  2: name##_mu_notpowered_sprites_right;              \
-     name##_mu_sprites_right; }                       \
+// прицепной моторный эксплуатация не под током
+#define DEMU_motor_direction_template_DC(name, vehid)                                    \
+switch (FEAT_TRAINS, SELF, name##_direction_left_D,                                      \
+  LOAD_TEMP(4) == vehid)                                                                 \
+{ 1: name##_mu_notpowered_normal_sprites_left;                                           \
+     name##_mu_notpowered_sprites_left; }                                                \
+switch (FEAT_TRAINS, SELF, name##_direction_right_D,                                     \
+  LOAD_TEMP(4) == vehid)                                                                 \
+{ 1: name##_mu_notpowered_normal_sprites_right;                                          \
+     name##_mu_notpowered_sprites_right; }                                               \
+switch (FEAT_TRAINS, SELF, name##_direction_left_DC,                                     \
+  LOAD_TEMP(4) == vehid)                                                                 \
+{ 0: name##_mu_notpowered_sprites_left;                                                  \
+     name##_mu_sprites_left; }                                                           \
+switch (FEAT_TRAINS, SELF, name##_direction_right_DC,                                    \
+  LOAD_TEMP(4) == vehid)                                                                 \
+{ 0: name##_mu_notpowered_sprites_right;                                                 \
+     name##_mu_sprites_right; }                                                          \
+is_ERD_ds(name##_direction_left, name##_direction_left_DC, name##_direction_left_D)      \
+is_ERD_ds(name##_direction_right, name##_direction_right_DC, name##_direction_right_D)   \
 
 // прицепной моторный
 #define EMU_motor_direction_template(name, vehid)    \
