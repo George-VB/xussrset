@@ -441,40 +441,19 @@ engine_weight_change_build_after(dr1a_c, 38,
                                          37, 1977)
 engine_power_MU(dr1a_h, 800, dr1a_h)
 
-RC_head_check2_new(dr1a_h_v1, dr1a_h, dr1a_n)
-switch (FEAT_TRAINS, SELF, dr1a_h_v1_running_cost_factor,
-[  STORE_TEMP(102, 0),  // Моторы
-   STORE_TEMP(14, 1),   // Бригада
-   STORE_TEMP(36, 2),   // Износ
-   STORE_TEMP(0, 3),    // Сопровождение
-   STORE_TEMP(25, 4),   // ТО
-   STORE_TEMP(2, 5),    // Сертификация
+RC_head_check2_new(dr1a_h, dr1a_h, dr1a_n)
+switch (FEAT_TRAINS, SELF, dr1a_h_running_cost_factor,
+[  STORE_TEMP(102 - (build_year >= 1985), 0),  // Моторы
+   STORE_TEMP(14, 1),                          // Бригада
+   STORE_TEMP(36 - (build_year >= 1985), 2),   // Износ
+   STORE_TEMP(0, 3),                           // Сопровождение
+   STORE_TEMP(25, 4),                          // ТО
+   STORE_TEMP(2, 5),                           // Сертификация
 
-   STORE_TEMP(120, 6),                                 // Скорость
-   STORE_TEMP(60 - 2 * (build_year >= 1985), 7),       // Тара
-   STORE_TEMP(60 + 9 - 2 * (build_year >= 1985), 8)])  // Максимальная масса
-{ dr1a_h_v1_check_running_cost_factor; }               // 179
-
-RC_head_check2_new(dr1a_h_v2, dr1a_h, dr1a_n)
-switch (FEAT_TRAINS, SELF, dr1a_h_v2_running_cost_factor,
-[  STORE_TEMP(101, 0),  // Моторы
-   STORE_TEMP(14, 1),   // Бригада
-   STORE_TEMP(35, 2),   // Износ
-   STORE_TEMP(0, 3),    // Сопровождение
-   STORE_TEMP(25, 4),   // ТО
-   STORE_TEMP(2, 5),    // Сертификация
-
-   STORE_TEMP(120, 6),                                 // Скорость
-   STORE_TEMP(60 - 2 * (build_year >= 1985), 7),       // Тара
-   STORE_TEMP(60 + 9 - 2 * (build_year >= 1985), 8)])  // Максимальная масса
-{ dr1a_h_v2_check_running_cost_factor; }               // 177
-
-switch (FEAT_TRAINS, PARENT, dr1a_h_running_cost_factor,
- build_year >= 1985)
-{
-  0: dr1a_h_v1_running_cost_factor;
-     dr1a_h_v2_running_cost_factor;
-}
+   STORE_TEMP(120, 6),                            // Скорость
+   STORE_TEMP(60 - 2 * (build_year >= 1985), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 9, 8)])              // Максимальная масса
+{ dr1a_h_check_running_cost_factor; }             // 179 - 177
 
 RC_head_check2_new(dr1a_c, dr1a_h, dr1a_n)
 switch (FEAT_TRAINS, SELF, dr1a_c_running_cost_factor,
