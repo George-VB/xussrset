@@ -13,10 +13,10 @@ Copyright (C) 2004-2022 by AgRiG, George (George V. Bagaev), Wowan (Vladimir
 Guryanov), Simozzz (Andrey Kashirin), dvornik (Alexander Kozlov), Joyrider
 (Anton Murashov), Ghost (Serguei Stepanov), Rubiroid (Alexander Tkachuk),
 Engineer_Keen (Vasiliy Verigin), Otecan (Andrey Pichugin), LitNik (Nikolay
-Litvinenko), pi1985 (Ivan Piskovoy).
+Litvinenko), pi1985 (Ivan Piskovoy), AliceAllst (Arkadiy Hirosava).
 
 Web: www.ttdrussia.net
 
-Special thanks to: Oleg.
+Special thanks to: Oleg, STD.
 
 Created using the NML.

@@ -3,6 +3,9 @@ set datebeg=%date%
 set timest=%time%
 clean-lng.pl
 if ERRORLEVEL 1 goto :EOF
+cd lang 
+start /min MonaLisa.pl 
+cd ..
 
 if /i "%1" == "selfconfig" goto :SelfConfig
 if /i "%1" == "gethgrev" goto :GetHgRev
@@ -144,5 +147,9 @@ set timetot3=%timetot3:~-2%
 rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
 echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile-rails.stat
+
+cd src 
+start /min MonaLisa.pl 
+cd ..
 
 :EOF
