@@ -1,10 +1,10 @@
 @echo off
 set datebeg=%date%
 set timest=%time%
-clean-lng.pl
+scripts\clean-lng.pl
 if ERRORLEVEL 1 goto :EOF
 cd lang 
-start /min MonaLisa.pl 
+start /min ..\scripts\MonaLisa.pl 
 cd ..
 
 if /i "%1" == "selfconfig" goto :SelfConfig
@@ -151,7 +151,7 @@ echo Total time: %timetot3%:%timetot2%:%timetot1%
 echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
 
 cd src 
-start /min MonaLisa.pl 
+start /min ..\scripts\MonaLisa.pl 
 cd ..
 
 :EOF
