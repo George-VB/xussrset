@@ -18,15 +18,15 @@ goto :EOF
 :: путь к MinGW
 set PATHMINGW=C:\MinGW\msys\1.0\bin;C:\MinGW\bin
 :: путь к NML 0.3
-set PATHNML=c:\Utils\nml
+set PATHNML=f:\Utils\nml
 :: путь к архиватору 7-Zip
 set PATH7Z=C:\Program Files\7-Zip
 :: путь к TortoiseHg
 set PATHTHG=C:\Program Files\TortoiseHg
 :: путь по которому копируется новый .grf после успешной сборки
 :: либо пусто, тогда не копируется никуда
-set GRFFOLDER=c:\GAMES\OpenTTD\DATA
+set GRFFOLDER=f:\GAMES\OpenTTD\DATA
 :: Параметры nmlc: "-c" - вырезать синьку. другие - "nmlc --help"
 set NMLCOPTION=-c --nfo=%NMLNAME%.nfo --nml=%NMLNAME%_optimized.nml -M --MF=%NMLNAME%_dep.txt
 
-set YDPATH=C:\Users\HP\YandexDisk
+set YDPATH=F:\Мои_Документы\YandexDisk
