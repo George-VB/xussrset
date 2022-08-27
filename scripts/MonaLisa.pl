@@ -195,7 +195,7 @@ sub ChangeFile($) {
 	$s = $s_total;
 	close(FROMFILE);
 # записать результаты
-#        $s =~ s/\n/\r\n/igs;
+        $s =~ s/\n/\r\n/igs;
 # не создавать файл если ничего не изменилось  
 	if($s eq $s_old) {
 #		print("File was not changed.\n");
