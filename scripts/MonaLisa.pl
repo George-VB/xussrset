@@ -75,7 +75,9 @@ sub FixBlockLeft($$) {
 		$len = length ($s_temp3);
 		$calc = $len if ($len > $calc);				
 	}
-	return $s_buff."\n" if ($calc == 0);
+	if ($calc == 0) {
+		return $s_buff."\n";
+	}
 	foreach $s_temp (@block) {
        	        $s_temp =~ s/^\s*(.*?)\s*$spliter\s*//;
        	        $s_temp3 = $1;
@@ -179,7 +181,7 @@ sub ChangeFile($) {
 	$s_buff = "";
 	$s_total = "";
 	foreach $str (@strs) {
-		if ($str =~ / \:[^ ]/) { # собрать блок
+		if ($str =~ / \:/) { # собрать блок[^ ]
 			$s_buff .="$str\n";
 		} else {
 			if ($s_buff eq "") {
@@ -193,8 +195,8 @@ sub ChangeFile($) {
 	}
 	$s_total .= FixBlockMiddle($s_buff, " \:") if ($s_buff ne "");
 	$s = $s_total;
-	close(FROMFILE);
 # записать результаты
+	close(FROMFILE);
         $s =~ s/\n/\r\n/igs;
 # не создавать файл если ничего не изменилось  
 	if($s eq $s_old) {
@@ -241,7 +243,7 @@ sub ChangeDir($) {
 
 sub main()
 {
-	print("Monalize all pnml files in the current dir and subdirs\n");
+	print("Monalize all pnml files in the current dir and subdirs\nVersion 0.2\n");
         my ($dir);
         use Cwd;
         $dir = cwd();
