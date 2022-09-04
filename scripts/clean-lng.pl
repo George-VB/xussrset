@@ -2,8 +2,7 @@
 # -w
 use strict;
 
-# todo
-# находить неиспользуемые png и pnml файлы
+# TODO в языковые файлы языков, отличных от английского, добавить отсутсвующие строки из английского, но закоментированные
 
 my(%nameallstrings) = ();
 my(%nameallids) = ();
@@ -33,9 +32,8 @@ sub ldirectory($)
 		open(FFILE,"<$dir/$t") || die "Can\'t read from $t\n";
 		while (<FFILE>) {
 			s/\s*$/\r\n/;
-			while(s/UNUSED_STR/STR/) {
-			};
-			if (/(STR_[_a-z0-9]*)/i) {
+			s/^UNUSED_STR/STR/;
+			if (/^[\#]{0,1}\s*(STR_[_a-z0-9]*)/i) {
 				if (exists($nameallstrings{$1})) {
 					$buff1.=$_;
 					$nameallstrings{$1}{$dir."/".$t}=1;
@@ -91,7 +89,6 @@ sub wdirectory($)
 		close(FFILE);
 # Добавление записи об использовании pnml
 		while($buff=~/\#include\s*\"([\\\/\.\_\-a-z0-9]+?)\"/isg) {
-			# Добавить префикс пути, так как внутри пути относительные
 			$tt2 = "$tt/$1";	
 			# исправить ссылки вида src/addon/../align/align.pnml
 			while($tt2 =~ s/([\.\_\-a-z0-9]+?)\/\.\.\///igs) {};
@@ -127,7 +124,6 @@ sub wdirectory($)
 				$nameallids{$2} = "$1 ($tt/$t)";
 			}
 		} 	
-
 		while($buff =~ /((?:TTD_|)STR_[_a-z0-9]*)/ig) {
 			$nameallstrings{$1}{$dir."/".$t}=1 if (!($1=~/^TTD_/));
 		}
@@ -154,7 +150,6 @@ sub main() {
 	} else {
 		print($name."lang is unavailable.\n");
 	}
-
 	open(FFILE,">".$name."src/IDs_usage") || die "Can\'t write to IDs_usage\n";
 	$t5 = (sort {$b <=> $a} (keys(%nameallids)))[0];
 	for ($t1 = 124; $t1 <= $t5 ; $t1++) {
