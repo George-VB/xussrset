@@ -1162,11 +1162,11 @@ switch (FEAT_TRAINS, SELF, name##_length, (build_year >= year) + (build_year >= 
 switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,    \
 [ STORE_TEMP(                                         \
              (var[0x9F, 0, 0x07] == 3) ?              \
-               var[0x9C, 0, 0x0F] & 3 :               \
+               var[0x9C, 0, 0x0F] & 3  :              \
              (var[0x9F, 0, 0x07] == 7) ?              \
-               (3 - var[0x9C, 0, 0x0F] & 3) :         \
+               (3 - var[0x9C, 0, 0x0F] & 3)  :        \
              (var[0x9F, 0, 0x07] > 3) ?               \
-               var[0x9A, 0, 0x0F] & 3 :               \
+               var[0x9A, 0, 0x0F] & 3  :              \
                (3 - var[0x9A, 0, 0x0F] & 3), 3) ])    \
 {  name##_sprites_start; }                            \
 switch (FEAT_TRAINS, PARENT, name##_sprites_parent,   \
@@ -1185,11 +1185,11 @@ switch (FEAT_TRAINS, SELF, name##_sprites,            \
 switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,    \
 [ STORE_TEMP(                                         \
              (var[0x9F, 0, 0x07] == 3) ?              \
-               var[0x9C, 0, 0x0F] & 3 :               \
+               var[0x9C, 0, 0x0F] & 3  :              \
              (var[0x9F, 0, 0x07] == 7) ?              \
-               (3 - var[0x9C, 0, 0x0F] & 3) :         \
+               (3 - var[0x9C, 0, 0x0F] & 3)  :        \
              (var[0x9F, 0, 0x07] > 3) ?               \
-               var[0x9A, 0, 0x0F] & 3 :               \
+               var[0x9A, 0, 0x0F] & 3  :              \
                (3 - var[0x9A, 0, 0x0F] & 3), 3) ])    \
 {  name##_sprites_start_sp;  }                        \
 switch (FEAT_TRAINS, PARENT, name##_sprites_parent,   \
@@ -1208,11 +1208,11 @@ switch (FEAT_TRAINS, SELF, name##_sprites,            \
 switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,    \
 [ STORE_TEMP(                                         \
              (var[0x9F, 0, 0x07] == 3) ?              \
-               var[0x9C, 0, 0x0F] & 3 :               \
+               var[0x9C, 0, 0x0F] & 3  :              \
              (var[0x9F, 0, 0x07] == 7) ?              \
-               (3 - var[0x9C, 0, 0x0F] & 3) :         \
+               (3 - var[0x9C, 0, 0x0F] & 3)  :        \
              (var[0x9F, 0, 0x07] > 3) ?               \
-               var[0x9A, 0, 0x0F] & 3 :               \
+               var[0x9A, 0, 0x0F] & 3  :              \
                (3 - var[0x9A, 0, 0x0F] & 3), 3) ])    \
 {  name##_direction_template;  }                      \
 switch (FEAT_TRAINS, PARENT, name##_sprites_parent,   \
@@ -1226,33 +1226,30 @@ switch (FEAT_TRAINS, SELF, name##_sprites,            \
 { 1: dummy_sprites;                                   \
      name##_sprites_parent; }                         \
 
-#define long_vehicle_nocount(name)                         \
-switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,         \
-[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ?             \
-  var[0x9C, 0, 0x0F] & 3 : var[0x9A, 0, 0x0F] & 3, 3) ])   \
-{  name##_sprites_start; }                                 \
-switch (FEAT_TRAINS, PARENT, name##_sprites_parent,        \
-[ STORE_TEMP(current_speed, 1),                            \
-  STORE_TEMP(vehicle_type_id, 4)                           \
-])                                                         \
-{  name##_sprites_selfpos; }                               \
-switch (FEAT_TRAINS, SELF, name##_sprites,                 \
-  is_not_build_yet() ||                                    \
-  (is_drawn_in_viewport() && is_hidden_at(1)))             \
-{ 1: dummy_sprites;                                        \
-     name##_sprites_parent; }                              \
+#define long_vehicle_nocount(name)                          \
+switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,          \
+[ STORE_TEMP(((var[0x9F, 0, 0x07] & 3) == 3) ?              \
+  var[0x9C, 0, 0x0F] & 3  : var[0x9A, 0, 0x0F] & 3, 3) ])   \
+{  name##_sprites_start; }                                  \
+switch (FEAT_TRAINS, PARENT, name##_sprites_parent,         \
+[ STORE_TEMP(current_speed, 1),                             \
+  STORE_TEMP(vehicle_type_id, 4)                            \
+])                                                          \
+{  name##_sprites_selfpos; }                                \
+switch (FEAT_TRAINS, SELF, name##_sprites,                  \
+  is_not_build_yet() ||                                     \
+  (is_drawn_in_viewport() && is_hidden_at(1)))              \
+{ 1: dummy_sprites;                                         \
+     name##_sprites_parent; }                               \
 
 // train default cargo type template
-
-#define models_default_cargo_template(name)                                                                                         \
-if (models_default_cargo == 1) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [GOOD]; default_cargo_type: GOOD; } } }   \
-if (models_default_cargo == 2) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [PASS]; default_cargo_type: PASS; } } }   \
-if (models_default_cargo == 3) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [MAIL]; default_cargo_type: MAIL; } } }   \
-
-#define models_default_cargo_template_pass(name)                                                                                          \
-if (models_default_cargo == 1) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [GOOD, PASS]; default_cargo_type: GOOD; } } }   \
-if (models_default_cargo == 2) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [PASS, GOOD]; default_cargo_type: PASS; } } }   \
-if (models_default_cargo == 3) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [MAIL, PASS]; default_cargo_type: MAIL; } } }   \
+#define models_default_cargo_template(name)                                                                                                \
+if ((cargotype_available("GOOD") == 0) || (cargotype_available("MAIL") == 0))                                                              \
+   { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [PASS]; default_cargo_type: PASS; } } }                                      \
+   else                                                                                                                                    \
+   { if (models_default_cargo == 1) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [GOOD]; default_cargo_type: GOOD; } } }     \
+     if (models_default_cargo == 2) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [PASS]; default_cargo_type: PASS; } } }     \
+     if (models_default_cargo == 3) { item (FEAT_TRAINS, name) { property { cargo_allow_refit: [MAIL]; default_cargo_type: MAIL; } } } }   \
 
 // train default cargo type template
 #define long_name_template(nname, strname)                                                     \

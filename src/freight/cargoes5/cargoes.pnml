@@ -254,11 +254,35 @@ switch (FEAT_TRAINS, SELF, cargo5_pipe_all_sprites, (random_bits >> 1) & 0x01)
 // --- ALUM ---
 switch (FEAT_TRAINS, SELF, cargo5_alum_all_sprites, (random_bits >> 1) & 0x03)
 {  cargo5_stel_alum_ingot_sprites; }
+switch (FEAT_TRAINS, SELF, cargo5_alum_loading_speed, (random_bits >> 1) & 0x03)
+{ return (cargo_capacity + 1); }
 // --- COPR ---
 switch (FEAT_TRAINS, SELF, cargo5_copr_all_sprites, (random_bits >> 1) & 0x01)
+{  0: cargo5_stel_v_coils_cup_sprites;
+      cargo5_stel_pipes_cup_sprites; }
+// --- STSE ---
+switch (FEAT_TRAINS, SELF, cargo5_stse_all_sprites, (random_bits >> 1) & 0x01)
+{  0: cargo5_good1_sprites;
+      cargo5_good2_sprites; }
+switch (FEAT_TRAINS, SELF, cargo5_stse_loading_speed, (random_bits >> 1) & 0x01)
+{ return (cargo_capacity / 2 + 1); }  // 2 boxes
+// --- STSH ---
+switch (FEAT_TRAINS, SELF, cargo5_stsh_all_sprites, (random_bits >> 1) & 0x01)
+{ cargo5_stel_slab_sprites; }
+switch (FEAT_TRAINS, SELF, cargo5_stsh_loading_speed, (random_bits >> 1) & 0x01)
+{ return (cargo_capacity / 2 + 1); }
+// --- STWR ---
+switch (FEAT_TRAINS, SELF, cargo5_stwr_all_sprites, (random_bits >> 1) & 0x07)
 {
-  0: cargo5_stel_v_coils_cup_sprites;
-     cargo5_stel_pipes_cup_sprites;
+  0..2: cargo5_stel_v_coils_sprites;
+  3..5: cargo5_stel_v_coils_cup_sprites;
+     6: cargo5_good1_sprites;
+     cargo5_good2_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo5_stwr_loading_speed, (random_bits >> 1) & 0x07)
+{
+  0..5: return (cargo_capacity / 2 + 1);  // Coils
+        return (cargo_capacity / 2 + 1);  // 2 boxes
 }
 // --- WDPR ---
 #define IMAGEFILE  "src/freight/cargoes5/wdpr-1.png"
@@ -333,8 +357,9 @@ switch (FEAT_TRAINS, SELF, cargo5_piece_loading_speed,
   cargo_type_in_veh)
 {
   VEHI: return 3;
-  ALUM: cargo5_stel_loading_speed;
+  ALUM: cargo5_alum_loading_speed;
   COPR: cargo5_stel_loading_speed;
+  CSTI: cargo5_stel_loading_speed;
   IRON: cargo5_stel_loading_speed;
   METL: cargo5_stel_loading_speed;
   PIPE: cargo5_stel_loading_speed;
@@ -342,7 +367,9 @@ switch (FEAT_TRAINS, SELF, cargo5_piece_loading_speed,
   STAL: cargo5_stel_loading_speed;
   STST: cargo5_stel_loading_speed;
   STCB: cargo5_stel_loading_speed;
-  CSTI: cargo5_stel_loading_speed;
+  STSE: cargo5_stse_loading_speed;
+  STSH: cargo5_stsh_loading_speed;
+  STWR: cargo5_stwr_loading_speed;
   ZINC: cargo5_stel_loading_speed;
   GOOD: cargo5_good_loading_speed;
         all_wagons_bulk_loading_speed;
@@ -362,6 +389,8 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   CMNT: cargo5_good_all_sprites;
   GLAS: cargo5_good_all_sprites;
   PAPR: cargo5_good_all_sprites;
+  SOAP: cargo5_good_all_sprites;
+  LYE_: cargo5_good_all_sprites;
 // Крытые: Сырьё
   FICR: cargo5_good_all_sprites;
   WOOL: cargo5_good_all_sprites;
@@ -470,6 +499,9 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   STCB: cargo5_stel_all_sprites;
   STEL: cargo5_stel_all_sprites;
   STST: cargo5_stel_all_sprites;
+  STSE: cargo5_stse_all_sprites;
+  STSH: cargo5_stsh_all_sprites;
+  STWR: cargo5_stwr_all_sprites;
   ZINC: cargo5_stel_all_sprites;
 // Штучный груз
   ENSP: cargo5_good_all_sprites;
@@ -616,6 +648,15 @@ switch (FEAT_TRAINS, SELF, cargo5_flatbed_fecr_sprites,
 [STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0D), 0x100), 0])
 {  cargo5_flatbed1_fecr_sprites;  }
 
+switch (FEAT_TRAINS, SELF, cargo5_flatbed1_phos_sprites, cargo_count)
+{
+0..2: dummy_sprites;
+      cargo5_flatbed1_1_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo5_flatbed_phos_sprites,
+[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0E), 0x100), 0])
+{  cargo5_flatbed1_phos_sprites;  }
+
 switch (FEAT_TRAINS, SELF, cargo5flatbed_sprites,
   [STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100),
   cargo_type_in_veh])
@@ -647,9 +688,10 @@ switch (FEAT_TRAINS, SELF, cargo5flatbed_sprites,
   IORE: cargo5_flatbed_iore_sprites;
   MNO2: cargo5_flatbed_mno2_sprites;
   NITR: cargo5_flatbed_clay_sprites;  // TODO
-  PHOS: cargo5_flatbed_iore_sprites;  // TODO
+  PHOS: cargo5_flatbed_phos_sprites;
   PORE: cargo5_flatbed_pore_sprites;
   POTA: cargo5_pota_all_sprites;
+  SALT: cargo5_pota_all_sprites;  // TODO
   SULP: cargo5_flatbed_sulp_sprites;
 // Прочее
   FMSP: cargo5_flatbed_fert_sprites;

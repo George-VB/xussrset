@@ -379,15 +379,9 @@ switch (FEAT_TRAINS, SELF, cargo6_pipe_loading_speed, 0)
 {  return (cargo_capacity / 3 + 1);  }
 // --- ALUM ---
 switch (FEAT_TRAINS, SELF, cargo6_alum_all_sprites, (random_bits >> 1) & 0x01)
-{
-   0: cargo6_stel_alum_ingot_sprites;
-      cargo6_stel_v_coils_sprites;
-}
+{  cargo6_stel_alum_ingot_sprites; }
 switch (FEAT_TRAINS, SELF, cargo6_alum_loading_speed, (random_bits >> 1) & 0x01)
-{
-  0: return (cargo_capacity     + 1);  // Sheets
-     return (cargo_capacity / 2 + 1);  // Coils
-}
+{  return (cargo_capacity + 1); }  // Sheets
 // --- COPR ---
 switch (FEAT_TRAINS, SELF, cargo6_copr_all_sprites, (random_bits >> 1) & 0x01)
 {
@@ -398,6 +392,38 @@ switch (FEAT_TRAINS, SELF, cargo6_copr_loading_speed, (random_bits >> 1) & 0x01)
 {
   0: return (cargo_capacity     + 1);  // Coils
      return (cargo_capacity / 3 + 1);  // Pipes
+}
+// --- STSE ---
+switch (FEAT_TRAINS, SELF, cargo6_stse_all_sprites, (random_bits >> 1) & 0x01)
+{
+  0: cargo6_good1_sprites;
+     cargo6_good2_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo6_stse_loading_speed, (random_bits >> 1) & 0x07)
+{ return (cargo_capacity / 2 + 1); }  // 2 boxes
+// --- STSH ---
+switch (FEAT_TRAINS, SELF, cargo6_stsh_all_sprites, (random_bits >> 1) & 0x07)
+{
+  0..5: cargo6_stel_slab_sprites;
+     6: cargo6_good1_sprites;
+     cargo6_good2_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo6_stsh_loading_speed, (random_bits >> 1) & 0x07)
+{
+  0..5: return (cargo_capacity / 2 + 1);  // Sheets
+        return (cargo_capacity / 2 + 1);  // 2 bosxes
+}
+// --- STWR ---
+switch (FEAT_TRAINS, SELF, cargo6_stwr_all_sprites, (random_bits >> 1) & 0x07)
+{
+  0..5: cargo6_stel_v_coils_sprites;
+     6: cargo6_good1_sprites;
+     cargo6_good2_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo6_stwr_loading_speed, (random_bits >> 1) & 0x07)
+{
+  0..5: return (cargo_capacity / 2 + 1);  // Coils
+        return (cargo_capacity / 2 + 1);  // 2 boxes
 }
 // --- WDPR ---
 #define IMAGEFILE  "src/freight/cargoes6/wdpr-1.png"
@@ -478,6 +504,9 @@ switch (FEAT_TRAINS, SELF, cargo6_piece_loading_speed,
   STST: cargo6_stel_loading_speed;
   STCB: cargo6_stel_loading_speed;
   CSTI: cargo6_stel_loading_speed;
+  STSE: cargo6_stse_loading_speed;
+  STSH: cargo6_stsh_loading_speed;
+  STWR: cargo6_stwr_loading_speed;
   ZINC: cargo6_stel_loading_speed;
   GOOD: cargo6_piece_good_loading_speed;
         all_wagons_bulk_loading_speed;
@@ -497,6 +526,8 @@ switch (FEAT_TRAINS, SELF, cargo6all_sprites,
   CMNT: cargo6_good_all_sprites;
   GLAS: cargo6_good_all_sprites;
   PAPR: cargo6_good_all_sprites;
+  SOAP: cargo6_good_all_sprites;
+  LYE_: cargo6_good_all_sprites;
 // Крытые: Сырьё
   FICR: cargo6_good_all_sprites;
   WOOL: cargo6_good_all_sprites;
@@ -605,6 +636,9 @@ switch (FEAT_TRAINS, SELF, cargo6all_sprites,
   STCB: cargo6_stel_all_sprites;
   STEL: cargo6_stel_all_sprites;
   STST: cargo6_stel_all_sprites;
+  STSE: cargo6_stse_all_sprites;
+  STSH: cargo6_stsh_all_sprites;
+  STWR: cargo6_stwr_all_sprites;
   ZINC: cargo6_stel_h_coils_sprites;
 // Штучный груз
   ENSP: cargo6_good_all_sprites;
@@ -655,6 +689,7 @@ switch (FEAT_TRAINS, SELF, cargo6_gondola1_core_sprites, cargo_count)
 29..48: cargo6_gondola1_2_sprites;
         cargo6_gondola1_3_sprites;
 }
+
 switch (FEAT_TRAINS, SELF, cargo6_gondola_core_sprites,
 [STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x02), 0x100), 0])
 {  cargo6_gondola1_core_sprites;  }
@@ -780,6 +815,17 @@ switch (FEAT_TRAINS, SELF, cargo6_gondola_fecr_sprites,
 [STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0D), 0x100), 0])
 {  cargo6_gondola1_fecr_sprites;  }
 
+switch (FEAT_TRAINS, SELF, cargo6_gondola1_phos_sprites, cargo_count)
+{
+  0..3: dummy_sprites;
+ 4..10: cargo6_gondola1_1_sprites;
+11..17: cargo6_gondola1_2_sprites;
+        cargo6_gondola1_3_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo6_gondola_phos_sprites,
+[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0E), 0x100), 0])
+{  cargo6_gondola1_phos_sprites;  }
+
 switch (FEAT_TRAINS, SELF, cargo6gondola_sprites,
   [STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100),
   cargo_type_in_veh])
@@ -811,9 +857,10 @@ switch (FEAT_TRAINS, SELF, cargo6gondola_sprites,
   IORE: cargo6_gondola_iore_sprites;
   MNO2: cargo6_gondola_mno2_sprites;
   NITR: cargo6_gondola_clay_sprites;  // TODO
-  PHOS: cargo6_gondola_iore_sprites;  // TODO
+  PHOS: cargo6_gondola_phos_sprites;
   PORE: cargo6_gondola_pore_sprites;
   POTA: cargo6_pota_all_sprites;
+  SALT: cargo6_pota_all_sprites;  // TODO
   SULP: cargo6_gondola_sulp_sprites;
 // Прочее
   FMSP: cargo6_gondola_fert_sprites;

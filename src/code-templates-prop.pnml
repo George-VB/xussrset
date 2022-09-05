@@ -327,20 +327,20 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= ye
 */
 
 // Определение скорости без вариантов
-#define engine_speed(name, speed)                             \
-switch (FEAT_TRAINS, SELF, name##_speed,                      \
-  is_penalise_speed() ? get_penalised_speed(speed) : speed)   \
-{ return; }                                                   \
+#define engine_speed(name, speed)                              \
+switch (FEAT_TRAINS, SELF, name##_speed,                       \
+  is_penalise_speed() ? get_penalised_speed(speed)  : speed)   \
+{ return; }                                                    \
 
 // Определение скорости с изменением в заданный год
-#define engine_speed_change_after(name, speed, new_speed, year)               \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)       \
-{ 1: return new_speed;                                                        \
-     return speed; }                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(check_year(year) ? new_speed : speed, 0),                        \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
-{ return; }                                                                   \
+#define engine_speed_change_after(name, speed, new_speed, year)                \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)        \
+{ 1: return new_speed;                                                         \
+     return speed; }                                                           \
+switch (FEAT_TRAINS, SELF, name##_speed,                                       \
+[ STORE_TEMP(check_year(year) ? new_speed                  : speed, 0),        \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])   \
+{ return; }                                                                    \
 
 // Определение скорости с изменением в 2 заданных года
 #define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)                   \
@@ -350,19 +350,19 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) + (curr
      return speed; }                                                                                  \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                              \
 [ STORE_TEMP(check_year(year) ?                                                                       \
-  (check_year(year2) ? new_speed2 : new_speed) : speed, 0),                                           \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                           \
+  (check_year(year2) ? new_speed2                          : new_speed) : speed, 0),                  \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])                          \
 { return; }                                                                                           \
 
 // Определение скорости с изменением по году постройки
-#define engine_speed_change_build_after(name, speed, new_speed, year)         \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= year)         \
-{ 1: return new_speed;                                                        \
-     return speed; }                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(build_year >= year ? new_speed : speed, 0),                      \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
-{ return; }                                                                   \
+#define engine_speed_change_build_after(name, speed, new_speed, year)          \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= year)          \
+{ 1: return new_speed;                                                         \
+     return speed; }                                                           \
+switch (FEAT_TRAINS, SELF, name##_speed,                                       \
+[ STORE_TEMP(build_year >= year ? new_speed                : speed, 0),        \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])   \
+{ return; }                                                                    \
 
 // Определение скорости с 2-я изменениями по году постройки
 #define engine_speed_change_build_after2(name, speed, new_speed, year, new_speed2, year2)         \
@@ -371,34 +371,34 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_
   2: return new_speed2;                                                                           \
      return speed; }                                                                              \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                          \
-[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? new_speed2 : new_speed) : speed, 0),     \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                       \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? new_speed2  : new_speed) : speed, 0),    \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))            : LOAD_TEMP(0) ])            \
 { return; }                                                                                       \
 
 // Определение скорости с 3-я изменениями по году постройки
-#define engine_speed_change_build_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)                         \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2) + (build_year >= year3))              \
-{ 1: return new_speed;                                                                                                               \
-  2: return new_speed2;                                                                                                              \
-  3: return new_speed3;                                                                                                              \
-     return speed; }                                                                                                                 \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                                                             \
-[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? new_speed3 : new_speed2) : new_speed) : speed, 0),   \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                                          \
-{ return; }                                                                                                                          \
+#define engine_speed_change_build_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)                          \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2) + (build_year >= year3))               \
+{ 1: return new_speed;                                                                                                                \
+  2: return new_speed2;                                                                                                               \
+  3: return new_speed3;                                                                                                               \
+     return speed; }                                                                                                                  \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                                              \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? new_speed3  : new_speed2) : new_speed) : speed, 0),   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                                   : LOAD_TEMP(0) ])                         \
+{ return; }                                                                                                                           \
 
 // Определение скорости с 4-я изменениями по году постройки
-#define engine_speed_change_build_after4(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3, new_speed4, year4)                                           \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))                           \
-{ 1: return new_speed;                                                                                                                                                    \
-  2: return new_speed2;                                                                                                                                                   \
-  3: return new_speed3;                                                                                                                                                   \
-  4: return new_speed4;                                                                                                                                                   \
-     return speed; }                                                                                                                                                      \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                                                                                                  \
-[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? (build_year >= year4 ? new_speed4 : new_speed3) : new_speed2) : new_speed) : speed, 0),   \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                                                                               \
-{ return; }                                                                                                                                                               \
+#define engine_speed_change_build_after4(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3, new_speed4, year4)                                            \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))                            \
+{ 1: return new_speed;                                                                                                                                                     \
+  2: return new_speed2;                                                                                                                                                    \
+  3: return new_speed3;                                                                                                                                                    \
+  4: return new_speed4;                                                                                                                                                    \
+     return speed; }                                                                                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                                                                                   \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? (build_year >= year4 ? new_speed4  : new_speed3) : new_speed2) : new_speed) : speed, 0),   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                                                          : LOAD_TEMP(0) ])                                       \
+{ return; }                                                                                                                                                                \
 
 // Определение скорости с изменением по году постройки и в заданном году
 #define engine_speed_change_build_after_and_year(name, speed, new_speed, year, new_speed2, year2)   \
@@ -408,23 +408,23 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed,                               
   1: return new_speed;                                                                              \
      return new_speed2; }                                                                           \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                            \
-[ STORE_TEMP(check_year(year2) ? new_speed2 :                                                       \
-  build_year >= year ? new_speed : speed, 0),                                                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                         \
+[ STORE_TEMP(check_year(year2) ? new_speed2                :                                        \
+  build_year >= year ? new_speed                           : speed, 0),                             \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])                        \
 { return; }                                                                                         \
 
 // Определение скорости с изменением в 2 заданных года
-#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +            \
-                                                  (current_year >= year2))            \
-{ 1: return new_speed;                                                                \
-  2: return new_speed2;                                                               \
-     return speed; }                                                                  \
-switch (FEAT_TRAINS, SELF, name##_speed,                                              \
-[ STORE_TEMP(check_year(year) ? (check_year(year2) ?                                  \
-new_speed2 : new_speed) : speed, 0),                                                  \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])           \
-{ return; }                                                                           \
+#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)    \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +             \
+                                                  (current_year >= year2))             \
+{ 1: return new_speed;                                                                 \
+  2: return new_speed2;                                                                \
+     return speed; }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_speed,                                               \
+[ STORE_TEMP(check_year(year) ? (check_year(year2) ?                                   \
+new_speed2                                                 : new_speed) : speed, 0),   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])           \
+{ return; }                                                                            \
 
 // Определение скорости с изменением в 3 заданных года
 #define engine_speed_change_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)   \
@@ -439,16 +439,16 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 [ STORE_TEMP(check_year(year) ?                                                                          \
             (check_year(year2) ?                                                                         \
             (check_year(year3) ?                                                                         \
-new_speed3 : new_speed2) : new_speed) : speed, 0),                                                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                              \
+new_speed3                                                 : new_speed2) : new_speed) : speed, 0),       \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])                             \
 { return; }                                                                                              \
 
 // Определение скорости со снижением для старых
-#define engine_speed_with_reduce(name, speed, speed_red, life)                \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(get_max_speed(life, speed_red, speed), 0),                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
-{ return; }                                                                   \
+#define engine_speed_with_reduce(name, speed, speed_red, life)                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                       \
+[ STORE_TEMP(get_max_speed(life, speed_red, speed), 0),                        \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])   \
+{ return; }                                                                    \
 
 // Определение скорости со снижением для старых и изменением скорости по году постройки
 #define engine_speed_with_reduce_change_build_after(name, speed, speed_red, life, new_speed, year)   \
@@ -456,27 +456,27 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= year)           
 { 1: return new_speed;                                                                               \
      return speed; }                                                                                 \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                             \
-[ STORE_TEMP(get_max_speed(life, speed_red, ((build_year >= year) ? new_speed : speed)), 0),         \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
+[ STORE_TEMP(get_max_speed(life, speed_red, ((build_year >= year) ? new_speed  : speed)), 0),        \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                      : LOAD_TEMP(0) ])     \
 { return; }                                                                                          \
 
 // Определение скорости со снижением для старых и с предсерийной моделью
 #define engine_speed_with_reduce_and_pre_model(name, speed, speed_red, life, life_pre, pre_year)   \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                           \
 [ STORE_TEMP( ((age_in_days >= (life_pre*365)) && (build_year < pre_year)) ||                      \
-  ((age_in_days >= (life*365)) && (build_year >= pre_year)) ? speed_red : speed, 0),               \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                        \
+  ((age_in_days >= (life*365)) && (build_year >= pre_year)) ? speed_red  : speed, 0),              \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                : LOAD_TEMP(0) ])         \
 { return; }                                                                                        \
 
 // Определение скорости со снижением для старых и с предсерийной моделью без снижения
-#define engine_speed_with_reduce_and_pre_model_no_reduce(name, speed, speed_red, life, new_speed, pre_year)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= pre_year)                                     \
-{ 1: return new_speed;                                                                                        \
-     return speed; }                                                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                                      \
-[ STORE_TEMP( (build_year < pre_year) ? speed : (age_in_days >= (life*365)) ? speed_red : new_speed, 0),      \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                   \
-{ return; }                                                                                                   \
+#define engine_speed_with_reduce_and_pre_model_no_reduce(name, speed, speed_red, life, new_speed, pre_year)             \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= pre_year)                                               \
+{ 1: return new_speed;                                                                                                  \
+     return speed; }                                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                                \
+[ STORE_TEMP( (build_year < pre_year) ? speed              : (age_in_days >= (life*365)) ? speed_red : new_speed, 0),   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])                                            \
+{ return; }                                                                                                             \
 
 // Определение скорости с загрузкой
 #define wagon_speed_change_on_load(name, speed, loaded_speed, loaded_amount)   \
@@ -498,14 +498,14 @@ is_ERD_ds(name##_3_speed, name##_DC_speed, name##_15DC_speed)   \
 is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_3_speed)   \
 is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)        \
 
-#define engine_speed_change_after(name, speed, new_speed, year)               \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)       \
-{ 1: return new_speed;                                                        \
-     return speed; }                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(check_year(year) ? new_speed : speed, 0),                        \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
-{ return; }                                                                   \
+#define engine_speed_change_after(name, speed, new_speed, year)                \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)        \
+{ 1: return new_speed;                                                         \
+     return speed; }                                                           \
+switch (FEAT_TRAINS, SELF, name##_speed,                                       \
+[ STORE_TEMP(check_year(year) ? new_speed                  : speed, 0),        \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])   \
+{ return; }                                                                    \
 
 // Определение старения груза с изменением по году постройки
 #define engine_CAP_change_build_after(name, CAP, new_CAP, year)           \

@@ -61,12 +61,13 @@ nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
 if /i not "%GRFFOLDER%" == "" (
-  xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
+  xcopy /y %NMLNAME%.grf "%GRFFOLDER%"
   if /i not %errorlevel% == 0 goto :Error
-  xcopy /y %NMLNAME%.grf "%YDPATH%\My\-todelete\xUSSR set\" 
+:: выкладывать файл сборки в папку с именем ветки, имя ветки брать в .git/HEAD в строке вида ref: refs/heads/main где main имя ветки
+  scripts\copy-branch.pl %NMLNAME%.grf 
   if /i not %errorlevel% == 0 goto :Error
 )
-:: выкладывать файл сборки в папку с именем ветки, имя ветки брать в .git/HEAD в строке вида ref: refs/heads/main где main имя ветки
+
 echo [Ok]
 set compres=[Ok]
 goto :END
