@@ -923,16 +923,16 @@ switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_motor, vehicle_type_id)  
 { name##_h: return CB_RESULT_ATTACH_ALLOW;                                       \
   name##_c: return CB_RESULT_ATTACH_ALLOW;                                       \
             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                       \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_base, vehicle_type_id)        \
+{ name##_h: return CB_RESULT_ATTACH_ALLOW;                                       \
+  name##_m: return CB_RESULT_ATTACH_ALLOW;                                       \
+  name##_c: return CB_RESULT_ATTACH_ALLOW;                                       \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                       \
 
 // шаблон присоединения вагона. Дополнительные варианты
 #define EMU_4_12_can_attach_wagon_errors_template2(name)                            \
 switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_basehead, vehicle_type_id)   \
 { name##_hm: return CB_RESULT_ATTACH_ALLOW;                                         \
-  name##_m: return CB_RESULT_ATTACH_ALLOW;                                          \
-  name##_c: return CB_RESULT_ATTACH_ALLOW;                                          \
-            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                          \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_base, vehicle_type_id)           \
-{ name##_h: return CB_RESULT_ATTACH_ALLOW;                                          \
   name##_m: return CB_RESULT_ATTACH_ALLOW;                                          \
   name##_c: return CB_RESULT_ATTACH_ALLOW;                                          \
             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                          \
@@ -986,6 +986,44 @@ switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_max, LOAD_TEMP(5))         
   0x20000: name##_can_attach_wagon_motor;        /* Гм-П-(М)                  */    \
   0x20001: name##_can_attach_wagon_head;         /* Гм-М-(Г)                  */    \
   0x30001: name##_can_attach_wagon_head;         /* Гм-П-М-(Г)                */    \
+          return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                            \
+
+// 4-12 вагонов
+#define EMU_4_12_can_attach_wagon_template(name)                                    \
+EMU_4_12_can_attach_wagon_errors_template(name)                                     \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_max, LOAD_TEMP(5))             \
+{  0x1000: name##_can_attach_wagon_motor;         /* Г-(М)                     */   \
+   0x2001: name##_can_attach_wagon_not_head;      /* Г-М-(П/М)                 */   \
+   0x3002: name##_can_attach_wagon_not_head;      /* Г-М-П-(П/М)               */   \
+   0x3003: name##_can_attach_wagon_not_motor;     /* Г-М-М-(П/Г)               */   \
+   0x4004: name##_can_attach_wagon_motor;         /* Г-М-П-П-(М)               */   \
+   0x4005: name##_can_attach_wagon_base;          /* Г-М-П-М-(П/М/Г)           */   \
+   0x4006: name##_can_attach_wagon_not_head;      /* Г-М-М-П-(П/М)             */   \
+   0x5009: name##_can_attach_wagon_motor;         /* Г-М-П-П-М-(М)             */   \
+   0x500A: name##_can_attach_wagon_motor;         /* Г-М-П-М-П-(М)             */   \
+   0x500B: name##_can_attach_wagon_not_motor;     /* Г-М-П-М-М-(П/Г)           */   \
+   0x500C: name##_can_attach_wagon_motor;         /* Г-М-М-П-П-(М)             */   \
+   0x500D: name##_can_attach_wagon_head;          /* Г-М-М-П-М-(Г)             */   \
+   0x6013: name##_can_attach_wagon_not_motor;     /* Г-М-П-П-М-М-(П/Г)         */   \
+   0x6015: name##_can_attach_wagon_motor;         /* Г-М-П-М-П-М-(М)           */   \
+   0x6016: name##_can_attach_wagon_not_head;      /* Г-М-П-М-М-П-(П/М)         */   \
+   0x6019: name##_can_attach_wagon_head;          /* Г-М-М-П-П-М-(Г)           */   \
+   0x7026: name##_can_attach_wagon_motor;         /* Г-М-П-П-М-М-П-(М)         */   \
+   0x702B: name##_can_attach_wagon_car;           /* Г-М-П-М-П-М-М-(П)         */   \
+   0x702C: name##_can_attach_wagon_motor;         /* Г-М-П-М-М-П-П-(М)         */   \
+   0x702D: name##_can_attach_wagon_not_motor;     /* Г-М-П-М-М-П-М-(П/Г)       */   \
+   0x804D: name##_can_attach_wagon_not_motor;     /* Г-М-П-П-М-М-П-М-(П/Г)     */   \
+   0x8056: name##_can_attach_wagon_not_head;      /* Г-М-П-М-П-М-М-П-(П/М)     */   \
+   0x8059: name##_can_attach_wagon_head;          /* Г-М-П-М-М-П-П-М-(Г)       */   \
+   0x805A: name##_can_attach_wagon_motor;         /* Г-М-П-М-М-П-М-П-(М)       */   \
+   0x909A: name##_can_attach_wagon_motor;         /* Г-М-П-П-М-М-П-М-П-(М)     */   \
+   0x90AC: name##_can_attach_wagon_motor;         /* Г-М-П-М-П-М-М-П-П-(М)     */   \
+   0x90AD: name##_can_attach_wagon_not_motor;     /* Г-М-П-М-П-М-М-П-М-(П/Г)   */   \
+   0x90B5: name##_can_attach_wagon_head;          /* Г-М-П-М-М-П-М-П-М-(Г)     */   \
+   0xA135: name##_can_attach_wagon_head;          /* Г-М-П-П-М-М-П-М-П-М-(Г)   */   \
+   0xA159: name##_can_attach_wagon_head;          /* Г-М-П-М-П-М-М-П-П-М-(Г)   */   \
+   0xA15A: name##_can_attach_wagon_motor;         /* Г-М-П-М-П-М-М-П-М-П-(М)   */   \
+   0xB2B5: name##_can_attach_wagon_head;          /* Г-М-П-М-П-М-М-П-М-П-М-(Г) */   \
           return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                            \
 
 #define EMU_4689_can_attach_wagon_template(name)                                 \
