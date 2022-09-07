@@ -80,9 +80,9 @@ goto :END
 :GetHgRev
 
 :: определяем текущую ревизию
-for /F %%i in (%NMLNAME%.ver) do set REPO_REVISION=%%i
+for /F %%i in (..\%NMLNAME%.ver) do set REPO_REVISION=%%i
 set /a REPO_REVISION=%REPO_REVISION%+1
-echo %REPO_REVISION%>%NMLNAME%.ver
+echo %REPO_REVISION%>..\%NMLNAME%.ver
 
 goto :EOF
 

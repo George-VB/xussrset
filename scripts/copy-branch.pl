@@ -3,6 +3,7 @@ use strict;
 
 use locale;
 use POSIX qw (locale_h);
+use Encode;
 
 my($todir) = ('F:/Мои_Документы/YandexDisk/My/-todelete/xUSSR set/'); 
 
@@ -55,6 +56,8 @@ sub main() {
 	close(FROMFILE);
 	if($str =~ /ref\:\s*refs\/heads\/([^\s]+)/is) {
 		$branch = $1;
+# записано в utf-8, надо сконвертировать
+		Encode::from_to($branch,'utf8','cp1251');
 #		$branch = "" if($branch eq "main");
 		$branch = $todir.$branch;
 		print(" to $branch\n");
