@@ -31,7 +31,7 @@ sub ldirectory($)
 	        my($buff1, $buff2, $buff3) = ("", "", "");
 		open(FFILE,"<$dir/$t") || die "Can\'t read from $t\n";
 		while (<FFILE>) {
-			s/\s*$/\r\n/;
+			s/\s*$/\r\n/is;
 			s/^UNUSED_STR/STR/;
 			if (/^[\#]{0,1}\s*(STR_[_a-z0-9]*)/i) {
 				if (exists($nameallstrings{$1})) {
@@ -154,9 +154,9 @@ sub main() {
 	$t5 = (sort {$b <=> $a} (keys(%nameallids)))[0];
 	for ($t1 = 124; $t1 <= $t5 ; $t1++) {
 		if (exists $nameallids{$t1}) {
-		        print FFILE $t1." -> ".$nameallids{$t1} . "\n";	        	
+		        print FFILE $t1." -> ".$nameallids{$t1} . "\r\n";	        	
 		} else {
-		        print FFILE $t1." ->\n";	        	
+		        print FFILE $t1." ->\r\n";	        	
 		}
 	}
 	close(FFILE);
@@ -165,7 +165,7 @@ sub main() {
 	$count = 0;
 	open(FFILE,">".$name."src/PNGs_usage") || die "Can\'t write to PNGs_usage\n";
 	foreach $t5 (sort {uc($a) cmp uc($b)} (keys(%nameallpngs))) {
-	        print FFILE $t5 . " -> " . $nameallpngs{$t5} . "\n";
+	        print FFILE $t5 . " -> " . $nameallpngs{$t5} . "\r\n";
 	        if ($nameallpngs{$t5} eq "") {
 	        	print "$t5 is not used\n";
 	        	$count ++;
@@ -177,7 +177,7 @@ sub main() {
 	
 	open(FFILE,">".$name."src/PNMLs_usage") || die "Can\'t write to PNMLs_usage\n";
 	foreach $t5 (sort {uc($a) cmp uc($b)} (keys(%nameallpnmls))) {
-	        print FFILE $t5 . " -> " . $nameallpnmls{$t5} . "\n";
+	        print FFILE $t5 . " -> " . $nameallpnmls{$t5} . "\r\n";
 	        print "$t5 is not used\n" if ($nameallpnmls{$t5} eq "");
 	}
 	close(FFILE);
@@ -189,7 +189,7 @@ sub main() {
 		foreach $t2 (sort {uc($a) cmp uc($b)} (keys(%{$nameallstrings{$t1}}))) {
 		        $t3++ if ($t2=~/lng$/i);
 	 	}
-	        $t4.="$t1\n" if ($t3 == 0);	        	
+	        $t4.="$t1\r\n" if ($t3 == 0);	        	
 	}
 	if ($t4 ne "") {
 		open(FFILE,">".$name."lang/_Missing.txt") || die "Can\'t write to _Missing.txt\n";
