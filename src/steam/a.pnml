@@ -19,10 +19,18 @@ switch (FEAT_TRAINS, SELF, steam_a_engine_sprites_start,
 steamer_direction_template(steam_a, _sprites_start)
 long_vehicle(steam_a)
 
+switch (FEAT_TRAINS, SELF, steam_a_engine_colour_mapping_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: return ttdall_cc + 0x53;
+     return ttdall_cc + 0x61;
+}
+
 switch (FEAT_TRAINS, SELF, steam_a_engine_colour_mapping,
   cargo_subtype)
 {
-           0: return ttdall_cc + 0x53;
+           0: steam_a_engine_colour_mapping_random;
   LV_RAL6002: return ttdall_cc + 0x53;
   LV_RAL6020: return ttdall_cc + 0x61;
         0xE0: return ttdall_cc + 0x53;
@@ -30,11 +38,19 @@ switch (FEAT_TRAINS, SELF, steam_a_engine_colour_mapping,
      return CB_FAILED;
 }
 
+switch (FEAT_TRAINS, SELF, steam_a_tender_colour_mapping_random,
+[  set_offset_to(-1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: return ttdall_cc + 0x53;
+     return ttdall_cc + 0x61;
+}
+
 switch (FEAT_TRAINS, SELF, steam_a_tender_colour_mapping,
 [ set_offset_to(-2),
   prev_vehicle_cargo_subtype()])
 {
-           0: return ttdall_cc + 0x53;
+           0: steam_a_tender_colour_mapping_random;
   LV_RAL6002: return ttdall_cc + 0x53;
   LV_RAL6020: return ttdall_cc + 0x61;
         0xE0: return ttdall_cc + 0x53;
@@ -44,7 +60,7 @@ switch (FEAT_TRAINS, SELF, steam_a_tender_colour_mapping,
 
 steamer_direction_template(steam_a, _colour_mapping)
 
-  livery_template_base_list2(steam_a_b1875, STR_REFIT_TTD_53, LV_RAL6020, LV_RAL6002)
+  livery_template_base_list2(steam_a_b1875, LV_RAL6020, LV_RAL6002)
 
   livery_template_refit2(steam_a_a1875, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_ROOF, STR_REFIT_TTD_53, STR_REFIT_TTD_59, steam_a_b1875)
 livery_template_service_year(steam_a, 1875)
