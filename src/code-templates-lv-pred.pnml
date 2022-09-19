@@ -537,6 +537,29 @@ switch (FEAT_TRAINS, SELF, dyes_tanker_colour_mapping,
 livery_template_alt6f(dyes_tanker, STR_REFIT_TTD_03, STR_REFIT_TTD_04, STR_REFIT_TTD_05,
                                    STR_REFIT_TTD_07, STR_REFIT_TTD_08, STR_REFIT_TTD_09)
 
+// вагоны - Цистерны для сжиженых газов
+switch (FEAT_TRAINS, SELF, gas_tanker_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+  0..36: return ttdall_cc + 0x13;
+ 37..90: return ttdall_cc + 0x14;
+         return ttdall_cc + 0x15;
+}
+
+switch (FEAT_TRAINS, SELF, gas_tanker_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: gas_tanker_random;
+   1: return ttdall_cc + 0x13;
+   2: return ttdall_cc + 0x14;
+   3: return ttdall_cc + 0x15;
+      return CB_FAILED;
+}
+
+livery_template_alt3f(gas_tanker, STR_REFIT_TTD_13, STR_REFIT_TTD_14, STR_REFIT_TTD_15)
+
 // вагоны - Цистерны для всех продуктов
 // todo Уточнить по цвету цистерн для цемента
 switch (FEAT_TRAINS, SELF, tanker_colour_mapping,
@@ -545,9 +568,10 @@ switch (FEAT_TRAINS, SELF, tanker_colour_mapping,
   RFPR: rfpr_tanker_colour_mapping;
   oil_tanker_check(oil_tanker_colour_mapping)
   petr_tanker_check(petr_tanker_colour_mapping)
-  food_gen_tanker_check(watr_tanker_colour_mapping)
-  chem_gen_tanker_check(dyes_tanker_colour_mapping)
+  food_tanker_check(watr_tanker_colour_mapping)
+  chem_tanker_check(dyes_tanker_colour_mapping)
   bulk_cargo_tanker_check(cement_hopper_colour_mapping)
+  gas_tanker_check(gas_tanker_colour_mapping)
         return CB_FAILED;
 }
 
@@ -558,8 +582,9 @@ switch (FEAT_TRAINS, SELF, tanker_cargo_subtype_text,
   oil_tanker_check(oil_tanker_cargo_subtype_text)
   petr_tanker_check(petr_tanker_cargo_subtype_text)
   food_gen_tanker_check(watr_tanker_cargo_subtype_text)
-  chem_gen_tanker_check(dyes_tanker_cargo_subtype_text)
+  chem_tanker_check(dyes_tanker_cargo_subtype_text)
   bulk_cargo_tanker_check(cement_hopper_cargo_subtype_text)
+  gas_tanker_check(gas_tanker_cargo_subtype_text)
         return CB_FAILED;
 }
 
