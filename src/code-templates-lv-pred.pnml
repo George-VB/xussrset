@@ -212,6 +212,7 @@ switch (FEAT_TRAINS, SELF, grain_hopper_colour_mapping,
    7: return ttdall_cc + 0x49;
    8: return ttdall_cc + 0x4A;
    9: return ttdall_cc + 0x4B;
+
   10: return ttdall_cc + 0x9D;
   11: return ttdall_cc + 0x06;
   12: return ttdall_cc + 0x62;
@@ -254,6 +255,7 @@ switch (FEAT_TRAINS, SELF, fert_hopper_colour_mapping,
    7: return ttdall_cc + 0x58;
    8: return ttdall_cc + 0x59;
    9: return ttdall_cc + 0x5A;
+
   10: return ttdall_cc + 0x95;
   11: return ttdall_cc + 0x96;
   12: return ttdall_cc + 0x04;
@@ -290,6 +292,7 @@ switch (FEAT_TRAINS, SELF, cement_hopper_colour_mapping,
    4: return ttdall_cc + 0x29;
    5: return ttdall_cc + 0x2A;
    6: return ttdall_cc + 0x2B;
+
    7: return ttdall_cc + 0x7B;
    8: return ttdall_cc + 0x7C;
    9: return ttdall_cc + 0x72;
@@ -302,8 +305,8 @@ livery_template_alt10f(cement_hopper, STR_REFIT_TTD_07, STR_REFIT_TTD_08, STR_RE
                                       STR_REFIT_TTD_72, STR_REFIT_TTD_7B, STR_REFIT_TTD_7C, STR_REFIT_TTD_4B)
 
 // Старший бит занят на цвет рамы
-// вагоны - Цистерны для нефти
-switch (FEAT_TRAINS, SELF, oil_tanker_random,
+// вагоны - Цистерны для нефти - при СССР
+switch (FEAT_TRAINS, SELF, oil_tanker_bUSSREND_random,
 [  set_offset_to(1-position_in_articulated_veh),
    prev_vehicle_randombits() & 0x7F])
 {
@@ -313,20 +316,66 @@ switch (FEAT_TRAINS, SELF, oil_tanker_random,
 // 0x7C случайным образом не выбираются
 }
 
-switch (FEAT_TRAINS, SELF, oil_tanker_colour_mapping,
+switch (FEAT_TRAINS, SELF, oil_tanker_bUSSREND_colour_mapping,
 [  set_offset_to(-position_in_articulated_veh),
    prev_vehicle_cargo_subtype()])
 {
-   0: oil_tanker_random;
+      0: oil_tanker_bUSSREND_random;
+   4..6: oil_tanker_bUSSREND_random;
+      1: return ttdall_cc + 0x48;
+      2: return ttdall_cc + 0x49;
+      3: return ttdall_cc + 0x4A;
+
+      7: return ttdall_cc + 0x7C;
+         return CB_FAILED;
+}
+
+livery_template_alt7f(oil_tanker_bUSSREND, STR_REFIT_TTD_48, STR_REFIT_TTD_49, STR_REFIT_TTD_4A,
+                                           STR_REFIT_FACTORY, STR_REFIT_FACTORY, STR_REFIT_FACTORY,
+                                           STR_REFIT_TTD_7C)
+// вагоны - Цистерны для нефти - после СССР
+switch (FEAT_TRAINS, SELF, oil_tanker_aUSSREND_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+   0..25: return ttdall_cc + 0x48;
+  26..57: return ttdall_cc + 0x49;
+  58..82: return ttdall_cc + 0x4A;
+  83..95: return ttdall_cc + 0x61;
+ 96..114: return ttdall_cc + 0x62;
+          return ttdall_cc + 0x63;
+// 0x6*, 0x7*, 0x9*, 0xB*, случайным образом не выбираются
+}
+
+switch (FEAT_TRAINS, SELF, oil_tanker_aUSSREND_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: oil_tanker_aUSSREND_random;
    1: return ttdall_cc + 0x48;
    2: return ttdall_cc + 0x49;
    3: return ttdall_cc + 0x4A;
-   4: return ttdall_cc + 0x7C;
-     return CB_FAILED;
+   4: return ttdall_cc + 0x61;
+   5: return ttdall_cc + 0x62;
+   6: return ttdall_cc + 0x63;
+
+   7: return ttdall_cc + 0x7C;
+   8: return ttdall_cc + 0x95;
+   9: return ttdall_cc + 0x9D;
+  10: return ttdall_cc + 0xB3;
+  11: return ttdall_cc + 0xB4;
+  12: return ttdall_cc + 0x08;
+  13: return ttdall_cc + 0x0A;
+      return CB_FAILED;
 }
 
-livery_template_alt4f(oil_tanker, STR_REFIT_TTD_48, STR_REFIT_TTD_49, STR_REFIT_TTD_4A,
-                                     STR_REFIT_TTD_7C)
+livery_template_alt13f(oil_tanker_aUSSREND, STR_REFIT_TTD_48, STR_REFIT_TTD_49, STR_REFIT_TTD_4A,
+                                            STR_REFIT_TTD_61, STR_REFIT_TTD_62, STR_REFIT_TTD_63,
+                                            STR_REFIT_TTD_7C, STR_REFIT_TTD_95, STR_REFIT_TTD_9D,
+                                            STR_REFIT_TTD_B3, STR_REFIT_TTD_B4, STR_REFIT_TTD_08, STR_REFIT_TTD_0A)
+
+engine_change_build_after(oil_tanker_colour_mapping, oil_tanker_bUSSREND_colour_mapping, oil_tanker_aUSSREND_colour_mapping, USSREND)
+livery_template_service_year(oil_tanker, USSREND)
 
 // вагоны - Цистерны для нефтепродуктов
 switch (FEAT_TRAINS, SELF, rfpr_tanker_random,
@@ -347,6 +396,7 @@ switch (FEAT_TRAINS, SELF, rfpr_tanker_colour_mapping,
    1: return ttdall_cc + 0x38;
    2: return ttdall_cc + 0x39;
    3: return ttdall_cc + 0x3A;
+
    4: return ttdall_cc + 0x26;
       return CB_FAILED;
 }
@@ -354,8 +404,8 @@ switch (FEAT_TRAINS, SELF, rfpr_tanker_colour_mapping,
 livery_template_alt4f(rfpr_tanker, STR_REFIT_TTD_38, STR_REFIT_TTD_39, STR_REFIT_TTD_3A,
                                    STR_REFIT_TTD_26)
 
-// вагоны - Цистерны для бензина
-switch (FEAT_TRAINS, SELF, petr_tanker_random,
+// вагоны - Цистерны для бензина - при СССР
+switch (FEAT_TRAINS, SELF, petr_tanker_bUSSREND_random,
 [  set_offset_to(1-position_in_articulated_veh),
    prev_vehicle_randombits() & 0x7F])
 {
@@ -365,43 +415,97 @@ switch (FEAT_TRAINS, SELF, petr_tanker_random,
 // 0x39 случайным образом не выбираются
 }
 
-switch (FEAT_TRAINS, SELF, petr_tanker_colour_mapping,
+switch (FEAT_TRAINS, SELF, petr_tanker_bUSSREND_colour_mapping,
 [  set_offset_to(-position_in_articulated_veh),
    prev_vehicle_cargo_subtype()])
 {
-   0: petr_tanker_random;
-   1: return ttdall_cc + 0x25;
-   2: return ttdall_cc + 0x26;
-   3: return ttdall_cc + 0x27;
-   4: return ttdall_cc + 0x39;
+     0: petr_tanker_bUSSREND_random;
+  4..6: petr_tanker_bUSSREND_random;
+     1: return ttdall_cc + 0x25;
+     2: return ttdall_cc + 0x26;
+     3: return ttdall_cc + 0x27;
+
+  7: return ttdall_cc + 0x39;
      return CB_FAILED;
 }
 
-livery_template_alt4f(petr_tanker, STR_REFIT_TTD_25, STR_REFIT_TTD_26, STR_REFIT_TTD_27,
-                                   STR_REFIT_TTD_39)
+livery_template_alt7f(petr_tanker_bUSSREND, STR_REFIT_TTD_25, STR_REFIT_TTD_26, STR_REFIT_TTD_27,
+                                            STR_REFIT_FACTORY, STR_REFIT_FACTORY, STR_REFIT_FACTORY,
+                                            STR_REFIT_TTD_39)
+
+// вагоны - Цистерны для бензина - после СССР
+switch (FEAT_TRAINS, SELF, petr_tanker_aUSSREND_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+   0..25: return ttdall_cc + 0x25;
+  26..57: return ttdall_cc + 0x26;
+  58..82: return ttdall_cc + 0x27;
+  83..95: return ttdall_cc + 0x94;
+ 96..114: return ttdall_cc + 0x95;
+          return ttdall_cc + 0x96;
+// 0x39, 0x9В, 0x0*, 0x4*, 0x7С  случайным образом не выбираются
+}
+
+// TODO попробовать добавить 0xB4, 0x53, 0x92
+switch (FEAT_TRAINS, SELF, petr_tanker_aUSSREND_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: petr_tanker_aUSSREND_random;
+   1: return ttdall_cc + 0x25;
+   2: return ttdall_cc + 0x26;
+   3: return ttdall_cc + 0x27;
+   4: return ttdall_cc + 0x94;
+   5: return ttdall_cc + 0x95;
+   6: return ttdall_cc + 0x96;
+
+   7: return ttdall_cc + 0x39;
+   8: return ttdall_cc + 0x08;
+   9: return ttdall_cc + 0x0A;
+  10: return ttdall_cc + 0x7C;
+  11: return ttdall_cc + 0x9D;
+  12: return ttdall_cc + 0x41;
+  13: return ttdall_cc + 0x48;
+      return CB_FAILED;
+}
+
+livery_template_alt13f(petr_tanker_aUSSREND, STR_REFIT_TTD_25, STR_REFIT_TTD_26, STR_REFIT_TTD_27,
+                                             STR_REFIT_TTD_94, STR_REFIT_TTD_95, STR_REFIT_TTD_96,
+                                             STR_REFIT_TTD_39, STR_REFIT_TTD_08, STR_REFIT_TTD_0A,
+                                             STR_REFIT_TTD_7C, STR_REFIT_TTD_9D, STR_REFIT_TTD_41, STR_REFIT_TTD_48)
+
+engine_change_build_after(petr_tanker_colour_mapping, petr_tanker_bUSSREND_colour_mapping, petr_tanker_aUSSREND_colour_mapping, USSREND)
+livery_template_service_year(petr_tanker, USSREND)
 
 // вагоны - Цистерны для воды
 switch (FEAT_TRAINS, SELF, watr_tanker_random,
 [  set_offset_to(1-position_in_articulated_veh),
    prev_vehicle_randombits() & 0x7F])
 {
-  0..36: return ttdall_cc + 0x09;
- 37..90: return ttdall_cc + 0x0A;
-         return ttdall_cc + 0x0B;
+   0..25: return ttdall_cc + 0x08;
+  26..63: return ttdall_cc + 0x09;
+ 64..101: return ttdall_cc + 0x0A;
+          return ttdall_cc + 0x0B;
 }
 
 switch (FEAT_TRAINS, SELF, watr_tanker_colour_mapping,
 [  set_offset_to(-position_in_articulated_veh),
    prev_vehicle_cargo_subtype()])
 {
-   0: watr_tanker_random;
-   1: return ttdall_cc + 0x09;
-   2: return ttdall_cc + 0x0A;
-   3: return ttdall_cc + 0x0B;
+  0: watr_tanker_random;
+  1: return ttdall_cc + 0x08;
+  2: return ttdall_cc + 0x09;
+  3: return ttdall_cc + 0x0A;
+  4: return ttdall_cc + 0x0B;
+
+  5: return ttdall_cc + 0x25;
+  6: return ttdall_cc + 0x39;
      return CB_FAILED;
 }
 
-livery_template_alt3f(watr_tanker, STR_REFIT_TTD_09, STR_REFIT_TTD_0A, STR_REFIT_TTD_0B)
+livery_template_alt6f(watr_tanker, STR_REFIT_TTD_08, STR_REFIT_TTD_09, STR_REFIT_TTD_0A, STR_REFIT_TTD_0B,
+                                   STR_REFIT_TTD_25, STR_REFIT_TTD_39)
 
 // вагоны - Цистерны для красок
 switch (FEAT_TRAINS, SELF, dyes_tanker_random,
@@ -434,7 +538,7 @@ livery_template_alt6f(dyes_tanker, STR_REFIT_TTD_03, STR_REFIT_TTD_04, STR_REFIT
                                    STR_REFIT_TTD_07, STR_REFIT_TTD_08, STR_REFIT_TTD_09)
 
 // вагоны - Цистерны для всех продуктов
-// todo использовать функции вместо прямого перечисления меток
+// todo Уточнить по цвету цистерн для цемента
 switch (FEAT_TRAINS, SELF, tanker_colour_mapping,
   cargo_type_in_veh)
 {
