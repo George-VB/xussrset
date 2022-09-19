@@ -1,12 +1,22 @@
 ﻿// tanker_type1892w uses tanker_type1858w
 
-switch (FEAT_TRAINS, SELF, tanker_type1892w_colour_mapping,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x01])
+#define IMAGEFILE  "src/freight/tankers/type1858w.png"
+purchase_sprites(tanker_type1892w, 100, 0)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_frame,
+  STORE_TEMP(ttdall_cc + 0x04, 0x100))
+{ tanker_type1858w_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
 {
-  0: return ttd_cc2 + 0x14;
-     return ttd_cc2 + 0x15;
+  0: tanker_type1858w_tank_sprites_start;
+  1: tanker_type1892w_frame;
+     return CB_FAILED;
 }
+
+long_vehicle(tanker_type1892w)
 
 switch (FEAT_TRAINS, SELF, tanker_type1892w_loading_speed,
 [  STORE_TEMP(0, 0),
@@ -53,12 +63,13 @@ item (FEAT_TRAINS, tanker_type1892w, 527) {
     cargo_allow_refit: [cargo_all_food_gen_tanker()];
   }
   graphics {
-                default: tanker_type1858w_sprites;
-               purchase: tanker_type1858w_purchase_sprites;
+                default: tanker_type1892w_sprites;
+               purchase: tanker_type1892w_purchase_sprites;
        articulated_part: articulated_part_dummy1;
     running_cost_factor: tanker_type1892w_running_cost_factor;
              refit_cost: tanker_refit_cost;
-         colour_mapping: tanker_type1892w_colour_mapping;
+         colour_mapping: tanker_colour_mapping;
+     cargo_subtype_text: tanker_cargo_subtype_text;
         additional_text: tanker_type1892w_additional_text;
          cargo_capacity: tanker_type1892w_cargo_capacity;
           loading_speed: tanker_type1892w_loading_speed;

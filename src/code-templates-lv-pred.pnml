@@ -164,7 +164,8 @@ switch (FEAT_TRAINS, SELF, dumpcar_random,
 }
 
 switch (FEAT_TRAINS, SELF, dumpcar_colour_mapping,
-  cargo_subtype)
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
 {
   0: dumpcar_random;
   1: return ttdall_cc + 0x7B;
@@ -198,7 +199,8 @@ switch (FEAT_TRAINS, SELF, grain_hopper_random,
 }
 
 switch (FEAT_TRAINS, SELF, grain_hopper_colour_mapping,
-  cargo_subtype)
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
 {
    0: grain_hopper_random;
    1: return ttdall_cc + 0x70;
@@ -239,7 +241,8 @@ switch (FEAT_TRAINS, SELF, fert_hopper_random,
 }
 
 switch (FEAT_TRAINS, SELF, fert_hopper_colour_mapping,
-  cargo_subtype)
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
 {
    0: fert_hopper_random;
    1: return ttdall_cc + 0x61;
@@ -277,7 +280,8 @@ switch (FEAT_TRAINS, SELF, cement_hopper_random,
 }
 
 switch (FEAT_TRAINS, SELF, cement_hopper_colour_mapping,
-  cargo_subtype)
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
 {
    0: cement_hopper_random;
    1: return ttdall_cc + 0x07;
@@ -296,5 +300,161 @@ switch (FEAT_TRAINS, SELF, cement_hopper_colour_mapping,
 livery_template_alt10f(cement_hopper, STR_REFIT_TTD_07, STR_REFIT_TTD_08, STR_REFIT_TTD_09,
                                       STR_REFIT_TTD_29, STR_REFIT_TTD_2A, STR_REFIT_TTD_2B,
                                       STR_REFIT_TTD_72, STR_REFIT_TTD_7B, STR_REFIT_TTD_7C, STR_REFIT_TTD_4B)
+
+// Старший бит занят на цвет рамы
+// вагоны - Цистерны для нефти
+switch (FEAT_TRAINS, SELF, oil_tanker_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+  0..36: return ttdall_cc + 0x48;
+ 37..90: return ttdall_cc + 0x49;
+         return ttdall_cc + 0x4A;
+// 0x7C случайным образом не выбираются
+}
+
+switch (FEAT_TRAINS, SELF, oil_tanker_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: oil_tanker_random;
+   1: return ttdall_cc + 0x48;
+   2: return ttdall_cc + 0x49;
+   3: return ttdall_cc + 0x4A;
+   4: return ttdall_cc + 0x7C;
+     return CB_FAILED;
+}
+
+livery_template_alt4f(oil_tanker, STR_REFIT_TTD_48, STR_REFIT_TTD_49, STR_REFIT_TTD_4A,
+                                     STR_REFIT_TTD_7C)
+
+// вагоны - Цистерны для нефтепродуктов
+switch (FEAT_TRAINS, SELF, rfpr_tanker_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+  0..36: return ttdall_cc + 0x38;
+ 37..90: return ttdall_cc + 0x39;
+         return ttdall_cc + 0x3A;
+// 0x26 случайным образом не выбираются
+}
+
+switch (FEAT_TRAINS, SELF, rfpr_tanker_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: rfpr_tanker_random;
+   1: return ttdall_cc + 0x38;
+   2: return ttdall_cc + 0x39;
+   3: return ttdall_cc + 0x3A;
+   4: return ttdall_cc + 0x26;
+      return CB_FAILED;
+}
+
+livery_template_alt4f(rfpr_tanker, STR_REFIT_TTD_38, STR_REFIT_TTD_39, STR_REFIT_TTD_3A,
+                                   STR_REFIT_TTD_26)
+
+// вагоны - Цистерны для бензина
+switch (FEAT_TRAINS, SELF, petr_tanker_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+  0..36: return ttdall_cc + 0x25;
+ 37..90: return ttdall_cc + 0x26;
+         return ttdall_cc + 0x27;
+// 0x39 случайным образом не выбираются
+}
+
+switch (FEAT_TRAINS, SELF, petr_tanker_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: petr_tanker_random;
+   1: return ttdall_cc + 0x25;
+   2: return ttdall_cc + 0x26;
+   3: return ttdall_cc + 0x27;
+   4: return ttdall_cc + 0x39;
+     return CB_FAILED;
+}
+
+livery_template_alt4f(petr_tanker, STR_REFIT_TTD_25, STR_REFIT_TTD_26, STR_REFIT_TTD_27,
+                                   STR_REFIT_TTD_39)
+
+// вагоны - Цистерны для воды
+switch (FEAT_TRAINS, SELF, watr_tanker_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+  0..36: return ttdall_cc + 0x09;
+ 37..90: return ttdall_cc + 0x0A;
+         return ttdall_cc + 0x0B;
+}
+
+switch (FEAT_TRAINS, SELF, watr_tanker_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: watr_tanker_random;
+   1: return ttdall_cc + 0x09;
+   2: return ttdall_cc + 0x0A;
+   3: return ttdall_cc + 0x0B;
+     return CB_FAILED;
+}
+
+livery_template_alt3f(watr_tanker, STR_REFIT_TTD_09, STR_REFIT_TTD_0A, STR_REFIT_TTD_0B)
+
+// вагоны - Цистерны для красок
+switch (FEAT_TRAINS, SELF, dyes_tanker_random,
+[  set_offset_to(1-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x7F])
+{
+    0..17: return ttdall_cc + 0x03;
+   18..45: return ttdall_cc + 0x04;
+   46..63: return ttdall_cc + 0x05;
+   64..81: return ttdall_cc + 0x07;
+  82..109: return ttdall_cc + 0x08;
+           return ttdall_cc + 0x09;
+}
+
+switch (FEAT_TRAINS, SELF, dyes_tanker_colour_mapping,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_subtype()])
+{
+   0: dyes_tanker_random;
+   1: return ttdall_cc + 0x03;
+   2: return ttdall_cc + 0x04;
+   3: return ttdall_cc + 0x05;
+   4: return ttdall_cc + 0x07;
+   5: return ttdall_cc + 0x08;
+   6: return ttdall_cc + 0x09;
+      return CB_FAILED;
+}
+
+livery_template_alt6f(dyes_tanker, STR_REFIT_TTD_03, STR_REFIT_TTD_04, STR_REFIT_TTD_05,
+                                   STR_REFIT_TTD_07, STR_REFIT_TTD_08, STR_REFIT_TTD_09)
+
+// вагоны - Цистерны для всех продуктов
+// todo использовать функции вместо прямого перечисления меток
+switch (FEAT_TRAINS, SELF, tanker_colour_mapping,
+  cargo_type_in_veh)
+{
+  RFPR: rfpr_tanker_colour_mapping;
+  oil_tanker_check(oil_tanker_colour_mapping)
+  petr_tanker_check(petr_tanker_colour_mapping)
+  food_gen_tanker_check(watr_tanker_colour_mapping)
+  chem_gen_tanker_check(dyes_tanker_colour_mapping)
+        return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_cargo_subtype_text,
+  cargo_type_in_veh)
+{
+  RFPR: rfpr_tanker_cargo_subtype_text;
+  oil_tanker_check(oil_tanker_cargo_subtype_text)
+  petr_tanker_check(petr_tanker_cargo_subtype_text)
+  food_gen_tanker_check(watr_tanker_cargo_subtype_text)
+  chem_gen_tanker_check(dyes_tanker_cargo_subtype_text)
+        return CB_FAILED;
+}
 
 // end
