@@ -5,7 +5,7 @@ use locale;
 use POSIX qw (locale_h);
 use Encode;
 
-my($todir) = ('F:/Мои_Документы/YandexDisk/My/-todelete/xUSSR set/'); 
+my($todir) = ('c:/users/GVBagaev/YandexDisk/My/-todelete/xUSSRset/'); 
 
 sub MMkdir($)
 {
