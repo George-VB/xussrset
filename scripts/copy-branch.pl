@@ -38,7 +38,7 @@ sub main() {
 	$nver = $name;
 	$nver =~ s/\.grf$/\.ver/isg;
 	if(-e $nver) {
-		if(not open(FROMFILE, "<$nver")) {
+		if(not open(FROMFILE, "<:encoding(UTF-8)", $nver)) {
 			$ver = "";
 		} else {
 			$ver = join("", <FROMFILE>);
@@ -48,7 +48,7 @@ sub main() {
 		$ver = "";
 	}
 #print("To $todir\n");
-	if(not open(FROMFILE, "<\.git\/HEAD")) {
+	if(not open(FROMFILE, "<:encoding(UTF-8)", "\.git\/HEAD")) {
 		print("Can't read branch name.\n$!\n");	
 		exit(1);
 	}
