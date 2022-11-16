@@ -133,7 +133,7 @@ sub ChangeFile($) {
 	$s_buff = "";
 	$s_total = "";
 	foreach $str (@strs) {
-		if ($str =~ /^\s+[0-9a-z_\.]+\s*\:\s+/i) { # собрать блок
+		if ($str =~ /^[\{]{0,1}\s+[0-9a-z_\.]+\s*\:\s+/i) { # собрать блок
 			$s_buff .="$str\n";
 		} else {
 			if ($s_buff eq "") {
