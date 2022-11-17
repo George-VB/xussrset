@@ -3,51 +3,43 @@
 #define IMAGEFILE  "src/freight/tankers/15-1547.png"
 purchase_sprites(tanker_15_1547_v1, 0, 0)
 tanker_layout_template(tanker_15_1547_v1, 7, 32, 40)
-tanker_layout_template(tanker_15_1547_v1y, 7, 32, 107)
-tanker_layout_template(tanker_15_1547_v1g, 7, 32, 174)
-tanker_layout_template(tanker_15_1547_v1gy, 7, 32, 241)
+tanker_layout_template(tanker_15_1547_v1g, 7, 32, 107)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/freight/tankers/15-1547-a1993.png"
 purchase_sprites(tanker_15_1547_v2, 0, 0)
-tanker_layout_template(tanker_15_1547_v2g, 7, 32, 40)
-tanker_layout_template(tanker_15_1547_v2gy, 7, 32, 107)
+tanker_layout_template(tanker_15_1547_petr_a1993, 7, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/tankers/15-1547-22.png"
+tanker_layout_template(tanker_15_1547_22_v1, 7, 32, 40)
+tanker_layout_template(tanker_15_1547_22_v1g, 7, 32, 107)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/freight/tankers/15-1547-22-a1993.png"
+tanker_layout_template(tanker_15_1547_chem_gen_a1993, 7, 32, 40)
 #undef IMAGEFILE
 purchase_sprites_select(tanker_15_1547, 1993)
 
-// круг рисуем при обслуживании с 1993 года. Полосу - рэндом по последнему биту
-
-switch (FEAT_TRAINS, SELF, tanker_15_1547_v1_sprites_random,
-[ set_offset_to(1),
-  prev_vehicle_randombits() >> 7 & 0x01])
-{
-  0: tanker_15_1547_v1_sprites_start;
-     tanker_15_1547_v1y_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_1547_v1g_sprites_random,
-[ set_offset_to(1),
-  prev_vehicle_randombits() >> 7 & 0x01])
-{
-  0: tanker_15_1547_v1g_sprites_start;
-     tanker_15_1547_v1gy_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_1547_b1993_sprites_start,
+switch (FEAT_TRAINS, SELF, tanker_15_1547_petr_b1993_sprites_start,
   check_year(USSREND))
 {
-  1: tanker_15_1547_v1g_sprites_random;
-     tanker_15_1547_v1_sprites_random;
+  1: tanker_15_1547_v1g_sprites_start;
+     tanker_15_1547_v1_sprites_start;
 }
-
-switch (FEAT_TRAINS, SELF, tanker_15_1547_a1993_sprites_start,
-[ set_offset_to(1),
-  prev_vehicle_randombits() >> 7 & 0x01])
+engine_build_year_template(tanker_15_1547_petr, 1993, start, )
+switch (FEAT_TRAINS, SELF, tanker_15_1547_chem_gen_b1993_sprites_start,
+  check_year(USSREND))
 {
-  0: tanker_15_1547_v2g_sprites_start;
-     tanker_15_1547_v2gy_sprites_start;
+  1: tanker_15_1547_22_v1g_sprites_start;
+     tanker_15_1547_22_v1_sprites_start;
+}
+engine_build_year_template(tanker_15_1547_chem_gen, 1993, start, )
+
+switch (FEAT_TRAINS, SELF, tanker_15_1547_sprites_start,
+  cargo_type_in_veh)
+{
+  chem_gen_tanker_check(tanker_15_1547_chem_gen_sprites_start)
+  tanker_15_1547_petr_sprites_start;
 }
 
-engine_build_year_template(tanker_15_1547, 1993, start, )
 long_vehicle(tanker_15_1547)
 
 switch (FEAT_TRAINS, SELF, tanker_15_1547_loading_speed,
@@ -92,7 +84,7 @@ item (FEAT_TRAINS, tanker_15_1547, 362) {
     name: string(STR_MODEL_NUMBER2, 15, 1547);
     vehicle_dates(1983, 1997, 32, 10, 6, 119)
     vehicle_wagon(24, 120)
-    cargo_allow_refit: [cargo_all_petr_tanker()];
+    cargo_allow_refit: [cargo_all_petr_tanker(), cargo_all_chem_gen_tanker()];
   }
   graphics {
                 default: tanker_15_1547_sprites;
