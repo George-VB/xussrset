@@ -51,9 +51,9 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-change.pl xussr-rails.nml "\) \{" "\)\n\{"
-change.pl xussr-rails.nml "\} switch" "\}\nswitch"
-change.pl xussr-rails.nml "\; " "\;\n"
+scripts\change.pl xussr-rails.nml "\) \{" "\)\n\{"
+scripts\change.pl xussr-rails.nml "\} switch" "\}\nswitch"
+scripts\change.pl xussr-rails.nml "\; " "\;\n"
 
 del xussr-rails.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
@@ -62,7 +62,7 @@ if /i not %errorlevel% == 0 goto :Error
 if /i not "%GRFFOLDER%" == "" (
   xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
   if /i not %errorlevel% == 0 goto :Error
-  xcopy /y %NMLNAME%.grf "%YDPATH%\My\-todelete\xUSSR set\" 
+  scripts\copy-branch.pl %NMLNAME%.grf 
   if /i not %errorlevel% == 0 goto :Error
 )
 echo [Ok]
@@ -77,9 +77,9 @@ goto :END
 :GetHgRev
 
 :: определяем текущую ревизию
-for /F %%i in (..\%NMLNAME%.ver) do set REPO_REVISION=%%i
+for /F %%i in (%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver) do set REPO_REVISION=%%i
 set /a REPO_REVISION=%REPO_REVISION%+1
-echo %REPO_REVISION%>..\%NMLNAME%.ver
+echo %REPO_REVISION%>%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver
 
 goto :EOF
 

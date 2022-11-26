@@ -5,43 +5,53 @@ use strict;
 
 use utf8;
 use open qw(:std :utf8);
+#use feature "unicode_strings";
+#no bytes;
 
+sub PrintNSpaces($) {
+        my($total) = (@_);
+	my($res) = ("");
+	for(my($i) = 0; $i < $total; $i++) {
+		$res .= " ";
+	}  
+	return $res;               
+}
+        
 my($last_str_length) = (0);
 sub WPrint($) {
 	my($str) = @_;
-	for(my($i)=0; $i <= $last_str_length; $i++) {
-		print(" ");
-	}
-#	sprintf("% ".$last_str_length."\r");
-	print("\r$str\r");
+	print(PrintNSpaces($last_str_length +1)."\r$str\r");
 	$last_str_length = length($str);
-}
+}  
 
 sub FixBlockRight($$) { 
-# Эта функция выравнивает блок по левому краю
+# Эта функция выравнивает разделитель по правому краю
 	my($s_buff, $spliter) = @_;
 	$s_buff =~ s/^\n+//;
 	$s_buff =~ s/\n+$//;
 	my(@block) = split(/\n/, $s_buff);
-	my($calc, $s_temp, $s_temp2, $len)=(0, "", "");
-	foreach $s_temp (@block) {
-		$len = length ($s_temp);
-		$calc = $len if ($len > $calc);				
+	my($calc, $s_temp, $s_temp2, $len, $i) = (0, "", "");
+	for($i = 0; $i < scalar(@block); $i ++) {
+		$block[$i] =~ s/$spliter.*?$//;
+		$block[$i] =~ s/\s*$//;
+		$len = length($block[$i]);
+		$calc = $len if ($len > $calc);	
+#		$block[$i] .= "-".$len."-".MLengthN($block[$i])."-".MLengthB($block[$i])."";			
 	}
-	foreach $s_temp (@block) {
-	        $len = $calc - length ($s_temp) + 1;
-		$s_temp2 .= $s_temp . sprintf("%-${len}s", " "). "  $spliter\n";					
+	for($i = 0; $i < scalar(@block); $i ++) {
+	        $len = $calc - length($block[$i]);
+		$s_temp2 .= $block[$i] . PrintNSpaces($len) . "  $spliter\n";					
 	}
 	return $s_temp2;
 }
 
 sub FixBlockMiddle($$) {
-# Эта функция выравнивает блок по разделителю
+# Эта функция выравнивает блок по разделителю, става пробелы слева от разделителя
 	my($s_buff, $spliter) = @_;
 	$s_buff =~ s/^\n+//;
 	$s_buff =~ s/\n+$//;
 	my(@block) = split(/\n/, $s_buff);
-	my($calc, $s_temp, $s_temp2, $s_temp3, $len)=(0, "", "");
+	my($calc, $s_temp, $s_temp2, $s_temp3, $len) = (0, "", "");
 	foreach $s_temp (@block) {
 		$s_temp3 = $s_temp;
 	        $s_temp3 =~ s/\s*$spliter.*$//;
@@ -57,18 +67,18 @@ sub FixBlockMiddle($$) {
 	        } else {
 	        	$len = $calc - length ($s_temp) + 1;
 	        }
-		$s_temp2 .= $s_temp . sprintf("%-${len}s", " "). "$spliter$s_temp3\n";					
+		$s_temp2 .= $s_temp . PrintNSpaces($len). "$spliter$s_temp3\n";					
 	}
 	return $s_temp2;
 }
 
 sub FixBlockLeft($$) {
-# Эта функция выравнивает блок по разделителю слева
+# Эта функция выравнивает блок по разделителю, ставя пробелы в начале строки
 	my($s_buff, $spliter) = @_;
 	$s_buff =~ s/^\n+//;
 	$s_buff =~ s/\n+$//;
 	my(@block) = split(/\n/, $s_buff);
-	my($calc, $s_temp, $s_temp2, $s_temp3, $len)=(0, "", "");
+	my($calc, $s_temp, $s_temp2, $s_temp3, $len) = (0, "", "");
 	foreach $s_temp (@block) {
 		$s_temp3 = $s_temp;
 	        $s_temp3 =~ s/$spliter.*$//;
@@ -86,7 +96,7 @@ sub FixBlockLeft($$) {
 	        } else {
 	        	$len = $calc - length ($s_temp3);
 	        }
-		$s_temp2 .= sprintf("%-${len}s", " "). "$s_temp3$spliter $s_temp\n";					
+		$s_temp2 .= PrintNSpaces($len). "$s_temp3$spliter $s_temp\n";					
 	}
 	return $s_temp2;
 }
@@ -97,8 +107,8 @@ sub ChangeFile($) {
 	my(@strs);
 	my($s_buff, $s_total, $str);
 
-	open(FROMFILE, "<".$name) || return "Can't open: ".$name;
-	binmode(FROMFILE);
+	open(FROMFILE, "<:encoding(UTF-8)", $name) || return "Can't open: ".$name;
+#	binmode(FROMFILE);
 
 	$s = join("", <FROMFILE>);
 	$s_old = $s;
@@ -118,12 +128,12 @@ sub ChangeFile($) {
         $s =~ s#( )*\/\/\/# \/\/\/#g;
 # схлопнуть {   return 1; }
         $s =~ s#\)\s*\{\s*(return\s*[0-9a-z_])\;\s*\}#\) \{ $1; \}#g;
-# выравнивать блоки с : в начале
+# выравнивать блоки с : в начале, например свойства ПС в graphics
 	@strs = split(/\n/, $s);
 	$s_buff = "";
 	$s_total = "";
 	foreach $str (@strs) {
-		if ($str =~ /^ \s*[0-9a-z_\.]+\s*\:\s+/i) { # собрать блок
+		if ($str =~ /^[\{]{0,1}\s+[0-9a-z_\.]+\s*\:\s+/i) { # собрать блок
 			$s_buff .="$str\n";
 		} else {
 			if ($s_buff eq "") {
@@ -137,27 +147,7 @@ sub ChangeFile($) {
 	}
 	$s_total .= FixBlockLeft($s_buff, "\:") if ($s_buff ne "");
 	$s = $s_total;
-# выравнивать блоки с \ на конце
-	@strs = split(/\n/, $s);
-	$s_buff = "";
-	$s_total = "";
-	foreach $str (@strs) {
-		if ($str =~ /\\$/) { # собрать блок
-			$str =~ s/\s*\\$//;
-			$s_buff .="$str\n";
-		} else {
-			if ($s_buff eq "") {
-				$s_total .= "$str\n";
-			} else { # расчистить блок
-				$s_total .= FixBlockRight($s_buff, "\\");
-				$s_total .= "$str\n";
-				$s_buff = "";
-			}
-		}		
-	}
-	$s_total .= FixBlockRight($s_buff, "\\") if ($s_buff ne "");
-	$s = $s_total;
-# выравнивать блоки с // на конце
+# выравнивать блоки с // на конце, например комментарии в стоимости обслуживания 
 	@strs = split(/\n/, $s);
 	$s_buff = "";
 	$s_total = "";
@@ -176,7 +166,7 @@ sub ChangeFile($) {
 	}
 	$s_total .= FixBlockMiddle($s_buff, " \/\/") if ($s_buff ne "");
 	$s = $s_total;
-# выравнивать блоки с : на конце
+# выравнивать блоки с : на конце, например, в языковых файлах
 	@strs = split(/\n/, $s);
 	$s_buff = "";
 	$s_total = "";
@@ -195,9 +185,28 @@ sub ChangeFile($) {
 	}
 	$s_total .= FixBlockMiddle($s_buff, " \:") if ($s_buff ne "");
 	$s = $s_total;
+# выравнивать блоки с \ на конце, например блоки подстановки define
+	@strs = split(/\n/, $s);
+	$s_buff = "";
+	$s_total = "";
+	foreach $str (@strs) {
+		if ($str =~ s/\s*\\$//) { # собрать блок
+			$s_buff .="$str\n";
+		} else {
+			if ($s_buff eq "") {
+				$s_total .= "$str\n";
+			} else { # расчистить блок
+				$s_total .= FixBlockRight($s_buff, "\\");
+				$s_total .= "$str\n";
+				$s_buff = "";
+			}
+		}		
+	}
+	$s_total .= FixBlockRight($s_buff, "\\") if ($s_buff ne "");
+	$s = $s_total;
 # записать результаты
 	close(FROMFILE);
-        $s =~ s/\n/\r\n/igs;
+#        $s =~ s/\n/\r\n/igs;
 # не создавать файл если ничего не изменилось  
 	if($s eq $s_old) {
 #		print("File was not changed.\n");
@@ -206,8 +215,8 @@ sub ChangeFile($) {
 	} else {
 		print("\n");
 	}
-	open(TOFILE, ">temp.tmp") || return "Can't open temp file.";
-	binmode(TOFILE);
+	open(TOFILE, ">:encoding(UTF-8)", "temp.tmp") || return "Can't open temp file.";
+#	binmode(TOFILE);
 	print(TOFILE $s); 
 	close(TOFILE);
 	$bak = $name;

@@ -29,7 +29,7 @@ sub ldirectory($)
 	}
 	foreach $t (@dirs) {
 	        my($buff1, $buff2, $buff3) = ("", "", "");
-		open(FFILE,"<$dir/$t") || die "Can\'t read from $t\n";
+		open(FFILE, "<:encoding(UTF-8)", "$dir/$t") || die "Can\'t read from $t\n";
 		while (<FFILE>) {
 			s/\s*$/\r\n/is;
 			s/^UNUSED_STR/STR/;
@@ -47,7 +47,7 @@ sub ldirectory($)
 		}
 		$buff3 .= msort($buff1) . msort($buff2);
 		close(FFILE);
-		open(FFILE,">$dir/$t") || die "Can\'t write to $t\n";
+		open(FFILE, ">:encoding(UTF-8)", "$dir/$t") || die "Can\'t write to $t\n";
 		print FFILE $buff3;
 		close(FFILE);
 	}
@@ -80,7 +80,7 @@ sub wdirectory($)
 	}
 
 	foreach $t (@dirs) {
-		open(FFILE,"<$dir/$t") || die "Can\'t read from $t\n";
+		open(FFILE, "<:encoding(UTF-8)", "$dir/$t") || die "Can\'t read from $t\n";
 		if(not exists $nameallpnmls{"$tt/$t"}) {
 			$nameallpnmls{"$tt/$t"} = "";
 		} 
@@ -150,7 +150,7 @@ sub main() {
 	} else {
 		print($name."lang is unavailable.\n");
 	}
-	open(FFILE,">".$name."src/IDs_usage") || die "Can\'t write to IDs_usage\n";
+	open(FFILE, ">:encoding(UTF-8)", $name."src/IDs_usage") || die "Can\'t write to IDs_usage\n";
 	$t5 = (sort {$b <=> $a} (keys(%nameallids)))[0];
 	for ($t1 = 124; $t1 <= $t5 ; $t1++) {
 		if (exists $nameallids{$t1}) {
@@ -163,7 +163,7 @@ sub main() {
 	print "Max ID used: ".($t1-1)."\n";
 	
 	$count = 0;
-	open(FFILE,">".$name."src/PNGs_usage") || die "Can\'t write to PNGs_usage\n";
+	open(FFILE, ">:encoding(UTF-8)", $name."src/PNGs_usage") || die "Can\'t write to PNGs_usage\n";
 	foreach $t5 (sort {uc($a) cmp uc($b)} (keys(%nameallpngs))) {
 	        print FFILE $t5 . " -> " . $nameallpngs{$t5} . "\r\n";
 	        if ($nameallpngs{$t5} eq "") {
@@ -175,7 +175,7 @@ sub main() {
 
 	print("\n") if($count > 0);
 	
-	open(FFILE,">".$name."src/PNMLs_usage") || die "Can\'t write to PNMLs_usage\n";
+	open(FFILE, ">:encoding(UTF-8)", $name."src/PNMLs_usage") || die "Can\'t write to PNMLs_usage\n";
 	foreach $t5 (sort {uc($a) cmp uc($b)} (keys(%nameallpnmls))) {
 	        print FFILE $t5 . " -> " . $nameallpnmls{$t5} . "\r\n";
 	        print "$t5 is not used\n" if ($nameallpnmls{$t5} eq "");
@@ -192,7 +192,7 @@ sub main() {
 	        $t4.="$t1\r\n" if ($t3 == 0);	        	
 	}
 	if ($t4 ne "") {
-		open(FFILE,">".$name."lang/_Missing.txt") || die "Can\'t write to _Missing.txt\n";
+		open(FFILE, ">:encoding(UTF-8)", $name."lang/_Missing.txt") || die "Can\'t write to _Missing.txt\n";
 	        print FFILE $t4;	        	
 		close(FFILE);
 		die("Missing strings found!\n");
