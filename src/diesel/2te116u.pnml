@@ -17,6 +17,7 @@ switch (FEAT_TRAINS, SELF, _2te116u_a2009_sprites_left,
 {
            0: _2te116u_v2_sprites_left;
            1: _2te116u_v2_sprites_left;  // ускоренный
+        0xE0: _2te116u_v2_sprites_left;  // ускоренный
   LV_RZD_PID: _2te116u_a2011_sprites_left;
   align_11_sprites;
 }
@@ -26,6 +27,7 @@ switch (FEAT_TRAINS, SELF, _2te116u_a2009_sprites_right,
 {
            0: _2te116u_v2_sprites_right;
            1: _2te116u_v2_sprites_right;  // ускоренный
+        0xE0: _2te116u_v2_sprites_right;  // ускоренный
   LV_RZD_PID: _2te116u_a2011_sprites_right;
   align_11_sprites;
 }
@@ -36,7 +38,7 @@ engine_direction_template(_2te116u, )
 long_vehicle(_2te116u)
 
 switch (FEAT_TRAINS, SELF, _2te116u_tractive_effort_coefficient,
-  cargo_subtype == 1)
+  cargo_subtype >= 0xE0)
 {
   0: return get_tec_int(403.0, 138);
      return get_tec_int(337.0, 138);
@@ -46,22 +48,23 @@ engine_speed(_2te116u_100, 100)
 engine_speed(_2te116u_120, 120)
 
 switch (FEAT_TRAINS, SELF, _2te116u_speed,
-  cargo_subtype == 1)
+  cargo_subtype >= 0xE0)
 {
   1: _2te116u_120_speed;
      _2te116u_100_speed;
 }
 
-  livery_template_altf(_2te116u_b2009, STR_REFIT_WITH_INCREASED_SPEED)
+  livery_template_refitf(_2te116u_b2009, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
 
-  livery_template_base_list(_2te116u_a2009_alt, LV_RZD_PID)
-  livery_template_alt(_2te116u_a2009, STR_REFIT_WITH_INCREASED_SPEED)
+  livery_template_base_list(_2te116u_a2009_base, LV_RZD_PID)
+  livery_template_refit(_2te116u_a2009, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY, _2te116u_a2009_base)
 
-  livery_template_altf(_2te116u_a2011, STR_REFIT_WITH_INCREASED_SPEED)
+  livery_template_refitf(_2te116u_a2011, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
 livery_template_build_year2(_2te116u, 2009, 2011)
 engine_diesel_1r_effect(_2te116u_create_effect_sprites, 2, 0, 12)
 engine_direction_template(_2te116u, _create_effect)
 engine_penalise_speed(_2te116u, 4)
+engine_refit_cost_for_a2_livery_change(_2te116u, 0xE0, 1, 2)
 
 switch (FEAT_TRAINS, SELF, _2te116u_running_cost_factor,
 [  STORE_TEMP(346, 0),  // Моторы
@@ -106,6 +109,7 @@ item (FEAT_TRAINS, _2te116u, 172) {
     tractive_effort_coefficient: _2te116u_tractive_effort_coefficient;
                  purchase_speed: return 100;
                 additional_text: _2te116u_additional_text;
+                     refit_cost: _2te116u_refit_cost;
   }
 }
 

@@ -608,12 +608,6 @@ switch (FEAT_TRAINS, SELF, name##_power, check_year(year))       \
 { 1: return get_power_in_cb(new_power);                          \
      return get_power_in_cb(power); }                            \
 
-// Определение мощности с изменением по грузу
-#define engine_power_change_on_cargo_type(name, power, new_power, cargo)  \
-switch (FEAT_TRAINS, SELF, name##_power, cargo_type_in_veh == cargo)      \
-{ 1: return get_power_in_cb(new_power);                                   \
-     return get_power_in_cb(power); }                                     \
-
 // Определение мощности МВПС
 #define engine_power_MU(name, power, vehid)                           \
 switch (FEAT_TRAINS, PARENT, name##_power, vehicle_type_id == vehid)  \
@@ -679,44 +673,32 @@ switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient,                  
   4: return new_TE4;                                                                                           \
      return TE; }                                                                                              \
 
-// Определение ТЕ с изменением по грузу
-#define engine_TE_change_on_cargo_type(name, TE, new_TE, cargo)                             \
-switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, cargo_type_in_veh == cargo)  \
-{ 1: return new_TE;                                                                         \
-     return TE; }                                                                           \
-
-// Определение цены рефита при изменении груза
-#define engine_refit_cost_for_cargo_change(name, cost)                                               \
-switch (FEAT_TRAINS, SELF, name##_refit_cost, (extra_callback_info1 & 0x00FF) == cargo_type_in_veh)  \
-{ 1: return 0;                                                                                       \
-     return cost; }                                                                                  \
-
 // Определение цены рефита при ливреи
 #define engine_refit_cost_for_a_livery_change(name, num, cost)                     \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
 { 1: return cost;                                                                  \
-     return 0; }                                                                   \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 #define engine_refit_cost_for_a2_livery_change(name, num, cost, cost2)             \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
 { 1: return cost;                                                                  \
   2: return cost2;                                                                 \
-     return 0; }                                                                   \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 #define engine_refit_cost_for_e_livery_change(name, num, cost)                     \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
 { 1: return cost;                                                                  \
-     return 0; }                                                                   \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 #define engine_refit_cost_for_e2_livery_change(name, num, cost, cost2)             \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
 { 1: return cost;                                                                  \
   2: return cost2;                                                                 \
-     return 0; }                                                                   \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 // Определение длины с изменением по году постройки
 #define engine_length_change_build_after(name, length, new_length, year)  \
