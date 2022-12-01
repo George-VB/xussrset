@@ -13,22 +13,37 @@ switch (FEAT_TRAINS, SELF, vl22_sprites_start,
            0: vl22_v1_sprites_start;
            1: vl22_v2_sprites_start;
   LV_RAL6002: vl22_v1_sprites_start;
-  align_10_sprites;
+        0xE0: vl22_v1_sprites_start;
+        0xE1: vl22_v2_sprites_start;
+              align_10_sprites;
 }
 
 long_vehicle(vl22)
 
-livery_template_alt0(vl22, STR_REFIT_TTD_53, STR_REFIT_TTD_96)
-engine_refit_cost_for_cargo_change(vl22, 2)
-engine_TE_change_on_cargo_type(vl22, get_tec_int(353.0, 132),
-                                     get_tec_int(322.0, 132), PASS)
-engine_power_change_on_cargo_type(vl22, 2430,
-                                        2447, PASS)
+livery_template_alt0(vl22_base, STR_REFIT_TTD_53, STR_REFIT_TTD_96)
+livery_template_refit2(vl22, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_PASSENGER_EDITION, STR_REFIT_TTD_53, STR_REFIT_TTD_96, vl22_base)
+
+engine_refit_cost_for_a2_livery_change(vl22, 0xE0, 1, 2)
+
+switch (FEAT_TRAINS, SELF, vl22_tractive_effort_coefficient,
+  cargo_subtype >= 0xE0)
+{
+  1: return get_tec_int(353.0, 132);
+     return get_tec_int(322.0, 132);
+}
+
+switch (FEAT_TRAINS, SELF, vl22_power,
+  (cargo_subtype >= 0xE0))
+{
+  0: return get_power_in_cb(2430);
+     return get_power_in_cb(2447);
+}
+
 engine_electric1_2_effect(vl22_create_effect, -2, 4)
 engine_speed(vl22cargo, 70)
 engine_speed(vl22pass, 85)
 switch (FEAT_TRAINS, SELF, vl22_speed,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 {
   1: vl22pass_speed;
      vl22cargo_speed;
@@ -76,7 +91,7 @@ item (FEAT_TRAINS, vl22, 313) {
   property {
     name: string(STR_NAME_VL22);
     vehicle_dates(1938, 1946, 40, 10, 8, 32)
-    vehicle_pass_and_cargo()
+    vehicle_passcargo()
     vehicle_dcelectric(2430, 132, 353.0)
   }
   graphics {

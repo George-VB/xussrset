@@ -28,13 +28,16 @@ switch (FEAT_TRAINS, SELF, vl22m_sprites_start,
            0: vl22m_sprites_start_gr;
            1: vl22m_sprites_start_bm;
   LV_RAL6002: vl22m_sprites_start_gr;
+        0xE0: vl22m_sprites_start_gr;
+        0xE1: vl22m_sprites_start_bm;
   align_10_sprites;
 }
 
 long_vehicle(vl22m)
 
-livery_template_alt0(vl22m, STR_REFIT_TTD_53, STR_REFIT_TTD_96)
-engine_refit_cost_for_cargo_change(vl22m, 1)
+livery_template_alt0(vl22m_base, STR_REFIT_TTD_53, STR_REFIT_TTD_96)
+livery_template_refit2(vl22m, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_PASSENGER_EDITION, STR_REFIT_TTD_53, STR_REFIT_TTD_96, vl22m_base)
+engine_refit_cost_for_a2_livery_change(vl22m, 0xE0, 1, 2)
 engine_TE_change_build_after2(vl22mpass, get_tec_int(353.0, 132),
                                          get_tec_int(355.0, 132), 1956,
                                          get_tec_int(292.0, 132), 1957)
@@ -42,7 +45,7 @@ engine_TE_change_build_after2(vl22mcargo, get_tec_int(378.5, 132),
                                           get_tec_int(369.0, 132), 1956,
                                           get_tec_int(364.8, 132), 1957)
 switch (FEAT_TRAINS, SELF, vl22m_tractive_effort_coefficient,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 {
   1: vl22mpass_tractive_effort_coefficient;
      vl22mcargo_tractive_effort_coefficient;
@@ -54,7 +57,7 @@ engine_power_change_build_after2(vl22mcargo, 2470,
                                              2460, 1956,
                                              2480, 1957)
 switch (FEAT_TRAINS, SELF, vl22m_power,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 {
   1: vl22mpass_power;
      vl22mcargo_power;
@@ -65,13 +68,13 @@ engine_speed_change_build_after(vl22mpass, 90,
 engine_speed_change_build_after(vl22mcargo, 75,
                                             80, 1957)
 switch (FEAT_TRAINS, SELF, vl22m_speed,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 {
   1: vl22mpass_speed;
      vl22mcargo_speed;
 }
 switch (FEAT_TRAINS, SELF, vl22m_purchase_speed,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 {
   1: vl22mpass_purchase_speed;
      vl22mcargo_purchase_speed;
@@ -103,7 +106,7 @@ switch (FEAT_TRAINS, SELF, vl22mcargo_running_cost_factor,
    STORE_TEMP(LOAD_TEMP(7), 8)])                  // Максимальная масса
 { all_running_cost_factor; }                      // 241 - 243 - 234
 switch (FEAT_TRAINS, SELF, vl22m_running_cost_factor,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 { 1: vl22mpass_running_cost_factor;
      vl22mcargo_running_cost_factor; }
 
@@ -119,7 +122,7 @@ item (FEAT_TRAINS, vl22m, 314) {
   property {
     name: string(STR_NAME_VL22M);
     vehicle_dates(1947, 1958, 30, 10, 8, 30)
-    vehicle_cargo_and_pass()
+    vehicle_passcargo()
     vehicle_dcelectric(2470, 132, 353.0)
   }
   graphics {
