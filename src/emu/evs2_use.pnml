@@ -1,4 +1,4 @@
-﻿// evs2
+﻿// evs2 uses evs1
 
 switch (FEAT_TRAINS, SELF, evs2_h_gbt_sprites_left_check,
   position_in_consist == 0)
@@ -163,19 +163,16 @@ switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-  livery_template_none(evs2_b2014)
-
-  livery_template0(evs2_a2014_alt)
-  livery_template_alt(evs2_a2014, WITH_INCREASED_SPEED)
-livery_template_build_year(evs2, 2014)
+  livery_template_refitf(evs2_a2014, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
+livery_template_build_year_ao(evs2, 2014)
 
 engine_speed(evs2_250, 250)
 engine_speed(evs2_300, 300)
 switch (FEAT_TRAINS, SELF, evs2_speed,
-  cargo_subtype == 1)
+  cargo_subtype >= 0xE0)
 { 1: evs2_300_speed;
      evs2_250_speed; }
-engine_refit_cost_for_e2_livery_change(evs2, 1, 105, 105)
+engine_refit_cost_for_e2_livery_change(evs2, 0xE0, 105, 105)
 engine_capacity_MU_change_build_after(evs2, 460,
                                             433, 2014, evs2)
 engine_capacity_MU_change_build_after(evs2_part2, 104,
@@ -205,13 +202,13 @@ switch (FEAT_TRAINS, SELF, evs2_v2_running_cost_factor,
    STORE_TEMP(811, 4),   // ТО
    STORE_TEMP(58, 5),    // Сертификация
 
-   STORE_TEMP(300, 6),                                     // Скорость
-   STORE_TEMP(597, 7),                                     // Тара
-   STORE_TEMP(673, 8)])                      /* 597+76 */  // Максимальная масса
-{ evs2_check_running_cost_factor; }                        // 3055+2738
+   STORE_TEMP(300, 6),                 // Скорость
+   STORE_TEMP(597, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 76, 8)])  // Максимальная масса
+{ evs2_check_running_cost_factor; }    // 3055+2738
 
 switch (FEAT_TRAINS, PARENT, evs2_running_cost_factor,
-  cargo_subtype == 1)
+  cargo_subtype >= 0xE0)
 {
   0: evs2_v1_running_cost_factor;
      evs2_v2_running_cost_factor;

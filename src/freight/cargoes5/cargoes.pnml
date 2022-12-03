@@ -7,7 +7,7 @@ cargo_layout_template(cargo5_mno21_1, 5, 32, 40)
 switch (FEAT_TRAINS, SELF, cargo5_mno2_all_sprites,
  cargo_count)
 {
-0..3: dummy_sprites;
+ 0..3: dummy_sprites;
       cargo5_mno21_1_sprites;
 }
 
@@ -17,7 +17,7 @@ cargo_layout_template(cargo5_pore1_1, 5, 32, 40)
 switch (FEAT_TRAINS, SELF, cargo5_pore_all_sprites,
  cargo_count)
 {
-0..3: dummy_sprites;
+ 0..3: dummy_sprites;
       cargo5_pore1_1_sprites;
 }
 
@@ -27,7 +27,7 @@ cargo_layout_template(cargo5_core1_1, 5, 32, 40)
 switch (FEAT_TRAINS, SELF, cargo5_core_all_sprites,
  cargo_count)
 {
-0..3: dummy_sprites;
+ 0..3: dummy_sprites;
       cargo5_core1_1_sprites;
 }
 
@@ -37,7 +37,7 @@ cargo_layout_template(cargo5_iore1_1, 5, 32, 40)
 switch (FEAT_TRAINS, SELF, cargo5_iore_all_sprites,
  cargo_count)
 {
-0..3: dummy_sprites;
+ 0..3: dummy_sprites;
       cargo5_iore1_1_sprites;
 }
 
@@ -181,8 +181,7 @@ switch (FEAT_TRAINS, SELF, cargo5_good_all_sprites,
   0: cargo5_good1_sprites;
      cargo5_good2_sprites;
 }
-
-
+// --- STEL ---
 #define IMAGEFILE  "src/freight/cargoes5/stel-pipe-cup.png"
 cargo_layout_template(cargo5_stel_pipes_cup_1, 5, 32, 40)
 #undef IMAGEFILE
@@ -201,24 +200,91 @@ switch (FEAT_TRAINS, SELF, cargo5_stel_v_coils_sprites,
   0..3: dummy_sprites;
         cargo5_stel_v_coils_1_sprites;
 }
-
-switch (FEAT_TRAINS, SELF, cargo5_stel_all_sprites,
-  (random_bits >> 1) & 0x01)
+#define IMAGEFILE  "src/freight/cargoes5/stel-copr-coils.png"
+cargo_layout_template(cargo5_stel_v_coils_cup_1, 5, 32, 40)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, cargo5_stel_v_coils_cup_sprites,
+ cargo_count * 100 / cargo_capacity)
 {
-  0: cargo5_stel_pipes_cup_sprites;
-     cargo5_stel_v_coils_sprites;
+  0..3: dummy_sprites;
+        cargo5_stel_v_coils_cup_1_sprites;
 }
-
-switch (FEAT_TRAINS, SELF, cargo5_stel_loading_speed,
-  (random_bits >> 1) & 0x01)
-{  return (cargo_capacity / 2 + 1);  }
-
-switch (FEAT_TRAINS, SELF, cargo5_pipe_all_sprites, 0)
-{  cargo5_stel_pipes_cup_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_pipe_loading_speed, 0)
-{  return (cargo_capacity / 2 + 1);  }
-
+#define IMAGEFILE  "src/freight/cargoes5/stel-slab.png"
+cargo_layout_template(cargo5_stel_slab_1, 5, 32, 40)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, cargo5_stel_slab_sprites,
+ cargo_count * 100 / cargo_capacity)
+{
+    0..3: dummy_sprites;
+          cargo5_stel_slab_1_sprites;
+}
+#define IMAGEFILE  "src/freight/cargoes5/stel-alum-ingot.png"
+cargo_layout_template(cargo5_stel_alum_ingot_1, 5, 32, 40)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, cargo5_stel_alum_ingot_sprites,
+ cargo_count * 100 / cargo_capacity)
+{
+   0..3: dummy_sprites;
+         cargo5_stel_alum_ingot_1_sprites;
+}
+switch (FEAT_TRAINS, PARENT, cargo5_stel_all_sprites_2,
+  (random_bits >> 1) & 0x3F)
+{
+   0..18: cargo5_stel_v_coils_sprites;      // 7
+  19..38: cargo5_stel_slab_sprites;         // 7
+  39..52: cargo5_stel_alum_ingot_sprites;   // 5
+  53..57: cargo5_stel_v_coils_cup_sprites;  // 2
+          cargo5_stel_pipes_cup_sprites;    // 2
+}
+switch (FEAT_TRAINS, SELF, cargo5_stel_all_sprites,
+  (random_bits >> 1) & 0x3F)
+{
+    0..4: cargo5_stel_v_coils_sprites;      // 7
+    5..9: cargo5_stel_slab_sprites;         // 7
+  10..12: cargo5_stel_alum_ingot_sprites;   // 5
+  13..14: cargo5_stel_v_coils_cup_sprites;  // 2
+  15..15: cargo5_stel_pipes_cup_sprites;    // 2
+          cargo5_stel_all_sprites_2;
+}
+switch (FEAT_TRAINS, SELF, cargo5_stel_loading_speed, (random_bits >> 1) & 0x01)
+{  return (cargo_capacity); }
+// --- PIPE ---
+switch (FEAT_TRAINS, SELF, cargo5_pipe_all_sprites, (random_bits >> 1) & 0x01)
+{  cargo5_stel_pipes_cup_sprites; }
+// --- ALUM ---
+switch (FEAT_TRAINS, SELF, cargo5_alum_all_sprites, (random_bits >> 1) & 0x03)
+{  cargo5_stel_alum_ingot_sprites; }
+switch (FEAT_TRAINS, SELF, cargo5_alum_loading_speed, (random_bits >> 1) & 0x03)
+{ return (cargo_capacity + 1); }
+// --- COPR ---
+switch (FEAT_TRAINS, SELF, cargo5_copr_all_sprites, (random_bits >> 1) & 0x01)
+{  0: cargo5_stel_v_coils_cup_sprites;
+      cargo5_stel_pipes_cup_sprites; }
+// --- STSE ---
+switch (FEAT_TRAINS, SELF, cargo5_stse_all_sprites, (random_bits >> 1) & 0x01)
+{  0: cargo5_good1_sprites;
+      cargo5_good2_sprites; }
+switch (FEAT_TRAINS, SELF, cargo5_stse_loading_speed, (random_bits >> 1) & 0x01)
+{ return (cargo_capacity / 2 + 1); }  // 2 boxes
+// --- STSH ---
+switch (FEAT_TRAINS, SELF, cargo5_stsh_all_sprites, (random_bits >> 1) & 0x01)
+{ cargo5_stel_slab_sprites; }
+switch (FEAT_TRAINS, SELF, cargo5_stsh_loading_speed, (random_bits >> 1) & 0x01)
+{ return (cargo_capacity / 2 + 1); }
+// --- STWR ---
+switch (FEAT_TRAINS, SELF, cargo5_stwr_all_sprites, (random_bits >> 1) & 0x07)
+{
+  0..2: cargo5_stel_v_coils_sprites;
+  3..5: cargo5_stel_v_coils_cup_sprites;
+     6: cargo5_good1_sprites;
+     cargo5_good2_sprites;
+}
+switch (FEAT_TRAINS, SELF, cargo5_stwr_loading_speed, (random_bits >> 1) & 0x07)
+{
+  0..5: return (cargo_capacity / 2 + 1);  // Coils
+        return (cargo_capacity / 2 + 1);  // 2 boxes
+}
+// --- WDPR ---
 #define IMAGEFILE  "src/freight/cargoes5/wdpr-1.png"
 cargo_layout_template(cargo5_wdpr1_1, 5, 32, 40)
 #undef IMAGEFILE
@@ -265,7 +331,7 @@ cargo_layout_template(cargo5_lvst1_1, 5, 32, 40)
 switch (FEAT_TRAINS, SELF, cargo5_lvst1_sprites,
   cargo_count * 100 / cargo_capacity)
 {
-0..3: dummy_sprites;
+ 0..3: dummy_sprites;
       cargo5_lvst1_1_sprites;
 }
 
@@ -275,7 +341,7 @@ cargo_layout_template(cargo5_lvst2_1, 5, 32, 40)
 switch (FEAT_TRAINS, SELF, cargo5_lvst2_sprites,
   cargo_count * 100 / cargo_capacity)
 {
-0..3: dummy_sprites;
+ 0..3: dummy_sprites;
       cargo5_lvst2_1_sprites;
 }
 
@@ -291,15 +357,19 @@ switch (FEAT_TRAINS, SELF, cargo5_piece_loading_speed,
   cargo_type_in_veh)
 {
   VEHI: return 3;
+  ALUM: cargo5_alum_loading_speed;
   COPR: cargo5_stel_loading_speed;
+  CSTI: cargo5_stel_loading_speed;
   IRON: cargo5_stel_loading_speed;
   METL: cargo5_stel_loading_speed;
-  PIPE: cargo5_pipe_loading_speed;
+  PIPE: cargo5_stel_loading_speed;
   STEL: cargo5_stel_loading_speed;
   STAL: cargo5_stel_loading_speed;
   STST: cargo5_stel_loading_speed;
   STCB: cargo5_stel_loading_speed;
-  CSTI: cargo5_stel_loading_speed;
+  STSE: cargo5_stse_loading_speed;
+  STSH: cargo5_stsh_loading_speed;
+  STWR: cargo5_stwr_loading_speed;
   ZINC: cargo5_stel_loading_speed;
   GOOD: cargo5_good_loading_speed;
         all_wagons_bulk_loading_speed;
@@ -319,6 +389,8 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   CMNT: cargo5_good_all_sprites;
   GLAS: cargo5_good_all_sprites;
   PAPR: cargo5_good_all_sprites;
+  SOAP: cargo5_good_all_sprites;
+  LYE_: cargo5_good_all_sprites;
 // Крытые: Сырьё
   FICR: cargo5_good_all_sprites;
   WOOL: cargo5_good_all_sprites;
@@ -333,6 +405,7 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   PETR: cargo5_good_all_sprites;
   RFPR: cargo5_good_all_sprites;
 // Жидкости: Материалы
+  COAT: cargo5_good_all_sprites;
   DYES: cargo5_good_all_sprites;
   PLAS: cargo5_good_all_sprites;
   PLST: cargo5_good_all_sprites;
@@ -340,6 +413,7 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   ACID: cargo5_good_all_sprites;
   CHLO: cargo5_good_all_sprites;
   CTAR: cargo5_good_all_sprites;
+  NH3_: cargo5_good_all_sprites;
 // Жидкости: Сырьё
   BUBL: cargo5_good_all_sprites;
   RUBR: cargo5_good_all_sprites;
@@ -394,7 +468,6 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   CLAY: cargo5_clay_all_sprites;
   KAOL: cargo5_lime_all_sprites;
   LIME: cargo5_lime_all_sprites;
-  QLME: cargo5_lime_all_sprites;
 // Сыпучка: Руды
   AORE: cargo5_aore_all_sprites;
   CORE: cargo5_core_all_sprites;
@@ -415,7 +488,8 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   WDPR: cargo5_wdpr_all_sprites;
   WOOD: cargo5_wood_all_sprites;
 // Навал: Стали
-  COPR: cargo5_stel_all_sprites;
+  ALUM: cargo5_alum_all_sprites;
+  COPR: cargo5_copr_all_sprites;
   CSTI: cargo5_stel_all_sprites;
   IRON: cargo5_stel_all_sprites;
   METL: cargo5_stel_all_sprites;
@@ -424,6 +498,9 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
   STCB: cargo5_stel_all_sprites;
   STEL: cargo5_stel_all_sprites;
   STST: cargo5_stel_all_sprites;
+  STSE: cargo5_stse_all_sprites;
+  STSH: cargo5_stsh_all_sprites;
+  STWR: cargo5_stwr_all_sprites;
   ZINC: cargo5_stel_all_sprites;
 // Штучный груз
   ENSP: cargo5_good_all_sprites;
@@ -444,141 +521,37 @@ switch (FEAT_TRAINS, SELF, cargo5all_sprites,
 cargo_layout_template(cargo5_flatbed1_1, 5, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_coal_sprites, cargo_count)
-{
-0..2: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_coal_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x00), 0x100), 0])
-{  cargo5_flatbed1_coal_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_aore_sprites, cargo_count)
-{
-0..3: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_aore_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x01), 0x100), 0])
-{  cargo5_flatbed1_aore_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_core_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_core_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x02), 0x100), 0])
-{  cargo5_flatbed1_core_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_fert_sprites, cargo_count)
-{
-0..2: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_fert_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x03), 0x100), 0])
-{  cargo5_flatbed1_fert_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_grvl_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_grvl_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x04), 0x100), 0])
-{  cargo5_flatbed1_grvl_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_iore_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_iore_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x05), 0x100), 0])
-{  cargo5_flatbed1_iore_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_lime_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_lime_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x06), 0x100), 0])
-{  cargo5_flatbed1_lime_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_mno2_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_mno2_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x07), 0x100), 0])
-{  cargo5_flatbed1_mno2_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_pore_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_pore_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x08), 0x100), 0])
-{  cargo5_flatbed1_pore_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_sand_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_sand_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x09), 0x100), 0])
-{  cargo5_flatbed1_sand_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_scmt_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_scmt_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0A), 0x100), 0])
-{  cargo5_flatbed1_scmt_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_sulp_sprites, cargo_count)
-{
-0..3: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_sulp_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0B), 0x100), 0])
-{  cargo5_flatbed1_sulp_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_clay_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_clay_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0C), 0x100), 0])
-{  cargo5_flatbed1_clay_sprites;  }
-
-switch (FEAT_TRAINS, SELF, cargo5_flatbed1_fecr_sprites, cargo_count)
-{
-0..4: dummy_sprites;
-      cargo5_flatbed1_1_sprites;
-}
-switch (FEAT_TRAINS, SELF, cargo5_flatbed_fecr_sprites,
-[STORE_TEMP(CB_FLAG_MORE_SPRITES | (cargoes_cc2 + 0x0D), 0x100), 0])
-{  cargo5_flatbed1_fecr_sprites;  }
+wagon_cargo1_1(5, flatbed, coal, 850 , 1, 0x00)
+wagon_cargo1_1(5, flatbed, aore, 1280, 1, 0x01)
+wagon_cargo1_1(5, flatbed, core, 2590, 1, 0x02)
+wagon_cargo1_1(5, flatbed, fert, 800 , 1, 0x03)
+wagon_cargo1_1(5, flatbed, grvl, 1800, 1, 0x04)
+wagon_cargo1_1(5, flatbed, iore, 2470, 1, 0x05)
+wagon_cargo1_1(5, flatbed, lime, 1550, 1, 0x06)
+wagon_cargo1_1(5, flatbed, mno2, 7430, 1, 0x07)
+wagon_cargo1_1(5, flatbed, pore, 5015, 1, 0x08)
+wagon_cargo1_1(5, flatbed, sand, 1440, 1, 0x09)
+wagon_cargo1_1(5, flatbed, scmt, 3000, 1, 0x0A)
+wagon_cargo1_1(5, flatbed, sulp, 1310, 1, 0x0B)
+wagon_cargo1_1(5, flatbed, clay, 1700, 1, 0x0C)
+wagon_cargo1_1(5, flatbed, fecr, 2190, 1, 0x0D)
+wagon_cargo1_1(5, flatbed, phos, 960 , 1, 0x0E)
+wagon_cargo1_1(5, flatbed, uran, 5000, 5, 0x0F)
+wagon_cargo1_1(5, flatbed, rcyc, 480 , 1, 0x10)
+wagon_cargo1_1(5, flatbed, peat, 800 , 1, 0x11)
+wagon_cargo1_1(5, flatbed, slag, 2110, 1, 0x12)
+wagon_cargo1_1(5, flatbed, kaol, 1550, 1, 0x13)
+wagon_cargo1_1(5, flatbed, salt, 1200, 1, 0x14)
 
 switch (FEAT_TRAINS, SELF, cargo5flatbed_sprites,
-  [STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100),
+[STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_IDENTITY, 0x100),
   cargo_type_in_veh])
 {
 // Сыпучка: Материалы
   CBLK: cargo5_good_all_sprites;  // TODO
   FERT: cargo5_flatbed_fert_sprites;
-  RCYC: cargo5_flatbed_scmt_sprites;  // TODO
-  SASH: cargo5_good_all_sprites;      // TODO
+  RCYC: cargo5_flatbed_rcyc_sprites;
+  SASH: cargo5_good_all_sprites;  // TODO
   SCMT: cargo5_flatbed_scmt_sprites;
   SCRP: cargo5_flatbed_scmt_sprites;  // TODO
   WSTE: cargo5_flatbed_scmt_sprites;  // TODO
@@ -586,14 +559,13 @@ switch (FEAT_TRAINS, SELF, cargo5flatbed_sprites,
   COAL: cargo5_flatbed_coal_sprites;
   COKE: cargo5_flatbed_coal_sprites;  // TODO
   GRVL: cargo5_flatbed_grvl_sprites;
-  PEAT: cargo5_flatbed_fert_sprites;  // TODO
+  PEAT: cargo5_flatbed_peat_sprites;
   SAND: cargo5_flatbed_sand_sprites;
-  SLAG: cargo5_flatbed_grvl_sprites;  // TODO
+  SLAG: cargo5_flatbed_slag_sprites;
 // Сыпучка: Глины
   CLAY: cargo5_flatbed_clay_sprites;
-  KAOL: cargo5_flatbed_lime_sprites;  // TODO
+  KAOL: cargo5_flatbed_kaol_sprites;
   LIME: cargo5_flatbed_lime_sprites;
-  QLME: cargo5_flatbed_lime_sprites;  // TODO
 // Сыпучка: Руды
   AORE: cargo5_flatbed_aore_sprites;
   CORE: cargo5_flatbed_core_sprites;
@@ -601,11 +573,14 @@ switch (FEAT_TRAINS, SELF, cargo5flatbed_sprites,
   IORE: cargo5_flatbed_iore_sprites;
   MNO2: cargo5_flatbed_mno2_sprites;
   NITR: cargo5_flatbed_clay_sprites;  // TODO
-  PHOS: cargo5_flatbed_iore_sprites;  // TODO
+  PHOS: cargo5_flatbed_phos_sprites;
   PORE: cargo5_flatbed_pore_sprites;
   POTA: cargo5_pota_all_sprites;
+  SALT: cargo5_flatbed_salt_sprites;
   SULP: cargo5_flatbed_sulp_sprites;
+
+  URAN: cargo5_flatbed_uran_sprites;
 // Прочее
-  FMSP: cargo5_flatbed_fert_sprites;
+  FMSP: cargo5_flatbed_fert_sprites;  // TODO
         cargo5all_sprites;
 }

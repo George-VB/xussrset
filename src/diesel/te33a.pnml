@@ -11,6 +11,11 @@ diesel1r_sprites(12, te33a_v3, 32, 241)
 diesel1r_sprites(12, te33a_v4, 32, 442)
 diesel1r_sprites(12, te33a_v5, 32, 643)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/diesel/te33ac.png"
+diesel1r_sprites(12, te33ac_v1, 32,  40)
+diesel1r_sprites(12, te33ac_v2, 32, 241)
+diesel1r_sprites(12, te33ac_v3, 32, 442)
+#undef IMAGEFILE
 purchase_sprites_select(te33a, 2010)
 
 switch (FEAT_TRAINS, SELF, te33a_a2010_sprites_left,
@@ -21,6 +26,9 @@ switch (FEAT_TRAINS, SELF, te33a_a2010_sprites_left,
                           2: te33a_v4_sprites_left;
                           3: te33a_v5_sprites_left;
   LV_KAZAKHSTAN_TEMIR_ZHOLY: te33a_v2_sprites_left;
+                       0xE0: te33ac_v1_sprites_left;
+                       0xE1: te33ac_v2_sprites_left;
+                       0xE2: te33ac_v3_sprites_left;
      align_12_sprites;
 }
 
@@ -32,6 +40,9 @@ switch (FEAT_TRAINS, SELF, te33a_a2010_sprites_right,
                           2: te33a_v4_sprites_right;
                           3: te33a_v5_sprites_right;
   LV_KAZAKHSTAN_TEMIR_ZHOLY: te33a_v2_sprites_right;
+                       0xE0: te33ac_v1_sprites_right;
+                       0xE1: te33ac_v2_sprites_right;
+                       0xE2: te33ac_v3_sprites_right;
      align_12_sprites;
 }
 
@@ -49,15 +60,19 @@ switch (FEAT_TRAINS, SELF, te33a_colour_mapping,
                           2: return ttd_cc2 + 0x42;
                           3: return ttd_cc2 + 0x44;
   LV_KAZAKHSTAN_TEMIR_ZHOLY: return ttd_cc2 + 0x41;
+                       0xE0: return ttd_cc2 + 0x41;    // LV_KAZAKHSTAN_TEMIR_ZHOLY
+                       0xE1: return ttd_cc2 + 0x45;    // LV_UKRAINIAN_RAILWAY
+                       0xE2: return ttdall_cc + 0x92;  // LV_RAILWAY_MOLDOVA
+     return CB_FAILED;
 }
 
-  livery_template_none(te33a_b2010)
+    livery_template_alt30(te33a_a2010_b2013, STR_REFIT_LV_KAZAKHSTAN_TEMIR_ZHOLY, STR_REFIT_LV_TAJIK_RAILWAYS, STR_REFIT_LV_AZERBAIJAN_RAILWAYS, STR_REFIT_UZ_IVANOFRANKIVSKCEMENT)
+    livery_template_refit3(te33a_a2010_a2013, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_TE33AC, STR_REFIT_LV_KAZAKHSTAN_TEMIR_ZHOLY, STR_REFIT_LV_UKRAINIAN_RAILWAY, STR_REFIT_LV_CALEA_FERATA_MOLDOVA, te33a_a2010_b2013)
+  livery_template_service_year(te33a_a2010, 2013)
+livery_template_build_year_ao(te33a, 2010)
+engine_refit_cost_for_a_livery_change(te33a, 0xE0, 1)
 
-  livery_template1(te33a_a2010_alt, KAZAKHSTAN_TEMIR_ZHOLY)
-  livery_template_alt3(te33a_a2010, TAJIK_RAILWAYS, AZERBAIJAN_RAILWAYS, UZ_IVANOFRANKIVSKCEMENT)
-livery_template_build_year(te33a, 2010)
-
-engine_diesel_1r_effect(te33a_create_effect_sprites, -1, 5, 12)
+engine_diesel_1r_effect(te33a_create_effect_sprites, 1, 3, 12)
 engine_direction_template(te33a, _create_effect)
 engine_RND_effect_direction_template(te33a, 3, 1)
 engine_speed(te33a, 120)
@@ -70,16 +85,23 @@ switch (FEAT_TRAINS, SELF, te33a_running_cost_factor,
    STORE_TEMP(226, 4),  // ТО
    STORE_TEMP(16, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),        // Скорость
-   STORE_TEMP(138, 7),        // Тара
-   STORE_TEMP(138, 8)])       // Максимальная масса
-{ all_running_cost_factor; }  // 1613
+   STORE_TEMP(120, 6),            // Скорость
+   STORE_TEMP(138, 7),            // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 1613
 
-hint_engine_noto(te33a,
+hint_engine_noto(te33a_b2013,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_3,
      2009,
      string(STR_PURCHASE_HINT_FACTORY_ASTANA))
+hint_engine_noto_comment(te33a_a2013,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1_3,
+     2013,
+     string(STR_PURCHASE_HINT_FACTORY_ASTANA),
+     string(STR_PURCHASE_HINT_UPGRADE))
+hint_change_after(te33a, 2013)
 
 item (FEAT_TRAINS, te33a, 623) {
   property {
@@ -98,6 +120,7 @@ item (FEAT_TRAINS, te33a, 623) {
      running_cost_factor: te33a_running_cost_factor;
     bitmask_vehicle_info: te33a_bitmask_vehicle_info;
           cargo_capacity: return 0;
+              refit_cost: te33a_refit_cost;
            create_effect: te33a_create_effect;
       cargo_subtype_text: te33a_cargo_subtype_text;
           colour_mapping: te33a_colour_mapping;

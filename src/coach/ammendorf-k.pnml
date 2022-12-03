@@ -24,6 +24,14 @@ pass_wagon_sprites(14, ammendorf_k_v12, 32, 844)
 pass_wagon_sprites(14, ammendorf_k_v13, 32, 40)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: ammendorf_k_v1_sprites_start;
+     ammendorf_k_v2_sprites_start;
+}
+
 switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_rbr,
  check_year(GREAT_CHANGE_YEAR))
 {
@@ -48,7 +56,7 @@ switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_rus,
 switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start,
   cargo_subtype)
 {
-                          0: ammendorf_k_v1_sprites_start;
+                          0: ammendorf_k_sprites_start_random;
                  LV_RAL6002: ammendorf_k_v2_sprites_start;
                  LV_RAL6020: ammendorf_k_v1_sprites_start;
                LV_RED_ARROW: ammendorf_k_v3_sprites_start;
@@ -64,6 +72,20 @@ switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start,
 
 long_vehicle(ammendorf_k)
 
+livery_template_base_list10(ammendorf_k, LV_RAL6020, LV_RAL6002, LV_RED_ARROW, LV_BELARUSSIA, LV_BALTIC_RAILWAY_RIGA, LV_BALTIC_RAILWAY_ESTONIA, LV_AMBER, LV_EAST, LV_RUSSIA, LV_SIBERIAN)
+switch (FEAT_TRAINS, SELF, ammendorf_k_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(46, 1),   // Бригада
+   STORE_TEMP(126, 2),  // Износ
+   STORE_TEMP(11, 3),   // Сопровождение
+   STORE_TEMP(33, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(55, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 221
+
 hint_wagon_coach(ammendorf_k_short,
      string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
      STR_PURCHASE_HINT_AGING_PERIOD_6_2,
@@ -78,20 +100,6 @@ hint_wagon_coach_comment(ammendorf_k_long,
      string(STR_PURCHASE_HINT_FACTORY_AMMENDORF),
      string(STR_PURCHASE_HINT_INTERIOR_WHITE))
 hint_change_longnames(ammendorf_k)
-
-livery_template(ammendorf_k, TTD_59, LV_RAL6002, LV_RED_ARROW, LV_BELARUSSIA, LV_BALTIC_RAILWAY_RIGA, LV_BALTIC_RAILWAY_ESTONIA, LV_AMBER, LV_EAST, LV_RUSSIA, LV_SIBERIAN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-switch (FEAT_TRAINS, SELF, ammendorf_k_running_cost_factor,
-[  STORE_TEMP(0, 0),    // Моторы
-   STORE_TEMP(46, 1),   // Бригада
-   STORE_TEMP(126, 2),  // Износ
-   STORE_TEMP(11, 3),   // Сопровождение
-   STORE_TEMP(33, 4),   // ТО
-   STORE_TEMP(4, 5),    // Сертификация
-
-   STORE_TEMP(160, 6),                                   // Скорость
-   STORE_TEMP(55, 7),                                    // Тара
-   STORE_TEMP(60, 8)])                     /* 55 + 5 */  // Максимальная масса
-{ all_running_cost_factor; }                             // 221
 
 item (FEAT_TRAINS, ammendorf_k, 436) {
   property {

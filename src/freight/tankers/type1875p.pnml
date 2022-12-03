@@ -2,19 +2,35 @@
 
 #define IMAGEFILE  "src/freight/tankers/type1875p.png"
 purchase_sprites(tanker_type1875p, 0, 0)
-tanker_layout_template(tanker_type1875p, 4, 32, 40)
+tanker_layout_template(tanker_type1875p_tank, 4, 32, 40)
+tanker_layout_template(tanker_type1875p_frame, 4, 32, 107)
 #undef IMAGEFILE
-long_vehicle(tanker_type1875p)
 
-switch (FEAT_TRAINS, SELF, tanker_type1875p_colour_mapping,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x03])
+switch (FEAT_TRAINS, SELF, tanker_type1875p_frame_cc1,
+  STORE_TEMP(ttdall_cc + 0x22, 0x100))
+{ tanker_type1875p_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_frame_cc2,
+  STORE_TEMP(ttdall_cc + 0x6B, 0x100))
+{ tanker_type1875p_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_frame,
+[  set_offset_to(1),
+   prev_vehicle_randombits() >> 7 & 0x01])
 {
-  0: return ttd_cc2 + 0x1C;
-  1: return ttd_cc2 + 0x1D;
-  2: return ttd_cc2 + 0x1E;
-     return ttd_cc2 + 0x1F;
+  0: tanker_type1875p_frame_cc1;
+     tanker_type1875p_frame_cc2;
 }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: tanker_type1875p_tank_sprites_start;
+  1: tanker_type1875p_frame;
+     return CB_FAILED;
+}
+
+long_vehicle(tanker_type1875p)
 
 switch (FEAT_TRAINS, SELF, tanker_type1875p_loading_speed,
 [  STORE_TEMP(0, 0),
@@ -39,10 +55,10 @@ switch (FEAT_TRAINS, SELF, tanker_type1875p_running_cost_factor,
    STORE_TEMP(1, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(60, 6),                                  // Скорость
-   STORE_TEMP(5, 7),                                   // Тара
-   STORE_TEMP(16, 8)])                     /* 5+11 */  // Максимальная масса
-{ all_running_cost_factor; }                           // 1
+   STORE_TEMP(60, 6),                  // Скорость
+   STORE_TEMP(5, 7),                   // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 11, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 1
 
 hint_wagon_with_uspeed_2fact(tanker_type1875p,
                  9, 10,
@@ -66,9 +82,10 @@ item (FEAT_TRAINS, tanker_type1875p, 521) {
        articulated_part: articulated_part_dummy1;
     running_cost_factor: tanker_type1875p_running_cost_factor;
              refit_cost: tanker_refit_cost;
-         colour_mapping: tanker_type1875p_colour_mapping;
         additional_text: tanker_type1875p_additional_text;
          cargo_capacity: tanker_type1875p_cargo_capacity;
           loading_speed: tanker_type1875p_loading_speed;
+         colour_mapping: tanker_colour_mapping;
+     cargo_subtype_text: tanker_cargo_subtype_text;
   }
 }

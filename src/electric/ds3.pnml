@@ -13,12 +13,14 @@ engine_electric1_2_effect(ds3_create_effect, -2, 4)
 engine_speed(ds3cargo, 120)
 engine_speed(ds3pass, 160)
 switch (FEAT_TRAINS, SELF, ds3_speed,
-  cargo_type_in_veh == PASS)
+  cargo_subtype >= 0xE0)
 {
   1: ds3pass_speed;
      ds3cargo_speed;
 }
 engine_penalise_speed(ds3, 2)
+engine_refit_cost_for_a2_livery_change(ds3, 0xE0, 1, 2)
+livery_template_refitf(ds3, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
 
 switch (FEAT_TRAINS, SELF, ds3_running_cost_factor,
 [  STORE_TEMP(380, 0),  // Моторы
@@ -28,22 +30,23 @@ switch (FEAT_TRAINS, SELF, ds3_running_cost_factor,
    STORE_TEMP(93, 4),   // ТО
    STORE_TEMP(7, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),        // Скорость
-   STORE_TEMP(90, 7),         // Тара
-   STORE_TEMP(90, 8)])        // Максимальная масса
-{ all_running_cost_factor; }  // 666
+   STORE_TEMP(120, 6),            // Скорость
+   STORE_TEMP(90, 7),             // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 666
 
-hint_engine(ds3,
+hint_engine_comment(ds3,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
      2002, 2008,
-     string(STR_PURCHASE_HINT_FACTORY_DNEPROPETROVSK_AUSSR))
+     string(STR_PURCHASE_HINT_FACTORY_DNEPROPETROVSK_AUSSR),
+     string(STR_PURCHASE_HINT_EDITION_NEW_SPEED, 160))
 
 item (FEAT_TRAINS, ds3, 197) {
   property {
     name: string(STR_NAME_DS3);
     vehicle_dates(2002, 2008, 20, 10, 8, 139)
-    vehicle_pass_and_cargo()
+    vehicle_passcargo()
     vehicle_acelectric(5800, 90, 311.0)
   }
   graphics {
@@ -60,6 +63,8 @@ item (FEAT_TRAINS, ds3, 197) {
           colour_mapping: any_cc_colour;
           purchase_speed: return 120;
          additional_text: ds3_additional_text;
+              refit_cost: ds3_refit_cost;
+      cargo_subtype_text: ds3_cargo_subtype_text;
   }
 }
 

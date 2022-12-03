@@ -1,358 +1,348 @@
 ﻿  /// code definition - properties
 
-// выявлена проблема. шаблоны свойств не учитывают pre (получается только графика и строки). расширить шаблоны на поддержку pre
+// TODO выявлена проблема. шаблоны свойств не учитывают pre (получается только графика и строки). расширить шаблоны на поддержку pre
+
+// Общее изменение по году постройки
+#define engine_change_build_after(name, old_prop, new_prop, year)  \
+switch (FEAT_TRAINS, SELF, name, build_year >= year)               \
+{ 1: new_prop;                                                     \
+     old_prop; }                                                   \
+
+#define engine_change_build_after2(name, old_prop, new_prop, year, new_prop2, year2)  \
+switch (FEAT_TRAINS, SELF, name, (build_year >= year) + (build_year >= year2))        \
+{ 1: new_prop;                                                                        \
+  2: new_prop2;                                                                       \
+     old_prop; }                                                                      \
 
 // Определение пенальти на скорость (схема без СМЕ)
-#define engine_penalise_speed0(name)                          \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,       \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||   \
-   (position_in_articulated_veh > 0))                         \
-{ 1: return 0;                                                \
-     return bitmask(FLAG_PENALISE_SPEED); }                   \
+#define engine_penalise_speed0(name)                         \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,      \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||  \
+   (position_in_articulated_veh > 0))                        \
+{ 1: return 0;                                               \
+     return bitmask(FLAG_PENALISE_SPEED); }                  \
 
 // Определение пенальти на скорость (схема без альтернатив в СМЕ)
-#define engine_penalise_speed(name, num)                          \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,          \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name), 0),               \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&   \
-    LOAD_TEMP(0) < num)])                                         \
-{ 1: return 0;                                                    \
-     return bitmask(FLAG_PENALISE_SPEED); }                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,        \
-[ STORE_TEMP(count_veh_id(name), 0),                              \
-  STORE_TEMP(vehicle_type_id == name, 1) ])                       \
-{ name##_bitmask_vehicle_info3; }                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||       \
-   (position_in_articulated_veh > 0))                             \
-{ 1: return 0;                                                    \
-     name##_bitmask_vehicle_info2; }                              \
+#define engine_penalise_speed(name, num)                         \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name), 0),              \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+    LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                   \
+     return bitmask(FLAG_PENALISE_SPEED); }                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
+[ STORE_TEMP(count_veh_id(name), 0),                             \
+  STORE_TEMP(vehicle_type_id == name, 1) ])                      \
+{ name##_bitmask_vehicle_info3; }                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
+   (position_in_articulated_veh > 0))                            \
+{ 1: return 0;                                                   \
+     name##_bitmask_vehicle_info2; }                             \
 
 // Определение пенальти на скорость (схема без альтернатив в СМЕ) для случая с изменениями в сме (имя и ид различаются)
-#define engine_penalise_speed_altname(name, num, vehid)           \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,          \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid), 0),              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&   \
-    LOAD_TEMP(0) < num)])                                         \
-{ 1: return 0;                                                    \
-     return bitmask(FLAG_PENALISE_SPEED); }                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,        \
-[ STORE_TEMP(count_veh_id(vehid), 0),                             \
-  STORE_TEMP(vehicle_type_id == vehid, 1) ])                      \
-{ name##_bitmask_vehicle_info3; }                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||       \
-   (position_in_articulated_veh > 0))                             \
-{ 1: return 0;                                                    \
-     name##_bitmask_vehicle_info2; }                              \
+#define engine_penalise_speed_altname(name, num, vehid)          \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid), 0),             \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+    LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                   \
+     return bitmask(FLAG_PENALISE_SPEED); }                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
+[ STORE_TEMP(count_veh_id(vehid), 0),                            \
+  STORE_TEMP(vehicle_type_id == vehid, 1) ])                     \
+{ name##_bitmask_vehicle_info3; }                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
+   (position_in_articulated_veh > 0))                            \
+{ 1: return 0;                                                   \
+     name##_bitmask_vehicle_info2; }                             \
 
 // Определение пенальти на скорость (схема без альтернатив в СМЕ с модернизацией СМЕ)
-#define engine_penalise_speed_2up3(name, shift)                                                  \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                     \
-  (cargo_subtype >= (0xE0 + shift)) && (LOAD_TEMP(2) >= (0xE0 + shift)) &&                       \
-  ((LOAD_TEMP(0) - count_veh_id(name)) == 2))                                                    \
-{ 1: return 0;                                                                                   \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                      \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos2,                                     \
-  (LOAD_TEMP(0) <= 2) || (cargo_subtype >= (0xE0 + shift)))                                      \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                        \
-     return 0; }                                                                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info2,                                         \
-  position_in_consist)                                                                           \
-{ 2: name##_bitmask_vehicle_info_pos2;                                                           \
-  4: name##_bitmask_vehicle_info_pos4;                                                           \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                      \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info1,                                       \
-[ STORE_TEMP(count_veh_id(name), 0),                                                             \
-  STORE_TEMP(cargo_subtype, 2),                                                                  \
-  vehicle_type_id == name ])                                                                     \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                        \
-     name##_bitmask_vehicle_info2; }                                                             \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                          \
-  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))   \
-{ 1: return 0;                                                                                   \
-     name##_bitmask_vehicle_info1; }                                                             \
+#define engine_penalise_speed_2up3(name, shift)                                                 \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                    \
+  (cargo_subtype >= (0xE0 + shift)) && (LOAD_TEMP(2) >= (0xE0 + shift)) &&                      \
+  ((LOAD_TEMP(0) - count_veh_id(name)) == 2))                                                   \
+{ 1: return 0;                                                                                  \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos2,                                    \
+  (LOAD_TEMP(0) <= 2) || (cargo_subtype >= (0xE0 + shift)))                                     \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                       \
+     return 0; }                                                                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info2,                                        \
+  position_in_consist)                                                                          \
+{ 2: name##_bitmask_vehicle_info_pos2;                                                          \
+  4: name##_bitmask_vehicle_info_pos4;                                                          \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                     \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info1,                                      \
+[ STORE_TEMP(count_veh_id(name), 0),                                                            \
+  STORE_TEMP(cargo_subtype, 2),                                                                 \
+  vehicle_type_id == name ])                                                                    \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                       \
+     name##_bitmask_vehicle_info2; }                                                            \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                         \
+  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))  \
+{ 1: return 0;                                                                                  \
+     name##_bitmask_vehicle_info1; }                                                            \
 
-#define engine_penalise_speed_2up4(name, shift)                                                  \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos6,                                     \
-  (cargo_subtype >= (0xE0 + shift)) && (LOAD_TEMP(2) >= (0xE0 + shift)) &&                       \
-  ((LOAD_TEMP(0) - count_veh_id(name)) == 3))                                                    \
-{ 1: return 0;                                                                                   \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                      \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                     \
-  (cargo_subtype >= (0xE0 + shift)) && (LOAD_TEMP(2) >= (0xE0 + shift)) &&                       \
-  ((LOAD_TEMP(0) - count_veh_id(name)) == 2))                                                    \
-{ 1: return 0;                                                                                   \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                      \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos2,                                     \
-  (LOAD_TEMP(0) <= 2) || (cargo_subtype >= (0xE0 + shift)))                                      \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                        \
-     return 0; }                                                                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info2,                                         \
-  position_in_consist)                                                                           \
-{ 2: name##_bitmask_vehicle_info_pos2;                                                           \
-  4: name##_bitmask_vehicle_info_pos4;                                                           \
-  6: name##_bitmask_vehicle_info_pos6;                                                           \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                      \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info1,                                       \
-[ STORE_TEMP(count_veh_id(name), 0),                                                             \
-  STORE_TEMP(cargo_subtype, 2),                                                                  \
-  vehicle_type_id == name ])                                                                     \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                        \
-     name##_bitmask_vehicle_info2; }                                                             \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                          \
-  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))   \
-{ 1: return 0;                                                                                   \
-     name##_bitmask_vehicle_info1; }                                                             \
+#define engine_penalise_speed_2up4(name, shift)                                                 \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos6,                                    \
+  (cargo_subtype >= (0xE0 + shift)) && (LOAD_TEMP(2) >= (0xE0 + shift)) &&                      \
+  ((LOAD_TEMP(0) - count_veh_id(name)) == 3))                                                   \
+{ 1: return 0;                                                                                  \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos4,                                    \
+  (cargo_subtype >= (0xE0 + shift)) && (LOAD_TEMP(2) >= (0xE0 + shift)) &&                      \
+  ((LOAD_TEMP(0) - count_veh_id(name)) == 2))                                                   \
+{ 1: return 0;                                                                                  \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_pos2,                                    \
+  (LOAD_TEMP(0) <= 2) || (cargo_subtype >= (0xE0 + shift)))                                     \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                       \
+     return 0; }                                                                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info2,                                        \
+  position_in_consist)                                                                          \
+{ 2: name##_bitmask_vehicle_info_pos2;                                                          \
+  4: name##_bitmask_vehicle_info_pos4;                                                          \
+  6: name##_bitmask_vehicle_info_pos6;                                                          \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                     \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info1,                                      \
+[ STORE_TEMP(count_veh_id(name), 0),                                                            \
+  STORE_TEMP(cargo_subtype, 2),                                                                 \
+  vehicle_type_id == name ])                                                                    \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                       \
+     name##_bitmask_vehicle_info2; }                                                            \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                         \
+  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))  \
+{ 1: return 0;                                                                                  \
+     name##_bitmask_vehicle_info1; }                                                            \
 
 // Определение пенальти на скорость (схема c 1 альтернативой в СМЕ)
-#define engine_penalise_speed2(name, name1, num)                  \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,          \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                  \
-                            count_veh_id(name1), 0),              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&   \
-    LOAD_TEMP(0) < num)])                                         \
-{ 1: return 0;                                                    \
-     return bitmask(FLAG_PENALISE_SPEED); }                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,        \
-[ STORE_TEMP(count_veh_id(name) +                                 \
-             count_veh_id(name1), 0),                             \
-  STORE_TEMP((vehicle_type_id == name) ||                         \
-             (vehicle_type_id == name1), 1) ])                    \
-{ name##_bitmask_vehicle_info3; }                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||       \
-   (position_in_articulated_veh > 0))                             \
-{ 1: return 0;                                                    \
-     name##_bitmask_vehicle_info2; }                              \
+#define engine_penalise_speed2(name, name1, num)                 \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                 \
+                            count_veh_id(name1), 0),             \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+    LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                   \
+     return bitmask(FLAG_PENALISE_SPEED); }                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
+[ STORE_TEMP(count_veh_id(name) +                                \
+             count_veh_id(name1), 0),                            \
+  STORE_TEMP((vehicle_type_id == name) ||                        \
+             (vehicle_type_id == name1), 1) ])                   \
+{ name##_bitmask_vehicle_info3; }                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
+   (position_in_articulated_veh > 0))                            \
+{ 1: return 0;                                                   \
+     name##_bitmask_vehicle_info2; }                             \
 
 // Определение пенальти на скорость (схема c 2 альтернативами в СМЕ)
-#define engine_penalise_speed3(name, name1, name2, num)           \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,          \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                  \
-                            count_veh_id(name1) -                 \
-                            count_veh_id(name2), 0),              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&   \
-    LOAD_TEMP(0) < num)])                                         \
-{ 1: return 0;                                                    \
-     return bitmask(FLAG_PENALISE_SPEED); }                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,        \
-[ STORE_TEMP(count_veh_id(name) +                                 \
-             count_veh_id(name1) +                                \
-             count_veh_id(name2), 0),                             \
-  STORE_TEMP((vehicle_type_id == name) ||                         \
-             (vehicle_type_id == name1) ||                        \
-             (vehicle_type_id == name2), 1) ])                    \
-{ name##_bitmask_vehicle_info3; }                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||       \
-   (position_in_articulated_veh > 0))                             \
-{ 1: return 0;                                                    \
-     name##_bitmask_vehicle_info2; }                              \
+#define engine_penalise_speed3(name, name1, name2, num)          \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                 \
+                            count_veh_id(name1) -                \
+                            count_veh_id(name2), 0),             \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+    LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                   \
+     return bitmask(FLAG_PENALISE_SPEED); }                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
+[ STORE_TEMP(count_veh_id(name) +                                \
+             count_veh_id(name1) +                               \
+             count_veh_id(name2), 0),                            \
+  STORE_TEMP((vehicle_type_id == name) ||                        \
+             (vehicle_type_id == name1) ||                       \
+             (vehicle_type_id == name2), 1) ])                   \
+{ name##_bitmask_vehicle_info3; }                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
+   (position_in_articulated_veh > 0))                            \
+{ 1: return 0;                                                   \
+     name##_bitmask_vehicle_info2; }                             \
 
 // Определение пенальти на скорость (схема c 3 альтернативами в СМЕ)
-#define engine_penalise_speed4(name, name1, name2, name3, num)    \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,          \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                  \
-                            count_veh_id(name1) -                 \
-                            count_veh_id(name2) -                 \
-                            count_veh_id(name3), 0),              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&   \
-    LOAD_TEMP(0) < num)])                                         \
-{ 1: return 0;                                                    \
-     return bitmask(FLAG_PENALISE_SPEED); }                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,        \
-[ STORE_TEMP(count_veh_id(name) +                                 \
-             count_veh_id(name1) +                                \
-             count_veh_id(name2) +                                \
-             count_veh_id(name3), 0),                             \
-  STORE_TEMP((vehicle_type_id == name) ||                         \
-             (vehicle_type_id == name1) ||                        \
-             (vehicle_type_id == name2) ||                        \
-             (vehicle_type_id == name3), 1) ])                    \
-{ name##_bitmask_vehicle_info3; }                                 \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,           \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||       \
-   (position_in_articulated_veh > 0))                             \
-{ 1: return 0;                                                    \
-     name##_bitmask_vehicle_info2; }                              \
+#define engine_penalise_speed4(name, name1, name2, name3, num)   \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                 \
+                            count_veh_id(name1) -                \
+                            count_veh_id(name2) -                \
+                            count_veh_id(name3), 0),             \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+    LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                   \
+     return bitmask(FLAG_PENALISE_SPEED); }                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
+[ STORE_TEMP(count_veh_id(name) +                                \
+             count_veh_id(name1) +                               \
+             count_veh_id(name2) +                               \
+             count_veh_id(name3), 0),                            \
+  STORE_TEMP((vehicle_type_id == name) ||                        \
+             (vehicle_type_id == name1) ||                       \
+             (vehicle_type_id == name2) ||                       \
+             (vehicle_type_id == name3), 1) ])                   \
+{ name##_bitmask_vehicle_info3; }                                \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
+   (position_in_articulated_veh > 0))                            \
+{ 1: return 0;                                                   \
+     name##_bitmask_vehicle_info2; }                             \
 
 // Определение пенальти на скорость (схема c 4 альтернативами в СМЕ)
-#define engine_penalise_speed5(name, name1, name2, name3, name4, num)   \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                        \
-                            count_veh_id(name1) -                       \
-                            count_veh_id(name2) -                       \
-                            count_veh_id(name3) -                       \
-                            count_veh_id(name4), 0),                    \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&         \
-    LOAD_TEMP(0) < num)])                                               \
-{ 1: return 0;                                                          \
-     return bitmask(FLAG_PENALISE_SPEED); }                             \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,              \
-[ STORE_TEMP(count_veh_id(name) +                                       \
-             count_veh_id(name1) +                                      \
-             count_veh_id(name2) +                                      \
-             count_veh_id(name3) +                                      \
-             count_veh_id(name4), 0),                                   \
-  STORE_TEMP((vehicle_type_id == name) ||                               \
-             (vehicle_type_id == name1) ||                              \
-             (vehicle_type_id == name2) ||                              \
-             (vehicle_type_id == name3) ||                              \
-             (vehicle_type_id == name4), 1) ])                          \
-{ name##_bitmask_vehicle_info3; }                                       \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                 \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||             \
-   (position_in_articulated_veh > 0))                                   \
-{ 1: return 0;                                                          \
-     name##_bitmask_vehicle_info2; }                                    \
+#define engine_penalise_speed5(name, name1, name2, name3, name4, num)  \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,               \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                       \
+                            count_veh_id(name1) -                      \
+                            count_veh_id(name2) -                      \
+                            count_veh_id(name3) -                      \
+                            count_veh_id(name4), 0),                   \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&        \
+    LOAD_TEMP(0) < num)])                                              \
+{ 1: return 0;                                                         \
+     return bitmask(FLAG_PENALISE_SPEED); }                            \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,             \
+[ STORE_TEMP(count_veh_id(name) +                                      \
+             count_veh_id(name1) +                                     \
+             count_veh_id(name2) +                                     \
+             count_veh_id(name3) +                                     \
+             count_veh_id(name4), 0),                                  \
+  STORE_TEMP((vehicle_type_id == name) ||                              \
+             (vehicle_type_id == name1) ||                             \
+             (vehicle_type_id == name2) ||                             \
+             (vehicle_type_id == name3) ||                             \
+             (vehicle_type_id == name4), 1) ])                         \
+{ name##_bitmask_vehicle_info3; }                                      \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||            \
+   (position_in_articulated_veh > 0))                                  \
+{ 1: return 0;                                                         \
+     name##_bitmask_vehicle_info2; }                                   \
 
 // Определение пенальти на скорость (схема c 5 альтернативами в СМЕ)
-#define engine_penalise_speed6(name, name1, name2, name3, name4, name5, num)   \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                       \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                               \
-                            count_veh_id(name1) -                              \
-                            count_veh_id(name2) -                              \
-                            count_veh_id(name3) -                              \
-                            count_veh_id(name4) -                              \
-                            count_veh_id(name5), 0),                           \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                \
-    LOAD_TEMP(0) < num)])                                                      \
-{ 1: return 0;                                                                 \
-     return bitmask(FLAG_PENALISE_SPEED); }                                    \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                     \
-[ STORE_TEMP(count_veh_id(name) +                                              \
-             count_veh_id(name1) +                                             \
-             count_veh_id(name2) +                                             \
-             count_veh_id(name3) +                                             \
-             count_veh_id(name4) +                                             \
-             count_veh_id(name5), 0),                                          \
-  STORE_TEMP((vehicle_type_id == name) ||                                      \
-             (vehicle_type_id == name1) ||                                     \
-             (vehicle_type_id == name2) ||                                     \
-             (vehicle_type_id == name3) ||                                     \
-             (vehicle_type_id == name4) ||                                     \
-             (vehicle_type_id == name5), 1) ])                                 \
-{ name##_bitmask_vehicle_info3; }                                              \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                        \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||                    \
-   (position_in_articulated_veh > 0))                                          \
-{ 1: return 0;                                                                 \
-     name##_bitmask_vehicle_info2; }                                           \
+#define engine_penalise_speed6(name, name1, name2, name3, name4, name5, num)  \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                      \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                              \
+                            count_veh_id(name1) -                             \
+                            count_veh_id(name2) -                             \
+                            count_veh_id(name3) -                             \
+                            count_veh_id(name4) -                             \
+                            count_veh_id(name5), 0),                          \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&               \
+    LOAD_TEMP(0) < num)])                                                     \
+{ 1: return 0;                                                                \
+     return bitmask(FLAG_PENALISE_SPEED); }                                   \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                    \
+[ STORE_TEMP(count_veh_id(name) +                                             \
+             count_veh_id(name1) +                                            \
+             count_veh_id(name2) +                                            \
+             count_veh_id(name3) +                                            \
+             count_veh_id(name4) +                                            \
+             count_veh_id(name5), 0),                                         \
+  STORE_TEMP((vehicle_type_id == name) ||                                     \
+             (vehicle_type_id == name1) ||                                    \
+             (vehicle_type_id == name2) ||                                    \
+             (vehicle_type_id == name3) ||                                    \
+             (vehicle_type_id == name4) ||                                    \
+             (vehicle_type_id == name5), 1) ])                                \
+{ name##_bitmask_vehicle_info3; }                                             \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                       \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||                   \
+   (position_in_articulated_veh > 0))                                         \
+{ 1: return 0;                                                                \
+     name##_bitmask_vehicle_info2; }                                          \
 
 // Определение пенальти на скорость (схема c 6 альтернативами в СМЕ)
-#define engine_penalise_speed7(name, name1, name2, name3, name4, name5, name6, num)   \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                              \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                                      \
-                            count_veh_id(name1) -                                     \
-                            count_veh_id(name2) -                                     \
-                            count_veh_id(name3) -                                     \
-                            count_veh_id(name4) -                                     \
-                            count_veh_id(name5) -                                     \
-                            count_veh_id(name6), 0),                                  \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                       \
-    LOAD_TEMP(0) < num)])                                                             \
-{ 1: return 0;                                                                        \
-     return bitmask(FLAG_PENALISE_SPEED); }                                           \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                            \
-[ STORE_TEMP(count_veh_id(name) +                                                     \
-             count_veh_id(name1) +                                                    \
-             count_veh_id(name2) +                                                    \
-             count_veh_id(name3) +                                                    \
-             count_veh_id(name4) +                                                    \
-             count_veh_id(name5) +                                                    \
-             count_veh_id(name6), 0),                                                 \
-  STORE_TEMP((vehicle_type_id == name) ||                                             \
-             (vehicle_type_id == name1) ||                                            \
-             (vehicle_type_id == name2) ||                                            \
-             (vehicle_type_id == name3) ||                                            \
-             (vehicle_type_id == name4) ||                                            \
-             (vehicle_type_id == name5) ||                                            \
-             (vehicle_type_id == name6), 1) ])                                        \
-{ name##_bitmask_vehicle_info3; }                                                     \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                               \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||                           \
-   (position_in_articulated_veh > 0))                                                 \
-{ 1: return 0;                                                                        \
-     name##_bitmask_vehicle_info2; }                                                  \
+#define engine_penalise_speed7(name, name1, name2, name3, name4, name5, name6, num)  \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                             \
+[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name) -                                     \
+                            count_veh_id(name1) -                                    \
+                            count_veh_id(name2) -                                    \
+                            count_veh_id(name3) -                                    \
+                            count_veh_id(name4) -                                    \
+                            count_veh_id(name5) -                                    \
+                            count_veh_id(name6), 0),                                 \
+  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                      \
+    LOAD_TEMP(0) < num)])                                                            \
+{ 1: return 0;                                                                       \
+     return bitmask(FLAG_PENALISE_SPEED); }                                          \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                           \
+[ STORE_TEMP(count_veh_id(name) +                                                    \
+             count_veh_id(name1) +                                                   \
+             count_veh_id(name2) +                                                   \
+             count_veh_id(name3) +                                                   \
+             count_veh_id(name4) +                                                   \
+             count_veh_id(name5) +                                                   \
+             count_veh_id(name6), 0),                                                \
+  STORE_TEMP((vehicle_type_id == name) ||                                            \
+             (vehicle_type_id == name1) ||                                           \
+             (vehicle_type_id == name2) ||                                           \
+             (vehicle_type_id == name3) ||                                           \
+             (vehicle_type_id == name4) ||                                           \
+             (vehicle_type_id == name5) ||                                           \
+             (vehicle_type_id == name6), 1) ])                                       \
+{ name##_bitmask_vehicle_info3; }                                                    \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                              \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||                          \
+   (position_in_articulated_veh > 0))                                                \
+{ 1: return 0;                                                                       \
+     name##_bitmask_vehicle_info2; }                                                 \
 
 // Определение пенальти на скорость (схема несовместимости СМЕ с заданного года)
-#define engine_penalise_speed_build_after(name, year)                                   \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, build_year >= year)   \
-{ 0: name##_b##year##_bitmask_vehicle_info;                                             \
-     return bitmask(FLAG_PENALISE_SPEED); }                                             \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, build_year >= year)   \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                               \
-     name##_a##year##_bitmask_vehicle_info; }                                           \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info, build_year >= year)             \
-{ 0: name##_bitmask_vehicle_info_change2;                                               \
-     name##_bitmask_vehicle_info_change1; }                                             \
+#define engine_penalise_speed_build_after(name, year)                                  \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, build_year >= year)  \
+{ 0: name##_b##year##_bitmask_vehicle_info;                                            \
+     return bitmask(FLAG_PENALISE_SPEED); }                                            \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, build_year >= year)  \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                              \
+     name##_a##year##_bitmask_vehicle_info; }                                          \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info, build_year >= year)            \
+{ 0: name##_bitmask_vehicle_info_change2;                                              \
+     name##_bitmask_vehicle_info_change1; }                                            \
 /*
 
-#define engine_penalise_speed_build_after2(name, year, year2)                                                     \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change3, (build_year >= year) + (build_year >= year2))   \
-{ 0: name##_bitmask_vehicle_info;                                                                                 \
-  1: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, (build_year >= year) + (build_year >= year2))   \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-  1: name##_bitmask_vehicle_info;                                                                                 \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, (build_year >= year) + (build_year >= year2))   \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-  1: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-     name##_bitmask_vehicle_info; }                                                                               \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= year) + (build_year >= year2))      \
-{ 0: name##_bitmask_vehicle_info_change3;                                                                         \
-  1: name##_bitmask_vehicle_info_change2;                                                                         \
-     name##_bitmask_vehicle_info_change1; }                                                                       \
+#define engine_penalise_speed_build_after2(name, year, year2)                                                    \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change3, (build_year >= year) + (build_year >= year2))  \
+{ 0: name##_bitmask_vehicle_info;                                                                                \
+  1: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, (build_year >= year) + (build_year >= year2))  \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+  1: name##_bitmask_vehicle_info;                                                                                \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, (build_year >= year) + (build_year >= year2))  \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+  1: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+     name##_bitmask_vehicle_info; }                                                                              \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= year) + (build_year >= year2))     \
+{ 0: name##_bitmask_vehicle_info_change3;                                                                        \
+  1: name##_bitmask_vehicle_info_change2;                                                                        \
+     name##_bitmask_vehicle_info_change1; }                                                                      \
 
-#define engine_penalise_speed_build_after2_pre(name, year, year2)                                                 \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change3, (build_year >= year) + (build_year >= year2))   \
-{ 0: name##_bitmask_vehicle_info_pre;                                                                             \
-  1: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, (build_year >= year) + (build_year >= year2))   \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-  1: name##_bitmask_vehicle_info_pre;                                                                             \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                       \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, (build_year >= year) + (build_year >= year2))   \
-{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-  1: return bitmask(FLAG_PENALISE_SPEED);                                                                         \
-     name##_bitmask_vehicle_info_pre; }                                                                           \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= year) + (build_year >= year2))      \
-{ 0: name##_bitmask_vehicle_info_change3;                                                                         \
-  1: name##_bitmask_vehicle_info_change2;                                                                         \
-     name##_bitmask_vehicle_info_change1; }                                                                       \
+#define engine_penalise_speed_build_after2_pre(name, year, year2)                                                \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change3, (build_year >= year) + (build_year >= year2))  \
+{ 0: name##_bitmask_vehicle_info_pre;                                                                            \
+  1: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change2, (build_year >= year) + (build_year >= year2))  \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+  1: name##_bitmask_vehicle_info_pre;                                                                            \
+     return bitmask(FLAG_PENALISE_SPEED); }                                                                      \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change1, (build_year >= year) + (build_year >= year2))  \
+{ 0: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+  1: return bitmask(FLAG_PENALISE_SPEED);                                                                        \
+     name##_bitmask_vehicle_info_pre; }                                                                          \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= year) + (build_year >= year2))     \
+{ 0: name##_bitmask_vehicle_info_change3;                                                                        \
+  1: name##_bitmask_vehicle_info_change2;                                                                        \
+     name##_bitmask_vehicle_info_change1; }                                                                      \
 */
 
 // Определение скорости без вариантов
 #define engine_speed(name, speed)                             \
 switch (FEAT_TRAINS, SELF, name##_speed,                      \
-  is_penalise_speed() ? get_penalised_speed(speed) : speed)   \
+  is_penalise_speed() ? get_penalised_speed(speed)  : speed)  \
 { return; }                                                   \
-
-// Определение скорости с изменением в заданный год
-#define engine_speed_change_after(name, speed, new_speed, year)               \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)       \
-{ 1: return new_speed;                                                        \
-     return speed; }                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(check_year(year) ? new_speed : speed, 0),                        \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
-{ return; }                                                                   \
-
-// Определение скорости с изменением в 2 заданных года
-#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)                   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) + (current_year >= year2))   \
-{ 1: return new_speed;                                                                                \
-  2: return new_speed2;                                                                               \
-     return speed; }                                                                                  \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                              \
-[ STORE_TEMP(check_year(year) ?                                                                       \
-  (check_year(year2) ? new_speed2 : new_speed) : speed, 0),                                           \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                           \
-{ return; }                                                                                           \
 
 // Определение скорости с изменением по году постройки
 #define engine_speed_change_build_after(name, speed, new_speed, year)         \
@@ -360,20 +350,20 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= year)         \
 { 1: return new_speed;                                                        \
      return speed; }                                                          \
 switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(build_year >= year ? new_speed : speed, 0),                      \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
+[ STORE_TEMP(build_year >= year ? new_speed                : speed, 0),       \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])  \
 { return; }                                                                   \
 
 // Определение скорости с 2-я изменениями по году постройки
-#define engine_speed_change_build_after2(name, speed, new_speed, year, new_speed2, year2)         \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2))   \
-{ 1: return new_speed;                                                                            \
-  2: return new_speed2;                                                                           \
-     return speed; }                                                                              \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                          \
-[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? new_speed2 : new_speed) : speed, 0),     \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                       \
-{ return; }                                                                                       \
+#define engine_speed_change_build_after2(name, speed, new_speed, year, new_speed2, year2)        \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2))  \
+{ 1: return new_speed;                                                                           \
+  2: return new_speed2;                                                                          \
+     return speed; }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                         \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? new_speed2  : new_speed) : speed, 0),   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))            : LOAD_TEMP(0) ])           \
+{ return; }                                                                                      \
 
 // Определение скорости с 3-я изменениями по году постройки
 #define engine_speed_change_build_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)                         \
@@ -383,8 +373,8 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_
   3: return new_speed3;                                                                                                              \
      return speed; }                                                                                                                 \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                                                             \
-[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? new_speed3 : new_speed2) : new_speed) : speed, 0),   \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                                          \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? new_speed3  : new_speed2) : new_speed) : speed, 0),  \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                                   : LOAD_TEMP(0) ])                        \
 { return; }                                                                                                                          \
 
 // Определение скорости с 4-я изменениями по году постройки
@@ -396,422 +386,408 @@ switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_
   4: return new_speed4;                                                                                                                                                   \
      return speed; }                                                                                                                                                      \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                                                                                                  \
-[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? (build_year >= year4 ? new_speed4 : new_speed3) : new_speed2) : new_speed) : speed, 0),   \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                                                                               \
+[ STORE_TEMP(build_year >= year ? (build_year >= year2 ? (build_year >= year3 ? (build_year >= year4 ? new_speed4  : new_speed3) : new_speed2) : new_speed) : speed, 0),  \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                                                          : LOAD_TEMP(0) ])                                      \
 { return; }                                                                                                                                                               \
 
 // Определение скорости с изменением по году постройки и в заданном году
-#define engine_speed_change_build_after_and_year(name, speed, new_speed, year, new_speed2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed,                                                   \
-        (build_year >= year) + ((current_year >= year2) * 2))                                       \
-{ 0: return speed;                                                                                  \
-  1: return new_speed;                                                                              \
-     return new_speed2; }                                                                           \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                            \
-[ STORE_TEMP(check_year(year2) ? new_speed2 :                                                       \
-  build_year >= year ? new_speed : speed, 0),                                                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                         \
-{ return; }                                                                                         \
+#define engine_speed_change_build_after_and_year(name, speed, new_speed, year, new_speed2, year2)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed,                                                  \
+        (build_year >= year) + ((current_year >= year2) * 2))                                      \
+{ 0: return speed;                                                                                 \
+  1: return new_speed;                                                                             \
+     return new_speed2; }                                                                          \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                           \
+[ STORE_TEMP(check_year(year2) ? new_speed2                :                                       \
+  build_year >= year ? new_speed                           : speed, 0),                            \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])                       \
+{ return; }                                                                                        \
+
+// Определение скорости с изменением в заданный год
+#define engine_speed_change_after(name, speed, new_speed, year)          \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)  \
+{ 1: return new_speed;                                                   \
+     return speed; }                                                     \
+switch (FEAT_TRAINS, SELF, name##_speed,                                 \
+[ STORE_TEMP(check_year(year) ? new_speed:                               \
+                                speed, 0),                               \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :             \
+                        LOAD_TEMP(0) ])                                  \
+{ return; }                                                              \
 
 // Определение скорости с изменением в 2 заданных года
-#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +            \
-                                                  (current_year >= year2))            \
-{ 1: return new_speed;                                                                \
-  2: return new_speed2;                                                               \
-     return speed; }                                                                  \
-switch (FEAT_TRAINS, SELF, name##_speed,                                              \
-[ STORE_TEMP(check_year(year) ? (check_year(year2) ?                                  \
-new_speed2 : new_speed) : speed, 0),                                                  \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])           \
-{ return; }                                                                           \
+#define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +           \
+                                                  (current_year >= year2))           \
+{ 1: return new_speed;                                                               \
+  2: return new_speed2;                                                              \
+     return speed; }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_speed,                                             \
+[ STORE_TEMP(check_year(year) ?                                                      \
+              (check_year(year2) ? new_speed2:                                       \
+                                   new_speed):                                       \
+                                speed, 0),                                           \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :                         \
+                        LOAD_TEMP(0) ])                                              \
+{ return; }                                                                          \
 
 // Определение скорости с изменением в 3 заданных года
-#define engine_speed_change_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +                               \
-                                                  (current_year >= year2) +                              \
-                                                  (current_year >= year3))                               \
-{ 1: return new_speed;                                                                                   \
-  2: return new_speed2;                                                                                  \
-  3: return new_speed3;                                                                                  \
-     return speed; }                                                                                     \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                                 \
-[ STORE_TEMP(check_year(year) ?                                                                          \
-            (check_year(year2) ?                                                                         \
-            (check_year(year3) ?                                                                         \
-new_speed3 : new_speed2) : new_speed) : speed, 0),                                                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                              \
-{ return; }                                                                                              \
+#define engine_speed_change_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +                              \
+                                                  (current_year >= year2) +                             \
+                                                  (current_year >= year3))                              \
+{ 1: return new_speed;                                                                                  \
+  2: return new_speed2;                                                                                 \
+  3: return new_speed3;                                                                                 \
+     return speed; }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                \
+[ STORE_TEMP(check_year(year) ?                                                                         \
+              (check_year(year2) ?                                                                      \
+                (check_year(year3) ? new_speed3:                                                        \
+                                     new_speed2):                                                       \
+                                   new_speed):                                                          \
+                                 speed, 0),                                                             \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :                                            \
+                        LOAD_TEMP(0) ])                                                                 \
+{ return; }                                                                                             \
 
 // Определение скорости со снижением для старых
 #define engine_speed_with_reduce(name, speed, speed_red, life)                \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, speed)                      \
-{ return; }                                                                   \
 switch (FEAT_TRAINS, SELF, name##_speed,                                      \
 [ STORE_TEMP(get_max_speed(life, speed_red, speed), 0),                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])  \
 { return; }                                                                   \
 
 // Определение скорости со снижением для старых и изменением скорости по году постройки
-#define engine_speed_with_reduce_change_build_after(name, speed, speed_red, life, new_speed, year)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= year)                                \
-{ 1: return new_speed;                                                                               \
-     return speed; }                                                                                 \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                             \
-[ STORE_TEMP(get_max_speed(life, speed_red, ((build_year >= year) ? new_speed : speed)), 0),         \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                          \
-{ return; }                                                                                          \
+#define engine_speed_with_reduce_change_build_after(name, speed, speed_red, life, new_speed, year)  \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= year)                               \
+{ 1: return new_speed;                                                                              \
+     return speed; }                                                                                \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                            \
+[ STORE_TEMP(get_max_speed(life, speed_red, ((build_year >= year) ? new_speed  : speed)), 0),       \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                      : LOAD_TEMP(0) ])    \
+{ return; }                                                                                         \
 
 // Определение скорости со снижением для старых и с предсерийной моделью
-#define engine_speed_with_reduce_and_pre_model(name, speed, speed_red, life, life_pre, pre_year)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, speed)                                           \
-{ return; }                                                                                        \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                           \
-[ STORE_TEMP( ((age_in_days >= (life_pre*365)) && (build_year < pre_year)) ||                      \
-  ((age_in_days >= (life*365)) && (build_year >= pre_year)) ? speed_red : speed, 0),               \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                        \
-{ return; }                                                                                        \
+#define engine_speed_with_reduce_and_pre_model(name, speed, speed_red, life, life_pre, pre_year)  \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                          \
+[ STORE_TEMP( ((age_in_days >= (life_pre*365)) && (build_year < pre_year)) ||                     \
+  ((age_in_days >= (life*365)) && (build_year >= pre_year)) ? speed_red  : speed, 0),             \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))                : LOAD_TEMP(0) ])        \
+{ return; }                                                                                       \
 
 // Определение скорости со снижением для старых и с предсерийной моделью без снижения
-#define engine_speed_with_reduce_and_pre_model_no_reduce(name, speed, speed_red, life, new_speed, pre_year)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= pre_year)                                     \
-{ 1: return new_speed;                                                                                        \
-     return speed; }                                                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                                                      \
-[ STORE_TEMP( (build_year < pre_year) ? speed : (age_in_days >= (life*365)) ? speed_red : new_speed, 0),      \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])                                   \
-{ return; }                                                                                                   \
+#define engine_speed_with_reduce_and_pre_model_no_reduce(name, speed, speed_red, life, new_speed, pre_year)            \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, build_year >= pre_year)                                              \
+{ 1: return new_speed;                                                                                                 \
+     return speed; }                                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_speed,                                                                               \
+[ STORE_TEMP( (build_year < pre_year) ? speed              : (age_in_days >= (life*365)) ? speed_red : new_speed, 0),  \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])                                           \
+{ return; }                                                                                                            \
 
 // Определение скорости с загрузкой
-#define wagon_speed_change_on_load(name, speed, loaded_speed, loaded_amount)   \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, 0)                           \
-{ return speed; }                                                              \
-switch (FEAT_TRAINS, SELF, name##_speed,                                       \
-  cargo_count > loaded_amount)                                                 \
-{ 1: return loaded_speed;                                                      \
-     return speed; }                                                           \
+#define wagon_speed_change_on_load(name, speed, loaded_speed, loaded_amount)  \
+switch (FEAT_TRAINS, SELF, name##_speed,                                      \
+  cargo_count > loaded_amount)                                                \
+{ 1: return loaded_speed;                                                     \
+     return speed; }                                                          \
 
 // Определение скорости в зависимости от типа пути
-#define engine_speed_change_AC_DC(name)                     \
-is_ERA_ds(name##_speed, name##_AC_speed, name##_DC_speed)   \
+#define engine_speed_change_AC_DC(name)                    \
+is_ERA_ds(name##_speed, name##_AC_speed, name##_DC_speed)  \
 
-#define engine_speed_change_AAC_DC(name)                         \
-is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_DC_speed)   \
-is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)         \
-
-#define engine_speed_change_AAC_DDC(name)                       \
-is_ERD_ds(name##_3_speed, name##_DC_speed, name##_15DC_speed)   \
-is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_3_speed)   \
+#define engine_speed_change_AAC_DC(name)                        \
+is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_DC_speed)  \
 is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)        \
 
-#define engine_speed_change_after(name, speed, new_speed, year)               \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)       \
-{ 1: return new_speed;                                                        \
-     return speed; }                                                          \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(check_year(year) ? new_speed : speed, 0),                        \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0)) : LOAD_TEMP(0) ])   \
-{ return; }                                                                   \
+#define engine_speed_change_AAC_DDC(name)                      \
+is_ERD_ds(name##_3_speed, name##_DC_speed, name##_15DC_speed)  \
+is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_3_speed)  \
+is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)       \
 
 // Определение старения груза с изменением по году постройки
-#define engine_CAP_change_build_after(name, CAP, new_CAP, year)           \
-switch (FEAT_TRAINS, SELF, name##_cargo_age_period, build_year >= year)   \
-{ 1: return new_CAP;                                                      \
-     return CAP; }                                                        \
+#define engine_CAP_change_build_after(name, CAP, new_CAP, year)          \
+switch (FEAT_TRAINS, SELF, name##_cargo_age_period, build_year >= year)  \
+{ 1: return new_CAP;                                                     \
+     return CAP; }                                                       \
 
 // Определение массы с изменением по году постройки
-#define engine_weight_change_build_after(name, weight, new_weight, year)   \
-switch (FEAT_TRAINS, SELF, name##_weight, build_year >= year)              \
-{ 1: return new_weight;                                                    \
-     return weight; }                                                      \
+#define engine_weight_change_build_after(name, weight, new_weight, year)  \
+switch (FEAT_TRAINS, SELF, name##_weight, build_year >= year)             \
+{ 1: return new_weight;                                                   \
+     return weight; }                                                     \
 
 // Определение массы с изменением по 2-м годам постройки
-#define engine_weight_change_build_after2(name, weight, new_weight, year, new_weight2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2))         \
-{ 1: return new_weight;                                                                         \
-  2: return new_weight2;                                                                        \
-     return weight; }                                                                           \
+#define engine_weight_change_build_after2(name, weight, new_weight, year, new_weight2, year2)  \
+switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2))        \
+{ 1: return new_weight;                                                                        \
+  2: return new_weight2;                                                                       \
+     return weight; }                                                                          \
 
 // Определение массы с изменением по 3-м годам постройки
-#define engine_weight_change_build_after3(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3)   \
-switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3))     \
-{ 1: return new_weight;                                                                                             \
-  2: return new_weight2;                                                                                            \
-  3: return new_weight3;                                                                                            \
-     return weight; }                                                                                               \
+#define engine_weight_change_build_after3(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3)  \
+switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3))    \
+{ 1: return new_weight;                                                                                            \
+  2: return new_weight2;                                                                                           \
+  3: return new_weight3;                                                                                           \
+     return weight; }                                                                                              \
 
 // Определение массы с изменением по 4-м годам постройки
-#define engine_weight_change_build_after4(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3, new_weight4, year4)     \
-switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))   \
-{ 1: return new_weight;                                                                                                                   \
-  2: return new_weight2;                                                                                                                  \
-  3: return new_weight3;                                                                                                                  \
-  4: return new_weight4;                                                                                                                  \
-     return weight; }                                                                                                                     \
+#define engine_weight_change_build_after4(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3, new_weight4, year4)    \
+switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))  \
+{ 1: return new_weight;                                                                                                                  \
+  2: return new_weight2;                                                                                                                 \
+  3: return new_weight3;                                                                                                                 \
+  4: return new_weight4;                                                                                                                 \
+     return weight; }                                                                                                                    \
 
 // Определение цены с изменением по году постройки
-#define engine_cost_change_build_after(name, cost, new_cost, year)   \
-switch (FEAT_TRAINS, SELF, name##_cost_factor, build_year >= year)   \
-{ 1: return new_cost;                                                \
-     return cost; }                                                  \
+#define engine_cost_change_build_after(name, cost, new_cost, year)  \
+switch (FEAT_TRAINS, SELF, name##_cost_factor, build_year >= year)  \
+{ 1: return new_cost;                                               \
+     return cost; }                                                 \
 
 // Определение цены с изменением по 2-м годам постройки
-#define engine_cost_change_build_after2(name, cost, new_cost, year, new_cost2, year2)          \
-switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2))   \
-{ 1: return new_cost;                                                                          \
-  2: return new_cost2;                                                                         \
-     return cost; }                                                                            \
+#define engine_cost_change_build_after2(name, cost, new_cost, year, new_cost2, year2)         \
+switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2))  \
+{ 1: return new_cost;                                                                         \
+  2: return new_cost2;                                                                        \
+     return cost; }                                                                           \
 
 // Определение цены с изменением по 3-м годам постройки
-#define engine_cost_change_build_after3(name, cost, new_cost, year, new_cost2, year2, new_cost3, year3)                \
-switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2) + (build_year >= year3))   \
-{ 1: return new_cost;                                                                                                  \
-  2: return new_cost2;                                                                                                 \
-  3: return new_cost3;                                                                                                 \
-     return cost; }                                                                                                    \
+#define engine_cost_change_build_after3(name, cost, new_cost, year, new_cost2, year2, new_cost3, year3)               \
+switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2) + (build_year >= year3))  \
+{ 1: return new_cost;                                                                                                 \
+  2: return new_cost2;                                                                                                \
+  3: return new_cost3;                                                                                                \
+     return cost; }                                                                                                   \
 
 // Определение цены с изменением по 4-м годам постройки
-#define engine_cost_change_build_after4(name, cost, new_cost, year, new_cost2, year2, new_cost3, year3, new_cost4, year4)                      \
-switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))   \
-{ 1: return new_cost;                                                                                                                          \
-  2: return new_cost2;                                                                                                                         \
-  3: return new_cost3;                                                                                                                         \
-  4: return new_cost4;                                                                                                                         \
-     return cost; }                                                                                                                            \
+#define engine_cost_change_build_after4(name, cost, new_cost, year, new_cost2, year2, new_cost3, year3, new_cost4, year4)                     \
+switch (FEAT_TRAINS, SELF, name##_cost_factor, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))  \
+{ 1: return new_cost;                                                                                                                         \
+  2: return new_cost2;                                                                                                                        \
+  3: return new_cost3;                                                                                                                        \
+  4: return new_cost4;                                                                                                                        \
+     return cost; }                                                                                                                           \
 
 // Определение мощности с изменением по году постройки
-#define engine_power_change_build_after(name, power, new_power, year)   \
-switch (FEAT_TRAINS, SELF, name##_power, build_year >= year)            \
-{ 1: return get_power_in_cb(new_power);                                 \
-     return get_power_in_cb(power); }                                   \
+#define engine_power_change_build_after(name, power, new_power, year)  \
+switch (FEAT_TRAINS, SELF, name##_power, build_year >= year)           \
+{ 1: return get_power_in_cb(new_power);                                \
+     return get_power_in_cb(power); }                                  \
 
 // Определение мощности с изменением по 2-м годам постройки
-#define engine_power_change_build_after2(name, power, new_power, year, new_power2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2))      \
-{ 1: return get_power_in_cb(new_power);                                                     \
-  2: return get_power_in_cb(new_power2);                                                    \
-     return get_power_in_cb(power); }                                                       \
+#define engine_power_change_build_after2(name, power, new_power, year, new_power2, year2)  \
+switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2))     \
+{ 1: return get_power_in_cb(new_power);                                                    \
+  2: return get_power_in_cb(new_power2);                                                   \
+     return get_power_in_cb(power); }                                                      \
 
 // Определение мощности с изменением по 3-м годам постройки
-#define engine_power_change_build_after3(name, power, new_power, year, new_power2, year2, new_power3, year3)     \
-switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2) + (build_year >= year3))   \
-{ 1: return get_power_in_cb(new_power);                                                                          \
-  2: return get_power_in_cb(new_power2);                                                                         \
-  3: return get_power_in_cb(new_power3);                                                                         \
-     return get_power_in_cb(power); }                                                                            \
+#define engine_power_change_build_after3(name, power, new_power, year, new_power2, year2, new_power3, year3)    \
+switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2) + (build_year >= year3))  \
+{ 1: return get_power_in_cb(new_power);                                                                         \
+  2: return get_power_in_cb(new_power2);                                                                        \
+  3: return get_power_in_cb(new_power3);                                                                        \
+     return get_power_in_cb(power); }                                                                           \
 
 // Определение мощности с изменением по 4-м годам постройки
-#define engine_power_change_build_after4(name, power, new_power, year, new_power2, year2, new_power3, year3, new_power4, year4)          \
-switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))   \
-{ 1: return get_power_in_cb(new_power);                                                                                                  \
-  2: return get_power_in_cb(new_power2);                                                                                                 \
-  3: return get_power_in_cb(new_power3);                                                                                                 \
-  4: return get_power_in_cb(new_power4);                                                                                                 \
-     return get_power_in_cb(power); }                                                                                                    \
+#define engine_power_change_build_after4(name, power, new_power, year, new_power2, year2, new_power3, year3, new_power4, year4)         \
+switch (FEAT_TRAINS, SELF, name##_power, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))  \
+{ 1: return get_power_in_cb(new_power);                                                                                                 \
+  2: return get_power_in_cb(new_power2);                                                                                                \
+  3: return get_power_in_cb(new_power3);                                                                                                \
+  4: return get_power_in_cb(new_power4);                                                                                                \
+     return get_power_in_cb(power); }                                                                                                   \
 
 // Определение мощности с изменением по году
-#define engine_power_change_after(name, power, new_power, year)   \
-switch (FEAT_TRAINS, SELF, name##_power, check_year(year))        \
-{ 1: return get_power_in_cb(new_power);                           \
-     return get_power_in_cb(power); }                             \
-
-// Определение мощности с изменением по грузу
-#define engine_power_change_on_cargo_type(name, power, new_power, cargo)   \
-switch (FEAT_TRAINS, SELF, name##_power, cargo_type_in_veh == cargo)       \
-{ 1: return get_power_in_cb(new_power);                                    \
-     return get_power_in_cb(power); }                                      \
+#define engine_power_change_after(name, power, new_power, year)  \
+switch (FEAT_TRAINS, SELF, name##_power, check_year(year))       \
+{ 1: return get_power_in_cb(new_power);                          \
+     return get_power_in_cb(power); }                            \
 
 // Определение мощности МВПС
-#define engine_power_MU(name, power, vehid)                            \
-switch (FEAT_TRAINS, PARENT, name##_power, vehicle_type_id == vehid)   \
-{ 1: return get_power_in_cb(power);                                    \
-     return 0; }                                                       \
+#define engine_power_MU(name, power, vehid)                           \
+switch (FEAT_TRAINS, PARENT, name##_power, vehicle_type_id == vehid)  \
+{ 1: return get_power_in_cb(power);                                   \
+     return 0; }                                                      \
 
-#define engine_power_MU2(name, power, vehid, vehid2)           \
-switch (FEAT_TRAINS, PARENT, name##_power,                     \
-  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))   \
-{ 1: return get_power_in_cb(power);                            \
-     return 0; }                                               \
+#define engine_power_MU2(name, power, vehid, vehid2)          \
+switch (FEAT_TRAINS, PARENT, name##_power,                    \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
+{ 1: return get_power_in_cb(power);                           \
+     return 0; }                                              \
 
-#define engine_power_MU_change_build_after(name, power, new_power, year, vehid)   \
-switch (FEAT_TRAINS, SELF, name##_power2, build_year >= year)                     \
-{ 1: return get_power_in_cb(new_power);                                           \
-     return get_power_in_cb(power); }                                             \
-switch (FEAT_TRAINS, PARENT, name##_power, vehicle_type_id == vehid)              \
-{ 1: name##_power2;                                                               \
-     return 0; }                                                                  \
+#define engine_power_MU_change_build_after(name, power, new_power, year, vehid)  \
+switch (FEAT_TRAINS, SELF, name##_power2, build_year >= year)                    \
+{ 1: return get_power_in_cb(new_power);                                          \
+     return get_power_in_cb(power); }                                            \
+switch (FEAT_TRAINS, PARENT, name##_power, vehicle_type_id == vehid)             \
+{ 1: name##_power2;                                                              \
+     return 0; }                                                                 \
 
 // Определение мощности в зависимости от типа пути
-#define engine_power_change_AC_DC(name)                     \
-is_ERA_ds(name##_power, name##_AC_power, name##_DC_power)   \
+#define engine_power_change_AC_DC(name)                    \
+is_ERA_ds(name##_power, name##_AC_power, name##_DC_power)  \
 
-#define engine_power_change_AAC_DC(name)                         \
-is_ERAA_ds(name##_2_power, name##_15AC_power, name##_DC_power)   \
-is_ERA_ds(name##_power, name##_AC_power, name##_2_power)         \
-
-#define engine_power_change_AAC_DDC(name)                       \
-is_ERD_ds(name##_3_power, name##_DC_power, name##_15DC_power)   \
-is_ERAA_ds(name##_2_power, name##_15AC_power, name##_3_power)   \
+#define engine_power_change_AAC_DC(name)                        \
+is_ERAA_ds(name##_2_power, name##_15AC_power, name##_DC_power)  \
 is_ERA_ds(name##_power, name##_AC_power, name##_2_power)        \
 
+#define engine_power_change_AAC_DDC(name)                      \
+is_ERD_ds(name##_3_power, name##_DC_power, name##_15DC_power)  \
+is_ERAA_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
+is_ERA_ds(name##_power, name##_AC_power, name##_2_power)       \
+
 // Определение ТЕ с изменением по году постройки
-#define engine_TE_change_build_after(name, TE, new_TE, year)                         \
-switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, build_year >= year)   \
-{ 1: return new_TE;                                                                  \
-     return TE; }                                                                    \
+#define engine_TE_change_build_after(name, TE, new_TE, year)                        \
+switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, build_year >= year)  \
+{ 1: return new_TE;                                                                 \
+     return TE; }                                                                   \
 
 // Определение ТЕ с изменением по 2-м годам постройки
-#define engine_TE_change_build_after2(name, TE, new_TE, year, new_TE2, year2)                                  \
-switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, (build_year >= year) + (build_year >= year2))   \
-{ 1: return new_TE;                                                                                            \
-  2: return new_TE2;                                                                                           \
-     return TE; }                                                                                              \
+#define engine_TE_change_build_after2(name, TE, new_TE, year, new_TE2, year2)                                 \
+switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, (build_year >= year) + (build_year >= year2))  \
+{ 1: return new_TE;                                                                                           \
+  2: return new_TE2;                                                                                          \
+     return TE; }                                                                                             \
 
 // Определение ТЕ с изменением по 3-м годам постройки
-#define engine_TE_change_build_after3(name, TE, new_TE, year, new_TE2, year2, new_TE3, year3)   \
-switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient,                                  \
-        (build_year >= year) + (build_year >= year2) + (build_year >= year3))                   \
-{ 1: return new_TE;                                                                             \
-  2: return new_TE2;                                                                            \
-  3: return new_TE3;                                                                            \
-     return TE; }                                                                               \
+#define engine_TE_change_build_after3(name, TE, new_TE, year, new_TE2, year2, new_TE3, year3)  \
+switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient,                                 \
+        (build_year >= year) + (build_year >= year2) + (build_year >= year3))                  \
+{ 1: return new_TE;                                                                            \
+  2: return new_TE2;                                                                           \
+  3: return new_TE3;                                                                           \
+     return TE; }                                                                              \
 
 // Определение ТЕ с изменением по 4-м годам постройки
-#define engine_TE_change_build_after4(name, TE, new_TE, year, new_TE2, year2, new_TE3, year3, new_TE4, year4)   \
-switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient,                                                  \
-        (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))           \
-{ 1: return new_TE;                                                                                             \
-  2: return new_TE2;                                                                                            \
-  3: return new_TE3;                                                                                            \
-  4: return new_TE4;                                                                                            \
-     return TE; }                                                                                               \
-
-// Определение ТЕ с изменением по грузу
-#define engine_TE_change_on_cargo_type(name, TE, new_TE, cargo)                              \
-switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient, cargo_type_in_veh == cargo)   \
-{ 1: return new_TE;                                                                          \
-     return TE; }                                                                            \
-
-// Определение цены рефита при изменении груза
-#define engine_refit_cost_for_cargo_change(name, cost)                                                \
-switch (FEAT_TRAINS, SELF, name##_refit_cost, (extra_callback_info1 & 0x00FF) == cargo_type_in_veh)   \
-{ 1: return 0;                                                                                        \
-     return cost; }                                                                                   \
+#define engine_TE_change_build_after4(name, TE, new_TE, year, new_TE2, year2, new_TE3, year3, new_TE4, year4)  \
+switch (FEAT_TRAINS, SELF, name##_tractive_effort_coefficient,                                                 \
+        (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))          \
+{ 1: return new_TE;                                                                                            \
+  2: return new_TE2;                                                                                           \
+  3: return new_TE3;                                                                                           \
+  4: return new_TE4;                                                                                           \
+     return TE; }                                                                                              \
 
 // Определение цены рефита при ливреи
-#define engine_refit_cost_for_a_livery_change(name, num, cost)                      \
-switch (FEAT_TRAINS, SELF, name##_refit_cost,                                       \
-  ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))   \
-{ 1: return cost;                                                                   \
-     return 0; }                                                                    \
+#define engine_refit_cost_for_a_livery_change(name, num, cost)                     \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
+{ 1: return cost;                                                                  \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
-#define engine_refit_cost_for_e_livery_change(name, num, cost)                      \
-switch (FEAT_TRAINS, SELF, name##_refit_cost,                                       \
-  ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))   \
-{ 1: return cost;                                                                   \
-     return 0; }                                                                    \
+#define engine_refit_cost_for_a2_livery_change(name, num, cost, cost2)             \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
+{ 1: return cost;                                                                  \
+  2: return cost2;                                                                 \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
-#define engine_refit_cost_for_e2_livery_change(name, num, cost, cost2)              \
-switch (FEAT_TRAINS, SELF, name##_refit_cost,                                       \
-  ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))   \
-{ 1: return cost;                                                                   \
-  2: return cost2;                                                                  \
-     return 0; }                                                                    \
+#define engine_refit_cost_for_e_livery_change(name, num, cost)                     \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
+{ 1: return cost;                                                                  \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+
+#define engine_refit_cost_for_e2_livery_change(name, num, cost, cost2)             \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
+{ 1: return cost;                                                                  \
+  2: return cost2;                                                                 \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 // Определение длины с изменением по году постройки
-#define engine_length_change_build_after(name, length, new_length, year)   \
-switch (FEAT_TRAINS, SELF, name##_length, build_year >= year)              \
-{ 1: return new_length;                                                    \
-     return length; }                                                      \
+#define engine_length_change_build_after(name, length, new_length, year)  \
+switch (FEAT_TRAINS, SELF, name##_length, build_year >= year)             \
+{ 1: return new_length;                                                   \
+     return length; }                                                     \
 
 // Определение длины с изменением по 2-м годам постройки
-#define engine_length_change_build_after2(name, length, new_length, year, new_length2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_length, (build_year >= year) + (build_year >= year2))         \
-{ 1: return new_length;                                                                         \
-  2: return new_length2;                                                                        \
-     return length; }                                                                           \
-
-// Определение длины с изменением по году постройки
-#define engine_ARV_change_build_after(name, length, new_length, year)     \
-switch (FEAT_TRAINS, SELF, name##_articulated_part, build_year >= year)   \
-{ 1: articulated_part_dummy##new_length;                                  \
-     articulated_part_dummy##length; }                                    \
+#define engine_length_change_build_after2(name, length, new_length, year, new_length2, year2)  \
+switch (FEAT_TRAINS, SELF, name##_length, (build_year >= year) + (build_year >= year2))        \
+{ 1: return new_length;                                                                        \
+  2: return new_length2;                                                                       \
+     return length; }                                                                          \
 
 // Двухсекционный ПС
-#define engine_ARVs(name, length)                                           \
-switch (FEAT_TRAINS, SELF, name##_articulated_part, extra_callback_info1)   \
-{ 1: return dummy##length;                                                  \
-  2: return name;                                                           \
-  3: return dummy##length;                                                  \
-     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                          \
+#define engine_ARVs(name, length)                                          \
+switch (FEAT_TRAINS, SELF, name##_articulated_part, extra_callback_info1)  \
+{ 1: return dummy##length;                                                 \
+  2: return name;                                                          \
+  3: return dummy##length;                                                 \
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                         \
 
 // Трёхсекционный ПС
-#define engine_ARVs3(name, length)                                          \
-switch (FEAT_TRAINS, SELF, name##_articulated_part, extra_callback_info1)   \
-{ 1: return dummy##length;                                                  \
-  2: return name;                                                           \
-  3: return dummy##length;                                                  \
-  4: return name;                                                           \
-  5: return dummy##length;                                                  \
-     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                          \
+#define engine_ARVs3(name, length)                                         \
+switch (FEAT_TRAINS, SELF, name##_articulated_part, extra_callback_info1)  \
+{ 1: return dummy##length;                                                 \
+  2: return name;                                                          \
+  3: return dummy##length;                                                 \
+  4: return name;                                                          \
+  5: return dummy##length;                                                 \
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                         \
 
 // Определение вместимости только для головной части ARV
-#define engine_capacity_arv0(name, name2)           \
-switch (FEAT_TRAINS, SELF, name##_cargo_capacity,   \
-position_in_articulated_veh == 0)                   \
-{ 1: name2##_cargo_capacity;                        \
-     return 0; }                                    \
+#define engine_capacity_arv0(name, name2)          \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity,  \
+position_in_articulated_veh == 0)                  \
+{ 1: name2##_cargo_capacity;                       \
+     return 0; }                                   \
 
 // Определение вместимости с изменением по году постройки
-#define engine_capacity_change_build_after(name, capacity, new_capacity, year)   \
-switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)            \
-{ 1: return new_capacity;                                                        \
-     return capacity; }                                                          \
+#define engine_capacity_change_build_after(name, capacity, new_capacity, year)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)           \
+{ 1: return new_capacity;                                                       \
+     return capacity; }                                                         \
 
-#define engine_capacity_change_build_after2(name, capacity, new_capacity, year, new_capacity2, year2)   \
-switch (FEAT_TRAINS, SELF, name##_cargo_capacity,                                                       \
-(build_year >= year) +                                                                                  \
-(build_year >= year2))                                                                                  \
-{ 0: return capacity;                                                                                   \
-  1: return new_capacity;                                                                               \
-     return new_capacity2; }                                                                            \
+#define engine_capacity_change_build_after2(name, capacity, new_capacity, year, new_capacity2, year2)  \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity,                                                      \
+(build_year >= year) +                                                                                 \
+(build_year >= year2))                                                                                 \
+{ 0: return capacity;                                                                                  \
+  1: return new_capacity;                                                                              \
+     return new_capacity2; }                                                                           \
 
 // Определение вместимости с изменением по году постройки
-#define wagon_capacity_change_build_after(name, year)                   \
-switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)   \
-{ 1: return name##_b##year##_cargo_capacity;                            \
-     return name##_a##year##_cargo_capacity; }                          \
+#define wagon_capacity_change_build_after(name, year)                  \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)  \
+{ 1: return name##_b##year##_cargo_capacity;                           \
+     return name##_a##year##_cargo_capacity; }                         \
 
 // Определение вместимости МВПС
-#define engine_capacity_MU(name, capacity, vehid)                               \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, vehicle_type_id == vehid)   \
-{ 1: return capacity;                                                           \
-     return 0; }                                                                \
+#define engine_capacity_MU(name, capacity, vehid)                              \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, vehicle_type_id == vehid)  \
+{ 1: return capacity;                                                          \
+     return 0; }                                                               \
 
-#define engine_capacity_MU2(name, capacity, vehid, vehid2)     \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,            \
-  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))   \
-{ 1: return capacity;                                          \
+#define engine_capacity_MU2(name, capacity, vehid, vehid2)    \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,           \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
+{ 1: return capacity;                                         \
      return 0; }
 
-#define engine_capacity_MU_change_build_after(name, capacity, new_capacity, year, vehid)   \
-switch (FEAT_TRAINS, SELF, name##_year_cargo_capacity, build_year >= year)                 \
-{ 1: return new_capacity;                                                                  \
-     return capacity; }                                                                    \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, vehicle_type_id == vehid)              \
-{ 1: name##_year_cargo_capacity;                                                           \
-     return 0; }                                                                           \
+#define engine_capacity_MU_change_build_after(name, capacity, new_capacity, year, vehid)  \
+switch (FEAT_TRAINS, SELF, name##_year_cargo_capacity, build_year >= year)                \
+{ 1: return new_capacity;                                                                 \
+     return capacity; }                                                                   \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, vehicle_type_id == vehid)             \
+{ 1: name##_year_cargo_capacity;                                                          \
+     return 0; }                                                                          \
 
 // Определение эффектов МВПС
-#define engine_effects_MU(name, effects, vehid)                                \
-switch (FEAT_TRAINS, PARENT, name##_create_effect, vehicle_type_id == vehid)   \
-{ 1: name##effects;                                                            \
-     return disable_create_effect(); }                                         \
+#define engine_effects_MU(name, effects, vehid)                               \
+switch (FEAT_TRAINS, PARENT, name##_create_effect, vehicle_type_id == vehid)  \
+{ 1: name##effects;                                                           \
+     return disable_create_effect(); }                                        \
 
-#define engine_effects_MU2(name, effects, vehid, vehid2)       \
-switch (FEAT_TRAINS, PARENT, name##_create_effect,             \
-  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))   \
-{ 1: name##effects;                                            \
-     return disable_create_effect(); }                         \
+#define engine_effects_MU2(name, effects, vehid, vehid2)      \
+switch (FEAT_TRAINS, PARENT, name##_create_effect,            \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
+{ 1: name##effects;                                           \
+     return disable_create_effect(); }                        \
 
 // end

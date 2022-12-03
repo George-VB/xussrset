@@ -1,0 +1,64 @@
+// steam_h
+
+#define IMAGEFILE  "src/steam/h.png"
+purchase_sprites(steam_h, 0, 0)
+steam_sprites(6, steam_h_engine, 32,  40)
+tender_sprites(4, steam_h_tender, 447,  40)
+#undef IMAGEFILE
+steamer_direction_template(steam_h, _sprites_start)
+long_vehicle(steam_h)
+
+switch (FEAT_TRAINS, SELF, steam_h_running_cost_factor,
+[  STORE_TEMP(84, 0),  // Моторы
+   STORE_TEMP(12, 1),  // Бригада
+   STORE_TEMP(30, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(21, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(53, 6),             // Скорость
+   STORE_TEMP(66 + 47, 7),        // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 148
+
+engine_steam_1_effect(steam_h_create_effect, -3, 12)
+engine_penalise_speed0(steam_h)
+engine_speed(steam_h, 53)
+engine_tender(steam_h)
+engine_tender_length(steam_h, 5, 1, 3, 1)
+
+hint_engine(steam_h,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1896, 1900,
+     string(STR_PURCHASE_HINT_FACTORY_BALDWIN))
+
+item (FEAT_TRAINS, steam_h, 585) {
+  property {
+    name: string(STR_NAME_H);
+    vehicle_dates(1896, 1900, 40, 10, 5, 6)
+    vehicle_cargo()
+    vehicle_steam(740, 66+47, 108.0)
+  }
+  graphics {
+                 default: steam_h_sprites;
+                purchase: steam_h_purchase_sprites;
+        articulated_part: steam_h_articulated_part;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+                   speed: steam_h_speed;
+                  length: steam_h_length;
+          purchase_speed: return 53;
+    bitmask_vehicle_info: steam_h_bitmask_vehicle_info;
+          cargo_capacity: return 0;
+           create_effect: steam_h_create_effect;
+     running_cost_factor: steam_h_running_cost_factor;
+      cargo_subtype_text: steam_freight_cargo_subtype_text;
+          colour_mapping: steam_freight_colour_mapping;
+         additional_text: steam_h_additional_text;
+  }
+}
+
+long_name_template(steam_h, STR_LONGNAME_H)
+models_default_cargo_template(steam_h)
+allow_steamer(steam_h)

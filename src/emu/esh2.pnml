@@ -88,12 +88,25 @@ switch (FEAT_TRAINS, PARENT, esh2_can_attach_wagon_length,
      return string(STR_CAN_ATTACH_NO_MORE);
 }
 
+switch (FEAT_TRAINS, PARENT, esh2_h1_can_attach_wagon2,
+[
+  set_offset_to(num_vehs_in_consist-6),
+  prev_vehicle_type_id() ])
+
+{
+  esh2_m1: esh2_can_attach_wagon_length;
+  esh2_m2: esh2_can_attach_wagon_length;
+   esh2_c: esh2_can_attach_wagon_length;
+    return string(STR_CAN_ATTACH_MCAR_ONLY);
+}
+
 switch (FEAT_TRAINS, PARENT, esh2_h1_can_attach_wagon1,
 [
   set_offset_to(num_vehs_in_consist-4),
   prev_vehicle_type_id() ])
+
 {
-  esh2_h_part2: return string(STR_CAN_ATTACH_MNCAR_ONLY);
+  esh2_h_part2: return string(STR_CAN_ATTACH_MCAR_ONLY);
        esh2_m1: esh2_can_attach_wagon_length;
        esh2_m2: esh2_can_attach_wagon_length;
         esh2_c: esh2_can_attach_wagon_length;
@@ -105,8 +118,8 @@ switch (FEAT_TRAINS, PARENT, esh2_h1_can_attach_wagon,
   set_offset_to(num_vehs_in_consist-2),
   prev_vehicle_type_id() ])
 {
-        esh2_c: return string(STR_CAN_ATTACH_MNCAR_ONLY);
-  esh2_h_part2: return string(STR_CAN_ATTACH_MNCAR_ONLY);
+        esh2_c: return string(STR_CAN_ATTACH_MCAR_ONLY);
+  esh2_h_part2: esh2_h1_can_attach_wagon2;
        esh2_m1: esh2_h1_can_attach_wagon1;
        esh2_m2: esh2_h1_can_attach_wagon1;
            return string(STR_CAN_ATTACH_SAME_MU_ONLY);
@@ -126,7 +139,7 @@ switch (FEAT_TRAINS, PARENT, esh2_c_can_attach_wagon1,
   set_offset_to(num_vehs_in_consist-4),
   prev_vehicle_type_id() ])
 {
-  esh2_c: return string(STR_CAN_ATTACH_MNCAR_ONLY);
+  esh2_c: return string(STR_CAN_ATTACH_MCAR_ONLY);
           return CB_RESULT_ATTACH_ALLOW;
 }
 
@@ -136,9 +149,9 @@ switch (FEAT_TRAINS, PARENT, esh2_c_can_attach_wagon,
   prev_vehicle_type_id() ])
 {
         esh2_c: esh2_c_can_attach_wagon1;
-  esh2_h_part2: return string(STR_CAN_ATTACH_MNCAR_ONLY);
+  esh2_h_part2: return string(STR_CAN_ATTACH_MCAR_ONLY);
        esh2_m1: esh2_c2_can_attach_wagon1;
-       esh2_m2: return string(STR_CAN_ATTACH_MNCAR_ONLY);
+       esh2_m2: return string(STR_CAN_ATTACH_MCAR_ONLY);
            return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
@@ -163,7 +176,7 @@ switch (FEAT_TRAINS, PARENT, esh2_m2_can_attach_wagon,
   set_offset_to(num_vehs_in_consist-2),
   prev_vehicle_type_id() ])
 {
-        esh2_c: return string(STR_CAN_ATTACH_MNCAR_ONLY);
+        esh2_c: return string(STR_CAN_ATTACH_MCAR_ONLY);
   esh2_h_part2: esh2_m1_can_attach_wagon_h;
        esh2_m1: esh2_m2_can_attach_wagon1;
        esh2_m2: return string(STR_CAN_ATTACH_SAME_MU_ONLY);
@@ -236,7 +249,7 @@ switch (FEAT_TRAINS, SELF, esh2_h1_running_cost_factor,
 
    STORE_TEMP(160, 6),                  // Скорость
    STORE_TEMP(60, 7),                   // Тара
-   STORE_TEMP(76, 8)])                  // Максимальная масса
+   STORE_TEMP(LOAD_TEMP(7) + 16, 8)])   // Максимальная масса
 { esh2_h1_check_running_cost_factor; }  //
 
 RC_head_check2_new(esh2_h2, esh2_h1, esh2_h2)
@@ -250,7 +263,7 @@ switch (FEAT_TRAINS, SELF, esh2_h2_running_cost_factor,
 
    STORE_TEMP(160, 6),                  // Скорость
    STORE_TEMP(60, 7),                   // Тара
-   STORE_TEMP(68, 8)])                  // Максимальная масса
+   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])    // Максимальная масса
 { esh2_h2_check_running_cost_factor; }  //
 
 RC_head_check2_new(esh2_m1, esh2_h1, esh2_h2)
@@ -264,7 +277,7 @@ switch (FEAT_TRAINS, SELF, esh2_m1_running_cost_factor,
 
    STORE_TEMP(160, 6),                  // Скорость
    STORE_TEMP(59, 7),                   // Тара
-   STORE_TEMP(65, 8)])                  // Максимальная масса
+   STORE_TEMP(LOAD_TEMP(7) + 6, 8)])    // Максимальная масса
 { esh2_m1_check_running_cost_factor; }  //
 
 RC_head_check2_new(esh2_m2, esh2_h1, esh2_h2)
@@ -278,7 +291,7 @@ switch (FEAT_TRAINS, SELF, esh2_m2_running_cost_factor,
 
    STORE_TEMP(160, 6),                  // Скорость
    STORE_TEMP(58, 7),                   // Тара
-   STORE_TEMP(64, 8)])                  // Максимальная масса
+   STORE_TEMP(LOAD_TEMP(7) + 6, 8)])    // Максимальная масса
 { esh2_m2_check_running_cost_factor; }  //
 
 RC_head_check2_new(esh2_c, esh2_h1, esh2_h2)
@@ -292,7 +305,7 @@ switch (FEAT_TRAINS, SELF, esh2_c_running_cost_factor,
 
    STORE_TEMP(160, 6),                 // Скорость
    STORE_TEMP(55, 7),                  // Тара
-   STORE_TEMP(65, 8)])                 // Максимальная масса
+   STORE_TEMP(LOAD_TEMP(7) + 10, 8)])  // Максимальная масса
 { esh2_c_check_running_cost_factor; }  //
 
 engine_power_MU2(esh2_m1, 2176, esh2_h1, esh2_h2)

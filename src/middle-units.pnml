@@ -1,14 +1,14 @@
 // Список средних секций
-#define all_mid_section()                     \
-((prev_vehicle_type_id() == _3te10m_m) ||     \
- (prev_vehicle_type_id() == _3te10u_m) ||     \
- (prev_vehicle_type_id() == _4te10s_m) ||     \
- (prev_vehicle_type_id() == _3m62u_m) ||      \
- (prev_vehicle_type_id() == _3te25k2m_m) ||   \
- (prev_vehicle_type_id() == _2es6_m) ||       \
- (prev_vehicle_type_id() == _2es10_m) ||      \
- (prev_vehicle_type_id() == _3es4k_m) ||      \
- (prev_vehicle_type_id() == _3es5k_m))        \
+#define all_mid_section()                    \
+((prev_vehicle_type_id() == _3te10m_m) ||    \
+ (prev_vehicle_type_id() == _3te10u_m) ||    \
+ (prev_vehicle_type_id() == _4te10s_m) ||    \
+ (prev_vehicle_type_id() == _3m62u_m) ||     \
+ (prev_vehicle_type_id() == _3te25k2m_m) ||  \
+ (prev_vehicle_type_id() == _2es6_m) ||      \
+ (prev_vehicle_type_id() == _2es10_m) ||     \
+ (prev_vehicle_type_id() == _3es4k_m) ||     \
+ (prev_vehicle_type_id() == _3es5k_m))       \
 
 // Специальная проверка для локомтивов, требующих 2+ головы (ВЛ80С, 2ЕС5К, 3ЕС5К, ВЛ11, 2ЭС4К, 2ЭС6, ВЛ82, ВЛ15)
 switch (FEAT_TRAINS, PARENT, q_2ev120_can_attach_wagon,
@@ -210,7 +210,9 @@ switch (FEAT_TRAINS, PARENT, m_3te10m_can_attach_wagon_m,
    STORE_TEMP (all_mid_section(), 3),
    set_offset_to(num_vehs_in_consist-2),
    ((prev_vehicle_type_id() == _2te10m) ||
-    (prev_vehicle_type_id() == _3te10m)) &&
+    (prev_vehicle_type_id() == _3te10m) ||
+    (prev_vehicle_type_id() == _2te10u) ||
+    (prev_vehicle_type_id() == _3te10u)) &&
    (!LOAD_TEMP(3)) ])
 {
   0: return string(STR_CAN_ATTACH_NO_MIDDLE_UNIT);
@@ -219,7 +221,7 @@ switch (FEAT_TRAINS, PARENT, m_3te10m_can_attach_wagon_m,
 
 switch (FEAT_TRAINS, PARENT, m_3te10m_can_attach_wagon_h,
 [  set_offset_to(num_vehs_in_consist-2),
-   all_mid_section() && (prev_vehicle_type_id() != _3te10m_m) ])
+   all_mid_section() && (prev_vehicle_type_id() != _3te10m_m) && (prev_vehicle_type_id() != _3te10u_m) ])
 {
   1: return string(STR_CAN_ATTACH_NO_AFTER_MIDDLE_UNIT);
      return double_can_attach_wagon;
@@ -230,7 +232,9 @@ switch (FEAT_TRAINS, PARENT, m_3te10u_can_attach_wagon_m,
    STORE_TEMP (all_mid_section(), 3),
    set_offset_to(num_vehs_in_consist-2),
    ((prev_vehicle_type_id() == _2te10u) ||
-    (prev_vehicle_type_id() == _3te10u)) &&
+    (prev_vehicle_type_id() == _3te10u) ||
+    (prev_vehicle_type_id() == _2te10m) ||
+    (prev_vehicle_type_id() == _3te10m)) &&
    (!LOAD_TEMP(3)) ])
 {
   0: return string(STR_CAN_ATTACH_NO_MIDDLE_UNIT);
@@ -239,7 +243,7 @@ switch (FEAT_TRAINS, PARENT, m_3te10u_can_attach_wagon_m,
 
 switch (FEAT_TRAINS, PARENT, m_3te10u_can_attach_wagon_h,
 [  set_offset_to(num_vehs_in_consist-2),
-   all_mid_section() && (prev_vehicle_type_id() != _3te10u_m) ])
+   all_mid_section() && (prev_vehicle_type_id() != _3te10u_m) && (prev_vehicle_type_id() != _3te10m_m) ])
 {
   1: return string(STR_CAN_ATTACH_NO_AFTER_MIDDLE_UNIT);
      return double_can_attach_wagon;
@@ -527,6 +531,28 @@ switch (FEAT_TRAINS, PARENT, q_vl85_start_stop,
      q_vl80s_start_stop;
 }
 
+switch (FEAT_TRAINS, PARENT, q_2es5_start_stop,
+[  set_offset_to(num_vehs_in_consist-2),
+   STORE_TEMP (prev_vehicle_type_id(), 3),
+   set_offset_to(num_vehs_in_consist-4),
+   (LOAD_TEMP(3) == _2es5) &&
+   (!(prev_vehicle_type_id() == _2es5)) ])
+{
+  1: return string(STR_START_STOP_DUAL_END_REQUIRED);
+     q_vl85_start_stop;
+}
+
+switch (FEAT_TRAINS, PARENT, q_2es5s_start_stop,
+[  set_offset_to(num_vehs_in_consist-2),
+   STORE_TEMP (prev_vehicle_type_id(), 3),
+   set_offset_to(num_vehs_in_consist-4),
+   (LOAD_TEMP(3) == _2es5s) &&
+   (!(prev_vehicle_type_id() == _2es5s)) ])
+{
+  1: return string(STR_START_STOP_DUAL_END_REQUIRED);
+     q_2es5_start_stop;
+}
+
 switch (FEAT_TRAINS, PARENT, q_2es6_start_stop,
 [  set_offset_to(num_vehs_in_consist-2),
    STORE_TEMP (prev_vehicle_type_id(), 3),
@@ -535,7 +561,7 @@ switch (FEAT_TRAINS, PARENT, q_2es6_start_stop,
    (!((prev_vehicle_type_id() == _2es6) || (prev_vehicle_type_id() == _2es6_m))) ])
 {
   1: return string(STR_START_STOP_DUAL_END_REQUIRED);
-     q_vl85_start_stop;
+     q_2es5s_start_stop;
 }
 
 switch (FEAT_TRAINS, PARENT, q_2es10_start_stop,

@@ -1,8 +1,11 @@
 @echo off
 set datebeg=%date%
 set timest=%time%
-clean-lng.pl
+scripts\clean-lng.pl
 if ERRORLEVEL 1 goto :EOF
+cd lang 
+start /min ..\scripts\MonaLisa.pl 
+cd ..
 
 if /i "%1" == "selfconfig" goto :SelfConfig
 if /i "%1" == "gethgrev" goto :GetHgRev
@@ -48,9 +51,9 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-change.pl xussr-addon.nml "\) \{" "\)\n\{"
-change.pl xussr-addon.nml "\} switch" "\}\nswitch"
-change.pl xussr-addon.nml "\; " "\;\n"
+scripts\change.pl xussr-addon.nml "\) \{" "\)\n\{"
+scripts\change.pl xussr-addon.nml "\} switch" "\}\nswitch"
+scripts\change.pl xussr-addon.nml "\; " "\;\n"
 
 del xussr-addon.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
@@ -59,7 +62,7 @@ if /i not %errorlevel% == 0 goto :Error
 if /i not "%GRFFOLDER%" == "" (
   xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
   if /i not %errorlevel% == 0 goto :Error
-  xcopy /y %NMLNAME%.grf "%YDPATH%\My\-todelete\xUSSR set\" 
+  scripts\copy-branch.pl %NMLNAME%.grf 
   if /i not %errorlevel% == 0 goto :Error
 )
 echo [Ok]
@@ -74,9 +77,9 @@ goto :END
 :GetHgRev
 
 :: определяем текущую ревизию
-for /F %%i in (%NMLNAME%.ver) do set REPO_REVISION=%%i
+for /F %%i in (%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver) do set REPO_REVISION=%%i
 set /a REPO_REVISION=%REPO_REVISION%+1
-echo %REPO_REVISION%>%NMLNAME%.ver
+echo %REPO_REVISION%>%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver
 
 goto :EOF
 
@@ -145,6 +148,8 @@ rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
 echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile-addon.stat
 
-rem start /min MonaLisa.pl 
+cd src 
+start /min ..\scripts\MonaLisa.pl 
+cd ..
 
 :EOF

@@ -1,0 +1,65 @@
+// d_schneider
+
+#define IMAGEFILE  "src/steam/d-schneider.png"
+purchase_sprites(d_schneider, 0, 0)
+steam_sprites0(4, d_schneider_engine, 32,  40)
+tender_sprites(4, d_schneider_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(d_schneider, _sprites_start)
+long_vehicle(d_schneider)
+
+switch (FEAT_TRAINS, SELF, d_schneider_running_cost_factor,
+[  STORE_TEMP(31, 0),  // Моторы
+   STORE_TEMP(4, 1),   // Бригада
+   STORE_TEMP(11, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(8, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(77, 6),             // Скорость
+   STORE_TEMP(31 + 20, 7),        // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 54
+
+engine_tender(d_schneider)
+engine_tender_length(d_schneider, 3, 1, 3, 1)
+
+engine_speed(d_schneider, 77)
+engine_steam_1_effect(d_schneider_create_effect, -4, 11)
+engine_penalise_speed0(d_schneider)
+hint_engine_with_subtype(d_schneider,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM_WITH_SUBTYPE, STR_PURCHASE_HINT_TYPE_66,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1867, 1877,
+     string(STR_PURCHASE_HINT_FACTORY_SCHNEIDER_CREUSOT))
+
+item (FEAT_TRAINS, d_schneider, 580) {
+  property {
+    name: string(STR_NAME_D_SCHNEIDER);
+    vehicle_dates(1867, 1877, 40, 10, 3, 3)
+    vehicle_pass()
+    vehicle_steam(400, 31+20, 39.0)
+  }
+  graphics {
+                 default: d_schneider_sprites;
+                purchase: d_schneider_purchase_sprites;
+        articulated_part: d_schneider_articulated_part;
+                  length: d_schneider_length;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+                   speed: d_schneider_speed;
+          purchase_speed: return 77;
+    bitmask_vehicle_info: d_schneider_bitmask_vehicle_info;
+          cargo_capacity: return 0;
+           create_effect: d_schneider_create_effect;
+     running_cost_factor: d_schneider_running_cost_factor;
+          colour_mapping: steam_pass_colour_mapping;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+         additional_text: d_schneider_additional_text;
+  }
+}
+
+long_name_template(d_schneider, STR_LONGNAME_D_SCHNEIDER)
+models_default_cargo_template(d_schneider)
+allow_steamer(d_schneider)

@@ -17,89 +17,6 @@ switch (FEAT_TRAINS, SELF, tanker_15_1500_sprites_start,
 
 long_vehicle(tanker_15_1500)
 
-switch (FEAT_TRAINS, SELF, tanker_15_1500_a1991_colour_mapping_random,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x3F])
-{
-   0..10: return ttdall_cc + 0x25;
-  11..24: return ttdall_cc + 0x39;
-  25..32: return ttdall_cc + 0x41;
-  33..36: return ttdall_cc + 0x08;
-  37..45: return ttdall_cc + 0x92;
-  46..48: return ttdall_cc + 0x0A;
-  49..55: return ttdall_cc + 0x95;
-  56..57: return ttdall_cc + 0xB4;
-          return ttdall_cc + 0x53;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_1500_b1991_colour_mapping_random,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x07])
-{
-  0..1: return ttdall_cc + 0x25;
-  2..3: return ttdall_cc + 0x39;
-     4: return ttdall_cc + 0x41;
-     5: return ttdall_cc + 0x08;
-     6: return ttdall_cc + 0x95;
-        return ttdall_cc + 0x0A;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_1500_colour_mapping_random,
-  check_year(1991))
-{
-  0: tanker_15_1500_b1991_colour_mapping_random;
-     tanker_15_1500_a1991_colour_mapping_random;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_1500_colour_mapping,
-  cargo_subtype)
-{
-   0: tanker_15_1500_colour_mapping_random;
-   1: return ttdall_cc + 0x25;
-   2: return ttdall_cc + 0x39;
-   3: return ttdall_cc + 0x41;
-   4: return ttdall_cc + 0x08;
-   5: return ttdall_cc + 0x92;
-   6: return ttdall_cc + 0x0A;
-   7: return ttdall_cc + 0x95;
-   8: return ttdall_cc + 0xB4;
-   9: return ttdall_cc + 0x53;
-      return CB_FAILED;
-}
-
-// сделать перекраску вариантов
-
-switch (FEAT_TRAINS, SELF, tanker_15_1500_b1991_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_TTD_25);
-  2: return string(STR_REFIT_TTD_39);
-  3: return string(STR_REFIT_TTD_41);
-  4: return string(STR_REFIT_TTD_08);
-  5: return string(STR_REFIT_TTD_92);
-  6: return string(STR_REFIT_TTD_0A);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_1500_a1991_cargo_subtype_text,
-  cargo_subtype)
-{
-   0: return string(STR_REFIT_FACTORY);
-   1: return string(STR_REFIT_TTD_25);
-   2: return string(STR_REFIT_TTD_39);
-   3: return string(STR_REFIT_TTD_41);
-   4: return string(STR_REFIT_TTD_08);
-   5: return string(STR_REFIT_TTD_92);
-   6: return string(STR_REFIT_TTD_0A);
-   7: return string(STR_REFIT_TTD_96);
-   8: return string(STR_REFIT_TTD_B5);
-   9: return string(STR_REFIT_TTD_53);
-      return CB_RESULT_NO_TEXT;
-}
-
-livery_template_build_year(tanker_15_1500, 1991)
-
 switch (FEAT_TRAINS, SELF, tanker_15_1500_loading_speed,
 [  STORE_TEMP(0, 0),
    STORE_TEMP(0, 1),
@@ -123,10 +40,10 @@ switch (FEAT_TRAINS, SELF, tanker_15_1500_running_cost_factor,
    STORE_TEMP(24, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                                   // Скорость
-   STORE_TEMP(51, 7),                                    // Тара
-   STORE_TEMP(176, 8)])                    /* 51+125 */  // Максимальная масса
-{ all_running_cost_factor; }                             // 73
+   STORE_TEMP(120, 6),                  // Скорость
+   STORE_TEMP(51, 7),                   // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 125, 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 73
 
 hint_wagon_with_uspeed_noto(tanker_15_1500,
                 125, 156,
@@ -150,11 +67,11 @@ item (FEAT_TRAINS, tanker_15_1500, 605) {
     running_cost_factor: tanker_15_1500_running_cost_factor;
             cost_factor: return 328;
         additional_text: tanker_15_1500_additional_text;
-     cargo_subtype_text: tanker_15_1500_cargo_subtype_text;
              refit_cost: tanker_refit_cost;
-         colour_mapping: tanker_15_1500_colour_mapping;
          cargo_capacity: tanker_15_1500_cargo_capacity;
           loading_speed: tanker_15_1500_loading_speed;
+         colour_mapping: tanker_colour_mapping;
+     cargo_subtype_text: tanker_cargo_subtype_text;
   }
 }
 

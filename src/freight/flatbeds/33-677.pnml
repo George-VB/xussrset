@@ -16,6 +16,26 @@ switch (FEAT_TRAINS, SELF, dumpcar_33_677_sprites_start,
 
 long_vehicle(dumpcar_33_677)
 
+switch (FEAT_TRAINS, SELF, dumpcar_33_677_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x1F])
+{
+   0..15: dumpcar_random;
+      16: return ttdall_cc + 0x7B;
+      17: return ttdall_cc + 0x71;
+  18..23: return ttdall_cc + 0x02;
+  24..29: return ttdall_cc + 0x03;
+      30: return ttdall_cc + 0x6A;
+          return ttdall_cc + 0x21;
+}
+
+switch (FEAT_TRAINS, SELF, dumpcar_33_677_colour_mapping,
+  cargo_subtype)
+{
+  0: dumpcar_33_677_random;
+     dumpcar_colour_mapping;
+}
+
 switch (FEAT_TRAINS, SELF, dumpcar_33_677_cargo_capacity,
 [  STORE_TEMP(105, 0),  // т
    STORE_TEMP(50, 1),   // м³
@@ -37,7 +57,6 @@ switch (FEAT_TRAINS, SELF, dumpcar_33_677_loading_speed,
   all_wagons_bulk_loading_speed;
 }
 
-
 switch (FEAT_TRAINS, SELF, dumpcar_33_677_running_cost_factor,
 [  STORE_TEMP(0, 0),   // Моторы
    STORE_TEMP(0, 1),   // Бригада
@@ -46,10 +65,10 @@ switch (FEAT_TRAINS, SELF, dumpcar_33_677_running_cost_factor,
    STORE_TEMP(18, 4),  // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(80, 6),                                    // Скорость
-   STORE_TEMP(62, 7),                                    // Тара
-   STORE_TEMP(167, 8)])                    /* 62+105 */  // Максимальная масса
-{ all_running_cost_factor; }                             // 24
+   STORE_TEMP(80, 6),                   // Скорость
+   STORE_TEMP(62, 7),                   // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 105, 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 24
 hint_wagon_with_uspeed_noto(dumpcar_33_677,
                             105, 50,
                             string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
@@ -73,9 +92,10 @@ item (FEAT_TRAINS, dumpcar_33_677, 320) {
        articulated_part: articulated_part_dummy1;
          cargo_capacity: dumpcar_33_677_cargo_capacity;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
-         colour_mapping: any_cc_colour;
           loading_speed: dumpcar_33_677_loading_speed;
         additional_text: dumpcar_33_677_additional_text;
+     cargo_subtype_text: dumpcar_cargo_subtype_text;
+         colour_mapping: dumpcar_33_677_colour_mapping;
   }
 }
 

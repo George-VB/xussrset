@@ -2,7 +2,7 @@
 
 #define IMAGEFILE  "src/emu/er200_h.png"
 purchase_sprites(er200_h, 0, 0)
-MU_head_sprites(15, er200_h_v1,  32, 40)
+MU_head_sprites(15, er200_h_mu,  32, 40)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/emu/er200_m.png"
 purchase_sprites(er200_m, 0, 0)
@@ -13,30 +13,9 @@ purchase_sprites(er200_c, 0, 0)
 MU_car_sprites(15, er200_c_v1, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, er200_h_sprites_left,
-  LOAD_TEMP(4) != er200_h)
-{
-  0: er200_h_v1_sprites_left;
-  1: er200_h_v1_notpowered_sprites_left;
-     align_15_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, er200_h_sprites_right,
-  LOAD_TEMP(4) != er200_h)
-{
-  0: er200_h_v1_sprites_right;
-  1: er200_h_v1_notpowered_sprites_right;
-     align_15_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, er200_h_sprites_start_sp,
-  ((LOAD_TEMP(0) - count_veh_id(er200_h)) % 2))
-{
-  0: er200_h_sprites_left;
-     er200_h_sprites_right;
-}
-
-long_vehicle_sp(er200_h)
+MU_head_direction_template(er200_h, er200_h)
+engine_direction_template3m2(er200_h, er200_m, er200_c, )
+long_vehicle(er200_h)
 
 switch (FEAT_TRAINS, SELF, er200_m_sprites_3,
   ((LOAD_TEMP(0) - count_veh_id(er200_m)) >=
@@ -51,9 +30,7 @@ switch (FEAT_TRAINS, SELF, er200_m_sprites_3,
 }
 
 switch (FEAT_TRAINS, PARENT, er200_m_sprites_start,
-[
-  STORE_TEMP(count_veh_id(er200_c), 6)
-])
+[  STORE_TEMP(count_veh_id(er200_c), 6)])
 {
   er200_m_sprites_3;
 }
@@ -73,9 +50,7 @@ switch (FEAT_TRAINS, SELF, er200_c_sprites_3,
 }
 
 switch (FEAT_TRAINS, PARENT, er200_c_sprites_start,
-[
-  STORE_TEMP(count_veh_id(er200_m), 6)
-])
+[  STORE_TEMP(count_veh_id(er200_m), 6)])
 {
   er200_c_sprites_3;
 }
@@ -188,50 +163,51 @@ switch (FEAT_TRAINS, PARENT, er200_m_create_effect,
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, PARENT, er200_h_cargo_capacity,
-  (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
+engine_capacity_MU(er200_h_r0, 24, er200_h)
+engine_capacity_MU(er200_h_r1, 12, er200_h)
+engine_capacity_MU(er200_c_r0, 64, er200_h)
+engine_capacity_MU(er200_c_r1, 36, er200_h)
+
+switch (FEAT_TRAINS, SELF, er200_h_cargo_capacity,
+  cargo_subtype >= 0xE0)
 {
-  1: return 24;
-  2: return 12;
-     return 0;
+  1: er200_h_r1_cargo_capacity;
+     er200_h_r0_cargo_capacity;
 }
 
-switch (FEAT_TRAINS, PARENT, er200_m_cargo_capacity,
-  (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
+switch (FEAT_TRAINS, SELF, er200_m_cargo_capacity,
+  cargo_subtype >= 0xE0)
 {
-  1: return 64;
-  2: return 36;
-     return 0;
+  1: er200_c_r1_cargo_capacity;
+     er200_c_r0_cargo_capacity;
 }
 
-switch (FEAT_TRAINS, PARENT, er200_c_cargo_capacity,
-  (vehicle_type_id == er200_h) * ((cargo_subtype == 1) + 1))
+switch (FEAT_TRAINS, SELF, er200_c_cargo_capacity,
+  cargo_subtype >= 0xE0)
 {
-  1: return 64;
-  2: return 36;
-     return 0;
+  1: er200_c_r1_cargo_capacity;
+     er200_c_r0_cargo_capacity;
 }
 
 engine_CAP_change_build_after(er200_h_v1, 120,
                                           200, 1988)
 
 switch (FEAT_TRAINS, SELF, er200_h_cargo_age_period,
-  cargo_subtype == 1)
+  cargo_subtype >= 0xE0)
 {
   0: er200_h_v1_cargo_age_period;
      return 500;
 }
 
 switch (FEAT_TRAINS, SELF, er200_cargo_age_period,
-  cargo_subtype == 1)
+  cargo_subtype >= 0xE0)
 {
   0: return 120;
      return 500;
 }
 
-livery_template0(er200_alt)
-livery_template_alt(er200, WITH_INCREASED_CP)
-engine_refit_cost_for_e2_livery_change(er200, 1, 2, -1)
+livery_template_refitf(er200, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_CP, STR_EMPTY)
+engine_refit_cost_for_a2_livery_change(er200, 0xE0, 2, 1)
 engine_speed(er200, 200)
 engine_weight_change_build_after(er200_h, 49,
                                           50, 1988)
@@ -249,45 +225,45 @@ engine_power_MU(er200_m, 1146, er200_h)
 
 RC_head_check_new(er200_h, er200_h)
 switch (FEAT_TRAINS, SELF, er200_h_running_cost_factor,
-[  STORE_TEMP((285 - 10 * (build_year >= 1988))*57/100, 0),  // Моторы
-   STORE_TEMP((285 - 10 * (build_year >= 1988))*8/100, 1),   // Бригада
-   STORE_TEMP((285 - 10 * (build_year >= 1988))*20/100, 2),  // Износ
-   STORE_TEMP(0, 3),                                         // Сопровождение
-   STORE_TEMP((285 - 10 * (build_year >= 1988))*14/100, 4),  // ТО
-   STORE_TEMP((285 - 10 * (build_year >= 1988))/100, 5),     // Сертификация
+[  STORE_TEMP(162 - 6 * (build_year >= 1988), 0),  // Моторы
+   STORE_TEMP(23 - (build_year >= 1988), 1),       // Бригада
+   STORE_TEMP(57 - 2 * (build_year >= 1988), 2),   // Износ
+   STORE_TEMP(0, 3),                               // Сопровождение
+   STORE_TEMP(40 - (build_year >= 1988), 4),       // ТО
+   STORE_TEMP(3, 5),                               // Сертификация
 
-   STORE_TEMP(200, 6),                             // Скорость
-   STORE_TEMP(49 + (build_year >= 1988), 7),       // Тара
-   STORE_TEMP(49 + (build_year >= 1988) + 3, 8)])  // Максимальная масса
-{ er200_h_check_running_cost_factor; }             // 285 - 275
+   STORE_TEMP(200, 6),                        // Скорость
+   STORE_TEMP(49 + (build_year >= 1988), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 3, 8)])          // Максимальная масса
+{ er200_h_check_running_cost_factor; }        // 285 - 275
 
 RC_head_check_new(er200_m, er200_h)
 switch (FEAT_TRAINS, SELF, er200_m_running_cost_factor,
-[  STORE_TEMP((320 - 11 * (build_year >= 1988))*57/100, 0),  // Моторы
-   STORE_TEMP(0, 1),                                         // Бригада
-   STORE_TEMP((320 - 11 * (build_year >= 1988))*20/100, 2),  // Износ
-   STORE_TEMP(0, 3),                                         // Сопровождение
-   STORE_TEMP((320 - 11 * (build_year >= 1988))*14/100, 4),  // ТО
-   STORE_TEMP((320 - 11 * (build_year >= 1988))/100, 5),     // Сертификация
+[  STORE_TEMP(182 - 6 * (build_year >= 1988), 0),  // Моторы
+   STORE_TEMP(0, 1),                               // Бригада
+   STORE_TEMP(62 - 2 * (build_year >= 1988), 2),   // Износ
+   STORE_TEMP(0, 3),                               // Сопровождение
+   STORE_TEMP(43 - 2 * (build_year >= 1988), 4),   // ТО
+   STORE_TEMP(3, 5),                               // Сертификация
 
-   STORE_TEMP(200, 6),                             // Скорость
-   STORE_TEMP(59 + (build_year >= 1988), 7),       // Тара
-   STORE_TEMP(59 + (build_year >= 1988) + 8, 8)])  // Максимальная масса
-{ er200_m_check_running_cost_factor; }             // 320 - 309
+   STORE_TEMP(200, 6),                        // Скорость
+   STORE_TEMP(59 + (build_year >= 1988), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])          // Максимальная масса
+{ er200_m_check_running_cost_factor; }        // 320 - 309
 
 RC_head_check_new(er200_c, er200_h)
 switch (FEAT_TRAINS, SELF, er200_c_running_cost_factor,
-[  STORE_TEMP((317 - 11 * (build_year >= 1988))*57/100, 0),  // Моторы
-   STORE_TEMP(0, 1),                                         // Бригада
-   STORE_TEMP((317 - 11 * (build_year >= 1988))*20/100, 2),  // Износ
-   STORE_TEMP(0, 3),                                         // Сопровождение
-   STORE_TEMP((317 - 11 * (build_year >= 1988))*14/100, 4),  // ТО
-   STORE_TEMP((317 - 11 * (build_year >= 1988))/100, 5),     // Сертификация
+[  STORE_TEMP(181 - 6 * (build_year >= 1988), 0),  // Моторы
+   STORE_TEMP(0, 1),                               // Бригада
+   STORE_TEMP(63 - 2 * (build_year >= 1988), 2),   // Износ
+   STORE_TEMP(0, 3),                               // Сопровождение
+   STORE_TEMP(44 - 2 * (build_year >= 1988), 4),   // ТО
+   STORE_TEMP(3, 5),                               // Сертификация
 
-   STORE_TEMP(200, 6),                             // Скорость
-   STORE_TEMP(57 + (build_year >= 1988), 7),       // Тара
-   STORE_TEMP(57 + (build_year >= 1988) + 8, 8)])  // Максимальная масса
-{ er200_c_check_running_cost_factor; }             // 317 - 306
+   STORE_TEMP(200, 6),                        // Скорость
+   STORE_TEMP(57 + (build_year >= 1988), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])          // Максимальная масса
+{ er200_c_check_running_cost_factor; }        // 317 - 306
 
 hint_MU_with_model2_comment(er200_h_b1984,
      calc_loading(16 / WAGON_DOOR),

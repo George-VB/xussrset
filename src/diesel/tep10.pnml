@@ -44,32 +44,29 @@ switch (FEAT_TRAINS, SELF, tep10_sprites_right,
 engine_RNDany_direction_template(tep10, 5, 3)
 long_vehicle_sp(tep10)
 
-  livery_template_none(tep10_bGREAT_CHANGE_YEAR)
-
-  livery_template(tep10_aGREAT_CHANGE_YEAR_alt, TTD_93, LV_RAL6002, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  livery_template_alt(tep10_aGREAT_CHANGE_YEAR, TTD_B5)
-livery_template_service_year(tep10, GREAT_CHANGE_YEAR)
+  livery_template_base_list(tep10_aGREAT_CHANGE_YEAR_alt, LV_RAL6002)
+  livery_template_alt(tep10_aGREAT_CHANGE_YEAR, STR_REFIT_TTD_B5)
+livery_template_service_year_ao(tep10, GREAT_CHANGE_YEAR)
 
 engine_diesel_1r_effect(tep10_create_effect_sprites, 3, 0, 12)
 engine_RNDany_effect_direction_template(tep10, 5, 5)
-
 engine_speed_with_reduce(tep10, 140, 120, 25)
 engine_penalise_speed(tep10, 2)
 engine_power_change_build_after(tep10, 2293,
                                        2333, 1964)
 
 switch (FEAT_TRAINS, SELF, tep10_running_cost_factor,
-[  STORE_TEMP((464 + 4 * (build_year >= 1964))*57/100, 0),  // Моторы
-   STORE_TEMP((464 + 4 * (build_year >= 1964))*8/100, 1),   // Бригада
-   STORE_TEMP((464 + 4 * (build_year >= 1964))*20/100, 2),  // Износ
-   STORE_TEMP(0, 3),                                        // Сопровождение
-   STORE_TEMP((464 + 4 * (build_year >= 1964))*14/100, 4),  // ТО
-   STORE_TEMP((464 + 4 * (build_year >= 1964))/100, 5),     // Сертификация
+[  STORE_TEMP(262 + 2 * (build_year >= 1964), 0),  // Моторы
+   STORE_TEMP(37, 1),                              // Бригада
+   STORE_TEMP(92 + (build_year >= 1964), 2),       // Износ
+   STORE_TEMP(0, 3),                               // Сопровождение
+   STORE_TEMP(64 + (build_year >= 1964), 4),       // ТО
+   STORE_TEMP(5, 5),                               // Сертификация
 
-   STORE_TEMP(140, 6),        // Скорость
-   STORE_TEMP(129, 7),        // Тара
-   STORE_TEMP(129, 8)])       // Максимальная масса
-{ all_running_cost_factor; }  // 460-464
+   STORE_TEMP(140, 6),            // Скорость
+   STORE_TEMP(129, 7),            // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 460-464
 
 hint_engine(tep10,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL,
@@ -94,7 +91,7 @@ item (FEAT_TRAINS, tep10, 150) {
           cargo_capacity: return 0;
                    speed: tep10_speed;
                    power: tep10_power;
-          purchase_speed: tep10_purchase_speed;
+          purchase_speed: return 140;
      running_cost_factor: tep10_running_cost_factor;
     bitmask_vehicle_info: tep10_bitmask_vehicle_info;
            create_effect: tep10_create_effect;

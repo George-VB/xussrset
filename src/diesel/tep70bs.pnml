@@ -29,17 +29,31 @@ switch (FEAT_TRAINS, SELF, tep70bs_sprites_left_pid,
      tep70bs_v5_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, tep70bs_sprites_left,
+switch (FEAT_TRAINS, SELF, tep70bs_bGAMEEND_sprites_left,
   cargo_subtype)
 {
                             0: tep70bs_sprites_left_pid;
-                            1: tep70bs_sprites_left_pid;
+                            1: tep70bs_sprites_left_pid;  // back compatibility
+                         0xE0: tep70bs_sprites_left_pid;
                    LV_RZD_PID: tep70bs_sprites_left_pid;
        LV_BELARUSSIAN_RAILWAY: tep70bs_v2_sprites_left;
                        LV_LDZ: tep70bs_sprites_left_ldz;
   LV_UZBEKISTAN_TEMIR_YOLLARI: tep70bs_v4_sprites_left;
            LV_CRIMEAN_RAILWAY: tep70bs_v7_sprites_left;
   align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tep70bs_aGAMEEND_sprites_left,
+  cargo_subtype)
+{
+  0: tep70bs_v1_sprites_left;
+  1: tep70bs_v2_sprites_left;
+  2: tep70bs_v3_sprites_left;
+  3: tep70bs_v4_sprites_left;
+  4: tep70bs_v5_sprites_left;
+  5: tep70bs_v6_sprites_left;
+  6: tep70bs_v7_sprites_left;
+     align_13_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, tep70bs_sprites_right_ldz,
@@ -56,11 +70,12 @@ switch (FEAT_TRAINS, SELF, tep70bs_sprites_right_pid,
      tep70bs_v5_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, tep70bs_sprites_right,
+switch (FEAT_TRAINS, SELF, tep70bs_bGAMEEND_sprites_right,
   cargo_subtype)
 {
                             0: tep70bs_sprites_right_pid;
-                            1: tep70bs_sprites_right_pid;
+                            1: tep70bs_sprites_right_pid;  // back compatibility
+                         0xE0: tep70bs_sprites_right_pid;
                    LV_RZD_PID: tep70bs_sprites_right_pid;
        LV_BELARUSSIAN_RAILWAY: tep70bs_v2_sprites_right;
                        LV_LDZ: tep70bs_sprites_right_ldz;
@@ -69,6 +84,21 @@ switch (FEAT_TRAINS, SELF, tep70bs_sprites_right,
   align_13_sprites;
 }
 
+switch (FEAT_TRAINS, SELF, tep70bs_aGAMEEND_sprites_right,
+  cargo_subtype)
+{
+  0: tep70bs_v1_sprites_right;
+  1: tep70bs_v2_sprites_right;
+  2: tep70bs_v3_sprites_right;
+  3: tep70bs_v4_sprites_right;
+  4: tep70bs_v5_sprites_right;
+  5: tep70bs_v6_sprites_right;
+  6: tep70bs_v7_sprites_right;
+     align_13_sprites;
+}
+
+engine_build_year_template(tep70bs, GAMEEND, left, )
+engine_build_year_template(tep70bs, GAMEEND, right, )
 engine_direction_template(tep70bs, )
 engine_RND_direction_template(tep70bs, 5, 3)
 long_vehicle_sp(tep70bs)
@@ -76,10 +106,10 @@ long_vehicle_sp(tep70bs)
 engine_speed_with_reduce(tep70bs_160, 160, 140, 30)
 engine_speed(tep70bs_120, 120)
 switch (FEAT_TRAINS, SELF, tep70bs_speed,
-  cargo_subtype)
+  cargo_subtype + 250 * (build_year >= GAMEEND))
 {
-  1: tep70bs_120_speed;
-     tep70bs_160_speed;
+  0xE0: tep70bs_120_speed;
+        tep70bs_160_speed;
 }
 switch (FEAT_TRAINS, SELF, tep70bs_120_running_cost_factor,
 [  STORE_TEMP(332, 0),  // Моторы
@@ -89,10 +119,10 @@ switch (FEAT_TRAINS, SELF, tep70bs_120_running_cost_factor,
    STORE_TEMP(81, 4),   // ТО
    STORE_TEMP(6, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),        // Скорость
-   STORE_TEMP(135, 7),        // Тара
-   STORE_TEMP(135, 8)])       // Максимальная масса
-{ all_running_cost_factor; }  // 582
+   STORE_TEMP(120, 6),            // Скорость
+   STORE_TEMP(135, 7),            // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 582
 switch (FEAT_TRAINS, SELF, tep70bs_160_running_cost_factor,
 [  STORE_TEMP(358, 0),  // Моторы
    STORE_TEMP(50, 1),   // Бригада
@@ -101,31 +131,46 @@ switch (FEAT_TRAINS, SELF, tep70bs_160_running_cost_factor,
    STORE_TEMP(88, 4),   // ТО
    STORE_TEMP(6, 5),    // Сертификация
 
-   STORE_TEMP(160, 6),        // Скорость
-   STORE_TEMP(135, 7),        // Тара
-   STORE_TEMP(135, 8)])       // Максимальная масса
-{ all_running_cost_factor; }  // 628
+   STORE_TEMP(160, 6),            // Скорость
+   STORE_TEMP(135, 7),            // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 628
 switch (FEAT_TRAINS, SELF, tep70bs_running_cost_factor,
-  cargo_subtype)
+  cargo_subtype + 250 * (build_year >= GAMEEND))
 {
-  1: tep70bs_120_running_cost_factor;
-     tep70bs_160_running_cost_factor;
+  0xE0: tep70bs_120_running_cost_factor;
+        tep70bs_160_running_cost_factor;
 }
 
 switch (FEAT_TRAINS, SELF, tep70bs_tractive_effort_coefficient,
-  cargo_subtype)
+  cargo_subtype + 250 * (build_year >= GAMEEND))
 {
-  1: return get_tec_int(384.0, 135);
-     return get_tec_int(310.0, 135);
+  0xE0: return get_tec_int(384.0, 135);
+        return get_tec_int(310.0, 135);
 }
 
-livery_template(tep70bs_alt_b2008, FACTORY, LV_BELARUSSIAN_RAILWAY, LV_LDZ, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-livery_template(tep70bs_alt_a2008, FACTORY, LV_BELARUSSIAN_RAILWAY, LV_LDZ, LV_UZBEKISTAN_TEMIR_YOLLARI, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-livery_template(tep70bs_alt_a2012, RZD_PID, LV_BELARUSSIAN_RAILWAY, LV_LDZ, LV_UZBEKISTAN_TEMIR_YOLLARI, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-livery_template(tep70bs_alt_a2019, RZD_PID, LV_BELARUSSIAN_RAILWAY, LV_LDZ, LV_UZBEKISTAN_TEMIR_YOLLARI, LV_CRIMEAN_RAILWAY, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-livery_template_service_year3(tep70bs_alt, 2008, 2012, 2019)
-livery_template_alt(tep70bs, WITH_REDUCED_SPEED)
-engine_refit_cost_for_e2_livery_change(tep70bs, 1, -5, 9)
+switch (FEAT_TRAINS, SELF, tep70bs_aGAMEEND_cargo_subtype_text, cargo_subtype)
+{
+  0: return string(STR_REFIT_GAMEEND_SP, 2006, string(STR_REFIT_LV_RZD_PID));
+  1: return string(STR_REFIT_GAMEEND_SP, 2006, string(STR_REFIT_LV_BELARUSSIAN_RAILWAY));
+  2: return string(STR_REFIT_GAMEEND_SP, 2006, string(STR_REFIT_LV_LDZ));
+  3: return string(STR_REFIT_GAMEEND_SERVICE_SP, 2006, 2008, string(STR_REFIT_LV_UZBEKISTAN_TEMIR_YOLLARI));
+  4: return string(STR_REFIT_GAMEEND_SERVICE_SP, 2006, 2012, string(STR_REFIT_LV_RZD_PID));
+  5: return string(STR_REFIT_GAMEEND_SERVICE_SP, 2006, 2012, string(STR_REFIT_LV_LDZ));
+  6: return string(STR_REFIT_GAMEEND_SERVICE_SP, 2006, 2019, string(STR_REFIT_LV_CRIMEAN_RAILWAY));
+     return CB_FAILED;
+}
+
+      livery_template_base_list2(tep70bs_bGAMEEND_alt_b2008, LV_BELARUSSIAN_RAILWAY, LV_LDZ)
+      livery_template_base_list3(tep70bs_bGAMEEND_alt_a2008, LV_BELARUSSIAN_RAILWAY, LV_LDZ, LV_UZBEKISTAN_TEMIR_YOLLARI)
+      livery_template_base_list4(tep70bs_bGAMEEND_alt_a2012, LV_RZD_PID, LV_BELARUSSIAN_RAILWAY, LV_LDZ, LV_UZBEKISTAN_TEMIR_YOLLARI)
+      livery_template_base_list5(tep70bs_bGAMEEND_alt_a2019, LV_RZD_PID, LV_BELARUSSIAN_RAILWAY, LV_LDZ, LV_UZBEKISTAN_TEMIR_YOLLARI, LV_CRIMEAN_RAILWAY)
+    livery_template_service_year3(tep70bs_bGAMEEND_alt, 2008, 2012, 2019)
+  livery_template_refit(tep70bs_bGAMEEND, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_REDUCED_SPEED, STR_EMPTY, tep70bs_bGAMEEND_alt)
+livery_template_build_year(tep70bs, GAMEEND)
+
+engine_refit_cost_for_a2_livery_change(tep70bs, 0xE0, -5, 9)
+
 engine_diesel_1r_effect(tep70bs_create_effect_sprites, 3, 2, 13)
 engine_direction_template(tep70bs, _create_effect)
 engine_RND_effect_direction_template(tep70bs, 5, 3)
@@ -172,7 +217,7 @@ item (FEAT_TRAINS, tep70bs, 175) {
                      refit_cost: tep70bs_refit_cost;
                  colour_mapping: any_cc_colour;
     tractive_effort_coefficient: tep70bs_tractive_effort_coefficient;
-                 purchase_speed: tep70bs_160_purchase_speed;
+                 purchase_speed: return 160;
                 additional_text: tep70bs_additional_text;
   }
 }

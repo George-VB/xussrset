@@ -1,15 +1,22 @@
 ﻿// ra1
 
-#define IMAGEFILE  "src/dmu/ra1-a1999.png"
-purchase_sprites(ra1, 0, 0)
-MU_head_single_middle_sprites(14, ra1_v2, 32, 40)        // 731 (серийная)
-MU_head_single_middle_sprites(14, ra1_v3, 32, 40 + 268)  // 731 (серийная в ПИДе)
+#define IMAGEFILE  "src/dmu/ra1.png"
+purchase_sprites(ra1_v1, 0, 0)
+MU_head_single_middle_sprites(13, ra1_v1, 32, 40)  // 730 (предсерийная)
 #undef IMAGEFILE
 
+#define IMAGEFILE  "src/dmu/ra1-a1999.png"
+purchase_sprites(ra1_v2, 0, 0)
+MU_head_single_middle_sprites(14, ra1_v2, 32, 40)   // 731 (серийная)
+MU_head_single_middle_sprites(14, ra1_v3, 32, 308)  // 731 (серийная в ПИДе)
+#undef IMAGEFILE
+purchase_sprites_selectpre(ra1, 1999)
+
+railcar_RND_mideq_direction_template(ra1_v1, ra1, 1, 1)
 railcar_RND_mideq_direction_template(ra1_v2, ra1, 1, 1)
 railcar_RND_mideq_direction_template(ra1_v3, ra1, 1, 1)
 
-switch (FEAT_TRAINS, SELF, ra1_sprites_start,
+switch (FEAT_TRAINS, SELF, ra1_a1999_sprites_start,
   cargo_subtype)
 {
            0: ra1_v2_sprites_start;
@@ -17,6 +24,7 @@ switch (FEAT_TRAINS, SELF, ra1_sprites_start,
               align_14_sprites;
 }
 
+engine_pre_template(ra1, 1999, start)
 long_vehicle(ra1)
 
 switch (FEAT_TRAINS, PARENT, ra1_can_attach_wagon_length,
@@ -51,25 +59,17 @@ switch (FEAT_TRAINS, PARENT, ra1_power,
      return 0;
 }
 
-switch (FEAT_TRAINS, PARENT, ra1_cargo_capacity,
-  (vehicle_type_id == ra1) *
-  ((build_year >= 1999) + 1))
-{
-  1: return 62;
-  2: return 78;
-     return 0;
-}
-
-  livery_template_none(ra1_b1999)
-
   livery_template_FP(ra1_a1999)
-livery_template_build_year(ra1, 1999)
+livery_template_pre(ra1, 1999)
 
+engine_capacity_MU(ra1, 62 + 16 * (build_year >= 1999), ra1)
 engine_speed(ra1, 100)
 engine_TE_change_build_after(ra1, get_tec_int(54.0, 32),
                                   get_tec_int(55.0, 40), 1999)
 engine_weight_change_build_after(ra1, 32,
                                       40, 1999)
+engine_length_change_build_after(ra1, 7,
+                                      8, 1999)
 
 RC_head_check_new(ra1, ra1)
 switch (FEAT_TRAINS, SELF, ra1_running_cost_factor,
@@ -80,10 +80,10 @@ switch (FEAT_TRAINS, SELF, ra1_running_cost_factor,
    STORE_TEMP(12, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(100, 6),                                  // Скорость
-   STORE_TEMP(32 + 8 * (build_year >= 1999), 7),        // Тара
-   STORE_TEMP(32 + 8 + 10 * (build_year >= 1999), 8)])  // Максимальная масса
-{ ra1_check_running_cost_factor; }                      // 89
+   STORE_TEMP(100, 6),                            // Скорость
+   STORE_TEMP(32 + 8 * (build_year >= 1999), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 10, 8)])             // Максимальная масса
+{ ra1_check_running_cost_factor; }                // 89
 
 hint_MU_with_subtype_in(ra1_b1999,
      calc_loading(62 / (2 * DOUBLE_DOOR)),
@@ -108,17 +108,17 @@ item (FEAT_TRAINS, ra1, 485) {
     vehicle_dmu(337, 32, 54.0, 62, 2 * DOUBLE_DOOR)
   }
   graphics {
-                default: ra1_sprites;
-               purchase: ra1_purchase_sprites;
-                  speed: ra1_speed;
-       articulated_part: articulated_part_dummy6;
-       cargo_age_period: return 60;
-    running_cost_factor: ra1_running_cost_factor;
-       can_attach_wagon: ra1_can_attach_wagon;
-     cargo_subtype_text: ra1_cargo_subtype_text;
-                  power: ra1_power;
-                 weight: ra1_weight;
-//    length: ra1_length;
+                        default: ra1_sprites;
+                       purchase: ra1_purchase_sprites;
+                          speed: ra1_speed;
+               articulated_part: articulated_part_dummy6;
+               cargo_age_period: return 60;
+            running_cost_factor: ra1_running_cost_factor;
+               can_attach_wagon: ra1_can_attach_wagon;
+             cargo_subtype_text: ra1_cargo_subtype_text;
+                          power: ra1_power;
+                         weight: ra1_weight;
+                         length: ra1_length;
                   create_effect: ra1_create_effect;
                  cargo_capacity: ra1_cargo_capacity;
                  colour_mapping: any_cc_colour;

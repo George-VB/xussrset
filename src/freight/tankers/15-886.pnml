@@ -2,41 +2,9 @@
 
 #define IMAGEFILE  "src/freight/tankers/15-886.png"
 purchase_sprites(tanker_15_886, 0, 0)
-tanker_layout_template(tanker_15_886_v2, 7, 32, 40)
-tanker_layout_template(tanker_15_886_v3, 7, 32, 107)
-tanker_layout_template(tanker_15_886_v4, 7, 32, 174)
+tanker_layout_template(tanker_15_886, 7, 32, 40)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, tanker_15_886_sprites_random,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x07])
-{
-     0: tanker_15_886_v2_sprites_start;
-  1..4: tanker_15_886_v3_sprites_start;
-        tanker_15_886_v4_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_15_886_sprites_start,
-  cargo_subtype)
-{
-  0: tanker_15_886_sprites_random;
-  1: tanker_15_886_v2_sprites_start;
-  2: tanker_15_886_v3_sprites_start;
-  3: tanker_15_886_v4_sprites_start;
-     align_7_sprites;
-}
-
 long_vehicle(tanker_15_886)
-
-switch (FEAT_TRAINS, SELF, tanker_15_886_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_TTD_42);
-  2: return string(STR_REFIT_TTD_25);
-  3: return string(STR_REFIT_TTD_0B);
-     return CB_RESULT_NO_TEXT;
-}
 
 switch (FEAT_TRAINS, SELF, tanker_15_886_loading_speed,
 [  STORE_TEMP(0, 0),
@@ -61,10 +29,10 @@ switch (FEAT_TRAINS, SELF, tanker_15_886_running_cost_factor,
    STORE_TEMP(12, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                                 // Скорость
-   STORE_TEMP(23, 7),                                  // Тара
-   STORE_TEMP(54, 8)])                    /* 23+31 */  // Максимальная масса
-{ all_running_cost_factor; }                           // 7
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(23, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 31, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 7
 
 hint_wagon_with_uspeed(tanker_15_886,
            31, 30,
@@ -80,7 +48,7 @@ item (FEAT_TRAINS, tanker_15_886, 370) {
     vehicle_dates(1963, 1988, 30, 10, 6, 22)
     vehicle_wagon(23, 120)
     default_cargo_type: MILK;
-     cargo_allow_refit: [cargo_all_milk_tanker()];
+     cargo_allow_refit: [cargo_all_food_ref_tanker()];
   }
   graphics {
                 default: tanker_15_886_sprites;
@@ -89,10 +57,10 @@ item (FEAT_TRAINS, tanker_15_886, 370) {
     running_cost_factor: tanker_15_886_running_cost_factor;
          cargo_capacity: tanker_15_886_cargo_capacity;
           loading_speed: tanker_15_886_loading_speed;
-             refit_cost: tanker_refit_cost;
-     cargo_subtype_text: tanker_15_886_cargo_subtype_text;
-         colour_mapping: any_cc_colour;
         additional_text: tanker_15_886_additional_text;
+             refit_cost: tanker_refit_cost;
+         colour_mapping: tanker_colour_mapping;
+     cargo_subtype_text: tanker_cargo_subtype_text;
   }
 }
 

@@ -23,11 +23,18 @@ long_vehicle(vl60)
 
 engine_penalise_speed3(vl60, vl60k, vl60p, 2)
 
+switch (FEAT_TRAINS, PARENT, vl60_bitmask_vehicle_info_advanced3,
+  (cargo_subtype < 0xE0) && (vehicle_type_id == vl60))
+{
+  1: return bitmask(FLAG_PENALISE_SPEED);
+     vl60_bitmask_vehicle_info;
+}
+
 switch (FEAT_TRAINS, PARENT, vl60_bitmask_vehicle_info_advanced2,
   (cargo_subtype < 0xE0) && (vehicle_type_id == vl60p))
 {
   1: return bitmask(FLAG_PENALISE_SPEED);
-     vl60_bitmask_vehicle_info;
+     vl60_bitmask_vehicle_info_advanced3;
 }
 
 switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced1,
@@ -38,19 +45,17 @@ switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced1,
 }
 
 switch (FEAT_TRAINS, SELF, vl60_bitmask_vehicle_info_advanced,
-  (position_in_consist == 0) || (vehicle_is_not_powered) || (position_in_articulated_veh > 0))
+  (position_in_consist == 0) || (vehicle_is_not_powered))
 {
   1: return 0;
      vl60_bitmask_vehicle_info_advanced1;
 }
 
-    livery_template_none(vl60_a1959_b1966)
-
-    livery_template_refit(vl60_a1959_a1966, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_VL60K, STR_EMPTY, vl60_a1959_b1966)
-  livery_template_service_year(vl60_a1959, 1966)
+    livery_template_refitf(vl60_a1959_a1966, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_VL60K, STR_EMPTY)
+  livery_template_service_year_ao(vl60_a1959, 1966)
 livery_template_pre(vl60, 1959)
 
-engine_refit_cost_for_a_livery_change(vl60, 0xE0, 1)
+engine_refit_cost_for_a2_livery_change(vl60, 0xE0, 1, 2)
 engine_electric1_2_effect(vl60_create_effect, -2, 6)
 engine_speed(vl60, 100)
 engine_TE_change_build_after2(vl60, get_tec_int(487.0, 141),
@@ -70,17 +75,17 @@ engine_weight_change_build_after2(vl60, 141,
                                         140, 1958,
                                         138, 1959)
 switch (FEAT_TRAINS, SELF, vl60_running_cost_factor,
-[  STORE_TEMP((624 - 66 * (build_year >= 1958) - 76 * (build_year >= 1959) - 31 * (build_year >= 1960) + 80 * (build_year >= 1965))*57/100, 0),  // Моторы
-   STORE_TEMP((624 - 66 * (build_year >= 1958) - 76 * (build_year >= 1959) - 31 * (build_year >= 1960) + 80 * (build_year >= 1965))*8/100, 1),   // Бригада
-   STORE_TEMP((624 - 66 * (build_year >= 1958) - 76 * (build_year >= 1959) - 31 * (build_year >= 1960) + 80 * (build_year >= 1965))*20/100, 2),  // Износ
-   STORE_TEMP(0, 3),                                                                                                                             // Сопровождение
-   STORE_TEMP((624 - 66 * (build_year >= 1958) - 76 * (build_year >= 1959) - 31 * (build_year >= 1960) + 80 * (build_year >= 1965))*14/100, 4),  // ТО
-   STORE_TEMP((624 - 66 * (build_year >= 1958) - 76 * (build_year >= 1959) - 31 * (build_year >= 1960) + 80 * (build_year >= 1965))/100, 5),     // Сертификация
+[  STORE_TEMP(356 - 38 * (build_year >= 1958) - 43 * (build_year >= 1959) - 19 * (build_year >= 1960) + 46 * (build_year >= 1965), 0),  // Моторы
+   STORE_TEMP( 50 -  5 * (build_year >= 1958) -  6 * (build_year >= 1959) -  2 * (build_year >= 1960) +  6 * (build_year >= 1965), 1),  // Бригада
+   STORE_TEMP(125 - 13 * (build_year >= 1958) - 15 * (build_year >= 1959) -  6 * (build_year >= 1960) + 16 * (build_year >= 1965), 2),  // Износ
+   STORE_TEMP(0, 3),                                                                                                                    // Сопровождение
+   STORE_TEMP( 87 -  9 * (build_year >= 1958) - 11 * (build_year >= 1959) -  4 * (build_year >= 1960) + 11 * (build_year >= 1965), 4),  // ТО
+   STORE_TEMP(  6 -      (build_year >= 1958) -      (build_year >= 1959)                             +      (build_year >= 1965), 5),  // Сертификация
 
-   STORE_TEMP(100, 6),                                                     // Скорость
-   STORE_TEMP(141 - (build_year >= 1958) - 2 * (build_year >= 1959), 7),   // Тара
-   STORE_TEMP(141 - (build_year >= 1958) - 2 * (build_year >= 1959), 8)])  // Максимальная масса
-{ all_running_cost_factor; }                                               // 624 - 558 - 482 - 451 - 531
+   STORE_TEMP(100, 6),                                                    // Скорость
+   STORE_TEMP(141 - (build_year >= 1958) - 2 * (build_year >= 1959), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                          // Максимальная масса
+{ all_running_cost_factor; }                                              // 624 - 558 - 482 - 451 - 531
 
 hint_engine(vl60_b1959,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC_PROTOTYPE,

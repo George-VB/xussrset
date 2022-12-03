@@ -25,6 +25,14 @@ pass_wagon_sprites(14, ammendorf_k_k_v13, 32, 40)
 pass_wagon_sprites(14, ammendorf_k_k_v14, 32, 308)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, ammendorf_k_k_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: ammendorf_k_k_v1_sprites_start;
+     ammendorf_k_k_v2_sprites_start;
+}
+
 switch (FEAT_TRAINS, SELF, ammendorf_k_k_sprites_start_lg,
  check_year(LG_CHANGE_YEAR))
 {
@@ -35,7 +43,7 @@ switch (FEAT_TRAINS, SELF, ammendorf_k_k_sprites_start_lg,
 switch (FEAT_TRAINS, SELF, ammendorf_k_k_sprites_start,
   cargo_subtype)
 {
-                            0: ammendorf_k_k_v1_sprites_start;
+                            0: ammendorf_k_k_sprites_start_random;
       LV_AMMENDORF_EXHIBITION: ammendorf_k_k_v3_sprites_start;
                    LV_RAL6002: ammendorf_k_k_v2_sprites_start;
                    LV_RAL6020: ammendorf_k_k_v1_sprites_start;
@@ -54,6 +62,20 @@ switch (FEAT_TRAINS, SELF, ammendorf_k_k_sprites_start,
 
 long_vehicle(ammendorf_k_k)
 
+livery_template_base_list13(ammendorf_k_k, LV_AMMENDORF_EXHIBITION, LV_RAL6020, LV_RAL6002, LV_RED_ARROW, LV_RUSSIA, LV_BALTIC_RAILWAY, LV_KALININGRAD_RAILWAY, LV_NORTHERN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI)
+switch (FEAT_TRAINS, SELF, ammendorf_k_k_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(53, 1),   // Бригада
+   STORE_TEMP(144, 2),  // Износ
+   STORE_TEMP(13, 3),   // Сопровождение
+   STORE_TEMP(38, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(55, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 253
+
 hint_wagon_coach(ammendorf_k_k_short,
      string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
      STR_PURCHASE_HINT_AGING_PERIOD_6_2,
@@ -68,20 +90,6 @@ hint_wagon_coach_comment(ammendorf_k_k_long,
      string(STR_PURCHASE_HINT_FACTORY_AMMENDORF),
      string(STR_PURCHASE_HINT_INTERIOR_WHITE))
 hint_change_longnames(ammendorf_k_k)
-
-livery_template(ammendorf_k_k, TTD_59, LV_AMMENDORF_EXHIBITION, LV_RAL6020, LV_RAL6002, LV_RED_ARROW, LV_RUSSIA, LV_BALTIC_RAILWAY, LV_KALININGRAD_RAILWAY, LV_NORTHERN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-switch (FEAT_TRAINS, SELF, ammendorf_k_k_running_cost_factor,
-[  STORE_TEMP(0, 0),    // Моторы
-   STORE_TEMP(53, 1),   // Бригада
-   STORE_TEMP(144, 2),  // Износ
-   STORE_TEMP(13, 3),   // Сопровождение
-   STORE_TEMP(38, 4),   // ТО
-   STORE_TEMP(5, 5),    // Сертификация
-
-   STORE_TEMP(160, 6),                                   // Скорость
-   STORE_TEMP(55, 7),                                    // Тара
-   STORE_TEMP(60, 8)])                     /* 55 + 5 */  // Максимальная масса
-{ all_running_cost_factor; }                             // 253
 
 item (FEAT_TRAINS, ammendorf_k_k, 232) {
   property {

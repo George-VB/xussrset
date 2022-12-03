@@ -20,6 +20,14 @@ pass_wagon_sprites(14, _61_817_v10, 32, 308)
 pass_wagon_sprites(14, _61_817_v11, 32, 576)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, _61_817_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _61_817_v1_sprites_start;
+     _61_817_v2_sprites_start;
+}
+
 switch (FEAT_TRAINS, SELF, _61_817_sprites_start_lg,
  check_year(LG_CHANGE_YEAR))
 {
@@ -30,7 +38,7 @@ switch (FEAT_TRAINS, SELF, _61_817_sprites_start_lg,
 switch (FEAT_TRAINS, SELF, _61_817_sprites_start,
   cargo_subtype)
 {
-                            0: _61_817_v1_sprites_start;
+                            0: _61_817_sprites_start_random;
                    LV_RAL6002: _61_817_v1_sprites_start;
                    LV_RAL6020: _61_817_v2_sprites_start;
                    LV_RZD_PID: _61_817_v3_sprites_start;
@@ -46,7 +54,7 @@ switch (FEAT_TRAINS, SELF, _61_817_sprites_start,
 
 long_vehicle(_61_817)
 
-livery_template(_61_817, TTD_53, LV_RAL6020, LV_RZD_PID, LV_KALININGRAD_RAILWAY, LV_NORTHERN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+livery_template_base_list10(_61_817, LV_RAL6020, LV_RAL6002, LV_RZD_PID, LV_KALININGRAD_RAILWAY, LV_NORTHERN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI)
 
 switch (FEAT_TRAINS, SELF, _61_817_running_cost_factor,
 [  STORE_TEMP(0, 0),   // Моторы
@@ -56,10 +64,10 @@ switch (FEAT_TRAINS, SELF, _61_817_running_cost_factor,
    STORE_TEMP(24, 4),  // ТО
    STORE_TEMP(3, 5),   // Сертификация
 
-   STORE_TEMP(160, 6),                                 // Скорость
-   STORE_TEMP(47, 7),                                  // Тара
-   STORE_TEMP(52, 8)])                   /* 47 + 5 */  // Максимальная масса
-{ all_running_cost_factor; }                           // 163
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(47, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 163
 
 hint_wagon_coach(_61_817,
      string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),

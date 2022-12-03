@@ -2,126 +2,9 @@
 
 #define IMAGEFILE  "src/freight/tankers/type1931.png"
 purchase_sprites(tanker_type1931, 0, 0)
-
-tanker_layout_template(tanker_type1931_v1, 5, 0,  30)
-tanker_layout_template(tanker_type1931_v2, 5, 0,  69)
-tanker_layout_template(tanker_type1931_v3, 5, 0, 108)
-tanker_layout_template(tanker_type1931_v4, 5, 0, 147)
+tanker_layout_template(tanker_type1931, 5, 32, 40)
 #undef IMAGEFILE
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_PETR_random,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x07])
-{
-  0..2: tanker_type1931_v1_sprites_start;
-        tanker_type1931_v2_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_RFPR_random,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x07])
-{
-  0..4: tanker_type1931_v2_sprites_start;
-        tanker_type1931_v3_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_WATR_random,
-[ set_offset_to(1),
-   prev_vehicle_randombits() & 0x07])
-{
-  0..2: tanker_type1931_v1_sprites_start;
-        tanker_type1931_v4_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_OIL_sprites,
-  cargo_subtype)
-{
-  0: tanker_type1931_v3_sprites_start;
-  align_5_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_PETR_sprites,
-  cargo_subtype)
-{
-  0: tanker_type1931_PETR_random;
-  1: tanker_type1931_v1_sprites_start;
-  2: tanker_type1931_v2_sprites_start;
-     align_5_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_RFPR_sprites,
-  cargo_subtype)
-{
-  0: tanker_type1931_RFPR_random;
-  1: tanker_type1931_v2_sprites_start;
-  2: tanker_type1931_v3_sprites_start;
-     align_5_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_WATR_sprites,
-  cargo_subtype)
-{
-  0: tanker_type1931_WATR_random;
-  1: tanker_type1931_v1_sprites_start;
-  2: tanker_type1931_v4_sprites_start;
-     align_5_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_DYES_RUBR_sprites,
-  cargo_subtype)
-{
-  0: tanker_type1931_v4_sprites_start;
-     align_5_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_sprites_start,
-  cargo_type_in_veh)
-{
-  OIL_: tanker_type1931_OIL_sprites;
-  PETR: tanker_type1931_PETR_sprites;
-  RFPR: tanker_type1931_RFPR_sprites;
-  WATR: tanker_type1931_WATR_sprites;
-        tanker_type1931_DYES_RUBR_sprites;
-}
-
 long_vehicle(tanker_type1931)
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_PETR_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_TTD_26);
-  2: return string(STR_REFIT_TTD_39);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_RFPR_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_TTD_39);
-  2: return string(STR_REFIT_TTD_3F);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_WATR_cargo_subtype_text,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_TTD_26);
-  2: return string(STR_REFIT_TTD_08);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, tanker_type1931_cargo_subtype_text,
-  cargo_type_in_veh)
-{
-  OIL_: string(STR_REFIT_TTD_3F);
-  PETR: tanker_type1931_PETR_cargo_subtype_text;
-  RFPR: tanker_type1931_RFPR_cargo_subtype_text;
-  WATR: tanker_type1931_WATR_cargo_subtype_text;
-        string(STR_REFIT_TTD_08);
-}
 
 switch (FEAT_TRAINS, SELF, tanker_type1931_loading_speed,
 [  STORE_TEMP(0, 0),
@@ -146,10 +29,10 @@ switch (FEAT_TRAINS, SELF, tanker_type1931_running_cost_factor,
    STORE_TEMP(2, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(100, 6),                               // Скорость
-   STORE_TEMP(11, 7),                                // Тара
-   STORE_TEMP(36, 8)])                  /* 11+25 */  // Максимальная масса
-{ all_running_cost_factor; }                         // 5
+   STORE_TEMP(100, 6),                 // Скорость
+   STORE_TEMP(11, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 25, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 5
 
 hint_wagon_with_uspeed(tanker_type1931,
            25, 25,
@@ -173,9 +56,9 @@ item (FEAT_TRAINS, tanker_type1931, 287) {
     running_cost_factor: tanker_type1931_running_cost_factor;
          cargo_capacity: tanker_type1931_cargo_capacity;
           loading_speed: tanker_type1931_loading_speed;
-     cargo_subtype_text: tanker_type1931_cargo_subtype_text;
              refit_cost: tanker_refit_cost;
-         colour_mapping: any_cc_colour;
+         colour_mapping: tanker_colour_mapping;
+     cargo_subtype_text: tanker_cargo_subtype_text;
         additional_text: tanker_type1931_additional_text;
   }
 }

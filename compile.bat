@@ -1,10 +1,10 @@
 @echo off
 set datebeg=%date%
 set timest=%time%
-clean-lng.pl
+scripts\clean-lng.pl
 if ERRORLEVEL 1 goto :EOF
 cd lang 
-start /min MonaLisa.pl 
+start /min ..\scripts\MonaLisa.pl 
 cd ..
 
 if /i "%1" == "selfconfig" goto :SelfConfig
@@ -51,60 +51,23 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-change.pl xussr.nml "\(0 == [0-9]+\)" "0"
-change.pl xussr.nml "\(1[0-9]+ == [2-9][0-9]+\)" "0"
-change.pl xussr.nml "\(2[0-9]+ == [1,3-9][0-9]+\)" "0"
-change.pl xussr.nml "\(3[0-9]+ == [1-2,4-9][0-9]+\)" "0"
-change.pl xussr.nml "\(4[0-9]+ == [1-3,5-9][0-9]+\)" "0"
-change.pl xussr.nml "\(5[0-9]+ == [1-4,6-9][0-9]+\)" "0"
-change.pl xussr.nml "\(6[0-9]+ == [1-5,7-9][0-9]+\)" "0"
-change.pl xussr.nml "\(7[0-9]+ == [1-6,8-9][0-9]+\)" "0"
-change.pl xussr.nml "\(8[0-9]+ == [1-7,9][0-9]+\)" "0"
-change.pl xussr.nml "\(9[0-9]+ == [1-8][0-9]+\)" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "0\s+\|\|\s+0" "0"
-change.pl xussr.nml "\(\(build_year \>\=\s*[0-9]+\) \|\| \(current_year \>\=\s*[0-9]+\)\) \&\& \(\s*0\)" "0"
-change.pl xussr.nml "\s*\{\s*" "\n\{\n"
-change.pl xussr.nml "\s*\}\s*" "\n\}\n"
-change.pl xussr.nml "\;" "\;\n"
-change.pl xussr.nml "\n\r*\n" "\n"
+scripts\change.pl xussr.nml "\s*\{\s*" "\n\{\n"
+scripts\change.pl xussr.nml "\s*\}\s*" "\n\}\n"
+scripts\change.pl xussr.nml "\;" "\;\n"
+scripts\change.pl xussr.nml "\n\r*\n" "\n"
 
 del xussr.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
 if /i not "%GRFFOLDER%" == "" (
-  xcopy /y %NMLNAME%.grf "%GRFFOLDER%\"
+  xcopy /y %NMLNAME%.grf "%GRFFOLDER%"
   if /i not %errorlevel% == 0 goto :Error
-  xcopy /y %NMLNAME%.grf "%YDPATH%\My\-todelete\xUSSR set\" 
+:: выкладывать файл сборки в папку с именем ветки, имя ветки брать в .git/HEAD в строке вида ref: refs/heads/main где main имя ветки
+  scripts\copy-branch.pl %NMLNAME%.grf 
   if /i not %errorlevel% == 0 goto :Error
 )
+
 echo [Ok]
 set compres=[Ok]
 goto :END
@@ -117,9 +80,9 @@ goto :END
 :GetHgRev
 
 :: определяем текущую ревизию
-for /F %%i in (%NMLNAME%.ver) do set REPO_REVISION=%%i
+for /F %%i in (%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver) do set REPO_REVISION=%%i
 set /a REPO_REVISION=%REPO_REVISION%+1
-echo %REPO_REVISION%>%NMLNAME%.ver
+echo %REPO_REVISION%>%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver
 
 goto :EOF
 
@@ -127,7 +90,7 @@ goto :EOF
 :WriteCustomTags
 echo VERSION  :%REPO_REVISION%
 echo MIN_COMPATIBLE_REVISION:%MIN_COMPATIBLE_REVISION%
-echo TITLE    :xUSSR Railway Set 0.7RC1.r%REPO_REVISION%
+echo TITLE    :xUSSR Railway Set 0.7RC2.r%REPO_REVISION%
 echo FILENAME :%NMLNAME%.grf
 goto :EOF
 
@@ -189,7 +152,7 @@ echo Total time: %timetot3%:%timetot2%:%timetot1%
 echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
 
 cd src 
-start /min MonaLisa.pl 
+start /min ..\scripts\MonaLisa.pl 
 cd ..
 
 :EOF
