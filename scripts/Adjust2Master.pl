@@ -144,7 +144,7 @@ sub parse_files($$) {
 			}
 		}
 	}
-	$result .= $footer_slave;
+	$result .= $footer_slave . "\n";
 	print("\n");
 #	$result =~ s/\n/\r\n/g;
 # TODO not to rewrite file if it has not been changed
