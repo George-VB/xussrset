@@ -1,30 +1,23 @@
 #!/usr/bin/perl -w
 use strict;
 
-# MVP: This script should add commented cargo labels to capacity file to be shure, that a list in capacity file is up to date with cargo table 
-# TODO future version should work with loading and unloading speed
-# TODO more future version should be used for translation - use eng file as template for other files
-# NB: should also support case, when destination file hase some data, not represented in the master file
-
 use utf8;
 use open qw(:std :utf8);
 #use feature "unicode_strings";
 #no bytes;
 
 # Required data:
-# Header separaton - parts before the separator are ignored for both the files. If ommited, the beginning of the file is parsed as a first group, 
+# Header separaton - parts before the separator are ignored for both the files. TODO If ommited, the beginning of the file is parsed as a first group, 
 # but the separator is always placed into ditination file, even if it was not represented
-# group separator expreassion (may be a multyline expression)
+# group separator expression (may be a multyline expression)
 # master file template (key-value)
-# destination file template (key value) 
-# NB: in cargo table fomat is "LABL,", while in capacity file the format is "LABL:"
+# destination file template (key-value) 
 # Footer separator - parts after the separator are ignored for both the files. If ommited, the ending of the file ends the last group, 
-# but the separator is always placed into ditination file, even if it was not represented
-# If data is represented in the wrong section, then it should be commented there and moved to the right section
+# TODO but the separator is always placed into ditination file, even if it was not represented
+# TODO If data is represented in the wrong section, then it should be commented there and moved to the right section
 # if data is represented several times, all the variants should be placed in the one place 
 
-my($header_template, $footer_template, $section_template, $key_template, $key_separator_master, $key_separator_slave, $comment_format) = 
-	("\# begin main block.*?\n", "\# end main block", "\#\n\#.*?\n\#\n", "\[\/\]\{0\,2\}\\s\*\[a\-z\_0\-9\.\]\+\?\\s\*", "\:", "\:", "\#");
+my($header_template, $footer_template, $section_template, $key_template, $key_separator_master, $key_separator_slave, $comment_format);
 
 sub read_file($$) {
 	my($fname, $separator) = (@_);
@@ -37,6 +30,10 @@ sub read_file($$) {
 	$str =~ s/\r//igs;
 	$header = $1 if($str =~ s/^(.*?$header_template)//is);
 	$footer = $1 if($str =~ s/($footer_template.*?)$//is);
+# If there is no section in the file - die with error
+	if(not $str =~ /^($section_template)(.*)$/is) { 
+		die("No sections found in $fname\n");
+	}
 	while($str =~ s/^($section_template)(.*)$//is) {
 		$count_sections++;
 		my($section, $key_list) = ($1, $2);
@@ -45,7 +42,7 @@ sub read_file($$) {
 		} 	
 		my(%keys) = ();
 		$key_list .= "\n";
-# ignore strings without a key  
+# Ignore strings without a key  
 # TODO decide, if there are multy-line values possible
 		while($key_list =~ s/^(.*?)\n//is) {
 			my($line) = ($1);
@@ -105,16 +102,16 @@ sub parse_files($$) {
 	my($from_file, $to_file) = (@_);
 	my($header_master, $footer_master, @sections_master) = (read_file($from_file, $key_separator_master));
 	my($header_slave, $footer_slave, @sections_slave) = (read_file($to_file, $key_separator_slave));
+# TODO because sections of the slave file are not used, transform slave sections into a single hash and use it, should be much faster
 	my($sec_number, $result, $section, %keys, $key, @values) = (1, "");
 	$result .= $header_slave;
 	foreach $section (@sections_master) {
 		%keys = %{$section};
 	        $result .= join("", @{$keys{"-Section-Header-"}});
-                print("Section: $sec_number                                                            \n");
+		print("Section: $sec_number\n");
 		$sec_number++;
 		foreach $key (sort {$a cmp $b} keys(%keys)) {
 			if($key ne "-Section-Header-") {
-				print("$key\r");
 				@values = get_key_values($key, $key_separator_master, $key_separator_slave, @sections_slave);
 				if(scalar(@values) == 2) {
 					$result .= "$comment_format $key" . join("\n$comment_format $key", @{$keys{$key}}) . "\n";
@@ -134,12 +131,11 @@ sub parse_files($$) {
 	print("unused strings\n");
 	$sec_number = 1;
 	foreach $section (@sections_slave) {
-		print("Section: $sec_number                                                            \n");
+		print("Section: $sec_number\n");
 		$sec_number++;
 		%keys = %{$section};
 		foreach $key (sort {$a cmp $b} keys(%keys)) {
 			if($key ne "-Section-Header-") {
-				print("$key\r");
 				@values = get_key_values($key, $key_separator_slave, $key_separator_master, @sections_master);
 				if(scalar(@values) == 2) {
 					$result .= "$comment_format Value is not represented in the master file\n";
@@ -184,7 +180,15 @@ sub main() {
 		die("Rules not specifiled\n");	
 	};
 	if($rules =~ /^lng$/i) {
-		print("Use LNG files rules\n");
+		print("Use language files rules\n");
+		($header_template, $footer_template, $section_template, $key_template, $key_separator_master, $key_separator_slave, $comment_format) = 
+		("\# begin main block.*?\n", "\# end main block", "\#\n\#.*?\n\#\n", "\#\{0\,1\}\\s\*\[a\-z\_0\-9\.\]\+\?\\s\*", "\:", "\:", "\#");
+	} elsif($rules =~ /^ct2cl$/i) {
+		print("Use CargoTable 2 Cargo list rules\n");
+		($header_template, $footer_template, $section_template, $key_template, $key_separator_master, $key_separator_slave, $comment_format) = 
+		("\/\/ begin main block.*?\n", "\/\/ end main block", "\/\/\\s\+\-\-\-.*?\n", "\[\/\]\{0\,2\}\\s\*\[a\-z\_0\-9\]\+\?\\s\*", "\,", "\:", "\/\/");
+	} else {
+		die("Rules \"$rules\" are unknown\n");	
 	}
 	parse_files($name_master, $name_slave);
 }
