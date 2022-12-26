@@ -2,8 +2,6 @@
 # -w
 use strict;
 
-# TODO в языковые файлы языков, отличных от английского, добавить отсутсвующие строки из английского, но закоментированные
-
 my(%nameallstrings) = ();
 my(%nameallids) = ();
 my(%nameallpngs) = ();
@@ -33,7 +31,8 @@ sub ldirectory($)
 		while (<FFILE>) {
 			s/\s*$/\r\n/is;
 			s/^UNUSED_STR/STR/;
-			if (/^[\#]{0,1}\s*(STR_[_a-z0-9]*)/i) {
+			s/^(\/\/|\#)\s*//;
+			if (/^(STR_[_a-z0-9]*)/i) {
 				if (exists($nameallstrings{$1})) {
 					$buff1.=$_;
 					$nameallstrings{$1}{$dir."/".$t}=1;
