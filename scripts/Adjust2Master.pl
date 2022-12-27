@@ -114,6 +114,7 @@ sub parse_files($$) {
 			if($key ne "-Section-Header-") {
 				@values = get_key_values($key, $key_separator_master, $key_separator_slave, @sections_slave);
 				if(scalar(@values) == 2) {
+# TODO use slave separator, not master separator
 					$result .= "$comment_format $key" . join("\n$comment_format $key", @{$keys{$key}}) . "\n";
 				} elsif(scalar(@values) == 3) {
 					$result .= $values[1] . $values[2] . "\n";
