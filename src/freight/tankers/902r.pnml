@@ -1,0 +1,67 @@
+﻿// tanker_902r
+
+#define IMAGEFILE  "src/freight/tankers/902R.png"
+purchase_sprites(tanker_902r, 0, 0)
+tanker_layout_template(tanker_902r, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_902r)
+
+switch (FEAT_TRAINS, SELF, tanker_902r_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_902r_cargo_capacity,
+[  STORE_TEMP(21, 0),  // т
+   STORE_TEMP(50, 1),  // м³
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(7, 4)])  // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_902r_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(27, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(17, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(33, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 21, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 28
+
+hint_wagon_with_uspeed(tanker_902r,
+           21, 50,
+           calc_loading(21 / (15)),
+           calc_loading(21 / (10)),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+           1961, 1969,
+           string(STR_PURCHASE_HINT_FACTORY_ZASTAL))
+
+item (FEAT_TRAINS, tanker_902r, 749) {
+  property {
+    name: string(STR_NAME_TANKER_902R);
+    vehicle_dates(1961, 1969, 40, 10, 6, 165)
+    vehicle_wagon(33, 120)
+    cargo_allow_refit: [cargo_all_gas_natural_tanker()];
+  }
+  graphics {
+                    default: tanker_902r_sprites;
+                   purchase: tanker_902r_purchase_sprites;
+           articulated_part: articulated_part_dummy1;
+        running_cost_factor: tanker_902r_running_cost_factor;
+                 refit_cost: tanker_refit_cost;
+            additional_text: tanker_902r_additional_text;
+             cargo_capacity: tanker_902r_cargo_capacity;
+              loading_speed: tanker_902r_loading_speed;
+             colour_mapping: tanker_colour_mapping;
+         cargo_subtype_text: tanker_cargo_subtype_text;
+  }
+}
+
+long_name_template(tanker_902r, STR_LONGNAME_TANKER_902R)
