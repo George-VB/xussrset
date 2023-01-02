@@ -11,22 +11,86 @@ steam_sprites(9, p12_v2_engine, 32,  40)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, p12_engine_sprites_start,
-  check_year(1946))
+  cargo_subtype)
 {
-  0: p12_v1_engine_sprites_start;
-     p12_v2_engine_sprites_start;
+                 0: p12_v1_engine_sprites_start;
+        LV_RAL6002: p12_v1_engine_sprites_start;
+        LV_RAL6020: p12_v1_engine_sprites_start;
+  LV_RED_ARROW_OLD: p12_v1_engine_sprites_start;
+              0xE0: p12_v2_engine_sprites_start;
+              0xE1: p12_v2_engine_sprites_start;
+              0xE2: p12_v2_engine_sprites_start;
+  align_9_sprites;
 }
+
 switch (FEAT_TRAINS, SELF, p12_tender_sprites_start,
-  check_year(1946))
+  cargo_subtype)
 {
-  0: p12_v1_tender_sprites_start;
-     p12_v2_tender_sprites_start;
+                 0: p12_v1_tender_sprites_start;
+        LV_RAL6002: p12_v1_tender_sprites_start;
+        LV_RAL6020: p12_v1_tender_sprites_start;
+  LV_RED_ARROW_OLD: p12_v1_tender_sprites_start;
+              0xE0: p12_v2_tender_sprites_start;
+              0xE1: p12_v2_tender_sprites_start;
+              0xE2: p12_v2_tender_sprites_start;
+  p12_v2_tender_sprites_start;
 }
 
 steamer_direction_template(p12, _sprites_start)
 long_vehicle(p12)
 
-switch (FEAT_TRAINS, SELF, p12_running_cost_factor,
+switch (FEAT_TRAINS, SELF, p12_engine_colour_mapping_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: return ttdall_cc + 0x53;
+     return ttdall_cc + 0x61;
+}
+
+switch (FEAT_TRAINS, SELF, p12_engine_colour_mapping,
+  cargo_subtype)
+{
+                 0: p12_engine_colour_mapping_random;
+        LV_RAL6002: return ttdall_cc + 0x53;
+        LV_RAL6020: return ttdall_cc + 0x61;
+  LV_RED_ARROW_OLD: return ttdall_cc + 0x9A;
+              0xE0: return ttdall_cc + 0x53;
+              0xE1: return ttdall_cc + 0x61;
+              0xE2: return ttdall_cc + 0x9A;
+  return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, p12_tender_colour_mapping_random,
+[  set_offset_to(-1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: return ttdall_cc + 0x53;
+     return ttdall_cc + 0x61;
+}
+
+switch (FEAT_TRAINS, SELF, p12_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+                 0: p12_tender_colour_mapping_random;
+        LV_RAL6002: return ttdall_cc + 0x53;
+        LV_RAL6020: return ttdall_cc + 0x61;
+  LV_RED_ARROW_OLD: return ttdall_cc + 0x9A;
+              0xE0: return ttdall_cc + 0x53;
+              0xE1: return ttdall_cc + 0x61;
+              0xE2: return ttdall_cc + 0x9A;
+  return CB_FAILED;
+}
+
+steamer_direction_template(p12, _colour_mapping)
+
+  livery_template_base_list3(p12_b1946, LV_RAL6020, LV_RAL6002, LV_RED_ARROW_OLD)
+
+  livery_template_refit3(p12_a1946, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_NO_COWL, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_LV_RED_ARROW_OLD, p12_b1946)
+livery_template_service_year(p12, 1946)
+engine_refit_cost_for_a2_livery_change(p12, 0xE0, 2, 4)
+
+switch (FEAT_TRAINS, SELF, p12_v1_running_cost_factor,
 [  STORE_TEMP(447, 0),  // Моторы
    STORE_TEMP(63, 1),   // Бригада
    STORE_TEMP(157, 2),  // Износ
@@ -38,6 +102,26 @@ switch (FEAT_TRAINS, SELF, p12_running_cost_factor,
    STORE_TEMP(124 + 127, 7),      // Тара
    STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
 { all_running_cost_factor; }      // 785
+// TODO снятие обтекателя должно снижать лобовое сопротивление, а не только наращивать расход топлива
+switch (FEAT_TRAINS, SELF, p12_v2_running_cost_factor,
+[  STORE_TEMP(457, 0),  // Моторы
+   STORE_TEMP(63, 1),   // Бригада
+   STORE_TEMP(157, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(180, 4),  // ТО
+   STORE_TEMP(8, 5),    // Сертификация
+
+   STORE_TEMP(150, 6),            // Скорость
+   STORE_TEMP(124 + 127, 7),      // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 785
+
+switch (FEAT_TRAINS, PARENT, p12_running_cost_factor,
+  cargo_subtype >= 0xE0)
+{
+  0: p12_v1_running_cost_factor;
+     p12_v2_running_cost_factor;
+}
 
 engine_steam_1_effect(p12_create_effect, -3, 13)
 engine_speed(p12, 150)
@@ -68,10 +152,11 @@ item (FEAT_TRAINS, p12, 491) {
     bitmask_vehicle_info: p12_bitmask_vehicle_info;
           purchase_speed: return 150;
           cargo_capacity: return 0;
+              refit_cost: p12_refit_cost;
            create_effect: p12_create_effect;
      running_cost_factor: p12_running_cost_factor;
-          colour_mapping: steam_pass_red_arrow_colour_mapping;
-      cargo_subtype_text: steam_pass_red_arrow_cargo_subtype_text;
+          colour_mapping: p12_colour_mapping;
+      cargo_subtype_text: p12_cargo_subtype_text;
          additional_text: p12_additional_text;
   }
 }
