@@ -55,7 +55,7 @@ switch (FEAT_TRAINS, SELF, emu_sv_sprites_start,
 long_vehicle(emu_sv)
 
 switch (FEAT_TRAINS, PARENT, emu_sv_can_attach_wagon1,
-  count_veh_id(emu_sv) < (2 * (2 + (current_year >= 1939))))
+  count_veh_id(emu_sv) < (2 + (current_year >= 1939)))
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -72,9 +72,9 @@ switch (FEAT_TRAINS, SELF, emu_sv_articulated_part,
   extra_callback_info1)
 {
   1: return dummy4;
-  2: return emu_sv;
+  2: return emu_sv_part2;
   3: return dummy4;
-  4: return emu_sv_part2;
+  4: return emu_sv_part3;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -97,8 +97,7 @@ switch (FEAT_TRAINS, SELF, emu_sv_create_effect,
 }
 
 engine_speed(emu_sv, 85)
-engine_capacity_MU(emu_sv_2, 306, emu_sv)
-engine_capacity_arv0(emu_sv, emu_sv_2)
+engine_capacity_MU(emu_sv, 306, emu_sv)
 engine_power_MU(emu_sv, 613, emu_sv)
 
 RC_head_check_new(emu_sv, emu_sv)
@@ -149,7 +148,6 @@ item (FEAT_TRAINS, emu_sv, 702) {
            can_attach_wagon: emu_sv_can_attach_wagon;
             additional_text: emu_sv_additional_text;
              cargo_capacity: emu_sv_cargo_capacity;
-    purchase_cargo_capacity: return 306/2;
                       power: emu_sv_power;
               create_effect: emu_sv_create_effect;
              colour_mapping: any_cc_colour;
@@ -163,12 +161,23 @@ allow_dcemu(emu_sv)
 item (FEAT_TRAINS, emu_sv_part2, 703) {
   property {
     vehicle_no_dates(1932, 1945, 20, 10, 8, 0)
-    vehicle_emu_c(15dc, 0, 20, 10)
-    cargo_allow_refit: [MAIL];
+    vehicle_emu_c_mail(15dc, 0, 20, 10)
   }
   graphics {
              default: emu_sv_sprites;
     cargo_age_period: return 60;
+       create_effect: emu_sv_create_effect;
+      colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, emu_sv_part3, 756) {
+  property {
+    vehicle_no_dates(1932, 1945, 20, 10, 8, 0)
+    vehicle_emu_empty(15dc)
+  }
+  graphics {
+             default: emu_sv_sprites;
        create_effect: emu_sv_create_effect;
       colour_mapping: any_cc_colour;
   }
