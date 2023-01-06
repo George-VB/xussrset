@@ -1,4 +1,4 @@
-﻿// rs4
+// rs4
 
 #define IMAGEFILE  "src/freight/refrigerators/rs4.png"
 purchase_sprites(rs4, 0, 0)
@@ -10,7 +10,7 @@ switch (FEAT_TRAINS, SELF, rs4_sprites_left,
   getbits(extra_callback_info1, 8, 8))
 {
   0: rs4_sprites_left_back;
-  1: cargo13_frut_bc_sprites;
+  1: cargo13_frut_bc_sprites_5_wagons;
   2: rs4_sprites_left_front;
      return CB_FAILED;
 }
@@ -19,92 +19,90 @@ switch (FEAT_TRAINS, SELF, rs4_sprites_right,
   getbits(extra_callback_info1, 8, 8))
 {
   0: rs4_sprites_right_back;
-  1: cargo13_frut_bc_sprites;
+  1: cargo13_frut_bc_sprites_5_wagons;
   2: rs4_sprites_right_front;
      return CB_FAILED;
 }
 
+switch (FEAT_TRAINS, SELF, rs4_sprites_left_all,
+  position_in_articulated_veh)
+{
+    0: rs4_sprites_left;
+    2: rs4_sprites_left;
+    4: rs4_diesel_sprites_left;
+    6: rs4_sprites_left;
+    8: rs4_sprites_left;
+  align_8_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_sprites_right_all,
+  position_in_articulated_veh)
+{
+    0: rs4_sprites_right;
+    2: rs4_sprites_right;
+    4: rs4_diesel_sprites_right;
+    6: rs4_sprites_right;
+    8: rs4_sprites_right;
+  align_8_sprites;
+}
+
 switch (FEAT_TRAINS, SELF, rs4_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
-   (prev_vehicle_randombits() & 0x01)])
+   prev_vehicle_randombits() & 0x01])
 {
-  0: rs4_sprites_left;
-     rs4_sprites_right;
+  0: rs4_sprites_left_all;
+     rs4_sprites_right_all;
 }
 
 long_vehicle(rs4)
-
-switch (FEAT_TRAINS, SELF, rs4int_sprites_start,
-[  set_offset_to(-position_in_articulated_veh),
-   (prev_vehicle_randombits() & 0x01)])
-{
-  0: rs4_diesel_sprites_left;
-     rs4_diesel_sprites_right;
-}
-
-long_vehicle(rs4int)
 
 engine_diesel_1r_effect(rs4int_create_effect_sprites, -2, 4, 11)
 
 switch (FEAT_TRAINS, SELF, rs4int_create_effect2,
 [  set_offset_to(-position_in_articulated_veh),
-   (prev_vehicle_randombits() & 0x01)])
+   prev_vehicle_randombits() & 0x01])
 {
   0: rs4int_create_effect_sprites_left;
      rs4int_create_effect_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, rs4int_create_effect,
-[  set_offset_to(-position_in_articulated_veh),
-   (prev_vehicle_cargo_load() > 0)])
+switch (FEAT_TRAINS, SELF, rs4int_create_effect1,
+  position_in_articulated_veh)
 {
-  1: rs4int_create_effect2;
-     return 0;
+  4: rs4int_create_effect2;
+     return disable_create_effect();
 }
 
-item (FEAT_TRAINS, rs4int, 395) {
-  property {
-    vehicle_no_dates(1979, 2050, 25, 10, 8, 0)
-    vehicle_wagon(0, 140)
-    vehicle_wagon_cargo(0, 0)
-    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-  }
-  graphics {
-           default: rs4int_sprites;
-     create_effect: rs4int_create_effect;
-    colour_mapping: any_cc_colour;
-  }
+switch (FEAT_TRAINS, SELF, rs4int_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_load() > 0])
+{
+  1: rs4int_create_effect1;
+     return disable_create_effect();
 }
 
 switch (FEAT_TRAINS, SELF, rs4_articulated_part,
   extra_callback_info1)
 {
   1: return dummy5;
-  2: return rs4;
+  2: return rs4int;
   3: return dummy5;
   4: return rs4int;
   5: return dummy2;
-  6: return rs4;
+  6: return rs4int;
   7: return dummy5;
-  8: return rs4;
+  8: return rs4int;
   9: return dummy5;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-switch (FEAT_TRAINS, SELF, rs4_cargo_capacity_2,
+switch (FEAT_TRAINS, SELF, rs4_cargo_capacity,
 [  STORE_TEMP((43 + 3 * (build_year >= 1983)) * 4, 0),  // т
    STORE_TEMP(112 * 4, 1),                              // м³
    STORE_TEMP(0, 2),                                    // м²
    STORE_TEMP(0, 3),                                    // палетомест
    STORE_TEMP(13 * 4, 4)])                              // шаблон
 { ref_cargo_capacity; }
-
-switch (FEAT_TRAINS, SELF, rs4_cargo_capacity,
-  position_in_articulated_veh)
-{
-  0: rs4_cargo_capacity_2;
-     return 0;
-}
 
 switch (FEAT_TRAINS, SELF, rs4_running_cost_factor,
 [  STORE_TEMP(0, 0),    // Моторы
@@ -120,7 +118,7 @@ switch (FEAT_TRAINS, SELF, rs4_running_cost_factor,
 { all_running_cost_factor; }                                           // 684
 
 switch (FEAT_TRAINS, SELF, rs4_loading_speed,
-  STORE_TEMP(12, 2))
+  STORE_TEMP(12 * 4, 2))
 { all_wagons_box_loading_speed; }
 
 wagon_speed_change_on_load(rs4, 140, 120, 148)
@@ -157,7 +155,6 @@ item (FEAT_TRAINS, rs4, 396) {
                    purchase: rs4_purchase_sprites;
              purchase_speed: return 140;
                       speed: rs4_speed;
-    purchase_cargo_capacity: return (43+3*(current_year >= 1983));
            cargo_age_period: return 9000;
              cargo_capacity: rs4_cargo_capacity;
               loading_speed: rs4_loading_speed;
@@ -171,3 +168,17 @@ item (FEAT_TRAINS, rs4, 396) {
 }
 
 long_name_template(rs4, STR_LONGNAME_RS4)
+
+item (FEAT_TRAINS, rs4int, 395) {
+  property {
+    vehicle_no_dates(1979, 2050, 25, 10, 8, 0)
+    vehicle_wagon(0, 140)
+    vehicle_wagon_cargo(0, 0)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+           default: rs4_sprites;
+     create_effect: rs4int_create_effect;
+    colour_mapping: any_cc_colour;
+  }
+}

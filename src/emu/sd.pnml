@@ -58,7 +58,7 @@ switch (FEAT_TRAINS, SELF, emu_sd_sprites_start,
 long_vehicle(emu_sd)
 
 switch (FEAT_TRAINS, PARENT, emu_sd_can_attach_wagon1,
-  emu_s_count() < (2 * (2 + (current_year >= 1939))))
+  emu_s_count() < (2 + (current_year >= 1939)))
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
@@ -75,9 +75,9 @@ switch (FEAT_TRAINS, SELF, emu_sd_articulated_part,
   extra_callback_info1)
 {
   1: return dummy4;
-  2: return emu_sd;
+  2: return emu_sd_part2;
   3: return dummy4;
-  4: return emu_sd_part2;
+  4: return emu_sd_part3;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
@@ -100,9 +100,16 @@ switch (FEAT_TRAINS, SELF, emu_sd_create_effect,
 }
 
 engine_speed(emu_sd, 85)
-engine_capacity_MU_emu_s(emu_sd_2, 306)
-engine_capacity_arv0(emu_sd, emu_sd_2)
+engine_capacity_MU_emu_s(emu_sd_pass, 306)
 engine_power_MU_emu_s(emu_sd, 680)
+
+switch (FEAT_TRAINS, SELF, emu_sd_cargo_capacity,
+  cargo_type_in_veh)
+{
+  PASS: emu_sd_pass_cargo_capacity;
+  return 0;
+
+}
 
 RC_head_check_emu_s_new(emu_sd)
 switch (FEAT_TRAINS, SELF, emu_sd_running_cost_factor,
@@ -152,7 +159,6 @@ item (FEAT_TRAINS, emu_sd, 443) {
            can_attach_wagon: emu_sd_can_attach_wagon;
             additional_text: emu_sd_additional_text;
              cargo_capacity: emu_sd_cargo_capacity;
-    purchase_cargo_capacity: return 306/2;
                       power: emu_sd_power;
               create_effect: emu_sd_create_effect;
              colour_mapping: any_cc_colour;
@@ -166,12 +172,23 @@ allow_dcemu(emu_sd)
 item (FEAT_TRAINS, emu_sd_part2, 448) {
   property {
     vehicle_no_dates(1932, 1945, 20, 10, 8, 0)
-    vehicle_emu_c(15dc, 0, 20, 10)
-    cargo_allow_refit: [MAIL];
+    vehicle_emu_c_mail(15dc, 0, 20, 10)
   }
   graphics {
              default: emu_sd_sprites;
     cargo_age_period: return 60;
+       create_effect: emu_sd_create_effect;
+      colour_mapping: any_cc_colour;
+  }
+}
+
+item (FEAT_TRAINS, emu_sd_part3, 753) {
+  property {
+    vehicle_no_dates(1932, 1945, 20, 10, 8, 0)
+    vehicle_emu_empty(15dc)
+  }
+  graphics {
+             default: emu_sd_sprites;
        create_effect: emu_sd_create_effect;
       colour_mapping: any_cc_colour;
   }
