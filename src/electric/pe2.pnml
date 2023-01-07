@@ -2,54 +2,113 @@
 
 #define IMAGEFILE  "src/electric/pe2.png"
 purchase_sprites(pe2, 0, 0)
-electric1r_2_sprites(11, pe2, 32, 40)
+electric1r_1_2b_sprites(11, pe2, 32, 40)
 #undef IMAGEFILE
 
-long_vehicle(pe2)
-
-switch (FEAT_TRAINS, SELF, pe2_create_effect_c,
-  electric_create_effect(-2)) { return 1; }
-
-switch (FEAT_TRAINS, SELF, pe2_create_effect,
-  position_in_articulated_veh)
+switch (FEAT_TRAINS, SELF, pe2_sprites_left_check22,
+[  set_offset_to(-4),
+   prev_vehicle_type_id()])
 {
-  4: pe2_create_effect_c;
-     return disable_create_effect();
+  pwd_dumpcar: pe2_normal_sprites_left_notfirst_light;
+  pe2_notpowered_sprites_left_d_2_up;
 }
 
+switch (FEAT_TRAINS, SELF, pe2_sprites_left_check2,
+[  set_offset_to(-2),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: pe2_sprites_left_check22;
+  pe2_notpowered_sprites_left_d_2_up;
+}
+
+switch (FEAT_TRAINS, SELF, pe2_sprites_left_check1,
+[  set_offset_to(-2),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: pe2_normal_sprites_left_notfirst_light;
+  pe2_notpowered_sprites_left_d_2_up;
+}
+
+switch (FEAT_TRAINS, SELF, pe2_sprites_left,
+  position_in_consist)
+{
+  0: pe2_sprites_left_first;
+  2: pe2_sprites_left_check1;
+  4: pe2_sprites_left_check2;
+  pe2_notpowered_sprites_left_d_2_up;
+}
+
+switch (FEAT_TRAINS, SELF, pe2_sprites_right_check22,
+[  set_offset_to(-4),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: pe2_normal_sprites_right_notfirst_light;
+  pe2_notpowered_sprites_right_d_1_up;
+}
+
+switch (FEAT_TRAINS, SELF, pe2_sprites_right_check2,
+[  set_offset_to(-2),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: pe2_sprites_right_check22;
+  pe2_notpowered_sprites_right_d_1_up;
+}
+
+switch (FEAT_TRAINS, SELF, pe2_sprites_right_check1,
+[  set_offset_to(-2),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: pe2_normal_sprites_right_notfirst_light;
+  pe2_notpowered_sprites_right_d_1_up;
+}
+
+switch (FEAT_TRAINS, SELF, pe2_sprites_right,
+  position_in_consist)
+{
+  0: pe2_sprites_right_first;
+  2: pe2_sprites_right_check1;
+  4: pe2_sprites_right_check2;
+  pe2_notpowered_sprites_right_d_1_up;
+}
+
+engine_RNDany_direction_template(pe2, 7, 1)
+long_vehicle_sp(pe2)
+
+engine_electric1r_1_effect(pe2_create_effect_sprites, -2, 4)
+engine_RNDany_effect_direction_template(pe2, 7, 1)
 engine_speed(pe2, 65)
-engine_penalise_speed0(pe2)
+engine_penalise_speed2(pe2, pwd_dumpcar, 4)
 
 switch (FEAT_TRAINS, SELF, pe2_running_cost_factor,
-[  STORE_TEMP(93, 0),  // Моторы
-   STORE_TEMP(13, 1),  // Бригада
-   STORE_TEMP(33, 2),  // Износ
+[  STORE_TEMP(23, 0),  // Моторы
+   STORE_TEMP(3, 1),   // Бригада
+   STORE_TEMP(8, 2),   // Износ
    STORE_TEMP(0, 3),   // Сопровождение
-   STORE_TEMP(23, 4),  // ТО
-   STORE_TEMP(2, 5),   // Сертификация
+   STORE_TEMP(6, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(60, 6),             // Скорость
-   STORE_TEMP(150, 7),            // Тара
+   STORE_TEMP(65, 6),             // Скорость
+   STORE_TEMP(120, 7),            // Тара
    STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 164
+{ all_running_cost_factor; }      // 41
 
-hint_engine(pe2,
-     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_15DC,
+hint_engine_noto(pe2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_DDC,
      STR_PURCHASE_HINT_SECTIONS_1,
-     1945, 1951,
-     fact_hennigsdorf())
+     1967,
+     fact_dnepropetrovsk())
 
 item (FEAT_TRAINS, pe2, 758) {
   property {
     name: string(STR_NAME_PE2);
-    vehicle_dates(1945, 1951, 20, 15, 3, 15)
+    vehicle_dates(1967, 2050, 20, 15, 8, 13)
     vehicle_cargo()
-    vehicle_15dcelectric(1950, 150, 220.0)
+    vehicle_ddcelectric(2500, 120, 227.0)
   }
   graphics {
                  default: pe2_sprites;
                 purchase: pe2_purchase_sprites;
-        articulated_part: pe2_articulated_part;
+        articulated_part: articulated_part_dummy3;
         can_attach_wagon: any_can_attach_wagon;
               start_stop: any_start_stop;
                    speed: pe2_speed;
@@ -57,7 +116,7 @@ item (FEAT_TRAINS, pe2, 758) {
           cargo_capacity: return 0;
            create_effect: pe2_create_effect;
      running_cost_factor: pe2_running_cost_factor;
-          purchase_speed: return 60;
+          purchase_speed: return 65;
          additional_text: pe2_additional_text;
       cargo_subtype_text: pe_type_cargo_subtype_text;
           colour_mapping: pe_type_colour_mapping;
