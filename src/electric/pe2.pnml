@@ -80,23 +80,40 @@ engine_speed(pe2, 65)
 engine_penalise_speed2(pe2, pwd_dumpcar, 4)
 
 switch (FEAT_TRAINS, SELF, pe2_running_cost_factor,
-[  STORE_TEMP(23, 0),  // Моторы
-   STORE_TEMP(3, 1),   // Бригада
-   STORE_TEMP(8, 2),   // Износ
-   STORE_TEMP(0, 3),   // Сопровождение
-   STORE_TEMP(6, 4),   // ТО
-   STORE_TEMP(0, 5),   // Сертификация
+[  STORE_TEMP(24 - 5 * (build_year >= 1985), 0),  // Моторы
+   STORE_TEMP(3, 1),                              // Бригада
+   STORE_TEMP(8 - (build_year >= 1985), 2),       // Износ
+   STORE_TEMP(0, 3),                              // Сопровождение
+   STORE_TEMP(6 - (build_year >= 1985), 4),       // ТО
+   STORE_TEMP(0, 5),                              // Сертификация
 
    STORE_TEMP(65, 6),             // Скорость
    STORE_TEMP(120, 7),            // Тара
    STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 41
+{ all_running_cost_factor; }      // 41 - 33
 
-hint_engine_noto(pe2,
+engine_power_change_build_after2(pe2, 860,
+                                      930, 1970,
+                                      1000, 1985)
+engine_cost_change_build_after2(pe2, 13,
+                                     13, 1970,
+                                     11, 1985)
+hint_engine(pe2_b1970,
      STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_DDC,
      STR_PURCHASE_HINT_SECTIONS_1,
-     1967,
+     1967, 1970,
      fact_dnepropetrovsk())
+hint_engine_with_subtype(pe2_a1970,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_DDC_WITH_SUBTYPE, STR_NAME_PE2M,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1970, 1985,
+     fact_dnepropetrovsk())
+hint_engine_with_subtype_noto(pe2_a1985,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_DDC_WITH_SUBTYPE, STR_NAME_PE2U,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1985,
+     fact_dnepropetrovsk())
+hint_change_pre_after2(pe2, 1970, 1985)
 
 item (FEAT_TRAINS, pe2, 758) {
   property {
@@ -109,9 +126,11 @@ item (FEAT_TRAINS, pe2, 758) {
                  default: pe2_sprites;
                 purchase: pe2_purchase_sprites;
         articulated_part: articulated_part_dummy3;
+             cost_factor: pe2_cost_factor;
         can_attach_wagon: any_can_attach_wagon;
               start_stop: any_start_stop;
                    speed: pe2_speed;
+                   power: pe2_power;
     bitmask_vehicle_info: pe2_bitmask_vehicle_info;
           cargo_capacity: return 0;
            create_effect: pe2_create_effect;
