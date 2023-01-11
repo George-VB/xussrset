@@ -186,7 +186,34 @@ switch (FEAT_TRAINS, PARENT, double_can_attach_wagon,
      q_2es10_can_attach_wagon;
 }
 
-// Специальная проверка для управления присоединением 3ТЭ10М, 3ТЭ10У, 4ТЭ10С, 3М62У, 3ЭС5К, 2ЭС10 и других со средней секцией
+// Специальная проверка для управления присоединением 3ТЭ10М, 3ТЭ10У, 4ТЭ10С, 3М62У, 3ЭС5К, 2ЭС10 и других со средней секцией, а также тяговых агрегатов
+
+switch (FEAT_TRAINS, PARENT, pe2_for_pwd_dumpcar_required3,
+[  set_offset_to(num_vehs_in_consist-8),
+   prev_vehicle_type_id() ])
+{
+  pe2: double_can_attach_wagon;
+     return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+}
+
+switch (FEAT_TRAINS, PARENT, pe2_for_pwd_dumpcar_required2,
+[  set_offset_to(num_vehs_in_consist-6),
+   prev_vehicle_type_id() ])
+{
+          pe2: double_can_attach_wagon;
+  pwd_dumpcar: pe2_for_pwd_dumpcar_required3;
+     return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+}
+
+switch (FEAT_TRAINS, PARENT, pe2_for_pwd_dumpcar_required,
+[  set_offset_to(num_vehs_in_consist-4),
+   prev_vehicle_type_id() ])
+{
+          pe2: double_can_attach_wagon;
+  pwd_dumpcar: pe2_for_pwd_dumpcar_required2;
+     return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+}
+
 switch (FEAT_TRAINS, PARENT, _4te10s_buster_required,
 [  set_offset_to(num_vehs_in_consist-4),
    (prev_vehicle_type_id() == _4te10s_m) ])
@@ -198,10 +225,12 @@ switch (FEAT_TRAINS, PARENT, _4te10s_buster_required,
 switch (FEAT_TRAINS, PARENT, other_can_attach_wagon,
 [  set_offset_to(num_vehs_in_consist-2),
    ( all_mid_section() +
-     ((prev_vehicle_type_id() == _4te10s) * 2)) ])
+     ((prev_vehicle_type_id() == _4te10s) * 2) +
+     (((prev_vehicle_type_id() == pwd_dumpcar) && (!(LOAD_TEMP(5) == pe2))) * 3)) ])
 {
   1: return string(STR_CAN_ATTACH_NO_AFTER_MIDDLE_UNIT);
   2: _4te10s_buster_required;
+  3: pe2_for_pwd_dumpcar_required;
      double_can_attach_wagon;
 }
 
@@ -403,11 +432,29 @@ switch (FEAT_TRAINS, PARENT, m_2es10_can_attach_wagon_h,
 
 // Специальная проверка для управления присоединением тяговыми агрегатами
 
+switch (FEAT_TRAINS, PARENT, m_pwd_dumpcar_can_attach_wagon6,
+[  set_offset_to(num_vehs_in_consist-12),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+          pe2: double_can_attach_wagon;
+  return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+}
+
+switch (FEAT_TRAINS, PARENT, m_pwd_dumpcar_can_attach_wagon5,
+[  set_offset_to(num_vehs_in_consist-10),
+   prev_vehicle_type_id()])
+{
+  pwd_dumpcar: m_pwd_dumpcar_can_attach_wagon6;
+          pe2: double_can_attach_wagon;
+  return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+}
+
 switch (FEAT_TRAINS, PARENT, m_pwd_dumpcar_can_attach_wagon4,
 [  set_offset_to(num_vehs_in_consist-8),
    prev_vehicle_type_id()])
 {
-  pwd_dumpcar: return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+  pwd_dumpcar: m_pwd_dumpcar_can_attach_wagon5;
           pe2: double_can_attach_wagon;
   return string(STR_START_STOP_POWER_UNIT_REQUIRED);
 }
@@ -417,8 +464,7 @@ switch (FEAT_TRAINS, PARENT, m_pwd_dumpcar_can_attach_wagon3,
    prev_vehicle_type_id()])
 {
   pwd_dumpcar: m_pwd_dumpcar_can_attach_wagon4;
-          pe2: double_can_attach_wagon;
-  return string(STR_START_STOP_POWER_UNIT_REQUIRED);
+  double_can_attach_wagon;
 }
 
 switch (FEAT_TRAINS, PARENT, m_pwd_dumpcar_can_attach_wagon2,
