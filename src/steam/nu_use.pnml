@@ -1,0 +1,64 @@
+// steam_nu uses steam_nv
+
+switch (FEAT_TRAINS, SELF, steam_nu_running_cost_factor,
+[  STORE_TEMP(91, 0),  // Моторы
+   STORE_TEMP(13, 1),  // Бригада
+   STORE_TEMP(32, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(22, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(90 + 15 * (current_year >= 1912) + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(59 + 47, 7),                                                         // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                                   // Максимальная масса
+{ all_running_cost_factor; }                                                       // 160
+
+engine_steam_1_effect(steam_nu_create_effect, -3, 12)
+engine_speed_change_after2(steam_nu, 90,
+                               105, 1912,
+                               120, 1936)
+engine_penalise_speed0(steam_nu)
+engine_tender(steam_nu)
+engine_tender_length(steam_nu, 5, 1, 3, 1)
+
+hint_engine_6fact(steam_nu,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1910, 1912,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv())
+
+item (FEAT_TRAINS, steam_nu, 762) {
+  property {
+    name: string(STR_NAME_NU);
+    vehicle_dates(1910, 1912, 40, 10, 5, 7)
+    vehicle_pass()
+    vehicle_steam(790, 59+47, 81.0)
+    vehicle_group(steam_n_group)
+  }
+  graphics {
+                 default: steam_nv_sprites;
+                purchase: steam_nv_purchase_sprites;
+        articulated_part: steam_nu_articulated_part;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+                   speed: steam_nu_speed;
+          purchase_speed: steam_nu_purchase_speed;
+    bitmask_vehicle_info: steam_nu_bitmask_vehicle_info;
+          cargo_capacity: return 0;
+           create_effect: steam_nu_create_effect;
+     running_cost_factor: steam_nu_running_cost_factor;
+          colour_mapping: steam_pass_colour_mapping;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+                  length: steam_nu_length;
+         additional_text: steam_nu_additional_text;
+  }
+}
+
+long_name_template(steam_nu, STR_LONGNAME_NU)
+models_default_cargo_template(steam_nu)
+allow_steamer(steam_nu)
