@@ -1,0 +1,71 @@
+// steam_su_152
+
+#define IMAGEFILE  "src/steam/su.png"
+purchase_sprites(steam_su_152, 0, 0)
+steam_sprites(8, steam_su_152_engine, 32, 40)
+tender_sprites(5, steam_su_152_tender, 447, 40)
+#undef IMAGEFILE
+steamer_direction_template(steam_su_152, _sprites_start)
+long_vehicle(steam_su_152)
+
+switch (FEAT_TRAINS, SELF, steam_su_152_running_cost_factor,
+[  STORE_TEMP(177, 0),  // Моторы
+   STORE_TEMP(25, 1),   // Бригада
+   STORE_TEMP(62, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(44, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(110 + 15 * (current_year >= 1926)
+                  + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(148, 7),                                // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                      // Максимальная масса
+{ all_running_cost_factor; }                          // 311
+
+engine_tender(steam_su_152)
+engine_tender_length(steam_su_152, 7, 1, 4, 1)
+engine_steam_1_effect(steam_su_152_create_effect, -3, 11)
+engine_speed_change_after2(steam_su_152, 110,
+                               115, 1926,
+                               130, 1936)
+engine_penalise_speed0(steam_su_152)
+hint_engine_5fact(steam_su_152,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1924, 1929,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY),
+     fact_kharkiv())
+
+item (FEAT_TRAINS, steam_su_152, 437) {
+  property {
+    name: string(STR_NAME_SU_152);
+    vehicle_dates(1924, 1929, 40, 10, 7, 14)
+    vehicle_pass()
+    vehicle_steam(1476, 84+64, 129.0)
+    vehicle_group(steam_s_group)
+  }
+  graphics {
+                        default: steam_su_152_sprites;
+                       purchase: steam_su_152_purchase_sprites;
+               articulated_part: steam_su_152_articulated_part;
+                         length: steam_su_152_length;
+               can_attach_wagon: any_can_attach_wagon;
+                     start_stop: any_start_stop;
+                          speed: steam_su_152_speed;
+                 purchase_speed: steam_su_152_purchase_speed;
+           bitmask_vehicle_info: steam_su_152_bitmask_vehicle_info;
+                 cargo_capacity: return 0;
+                  create_effect: steam_su_152_create_effect;
+            running_cost_factor: steam_su_152_running_cost_factor;
+                 colour_mapping: steam_pass_colour_mapping;
+             cargo_subtype_text: steam_pass_cargo_subtype_text;
+                additional_text: steam_su_152_additional_text;
+  }
+}
+
+long_name_template(steam_su_152, STR_LONGNAME_SU_152)
+models_default_cargo_template(steam_su_152)
+allow_steamer(steam_su_152)
