@@ -55,6 +55,7 @@ scripts\change.pl xussr.nml "\s*\{\s*" "\n\{\n"
 scripts\change.pl xussr.nml "\s*\}\s*" "\n\}\n"
 scripts\change.pl xussr.nml "\;" "\;\n"
 scripts\change.pl xussr.nml "\n\r*\n" "\n"
+scripts\change.pl xussr.nml "\{\s*([a-z0-9_ ]+);\s*\}" "{ $1; }"
 
 del xussr.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
