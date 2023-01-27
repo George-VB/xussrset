@@ -1,0 +1,87 @@
+﻿// tgm23
+
+#define IMAGEFILE  "src/diesel/tgm23.png"
+purchase_sprites(tgm23, 0, 0)
+steam_sprites1(5, tgm23_left,  32,  40)
+steam_sprites1(5, tgm23_right, 244,  40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tgm23_sprites_left, 0)
+{
+  tgm23_left_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, tgm23_sprites_right, 0)
+{
+  tgm23_right_sprites_start;
+}
+
+engine_RNDany_direction_template(tgm23, 5, 3)
+long_vehicle_sp(tgm23)
+
+switch (FEAT_TRAINS, SELF, tgm23_colour_mapping,
+  cargo_subtype)
+{
+  0: return tgm23_cc + 0;
+  1: return tgm23_cc + 1;
+  2: return tgm23_cc + 2;
+  3: return tgm23_cc + 3;
+  4: return tgm23_cc + 4;
+  5: return tgm23_cc + 5;
+  6: return tgm23_cc + 6;
+  7: return tgm23_cc + 7;
+     return CB_FAILED;
+}
+
+livery_template_alt70(tgm23, STR_REFIT_TTD_B6, STR_REFIT_TTD_B5, STR_REFIT_TTD_63, STR_REFIT_TTD_54, STR_REFIT_TTD_31, STR_REFIT_TTD_93, STR_REFIT_TTD_96, STR_REFIT_TTD_42)
+engine_diesel_1r_effect(tgm23_create_effect_sprites, 0, -3, 9)
+engine_RNDany_effect_direction_template(tgm23, 5, 3)
+
+engine_speed(tgm23, 60)
+engine_penalise_speed0(tgm23)
+switch (FEAT_TRAINS, SELF, tgm23_running_cost_factor,
+[  STORE_TEMP(22, 0),  // Моторы
+   STORE_TEMP(3, 1),   // Бригада
+   STORE_TEMP(8, 2),   // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(5, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(60, 6),             // Скорость
+   STORE_TEMP(44, 7),             // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 38
+hint_engine(tgm23,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1962, 1977,
+     string(STR_PURCHASE_HINT_FACTORY_MUROM))
+
+item (FEAT_TRAINS, tgm23, 780) {
+  property {
+    name: string(STR_NAME_TGM23);
+    vehicle_dates(1962, 1977, 20, 10, 4, 5)
+    vehicle_cargo()
+    vehicle_diesel(320, 44, 142.0)
+  }
+  graphics {
+                 default: tgm23_sprites;
+                purchase: tgm23_purchase_sprites;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+        articulated_part: articulated_part_dummy1;
+                   speed: tgm23_speed;
+     running_cost_factor: tgm23_running_cost_factor;
+      cargo_subtype_text: tgm23_cargo_subtype_text;
+          cargo_capacity: return 0;
+    bitmask_vehicle_info: tgm23_bitmask_vehicle_info;
+           create_effect: tgm23_create_effect;
+          colour_mapping: tgm23_colour_mapping;
+          purchase_speed: return 60;
+         additional_text: tgm23_additional_text;
+  }
+}
+
+long_name_template(tgm23, STR_LONGNAME_TGM23)
+models_default_cargo_template(tgm23)
+allow_diesel(tgm23)
