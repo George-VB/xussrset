@@ -1,5 +1,13 @@
 // steam_nu uses steam_nv
 
+#define STM_NU_CF  7
+#define STM_NU_RC  160
+#define STM_NU_SD  90
+#define STM_NU_WT  59+47
+#define STM_NU_TE  81.0
+#define STM_NU_PR  790
+#define STM_NU_CC  0
+
 switch (FEAT_TRAINS, SELF, steam_nu_running_cost_factor,
 [  STORE_TEMP(91, 0),  // Моторы
    STORE_TEMP(13, 1),  // Бригада
@@ -8,15 +16,16 @@ switch (FEAT_TRAINS, SELF, steam_nu_running_cost_factor,
    STORE_TEMP(22, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(90 + 15 * (current_year >= 1912) + 15 * (current_year >= 1936), 6),  // Скорость
-   STORE_TEMP(59 + 47, 7),                                                         // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                                   // Максимальная масса
-{ all_running_cost_factor; }                                                       // 160
+   STORE_TEMP(STM_NU_SD + 15 * (current_year >= 1912)
+                        + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(STM_NU_WT, 7),                                // Тара
+   STORE_TEMP(STM_NU_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                // 160
 
 engine_steam_1_effect(steam_nu_create_effect, -3, 12)
-engine_speed_change_after2(steam_nu, 90,
-                               105, 1912,
-                               120, 1936)
+engine_speed_change_after2(steam_nu, STM_NU_SD,
+                                     105, 1912,
+                                     120, 1936)
 engine_penalise_speed0(steam_nu)
 engine_tender(steam_nu)
 engine_tender_length(steam_nu, 5, 1, 3, 1)
@@ -35,19 +44,19 @@ hint_engine_6fact(steam_nu,
 item (FEAT_TRAINS, steam_nu, 762) {
   property {
     name: string(STR_NAME_NU);
-    vehicle_dates(1910, 1912, 40, 10, 5, 7)
+    vehicle_dates(1910, 1912, 40, 10, 5, STM_NU_CF)
     vehicle_pass()
-    vehicle_steam(790, 59+47, 81.0)
+    vehicle_steam(STM_NU_PR, STM_NU_WT, STM_NU_TE)
     vehicle_group(steam_n_group)
   }
   graphics {
+    purchase_menu(STM_NU_CF, STM_NU_RC, STM_NU_SD, STM_NU_WT, STM_NU_TE, STM_NU_PR, STM_NU_CC)
                  default: steam_nv_sprites;
                 purchase: steam_nv_purchase_sprites;
         articulated_part: steam_nu_articulated_part;
         can_attach_wagon: any_can_attach_wagon;
               start_stop: any_start_stop;
                    speed: steam_nu_speed;
-          purchase_speed: steam_nu_purchase_speed;
     bitmask_vehicle_info: steam_nu_bitmask_vehicle_info;
           cargo_capacity: return 0;
            create_effect: steam_nu_create_effect;
@@ -56,6 +65,7 @@ item (FEAT_TRAINS, steam_nu, 762) {
       cargo_subtype_text: steam_pass_cargo_subtype_text;
                   length: steam_nu_length;
          additional_text: steam_nu_additional_text;
+//        purchase_speed: steam_nu_purchase_speed;
   }
 }
 

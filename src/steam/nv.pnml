@@ -1,5 +1,13 @@
 // steam_nv
 
+#define STM_NV_CF  7
+#define STM_NV_RC  160
+#define STM_NV_SD  90
+#define STM_NV_WT  59+47
+#define STM_NV_TE  78.0
+#define STM_NV_PR  750
+#define STM_NV_CC  0
+
 #define IMAGEFILE  "src/steam/nv.png"
 purchase_sprites(steam_nv, 0, 0)
 steam_sprites(6, steam_nv_engine, 32,  40)
@@ -17,13 +25,14 @@ switch (FEAT_TRAINS, SELF, steam_nv_running_cost_factor,
    STORE_TEMP(22, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(90 + 15 * (current_year >= 1912) + 15 * (current_year >= 1936), 6),  // Скорость
-   STORE_TEMP(59 + 47, 7),                                                         // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                                   // Максимальная масса
-{ all_running_cost_factor; }                                                       // 157
+   STORE_TEMP(STM_NV_SD + 15 * (current_year >= 1912)
+                        + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(STM_NV_WT, 7),                                // Тара
+   STORE_TEMP(STM_NV_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                // 157
 
 engine_steam_1_effect(steam_nv_create_effect, -3, 12)
-engine_speed_change_after2(steam_nv, 90,
+engine_speed_change_after2(steam_nv, STM_NV_SD,
                                105, 1912,
                                120, 1936)
 engine_penalise_speed0(steam_nv)
@@ -44,19 +53,19 @@ hint_engine_6fact(steam_nv,
 item (FEAT_TRAINS, steam_nv, 431) {
   property {
     name: string(STR_NAME_NV);
-    vehicle_dates(1903, 1909, 40, 10, 5, 7)
+    vehicle_dates(1903, 1909, 40, 10, 5, STM_NV_CF)
     vehicle_pass()
-    vehicle_steam(750, 59+47, 78.0)
+    vehicle_steam(STM_NV_PR, STM_NV_WT, STM_NV_TE)
     vehicle_group(steam_n_group)
   }
   graphics {
+    purchase_menu(STM_NV_CF, STM_NV_RC, STM_NV_SD, STM_NV_WT, STM_NV_TE, STM_NV_PR, STM_NV_CC)
                  default: steam_nv_sprites;
                 purchase: steam_nv_purchase_sprites;
         articulated_part: steam_nv_articulated_part;
         can_attach_wagon: any_can_attach_wagon;
               start_stop: any_start_stop;
                    speed: steam_nv_speed;
-          purchase_speed: steam_nv_purchase_speed;
     bitmask_vehicle_info: steam_nv_bitmask_vehicle_info;
           cargo_capacity: return 0;
            create_effect: steam_nv_create_effect;
@@ -65,6 +74,7 @@ item (FEAT_TRAINS, steam_nv, 431) {
       cargo_subtype_text: steam_pass_cargo_subtype_text;
                   length: steam_nv_length;
          additional_text: steam_nv_additional_text;
+//        purchase_speed: steam_nv_purchase_speed;
   }
 }
 
