@@ -1,0 +1,72 @@
+// steam_e_9201 uses steam_e_6606
+
+#define PROP_steam_e_9201_CF  10
+#define PROP_steam_e_9201_RC  220
+#define PROP_steam_e_9201_SD  55
+#define PROP_steam_e_9201_WT  81+64
+#define PROP_steam_e_9201_TE  203.0
+#define PROP_steam_e_9201_PR  1018
+#define PROP_steam_e_9201_CC  0
+
+#define IMAGEFILE  "src/steam/e.png"
+purchase_sprites(steam_e_9201, 0, 0)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, steam_e_9201_running_cost_factor,
+[  STORE_TEMP(125, 0),  // Моторы
+   STORE_TEMP(18, 1),   // Бригада
+   STORE_TEMP(44, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(31, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_steam_e_9201_SD  + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_steam_e_9201_WT, 7),                                 // Тара
+   STORE_TEMP(PROP_steam_e_9201_WT, 8)])                                // Максимальная масса
+{ all_running_cost_factor; }                                            // 220
+
+engine_power_change_after(steam_e_9201, PROP_steam_e_9201_PR,
+                                        1031, 1920)
+engine_tender(steam_e_9201)
+engine_tender_length(steam_e_9201, 6, 1, 4, 1)
+engine_steam_1_effect(steam_e_9201_create_effect, -3, 12)
+engine_speed_change_after(steam_e_9201, PROP_steam_e_9201_SD,
+                                        65, 1936)
+engine_penalise_speed0(steam_e_9201)
+
+hint_engine(steam_e_9201,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1914, 1915,
+     fact_lugansk())
+
+item (FEAT_TRAINS, steam_e_9201, 782) {
+  property {
+    name: string(STR_NAME_E_9201);
+    vehicle_dates(1912, 1926, 40, 10, 6, PROP_steam_e_9201_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_steam_e_9201_PR, PROP_steam_e_9201_WT, PROP_steam_e_9201_TE)
+    vehicle_group(steam_e_group)
+  }
+  graphics {
+                 default: steam_e_6606_sprites;
+                purchase: steam_e_9201_purchase_sprites;
+          purchase_speed: return PROP_steam_e_9201_SD;
+        articulated_part: steam_e_9201_articulated_part;
+                  length: steam_e_9201_length;
+        can_attach_wagon: any_can_attach_wagon;
+              start_stop: any_start_stop;
+         additional_text: steam_e_9201_additional_text;
+                   speed: steam_e_9201_speed;
+    bitmask_vehicle_info: steam_e_9201_bitmask_vehicle_info;
+          cargo_capacity: return PROP_steam_e_9201_CC;
+                   power: steam_e_9201_power;
+           create_effect: steam_e_9201_create_effect;
+     running_cost_factor: steam_e_9201_running_cost_factor;
+          colour_mapping: any_cc_colour;
+  }
+}
+
+long_name_template(steam_e_9201, STR_LONGNAME_E_9201)
+models_default_cargo_template(steam_e_9201)
+allow_steamer(steam_e_9201)

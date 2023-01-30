@@ -1,5 +1,13 @@
 // steam_s
 
+#define PROP_steam_s_CF  12
+#define PROP_steam_s_RC  276
+#define PROP_steam_s_SD  110
+#define PROP_steam_s_WT  76+64
+#define PROP_steam_s_TE  104.0
+#define PROP_steam_s_PR  1292
+#define PROP_steam_s_CC  0
+
 #define IMAGEFILE  "src/steam/s.png"
 purchase_sprites(steam_s, 0, 0)
 steam_sprites(7, steam_s_engine, 32,  40)
@@ -17,14 +25,14 @@ switch (FEAT_TRAINS, SELF, steam_s_running_cost_factor,
    STORE_TEMP(39, 4),   // ТО
    STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(110 + 5 * (current_year >= 1926), 6),  // Скорость
-   STORE_TEMP(76 + 64, 7),                           // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                     // Максимальная масса
-{ all_running_cost_factor; }                         // 276
+   STORE_TEMP(PROP_steam_s_SD + 5 * (current_year >= 1926), 6),  // Скорость
+   STORE_TEMP(PROP_steam_s_WT, 7),                               // Тара
+   STORE_TEMP(PROP_steam_s_WT, 8)])                              // Максимальная масса
+{ all_running_cost_factor; }                                     // 276
 
 engine_steam_1_effect(steam_s_create_effect, -3, 11)
-engine_speed_change_after(steam_s, 110,
-                               115, 1926)
+engine_speed_change_after(steam_s, PROP_steam_s_SD,
+                                   115, 1926)
 engine_penalise_speed0(steam_s)
 engine_tender(steam_s)
 engine_tender_length(steam_s, 6, 1, 4, 1)
@@ -39,9 +47,9 @@ hint_engine_3fact(steam_s,
 item (FEAT_TRAINS, steam_s, 433) {
   property {
     name: string(STR_NAME_S_S);
-    vehicle_dates(1910, 1919, 45, 10, 6, 12)
+    vehicle_dates(1910, 1919, 45, 10, 6, PROP_steam_s_CF)
     vehicle_pass()
-    vehicle_steam(1292, 76+64, 104.0)
+    vehicle_steam(PROP_steam_s_PR, PROP_steam_s_WT, PROP_steam_s_TE)
     vehicle_group(steam_s_group)
   }
   graphics {
@@ -54,7 +62,7 @@ item (FEAT_TRAINS, steam_s, 433) {
                    speed: steam_s_speed;
           purchase_speed: steam_s_purchase_speed;
     bitmask_vehicle_info: steam_s_bitmask_vehicle_info;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_steam_s_CC;
            create_effect: steam_s_create_effect;
      running_cost_factor: steam_s_running_cost_factor;
           colour_mapping: steam_pass_extra_colour_mapping;
