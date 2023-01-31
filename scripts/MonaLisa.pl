@@ -119,6 +119,27 @@ sub ChangeFile($) {
         $s =~ s/\t/        /g;
 # не использовать \r
         $s =~ s/\r//g;
+# переупорядочить блок graphics {}
+# TODO Учитывать количество пробелов перед блоком, смещать на количество +2 (сейчас всегда 4)
+	$s_total = "";
+	$s = "graphics \{\n" . $s;
+	@strs = split(/graphics\s*\{\s*/is, $s);
+	foreach $str (@strs) {
+		if($str =~ s/^([^{]*?)\}//is) {
+			my($grs) = $1;
+			my(@sub_strs);
+			@sub_strs = split(/\;\s*/is, $grs);
+			@sub_strs = sort {uc($a) cmp uc($b)} @sub_strs;
+			$grs = join(";\n    ", @sub_strs) . "\;\n  \}";
+			$grs =~ s/^\s*[\;]+//;
+			$s_total.= "graphics \{\n  " . $grs . $str;
+		} else {
+			$s_total.= "graphics \{\n  " . $str;
+		}
+	}
+	$s_total =~ s/^graphics\s*\{\s*//is;
+	$s_total =~ s/^graphics\s*\{\s*/ /is;
+	$s = $s_total;
 # Заменить пробелы в начале
         $s =~ s/^(\s+)//g;
         $s =~ s#\n( )+\/\/#\n\/\/#g;
