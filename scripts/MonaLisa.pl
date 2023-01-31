@@ -128,10 +128,10 @@ sub ChangeFile($) {
 		if($str =~ s/^([^{]*?)\}//is) {
 			my($grs) = $1;
 			my(@sub_strs);
-			@sub_strs = split(/\;\s*/is, $grs);
+			@sub_strs = split(/\n\s*/is, $grs);
 			@sub_strs = sort {uc($a) cmp uc($b)} @sub_strs;
-			$grs = join(";\n    ", @sub_strs) . "\;\n  \}";
-			$grs =~ s/^\s*[\;]+//;
+			$grs = join("\n    ", @sub_strs) . "\n  \}";
+#			$grs =~ s/^\s*[\;]+//;
 			$s_total.= "graphics \{\n  " . $grs . $str;
 		} else {
 			$s_total.= "graphics \{\n  " . $str;
