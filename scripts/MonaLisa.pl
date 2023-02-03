@@ -121,9 +121,13 @@ sub ChangeFile($) {
         $s =~ s/\r//g;
 # переупорядочить блок graphics {}
 # TODO Учитывать количество пробелов перед блоком, смещать на количество +2 (сейчас всегда 4)
+
+
+#  Разрушает блок graphics в шаблонах (используется в рельсах), срочно исправить!
+
 	$s_total = "";
 	$s = "graphics \{\n" . $s;
-	@strs = split(/graphics\s*\{\s*/is, $s);
+	@strs = split(/graphics\s*\{\s?\n/is, $s);
 	foreach $str (@strs) {
 		if($str =~ s/^([^{]*?)\}//is) {
 			my($grs) = $1;
