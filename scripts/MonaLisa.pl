@@ -121,24 +121,23 @@ sub ChangeFile($) {
         $s =~ s/\r//g;
 # переупорядочить блок graphics {}
 # TODO Учитывать количество пробелов перед блоком, смещать на количество +2 (сейчас всегда 4)
-
-
-#  Разрушает блок graphics в шаблонах (используется в рельсах), срочно исправить!
-
 	$s_total = "";
-	$s = "graphics \{\n" . $s;
-	@strs = split(/graphics\s*\{\s?\n/is, $s);
+	$s = "graphics \{" . $s;
+	@strs = split(/graphics\s*\{/is, $s);
 	foreach $str (@strs) {
-		if($str =~ s/^([^{]*?)\}//is) {
+# templates should be ignored (Symbol '\')
+		if($str =~ s/^([^(\{|\\)]*?)\}//is) {
 			my($grs) = $1;
-			my(@sub_strs);
-			@sub_strs = split(/\n\s*/is, $grs);
-			@sub_strs = sort {uc($a) cmp uc($b)} @sub_strs;
-			$grs = join("\n    ", @sub_strs) . "\n  \}";
-#			$grs =~ s/^\s*[\;]+//;
-			$s_total.= "graphics \{\n  " . $grs . $str;
+# should not be used with a single line strings
+			if($grs =~/\n/) {
+				my(@sub_strs);
+				@sub_strs = split(/\n\s*/is, $grs);	
+				@sub_strs = sort {uc($a) cmp uc($b)} @sub_strs;
+				$grs = join("\n    ", @sub_strs) . "\n  ";
+			}
+			$s_total.= "graphics \{" . $grs . "\}" . $str;
 		} else {
-			$s_total.= "graphics \{\n  " . $str;
+			$s_total.= "graphics \{" . $str;
 		}
 	}
 	$s_total =~ s/^graphics\s*\{\s*//is;
