@@ -126,14 +126,28 @@ sub ChangeFile($) {
 	@strs = split(/graphics\s*\{/is, $s);
 	foreach $str (@strs) {
 # templates should be ignored (Symbol '\')
-		if($str =~ s/^([^(\{|\\)]*?)\}//is) {
+		if($str =~ s/^([^\{|\\]+?)\}//is) {
 			my($grs) = $1;
 # should not be used with a single line strings
-			if($grs =~/\n/) {
-				my(@sub_strs);
-				@sub_strs = split(/\n\s*/is, $grs);	
-				@sub_strs = sort {uc($a) cmp uc($b)} @sub_strs;
-				$grs = join("\n    ", @sub_strs) . "\n  ";
+			if($grs =~ /\n/s) {
+				my(@sub_strs, @sub_strs_with, @sub_strs_without);
+				@sub_strs_with = ();
+				@sub_strs_without = ();
+				@sub_strs = split(/\n/is, $grs);
+				for(my($i) = 0; $i < scalar(@sub_strs); $i++) {
+					if($sub_strs[$i] =~ /\:/) {
+					        $sub_strs[$i] =~ s/^\s*//;
+						@sub_strs_with = (@sub_strs_with, $sub_strs[$i]);
+					} else {
+					        $sub_strs[$i] =~ s/^\s+$//;
+						@sub_strs_without = (@sub_strs_without, $sub_strs[$i]) if ($sub_strs[$i] ne "");
+					}
+				}	
+				@sub_strs_with = sort {uc($a) cmp uc($b)} @sub_strs_with;
+				$grs = "\n";
+				$grs .= join("\n", @sub_strs_without) . "\n" if(scalar(@sub_strs_without) > 0);
+				$grs .= "    ". join("\n    ", @sub_strs_with) . "\n" if(scalar(@sub_strs_with) > 0);
+				$grs .= "  ";
 			}
 			$s_total.= "graphics \{" . $grs . "\}" . $str;
 		} else {
