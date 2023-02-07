@@ -1,0 +1,64 @@
+// steam_uu uses steam_u
+
+#define PROP_steam_uu_CF  11
+#define PROP_steam_uu_RC  248
+#define PROP_steam_uu_SD  105
+#define PROP_steam_uu_WT  76+53
+#define PROP_steam_uu_TE  93.0
+#define PROP_steam_uu_PR  1170
+#define PROP_steam_uu_CC  0
+
+switch (FEAT_TRAINS, SELF, steam_uu_running_cost_factor,
+[  STORE_TEMP(141, 0),  // Моторы
+   STORE_TEMP(20, 1),   // Бригада
+   STORE_TEMP(50, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(35, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_steam_uu_SD, 6),   // Скорость
+   STORE_TEMP(PROP_steam_uu_WT, 7),   // Тара
+   STORE_TEMP(PROP_steam_uu_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 239 - 7 + 7
+
+engine_tender(steam_uu)
+engine_tender_length(steam_uu, 5, 1, 4, 1)
+engine_steam_1_effect(steam_uu_create_effect, -3, 12)
+engine_speed(steam_uu, PROP_steam_uu_SD)
+engine_penalise_speed0(steam_uu)
+hint_engine_in(steam_uu,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1912,
+     fact_putilovsky())
+
+item (FEAT_TRAINS, steam_uu, 787) {
+  property {
+    name: string(STR_NAME_UU);
+    vehicle_dates(1912, 1912, 40, 10, 5, PROP_steam_uu_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_uu_PR, PROP_steam_uu_WT, PROP_steam_uu_TE)
+    vehicle_group(steam_u_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_uu_CF, PROP_steam_uu_RC, PROP_steam_uu_SD, PROP_steam_uu_WT, PROP_steam_uu_TE, PROP_steam_uu_PR, PROP_steam_uu_CC)
+         additional_text: steam_uu_additional_text;
+        articulated_part: steam_uu_articulated_part;
+    bitmask_vehicle_info: steam_uu_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_extra_cargo_subtype_text;
+          colour_mapping: steam_pass_extra_colour_mapping;
+           create_effect: steam_uu_create_effect;
+                 default: steam_u_sprites;
+                  length: steam_uu_length;
+                purchase: steam_u_purchase_sprites;
+     running_cost_factor: steam_uu_running_cost_factor;
+                   speed: steam_uu_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_uu, STR_LONGNAME_UU)
+models_default_cargo_template(steam_uu)
+allow_steamer(steam_uu)
