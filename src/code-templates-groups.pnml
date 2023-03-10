@@ -41,9 +41,101 @@ switch (FEAT_TRAINS, PARENT, name##_name,                       \
                cargo_capacity: name_g##_cargo_capacity;               \
               additional_text: name_g##_additional_text;              \
 
+// A group does not changes props
+
+#define group_props0(name_g, name0)                                  \
+switch (FEAT_TRAINS, SELF, name_g##_additional_text, 0)              \
+{ name0##_additional_text; }                                         \
+switch (FEAT_TRAINS, SELF, name_g##_purchase_sprites, 0)             \
+{ name0##_purchase_sprites; }                                        \
+switch (FEAT_TRAINS, SELF, name_g##_cargo_capacity, 0)               \
+{  return PROP_##name0##_CC; }                                       \
+switch (FEAT_TRAINS, SELF, name_g##_cost_factor, 0)                  \
+{  return PROP_##name0##_CF; }                                       \
+switch (FEAT_TRAINS, SELF, name_g##_running_cost_factor, 0)          \
+{ return PROP_##name0##_RC; }                                        \
+switch (FEAT_TRAINS, SELF, name_g##_power, 0)                        \
+{ return get_power_in_cb(PROP_##name0##_PR); }                       \
+switch (FEAT_TRAINS, SELF, name_g##_tractive_effort_coefficient, 0)  \
+{ return get_tec_int(PROP_##name0##_TE, PROP_##name0##_WT); }        \
+switch (FEAT_TRAINS, SELF, name_g##_weight, 0)                       \
+{ return PROP_##name0##_WT; }                                        \
+switch (FEAT_TRAINS, SELF, name_g##_speed, 0)                        \
+{ return PROP_##name0##_SD; }                                        \
+
+// A group does not changes props as average
+
+#define group_props0_HNMC(name_g, name0)                             \
+switch (FEAT_TRAINS, SELF, name_g##_additional_text, 0)              \
+{ name0##_additional_text; }                                         \
+switch (FEAT_TRAINS, SELF, name_g##_purchase_sprites, 0)             \
+{ name0##_purchase_sprites; }                                        \
+switch (FEAT_TRAINS, SELF, name_g##_cost_factor, 0)                  \
+{ return int(                                                        \
+             (PROP_##name0##_h_CF  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_CF  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_CF  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_CF  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+switch (FEAT_TRAINS, SELF, name_g##_cargo_capacity, 0)               \
+{ return int(                                                        \
+             (PROP_##name0##_h_CC  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_CC  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_CC  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_CC  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+switch (FEAT_TRAINS, SELF, name_g##_running_cost_factor, 0)          \
+{ return int(                                                        \
+             (PROP_##name0##_h_RC  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_RC  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_RC  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_RC  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+switch (FEAT_TRAINS, SELF, name_g##_power, 0)                        \
+{ return get_power_in_cb(                                            \
+             (PROP_##name0##_h_PR  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_PR  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_PR  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_PR  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+switch (FEAT_TRAINS, SELF, name_g##_tractive_effort_coefficient, 0)  \
+{ return get_tec_int(                                                \
+             (PROP_##name0##_h_TE  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_TE  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_TE  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_TE  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num),          \
+             (PROP_##name0##_h_WT  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_WT  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_WT  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_WT  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+switch (FEAT_TRAINS, SELF, name_g##_weight, 0)                       \
+{ return int(                                                        \
+             (PROP_##name0##_h_WT  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_WT  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_WT  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_WT  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+switch (FEAT_TRAINS, SELF, name_g##_speed, 0)                        \
+{ return int(                                                        \
+             (PROP_##name0##_h_SD  * PROP_##name0##_h_num +          \
+              PROP_##name0##_n_SD  * PROP_##name0##_n_num +          \
+              PROP_##name0##_m_SD  * PROP_##name0##_m_num +          \
+              PROP_##name0##_c_SD  * PROP_##name0##_c_num) /         \
+             (PROP_##name0##_h_num + PROP_##name0##_n_num +          \
+              PROP_##name0##_m_num + PROP_##name0##_c_num) ); }      \
+
 // A group changes props once
 
-#define group_props(name_g, name0, name1, year1)                  \
+#define group_props1(name_g, name0, name1, year1)                 \
 switch (FEAT_TRAINS, SELF, name_g##_additional_text,              \
   (current_year >= year1) )                                       \
 { 0: name0##_additional_text;                                     \
