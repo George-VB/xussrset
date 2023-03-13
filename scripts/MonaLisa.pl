@@ -135,7 +135,7 @@ sub ChangeFile($) {
 				@sub_strs_without = ();
 				@sub_strs = split(/\n/is, $grs);
 				for(my($i) = 0; $i < scalar(@sub_strs); $i++) {
-					if($sub_strs[$i] =~ /\:/) {
+					if($sub_strs[$i] =~ /(?<!\s)\:/) {
 					        $sub_strs[$i] =~ s/^\s*//;
 						@sub_strs_with = (@sub_strs_with, $sub_strs[$i]);
 					} else {

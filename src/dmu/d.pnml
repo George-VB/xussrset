@@ -1,5 +1,42 @@
 ﻿// d
 
+#define PROP_d_h_num  2
+#define PROP_d_n_num  0
+#define PROP_d_m_num  0
+#define PROP_d_c_num  1
+
+#define PROP_d_h_CF  18
+#define PROP_d_h_RC  1354
+#define PROP_d_h_SD  120
+#define PROP_d_h_WT  65.5
+#define PROP_d_h_TE  44.3
+#define PROP_d_h_PR  500
+#define PROP_d_h_CC  77
+
+#define PROP_d_n_CF  0
+#define PROP_d_n_RC  0
+#define PROP_d_n_SD  120
+#define PROP_d_n_WT  0
+#define PROP_d_n_TE  0
+#define PROP_d_n_PR  0
+#define PROP_d_n_CC  0
+
+#define PROP_d_m_CF  0
+#define PROP_d_m_RC  0
+#define PROP_d_m_SD  120
+#define PROP_d_m_WT  0
+#define PROP_d_m_TE  0
+#define PROP_d_m_PR  0
+#define PROP_d_m_CC  0
+
+#define PROP_d_c_CF  5
+#define PROP_d_c_RC  35
+#define PROP_d_c_SD  120
+#define PROP_d_c_WT  36.5
+#define PROP_d_c_TE  0
+#define PROP_d_c_PR  0
+#define PROP_d_c_CC  128
+
 #define IMAGEFILE  "src/dmu/d_h.png"
 purchase_sprites(d_h_v1, 0, 0)
 MU_head_middle_sprites(15, d_h_b1962_mu, 32, 40)
@@ -19,6 +56,7 @@ MU_car_sprites(15, d_c_a1962_mu, 32, 40)
 #undef IMAGEFILE
 purchase_sprites_select(d_h, 1962)
 purchase_sprites_select(d_c, 1962)
+map_sprites(d_purchase_sprites, d_h_purchase_sprites)
 
 MU_head_middle_direction_template(d_h_b1962, d_h)
 MU_head_middle_direction_template(d_h_a1962, d_h)
@@ -87,9 +125,9 @@ switch (FEAT_TRAINS, PARENT, d_h_create_effect0,
 }
 
 engine_effects_MU(d_h, _create_effect0, d_h)
-engine_capacity_MU(d_h, 77, d_h)
-engine_capacity_MU(d_c, 128, d_h)
-engine_power_MU(d_h, 500, d_h)
+engine_capacity_MU(d_h, PROP_d_h_CC, d_h)
+engine_capacity_MU(d_c, PROP_d_c_CC, d_h)
+engine_power_MU(d_h, PROP_d_h_PR, d_h)
 
 RC_head_check_new(d_h, d_h)
 switch (FEAT_TRAINS, SELF, d_h_running_cost_factor,
@@ -100,10 +138,10 @@ switch (FEAT_TRAINS, SELF, d_h_running_cost_factor,
    STORE_TEMP(19, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(65, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 10, 8)])  // Максимальная масса
-{ d_h_check_running_cost_factor; }     // 134
+   STORE_TEMP(PROP_d_h_SD, 6),                           // Скорость
+   STORE_TEMP(int(PROP_d_h_WT), 7),                      // Тара
+   STORE_TEMP(int(PROP_d_h_WT + PROP_d_h_CC / 16), 8)])  // Максимальная масса
+{ d_h_check_running_cost_factor; }                       // 134
 
 RC_head_check_new(d_c, d_h)
 switch (FEAT_TRAINS, SELF, d_c_running_cost_factor,
@@ -114,41 +152,43 @@ switch (FEAT_TRAINS, SELF, d_c_running_cost_factor,
    STORE_TEMP(5, 4),   // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),              // Скорость
-   STORE_TEMP(37, 7),               // Тара
-   STORE_TEMP(53, 8)])              // Максимальная масса
-{ d_c_check_running_cost_factor; }  // 35
+   STORE_TEMP(PROP_d_c_SD, 6),                           // Скорость
+   STORE_TEMP(int(PROP_d_c_WT), 7),                      // Тара
+   STORE_TEMP(int(PROP_d_c_WT + PROP_d_c_CC / 16), 8)])  // Максимальная масса
+{ d_c_check_running_cost_factor; }                       // 35
 
 hint_MU(d_h,
-     calc_loading(77 / 2 * DOUBLE_DOOR),
+     calc_loading(PROP_d_h_CC / 2 * DOUBLE_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H,
      STR_SECTIONS_DMU_2_3_M2,
      1960, 1964,
      fact_mavag())
 hint_MU(d_c_b1963,
-     calc_loading(128 / 2 * DOUBLE_DOOR),
+     calc_loading(PROP_d_c_CC / 2 * DOUBLE_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C,
      STR_SECTIONS_DMU_2_3_M2,
      1960, 1964,
      fact_mavag())
 hint_MU(d_c_a1963,
-     calc_loading(128 / 2 * DOUBLE_DOOR),
+     calc_loading(PROP_d_c_CC / 2 * DOUBLE_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C,
      STR_SECTIONS_DMU_2_3_M2,
      1960, 1964,
      string(STR_PURCHASE_HINT_FACTORY_GYOR))
 hint_change_after(d_c, 1963)
+map_sprites(d_additional_text, d_h_additional_text)
 
 item (FEAT_TRAINS, d_h, 203) {
   property {
     name: string(STR_NAME_D);
-    vehicle_dates(1960, 1964, 25, 10, 8, 18)
-    vehicle_dmu(500, 65.5, 44.3, 77, 2 * DOUBLE_DOOR)
+    vehicle_dates(1960, 1964, 25, 10, 8, PROP_d_h_CF)
+    vehicle_dmu(PROP_d_h_PR, PROP_d_h_WT, PROP_d_h_TE, PROP_d_h_CC, 2 * DOUBLE_DOOR)
   }
   graphics {
+      purchase_menu(PROP_d_h_CF, PROP_d_h_RC, PROP_d_h_SD, PROP_d_h_WT, PROP_d_h_TE, PROP_d_h_PR, PROP_d_h_CC)
         additional_text: d_h_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: d_can_attach_wagon;
@@ -159,7 +199,6 @@ item (FEAT_TRAINS, d_h, 203) {
                 default: d_h_sprites;
                   power: d_h_power;
                purchase: d_h_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: d_h_running_cost_factor;
                   speed: speed_after25_120to100;
              start_stop: d_h_start_stop;
@@ -169,11 +208,12 @@ item (FEAT_TRAINS, d_h, 203) {
 item (FEAT_TRAINS, d_c, 204) {
   property {
     name: string(STR_NAME_D);
-    vehicle_dates(1960, 1964, 25, 10, 8, 5)
-    vehicle_dmu_c(36.5, 128, 2 * DOUBLE_DOOR)
+    vehicle_dates(1960, 1964, 25, 10, 8, PROP_d_c_CF)
+    vehicle_dmu_c(PROP_d_c_WT, PROP_d_c_CC, 2 * DOUBLE_DOOR)
     vehicle_group_mu(d_h)
   }
   graphics {
+      purchase_menu(PROP_d_c_CF, PROP_d_c_RC, PROP_d_c_SD, PROP_d_c_WT, PROP_d_c_TE, PROP_d_c_PR, PROP_d_c_CC)
         additional_text: d_c_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: d_can_attach_wagon;
@@ -183,7 +223,6 @@ item (FEAT_TRAINS, d_c, 204) {
                 default: d_c_sprites;
                   power: return 0;
                purchase: d_c_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: d_c_running_cost_factor;
                   speed: speed_after25_120to100;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
