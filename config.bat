@@ -19,7 +19,7 @@ goto :EOF
 set PATHMINGW=c:\MinGW\msys\1.0\bin;c:\MinGW\bin
 :: путь к NML 0.7.1
 :: set PATHNML=C:\utils\nml.7.1
-set PATHNML=C:\Python\Python310\Scripts
+set PATHNML=C:\Python311\Scripts
 :: путь к архиватору 7-Zip
 set PATH7Z=C:\Program Files\7-Zip
 :: путь по которому копируется новый .grf после успешной сборки
