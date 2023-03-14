@@ -1,5 +1,42 @@
 ﻿// ach2
 
+#define PROP_ach2_h_num  1
+#define PROP_ach2_n_num  0
+#define PROP_ach2_m_num  0
+#define PROP_ach2_c_num  2
+
+#define PROP_ach2_h_CF  32
+#define PROP_ach2_h_RC  230
+#define PROP_ach2_h_SD  120
+#define PROP_ach2_h_WT  59
+#define PROP_ach2_h_TE  90.0
+#define PROP_ach2_h_PR  850
+#define PROP_ach2_h_CC  67
+
+#define PROP_ach2_n_CF  0
+#define PROP_ach2_n_RC  0
+#define PROP_ach2_n_SD  120
+#define PROP_ach2_n_WT  0
+#define PROP_ach2_n_TE  0
+#define PROP_ach2_n_PR  0
+#define PROP_ach2_n_CC  0
+
+#define PROP_ach2_m_CF  0
+#define PROP_ach2_m_RC  0
+#define PROP_ach2_m_SD  120
+#define PROP_ach2_m_WT  0
+#define PROP_ach2_m_TE  0
+#define PROP_ach2_m_PR  0
+#define PROP_ach2_m_CC  0
+
+#define PROP_ach2_c_CF  7
+#define PROP_ach2_c_RC  51
+#define PROP_ach2_c_SD  120
+#define PROP_ach2_c_WT  37
+#define PROP_ach2_c_TE  0
+#define PROP_ach2_c_PR  0
+#define PROP_ach2_c_CC  123
+
 #define IMAGEFILE  "src/dmu/ach2.png"
 purchase_sprites(ach2, 0, 0)
 MU_head_single_middle_sprites(15ach2, ach2, 32, 40)
@@ -113,9 +150,9 @@ switch (FEAT_TRAINS, SELF, ach2_colour_mapping,
      return CB_FAILED;
 }
 
-engine_power_MU(ach2, 850, ach2)
-engine_capacity_MU(ach2, 67, ach2)
-engine_capacity_MU(apch2, 123, ach2)
+engine_power_MU(ach2, PROP_ach2_h_PR, ach2)
+engine_capacity_MU(ach2, PROP_ach2_h_CC, ach2)
+engine_capacity_MU(apch2, PROP_ach2_c_CC, ach2)
 livery_template_alt0(ach2, STR_REFIT_TTD_5B, STR_REFIT_TTD_96)
 engine_diesel_1r_effect(ach2_create_effect_sprites, -2, 9, 11)
 railcar_RND_mideq_effect_direction_template(ach2, ach2, 1, 7)
@@ -129,10 +166,10 @@ switch (FEAT_TRAINS, SELF, ach2_running_cost_factor,
    STORE_TEMP(32, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),                // Скорость
-   STORE_TEMP(59, 7),                 // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 9, 8)])  // Максимальная масса
-{ ach2_check_running_cost_factor; }   // 230
+   STORE_TEMP(PROP_ach2_h_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ach2_h_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ach2_h_WT + PROP_ach2_h_CC / 16), 8)])  // Максимальная масса
+{ ach2_check_running_cost_factor; }                            // 230
 
 RC_head_check_new(apch2, ach2)
 switch (FEAT_TRAINS, SELF, apch2_running_cost_factor,
@@ -143,11 +180,17 @@ switch (FEAT_TRAINS, SELF, apch2_running_cost_factor,
    STORE_TEMP(8, 4),   // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(37, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 16, 8)])  // Максимальная масса
-{ apch2_check_running_cost_factor; }   // 51
+   STORE_TEMP(PROP_ach2_c_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ach2_c_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ach2_c_WT + PROP_ach2_c_CC / 16), 8)])  // Максимальная масса
+{ apch2_check_running_cost_factor; }                           // 51
 
+name_in_group_subgroup(ach2, string(STR_NAME_IN_GROUP, string(STR_NAME_ACH2_SERIES), string(STR_NAME_ACH2)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_ACH2_SERIES), string(STR_LONGNAME_ACH2)),
+                             string(STR_NAME_ACH2))
+name_in_group_subgroup(apch2, string(STR_NAME_IN_GROUP, string(STR_NAME_ACH2_SERIES), string(STR_NAME_APCH2)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_ACH2_SERIES), string(STR_LONGNAME_APCH2)),
+                              string(STR_NAME_ACH2))
 hint_MU(ach2,
      calc_loading(67 / DOUBLE_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
@@ -166,10 +209,12 @@ hint_MU(apch2,
 item (FEAT_TRAINS, ach2, 501) {
   property {
     name: string(STR_NAME_ACH2);
-    vehicle_dates(1984, 1992, 25, 10, 8, 32)
-    vehicle_dmu(850, 59, 90.0, 67, DOUBLE_DOOR)
+    vehicle_dates(1984, 1992, 25, 10, 8, PROP_ach2_h_CF)
+    vehicle_dmu(PROP_ach2_h_PR, PROP_ach2_h_WT, PROP_ach2_h_TE, PROP_ach2_h_CC, DOUBLE_DOOR)
+    vehicle_group(ach2_group)
   }
   graphics {
+    purchase_menu(PROP_ach2_h_CF, PROP_ach2_h_RC, PROP_ach2_h_SD, PROP_ach2_h_WT, PROP_ach2_h_TE, PROP_ach2_h_PR, PROP_ach2_h_CC)
         additional_text: ach2_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: ach2_can_attach_wagon;
@@ -179,9 +224,9 @@ item (FEAT_TRAINS, ach2, 501) {
          colour_mapping: ach2_colour_mapping;
           create_effect: ach2_create_effect;
                 default: ach2_sprites;
+                   name: ach2_name;
                   power: ach2_power;
                purchase: ach2_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: ach2_running_cost_factor;
                   speed: speed_after25_120to100;
              start_stop: ach2_start_stop;
@@ -191,11 +236,12 @@ item (FEAT_TRAINS, ach2, 501) {
 item (FEAT_TRAINS, apch2, 502) {
   property {
     name: string(STR_NAME_APCH2);
-    vehicle_dates(1984, 1989, 25, 10, 8, 7)
-    vehicle_dmu_c(37, 123, 2 * DOUBLE_DOOR)
+    vehicle_dates(1984, 1989, 25, 10, 8, PROP_ach2_c_CF)
+    vehicle_dmu_c(PROP_ach2_c_WT, PROP_ach2_c_CC, 2 * DOUBLE_DOOR)
     vehicle_group_mu(ach2)
   }
   graphics {
+    purchase_menu(PROP_ach2_c_CF, PROP_ach2_c_RC, PROP_ach2_c_SD, PROP_ach2_c_WT, PROP_ach2_c_TE, PROP_ach2_c_PR, PROP_ach2_c_CC)
         additional_text: apch2_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: ach2_can_attach_wagon;
@@ -204,9 +250,9 @@ item (FEAT_TRAINS, apch2, 502) {
      cargo_subtype_text: ach2_cargo_subtype_text;
          colour_mapping: ach2_colour_mapping;
                 default: apch2_sprites;
+                   name: apch2_name;
                   power: return 0;
                purchase: apch2_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: apch2_running_cost_factor;
                   speed: speed_after25_120to100;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
