@@ -12,7 +12,7 @@ if(defined($ENV{"YDPATH"}) &&
    (-d $ENV{"YDPATH"}) ) {
    	print("Change path to ");
 	$todir = $ENV{"YDPATH"};
-   	print("Change path to \"$todir\"");
+   	print("Change path to \"$todir\"\n");
 	$todir =~ s/\\/\//g;
 	$todir =~ s/\/$//;
  	$todir .= '/My/-todelete/xUSSRset/';
