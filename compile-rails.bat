@@ -20,7 +20,7 @@ if /i "%1" == "cleanup" goto :Cleanup
 ::: параметры для набора
 call :SelfConfig
 :: параметры пользователя
-call config user
+call ..\config user
 
 :: задаём переменные окружения
 set PATH=%PATHMINGW%;%PATHNML%;%PATHTHG%;%PATH%
