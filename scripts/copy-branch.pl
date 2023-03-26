@@ -5,7 +5,18 @@ use locale;
 use POSIX qw (locale_h);
 use Encode;
 
-my($todir) = ('c:/users/GVBagaev/YandexDisk/My/-todelete/xUSSRset/'); 
+my($todir) = ('c:/YandexDisk/My/-todelete/xUSSRset/'); 
+if(defined($ENV{"YDPATH"}) && 
+   ($ENV{"YDPATH"} ne "") &&
+   (-e $ENV{"YDPATH"}) &&
+   (-d $ENV{"YDPATH"}) ) {
+   	print("Change path to ");
+	$todir = $ENV{"YDPATH"};
+   	print("Change path to \"$todir\"\n");
+	$todir =~ s/\\/\//g;
+	$todir =~ s/\/$//;
+ 	$todir .= '/My/-todelete/xUSSRset/';
+}
 
 sub MMkdir($)
 {
@@ -31,7 +42,7 @@ sub main() {
 	$name = $ARGV[0];
 	$name = "" if(not defined($name));
 	if(not -e $name || -d $name) {
-		print("$name does not exist\n$!\n");	
+		print("\"$name\" does not exist\n$!\n");	
 		exit(1);
 	}			
 	print("Copy $name");
