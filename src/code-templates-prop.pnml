@@ -21,6 +21,17 @@ switch (FEAT_TRAINS, SELF, name, (build_year >= year) + (build_year >= year2) + 
   3: new_prop3;                                                                                         \
      old_prop; }                                                                                        \
 
+// Общее изменение по рефиту
+#define engine_change_refit(name, prop_name, new_prop_name)  \
+switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0))    \
+{ 1: new_prop_name;                                          \
+     prop_name; }                                            \
+
+#define engine_change_refit_shift(name, prop_name, new_prop_name, shift)  \
+switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0 + shift))         \
+{ 1: new_prop_name;                                                       \
+     prop_name; }                                                         \
+
 // Определение пенальти на скорость (схема без СМЕ)
 #define engine_penalise_speed0(name)                         \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,      \
@@ -621,15 +632,22 @@ switch (FEAT_TRAINS, PARENT, name##_power,                                      
      return 0; }                                                                 \
 
 // Определение мощности в зависимости от типа пути
-#define engine_power_change_AC_DC(name)                    \
-is_ERA_ds(name##_power, name##_AC_power, name##_DC_power)  \
+#define engine_power_change_DDC(name)                     \
+is_ERDD_ds(name##_2_power, name##_15DC_power, return 0)   \
+is_ERD_ds(name##_power, name##_DC_power, name##_2_power)  \
 
-#define engine_power_change_AAC_DC(name)                        \
-is_ERAA_ds(name##_2_power, name##_15AC_power, name##_DC_power)  \
-is_ERA_ds(name##_power, name##_AC_power, name##_2_power)        \
+#define engine_power_change_AC_DC(name)                   \
+is_ERD_ds(name##_2_power, name##_DC_power, return 0)      \
+is_ERA_ds(name##_power, name##_AC_power, name##_2_power)  \
+
+#define engine_power_change_AAC_DC(name)                       \
+is_ERD_ds(name##_3_power, name##_DC_power, return 0)           \
+is_ERAA_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
+is_ERA_ds(name##_power, name##_AC_power, name##_2_power)       \
 
 #define engine_power_change_AAC_DDC(name)                      \
-is_ERD_ds(name##_3_power, name##_DC_power, name##_15DC_power)  \
+is_ERDD_ds(name##_4_power, name##_15DC_power, return 0)        \
+is_ERD_ds(name##_3_power, name##_DC_power, name##_4_power)     \
 is_ERAA_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
 is_ERA_ds(name##_power, name##_AC_power, name##_2_power)       \
 
@@ -690,6 +708,13 @@ switch (FEAT_TRAINS, SELF, name##_refit_cost,                                   
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
 { 1: return cost;                                                                  \
   2: return cost2;                                                                 \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+
+#define engine_refit_cost_for_extra_livery_change(name, num, cost, base_name)      \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) == (num << 8)) * 2 + ((cargo_subtype == num)))  \
+{ 0..1: base_name;                                                                 \
+     2: return cost;                                                               \
      return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 // Определение длины с изменением по году постройки

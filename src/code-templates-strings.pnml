@@ -136,13 +136,22 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,        \
 
 // Описание вагона
 #define hint_wagon(name, cap, vol, lspeed, straging, strwagtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                             \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                              \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                              \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),  \
   STORE_TEMP(from | (to << 16), 0x103),                                              \
   STORE_TEMP(factory, 0x104)])                                                       \
 { return string(STR_PURCHASE_HINT_WAGON); }                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                            \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                              \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                              \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),    \
+  STORE_TEMP(from | (factory << 16), 0x103)])                                        \
+{ return string(STR_PURCHASE_HINT_WAGON); }                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)               \
+{ 1: name##_additional_text_hidden;                                                  \
+     name##_additional_text_shown; }                                                 \
 
 // Описание вагона без окончания срока доступности
 #define hint_wagon_noto(name, cap, vol, lspeed, straging, strwagtype, from, factory)  \
@@ -165,7 +174,7 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 // Описание вагона c 2 производителями
 #define hint_wagon_2fact(name, cap, vol, lspeed, straging, strwagtype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                             \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                              \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                              \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                  \
@@ -173,10 +182,20 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x104),                              \
   STORE_TEMP(factory2, 0x105)])                                                                      \
 { return string(STR_PURCHASE_HINT_WAGON); }                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                            \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                              \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                              \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                    \
+  STORE_TEMP(from | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x103),                                 \
+  STORE_TEMP(factory | (factory2 << 16), 0x104)])                                                    \
+{ return string(STR_PURCHASE_HINT_WAGON); }                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                               \
+{ 1: name##_additional_text_hidden;                                                                  \
+     name##_additional_text_shown; }                                                                 \
 
 // Описание вагона c 3 производителями
 #define hint_wagon_3fact(name, cap, vol, lspeed, straging, strwagtype, from, to, factory, factory2, factory3)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                       \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                        \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                        \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                            \
@@ -184,40 +203,81 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (factory << 16), 0x104),                                        \
   STORE_TEMP(factory2 | (factory3 << 16), 0x105)])                                                             \
 { return string(STR_PURCHASE_HINT_WAGON); }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                      \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                        \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                        \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                              \
+  STORE_TEMP(from | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x103),                                           \
+  STORE_TEMP(factory | (factory2 << 16), 0x104),                                                               \
+  STORE_TEMP(factory3, 0x105)])                                                                                \
+{ return string(STR_PURCHASE_HINT_WAGON); }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                         \
+{ 1: name##_additional_text_hidden;                                                                            \
+     name##_additional_text_shown; }                                                                           \
 
 // Описание вагона c примечанием
 #define hint_wagon_comment(name, cap, vol, lspeed, straging, strwagtype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                              \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                               \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                               \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                   \
   STORE_TEMP(from | (to << 16), 0x103),                                                               \
   STORE_TEMP(factory | (comment << 16), 0x104)])                                                      \
 { return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                             \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                               \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                               \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                     \
+  STORE_TEMP(from | (factory << 16), 0x103),                                                          \
+  STORE_TEMP(comment, 0x104)])                                                                        \
+{ return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                \
+{ 1: name##_additional_text_hidden;                                                                   \
+     name##_additional_text_shown; }                                                                  \
 
 // Описание вагона со специальным типом (передаётся как строка, а не как ссылка) c примечанием
 #define hint_wagon_with_spectype_comment(name, cap, vol, lspeed, straging, wagtype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                          \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                          \
   STORE_TEMP(wagtype | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                                         \
   STORE_TEMP(from | (to << 16), 0x103),                                                                          \
   STORE_TEMP(factory | (comment << 16), 0x104)])                                                                 \
 { return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                        \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                          \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                          \
+  STORE_TEMP(wagtype | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                                           \
+  STORE_TEMP(from | (factory << 16), 0x103),                                                                     \
+  STORE_TEMP(comment, 0x104)])                                                                                   \
+{ return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                           \
+{ 1: name##_additional_text_hidden;                                                                              \
+     name##_additional_text_shown; }                                                                             \
 
 // Описание вагона с отличающейся скоростью разгрузки
 #define hint_wagon_with_uspeed(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                  \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                   \
   STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                            \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                       \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x103),                                     \
   STORE_TEMP(to | (factory << 16), 0x104)])                                                               \
 { return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                 \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                   \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                            \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x103),                                       \
+  STORE_TEMP(factory, 0x104)])                                                                            \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                    \
+{ 1: name##_additional_text_hidden;                                                                       \
+     name##_additional_text_shown; }                                                                      \
 
 // Описание вагона с отличающейся скоростью разгрузки и 2 производителями
 #define hint_wagon_with_uspeed_2fact(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                  \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                   \
   STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                            \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                       \
@@ -225,6 +285,17 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x104),                                                        \
   STORE_TEMP(factory | (factory2 << 16), 0x105)])                                                                         \
 { return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                 \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                   \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                            \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x103),                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x104),                                                   \
+  STORE_TEMP(factory2, 0x105)])                                                                                           \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED); }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                    \
+{ 1: name##_additional_text_hidden;                                                                                       \
+     name##_additional_text_shown; }                                                                                      \
 
 // Описание вагона с отличающейся скоростью разгрузки без окончания срока доступности
 #define hint_wagon_with_uspeed_noto(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, factory)  \
@@ -248,7 +319,7 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 // Описание вагона с отличающейся скоростью разгрузки c примечанием
 #define hint_wagon_with_uspeed_comment(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                   \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                    \
   STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                             \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                        \
@@ -256,20 +327,39 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(to | (factory << 16), 0x104),                                                                                 \
   STORE_TEMP(comment, 0x105)])                                                                                             \
 { return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                  \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                    \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                             \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                        \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x103),                                                        \
+  STORE_TEMP(factory | (comment << 16), 0x104)])                                                                           \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                     \
+{ 1: name##_additional_text_hidden;                                                                                        \
+     name##_additional_text_shown; }                                                                                       \
 
 // Описание вагона-платформы
 #define hint_wagon_flat(name, cap, vol, lspeed, straging, strwagtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                  \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                   \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                   \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),       \
   STORE_TEMP(from | (to << 16), 0x103),                                                   \
   STORE_TEMP(factory, 0x104)])                                                            \
 { return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                 \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                   \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                   \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),         \
+  STORE_TEMP(from | (factory << 16), 0x103)])                                             \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                    \
+{ 1: name##_additional_text_hidden;                                                       \
+     name##_additional_text_shown; }                                                      \
 
 // Описание вагона-платформы c 2 производителями
 #define hint_wagon_flat_2fact(name, cap, vol, lspeed, straging, strwagtype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                  \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                   \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                   \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                       \
@@ -277,10 +367,20 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x104),                                   \
   STORE_TEMP(factory2, 0x105)])                                                                           \
 { return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                 \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                   \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                   \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                         \
+  STORE_TEMP(from | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x103),                                      \
+  STORE_TEMP(factory | (factory2 << 16), 0x104)])                                                         \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                    \
+{ 1: name##_additional_text_hidden;                                                                       \
+     name##_additional_text_shown; }                                                                      \
 
 // Описание вагона-платформы c 3 производителями
 #define hint_wagon_flat_3fact(name, cap, vol, lspeed, straging, strwagtype, from, to, factory, factory2, factory3)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                            \
 [ STORE_TEMP(cap | (vol << 16), 0x100),                                                                             \
   STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                             \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                                 \
@@ -288,6 +388,17 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (factory << 16), 0x104),                                             \
   STORE_TEMP(factory2 | (factory3 << 16), 0x105)])                                                                  \
 { return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                           \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                             \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                             \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                                   \
+  STORE_TEMP(from | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x103),                                                \
+  STORE_TEMP(factory | (factory2 << 16), 0x104),                                                                    \
+  STORE_TEMP(factory3, 0x105)])                                                                                     \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                              \
+{ 1: name##_additional_text_hidden;                                                                                 \
+     name##_additional_text_shown; }                                                                                \
 
 // Описание вагона-платформы без окончания срока доступности
 #define hint_wagon_flat_noto(name, cap, vol, lspeed, straging, strwagtype, from, factory)  \
@@ -310,12 +421,21 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 // Описание почтового-вагона
 #define hint_wagon_mail(name, cap, lspeed, straging, strwagtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                             \
 [ STORE_TEMP(cap | (lspeed << 16), 0x100),                                           \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                  \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                \
   STORE_TEMP(to | (factory << 16), 0x103)])                                          \
 { return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                            \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                           \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                  \
+  STORE_TEMP(factory, 0x103)])                                                       \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)               \
+{ 1: name##_additional_text_hidden;                                                  \
+     name##_additional_text_shown; }                                                 \
 
 // Описание почтового-вагона без окончания срока доступности
 #define hint_wagon_mail_noto(name, cap, lspeed, straging, strwagtype, from, factory)  \
@@ -328,13 +448,22 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 // Описание почтового-вагона с примечанием
 #define hint_wagon_mail_comment(name, cap, lspeed, straging, strwagtype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                              \
 [ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                            \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                   \
-  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                 \
   STORE_TEMP(to | (factory << 16), 0x103),                                                            \
   STORE_TEMP(comment, 0x104)])                                                                        \
 { return string(STR_PURCHASE_HINT_WAGON_MAIL_COMMENT); }                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                             \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                            \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                                   \
+  STORE_TEMP(factory | (comment << 16), 0x103)])                                                      \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL_COMMENT); }                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                \
+{ 1: name##_additional_text_hidden;                                                                   \
+     name##_additional_text_shown; }                                                                  \
 
 // Описание почтового-вагона без окончания срока доступности с примечанием
 #define hint_wagon_mail_noto_comment(name, cap, lspeed, straging, strwagtype, from, factory, comment)  \
@@ -347,50 +476,95 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 // Описание почтового-вагона с производством в течение года
 #define hint_wagon_mail_in(name, cap, lspeed, straging, strwagtype, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                          \
 [ STORE_TEMP(cap | (lspeed << 16), 0x100),                                        \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),               \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN) | (in << 16), 0x102),                   \
   STORE_TEMP(factory, 0x103)])                                                    \
 { return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                         \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                        \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),               \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (in << 16), 0x102),                 \
+  STORE_TEMP(factory, 0x103)])                                                    \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)            \
+{ 1: name##_additional_text_hidden;                                               \
+     name##_additional_text_shown; }                                              \
 
 // Описание почтового-вагона с подтипом
 #define hint_wagon_mail_with_subtype(name, cap, lspeed, straging, strwagtype, strwagsubtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
 [ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                                       \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                              \
   STORE_TEMP(string(strwagsubtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                           \
   STORE_TEMP(from | (to << 16), 0x103),                                                                          \
   STORE_TEMP(factory, 0x104)])                                                                                   \
 { return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                        \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                                       \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                              \
+  STORE_TEMP(string(strwagsubtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                             \
+  STORE_TEMP(from | (factory << 16), 0x103)])                                                                    \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                           \
+{ 1: name##_additional_text_hidden;                                                                              \
+     name##_additional_text_shown; }                                                                             \
 
 // Описание почтового-вагона c 2 производителями
 #define hint_wagon_mail_2fact(name, cap, lspeed, straging, strwagtype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                             \
 [ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                           \
   STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                  \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x103),                                   \
   STORE_TEMP(factory | (factory2 << 16), 0x104)])                                                    \
 { return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                            \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                           \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                              \
+  STORE_TEMP(factory2, 0x104)])                                                                      \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                               \
+{ 1: name##_additional_text_hidden;                                                                  \
+     name##_additional_text_shown; }                                                                 \
 
 // Описание пассажирского вагона с подтипом
 #define hint_wagon_coach_with_subtype(name, lspeed, straging, strwagtype, strwagsubtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                     \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                      \
   STORE_TEMP(string(strwagtype) | (string(strwagsubtype) << 16), 0x101),                                     \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                        \
   STORE_TEMP(to | (factory <<16), 0x103)])                                                                   \
 { return string(STR_PURCHASE_HINT_COACH); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                    \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                      \
+  STORE_TEMP(string(strwagtype) | (string(strwagsubtype) << 16), 0x101),                                     \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                                          \
+  STORE_TEMP(factory, 0x103)])                                                                               \
+{ return string(STR_PURCHASE_HINT_COACH); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                       \
+{ 1: name##_additional_text_hidden;                                                                          \
+     name##_additional_text_shown; }                                                                         \
 
 // Описание пассажирского вагона
 #define hint_wagon_coach(name, lspeed, straging, strwagtype, from, to, factory)      \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                             \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                              \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),  \
   STORE_TEMP(from | (to << 16), 0x102),                                              \
   STORE_TEMP(factory, 0x103)])                                                       \
 { return string(STR_PURCHASE_HINT_COACH); }                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                            \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                              \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),    \
+  STORE_TEMP(from | (factory << 16), 0x102)])                                        \
+{ return string(STR_PURCHASE_HINT_COACH); }                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)               \
+{ 1: name##_additional_text_hidden;                                                  \
+     name##_additional_text_shown; }                                                 \
 
 // Описание пассажирского вагона без окончания срока доступности
 #define hint_wagon_coach_noto(name, lspeed, straging, strwagtype, from, factory)   \
@@ -401,39 +575,74 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 { return string(STR_PURCHASE_HINT_COACH); }                                        \
 
 // Описание пассажирского вагона с производством в течение года
-#define hint_wagon_coach_in(name, lspeed, straging, strwagtype, in, factory)     \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                               \
-[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                          \
-  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_IN) << 16), 0x101),  \
-  STORE_TEMP(in | (factory << 16), 0x102)])                                      \
-{ return string(STR_PURCHASE_HINT_COACH); }                                      \
+#define hint_wagon_coach_in(name, lspeed, straging, strwagtype, in, factory)       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                           \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                            \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_IN) << 16), 0x101),    \
+  STORE_TEMP(in | (factory << 16), 0x102)])                                        \
+{ return string(STR_PURCHASE_HINT_COACH); }                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                          \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                            \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),  \
+  STORE_TEMP(in | (factory << 16), 0x102)])                                        \
+{ return string(STR_PURCHASE_HINT_COACH); }                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)             \
+{ 1: name##_additional_text_hidden;                                                \
+     name##_additional_text_shown; }                                               \
 
 // Описание пассажирского вагона с подтипом
 #define hint_wagon_coach_with_subtype(name, lspeed, straging, strwagtype, strwagsubtype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                     \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                      \
   STORE_TEMP(string(strwagtype) | (string(strwagsubtype) << 16), 0x101),                                     \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                        \
   STORE_TEMP(to | (factory <<16), 0x103)])                                                                   \
 { return string(STR_PURCHASE_HINT_COACH); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                    \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                      \
+  STORE_TEMP(string(strwagtype) | (string(strwagsubtype) << 16), 0x101),                                     \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                                          \
+  STORE_TEMP(factory, 0x103)])                                                                               \
+{ return string(STR_PURCHASE_HINT_COACH); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                       \
+{ 1: name##_additional_text_hidden;                                                                          \
+     name##_additional_text_shown; }                                                                         \
 
 // Описание пассажирского вагона с производством в течение года с подтипом
 #define hint_wagon_coach_in_with_subtype(name, lspeed, straging, strwagtype, strwagsubtype, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                  \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                   \
   STORE_TEMP(string(strwagtype) | (string(strwagsubtype) << 16), 0x101),                                  \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN) | (in << 16), 0x102),                                           \
   STORE_TEMP(factory, 0x103)])                                                                            \
 { return string(STR_PURCHASE_HINT_COACH); }                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                 \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                   \
+  STORE_TEMP(string(strwagtype) | (string(strwagsubtype) << 16), 0x101),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (in << 16), 0x102),                                         \
+  STORE_TEMP(factory, 0x103)])                                                                            \
+{ return string(STR_PURCHASE_HINT_COACH); }                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                    \
+{ 1: name##_additional_text_hidden;                                                                       \
+     name##_additional_text_shown; }                                                                      \
 
 // Описание пассажирского вагона c примечанием
 #define hint_wagon_coach_comment(name, lspeed, straging, strwagtype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                          \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                           \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),               \
   STORE_TEMP(from | (to << 16), 0x102),                                                           \
   STORE_TEMP(factory | (comment << 16), 0x103)])                                                  \
 { return string(STR_PURCHASE_HINT_COACH_COMMENT); }                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                         \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                           \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),                 \
+  STORE_TEMP(from | (factory << 16), 0x102),                                                      \
+  STORE_TEMP(comment, 0x103)])                                                                    \
+{ return string(STR_PURCHASE_HINT_COACH_COMMENT); }                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                            \
+{ 1: name##_additional_text_hidden;                                                               \
+     name##_additional_text_shown; }                                                              \
 
 // Описание пассажирского вагона c примечанием без окончания срока доступности
 #define hint_wagon_coach_noto_comment(name, lspeed, straging, strwagtype, from, factory, comment)  \
@@ -446,155 +655,283 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
 
 // Описание пассажирского вагона с 2 производителями
 #define hint_wagon_coach_2fact(name, lspeed, straging, strwagtype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                         \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                          \
   STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),              \
   STORE_TEMP(from | (to << 16), 0x102),                                                          \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                          \
   STORE_TEMP(factory2, 0x104)])                                                                  \
 { return string(STR_PURCHASE_HINT_COACH); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                        \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                          \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),                \
+  STORE_TEMP(from | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x102),                             \
+  STORE_TEMP(factory | (factory2 << 16), 0x103)])                                                \
+{ return string(STR_PURCHASE_HINT_COACH); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                           \
+{ 1: name##_additional_text_hidden;                                                              \
+     name##_additional_text_shown; }                                                             \
 
 // Описание локомотива
 #define hint_engine(name, strengtype, strengsmetype, from, to, factory)   \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                  \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),  \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),     \
   STORE_TEMP(to | (factory << 16), 0x102)])                               \
 { return string(STR_PURCHASE_HINT_ENGINE); }                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),  \
+  STORE_TEMP(factory, 0x101)])                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)    \
+{ 1: name##_additional_text_hidden;                                       \
+     name##_additional_text_shown; }                                      \
 
 // Описание локомотива с производством в течение года
 #define hint_engine_in(name, strengtype, strengsmetype, in, factory)      \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                  \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),  \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN) | (in << 16), 0x101),           \
   STORE_TEMP(factory, 0x102)])                                            \
 { return string(STR_PURCHASE_HINT_ENGINE); }                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),  \
+  STORE_TEMP(factory, 0x101)])                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)    \
+{ 1: name##_additional_text_hidden;                                       \
+     name##_additional_text_shown; }                                      \
 
 // Описание локомотива с производством в течение года и с 2 производителями
 #define hint_engine_in_2fact(name, strengtype, strengsmetype, in, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                              \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),              \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN) | (in << 16), 0x101),                       \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x102),               \
   STORE_TEMP(factory2, 0x103)])                                                       \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                             \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),              \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x101),               \
+  STORE_TEMP(factory2, 0x102)])                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                \
+{ 1: name##_additional_text_hidden;                                                   \
+     name##_additional_text_shown; }                                                  \
 
 // Описание локомотива без окончания срока доступности
-#define hint_engine_noto(name, strengtype, strengsmetype, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                        \
-[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),  \
-  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x101),       \
-  STORE_TEMP(factory, 0x102)])                                            \
-{ return string(STR_PURCHASE_HINT_ENGINE); }                              \
+#define hint_engine_noto(name, strengtype, strengsmetype, from, factory)         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                         \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x101),              \
+  STORE_TEMP(factory, 0x102)])                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE); }                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                        \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),         \
+  STORE_TEMP(factory, 0x101)])                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)  \
+{ 1: name##_additional_text_hidden;                                              \
+     name##_additional_text_shown; }                                             \
 
 // Описание локомотива c подтипом
 #define hint_engine_with_subtype(name, strengtype, strengsubtype, strengsmetype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                             \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                             \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),               \
   STORE_TEMP(from | (to << 16), 0x102),                                                              \
   STORE_TEMP(factory, 0x103)])                                                                       \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                            \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                             \
+  STORE_TEMP(string(strengsmetype) | (factory << 16), 0x101)])                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                               \
+{ 1: name##_additional_text_hidden;                                                                  \
+     name##_additional_text_shown; }                                                                 \
 
 // Описание локомотива c подтипом без окончания срока доступности
 #define hint_engine_with_subtype_noto(name, strengtype, strengsubtype, strengsmetype, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                              \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                              \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),                  \
   STORE_TEMP(from | (factory << 16), 0x102)])                                                         \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                             \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                              \
+  STORE_TEMP(string(strengsmetype) | (factory << 16), 0x101)])                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                       \
+{ 1: name##_additional_text_hidden;                                                                   \
+     name##_additional_text_shown; }                                                                  \
 
 // Описание локомотива c подтипом и производством в течение года
 #define hint_engine_with_subtype_in(name, strengtype, strengsubtype, strengsmetype, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                          \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                          \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_IN) << 16), 0x101),                \
   STORE_TEMP(in | (factory << 16), 0x102)])                                                       \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                         \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                          \
+  STORE_TEMP(string(strengsmetype) | (factory << 16), 0x101)])                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                            \
+{ 1: name##_additional_text_hidden;                                                               \
+     name##_additional_text_shown; }                                                              \
 
 // Описание локомотива c подтипом, с производством в течение года и 2 производителями
 #define hint_engine_with_subtype_in_2fact(name, strengtype, strengsubtype, strengsmetype, in, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                          \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                          \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_IN) << 16), 0x101),                                \
   STORE_TEMP(in | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x102),                                                \
   STORE_TEMP(factory | (factory2 << 16), 0x103)])                                                                 \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                         \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                          \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),                             \
+  STORE_TEMP(factory | (factory2 << 16), 0x102)])                                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                            \
+{ 1: name##_additional_text_hidden;                                                                               \
+     name##_additional_text_shown; }                                                                              \
 
 // Описание локомотива c подтипом и с 2 производителями
 #define hint_engine_with_subtype_2fact(name, strengtype, strengsubtype, strengsmetype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                             \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                             \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),                               \
   STORE_TEMP(from | (to << 16), 0x102),                                                                              \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                              \
   STORE_TEMP(factory2, 0x104)])                                                                                      \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                            \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                             \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),                                \
+  STORE_TEMP(factory | (factory2 << 16), 0x102)])                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                               \
+{ 1: name##_additional_text_hidden;                                                                                  \
+     name##_additional_text_shown; }                                                                                 \
 
 // Описание локомотива c подтипом и с 3 производителями
 #define hint_engine_with_subtype_3fact(name, strengtype, strengsubtype, strengsmetype, from, to, factory, factory2, factory3)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                       \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                       \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),                                         \
   STORE_TEMP(from | (to << 16), 0x102),                                                                                        \
-  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                        \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (factory << 16), 0x103),                                                        \
   STORE_TEMP(factory2 | (factory3 << 16), 0x104)])                                                                             \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                      \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                       \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x101),                                          \
+  STORE_TEMP(factory | (factory2 << 16), 0x102),                                                                               \
+  STORE_TEMP(factory3, 0x103)])                                                                                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                         \
+{ 1: name##_additional_text_hidden;                                                                                            \
+     name##_additional_text_shown; }                                                                                           \
 
 // Описание локомотива c подтипом и с 4 производителями
 #define hint_engine_with_subtype_4fact(name, strengtype, strengsubtype, strengsmetype, from, to, factory, factory2, factory3, factory4)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                 \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                 \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),                                                   \
   STORE_TEMP(from | (to << 16), 0x102),                                                                                                  \
-  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (factory << 16), 0x103),                                                                  \
   STORE_TEMP(factory2 | (factory3 << 16), 0x104),                                                                                        \
   STORE_TEMP(factory4, 0x105)])                                                                                                          \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                 \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x101),                                                    \
+  STORE_TEMP(factory | (factory2 << 16), 0x102),                                                                                         \
+  STORE_TEMP(factory3 | (factory4 << 16), 0x103)])                                                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                   \
+{ 1: name##_additional_text_hidden;                                                                                                      \
+     name##_additional_text_shown; }                                                                                                     \
 
 // Описание локомотива c подтипом и с 5 производителями
 #define hint_engine_with_subtype_5fact(name, strengtype, strengsubtype, strengsmetype, from, to, factory, factory2, factory3, factory4, factory5)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                           \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                           \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),                                                             \
   STORE_TEMP(from | (to << 16), 0x102),                                                                                                            \
-  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                                            \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST5) | (factory << 16), 0x103),                                                                            \
   STORE_TEMP(factory2 | (factory3 << 16), 0x104),                                                                                                  \
   STORE_TEMP(factory4 | (factory5 << 16), 0x105)])                                                                                                 \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                          \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                           \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST5) << 16), 0x101),                                                              \
+  STORE_TEMP(factory | (factory2 << 16), 0x102),                                                                                                   \
+  STORE_TEMP(factory3 | (factory4 << 16), 0x103),                                                                                                  \
+  STORE_TEMP(factory5, 0x104)])                                                                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                             \
+{ 1: name##_additional_text_hidden;                                                                                                                \
+     name##_additional_text_shown; }                                                                                                               \
 
 // Описание локомотива с 2 производителями
 #define hint_engine_2fact(name, strengtype, strengsmetype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                 \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                 \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                    \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x102),                       \
   STORE_TEMP(factory | (factory2 << 16), 0x103)])                                        \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                 \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x101),                  \
+  STORE_TEMP(factory2, 0x102)])                                                          \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                   \
+{ 1: name##_additional_text_hidden;                                                      \
+     name##_additional_text_shown; }                                                     \
 
 // Описание локомотива с 3 производителями
 #define hint_engine_3fact(name, strengtype, strengsmetype, from, to, factory, factory2, factory3)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                           \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                           \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                              \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x102),                                 \
   STORE_TEMP(factory | (factory2 << 16), 0x103),                                                   \
   STORE_TEMP(factory3, 0x104)])                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                          \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (factory << 16), 0x101),                            \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102)])                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                             \
+{ 1: name##_additional_text_hidden;                                                                \
+     name##_additional_text_shown; }                                                               \
 
 // Описание локомотива с 4 производителями
 #define hint_engine_4fact(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, factory4)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                     \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                     \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                                        \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x102),                                           \
   STORE_TEMP(factory | (factory2 << 16), 0x103),                                                             \
   STORE_TEMP(factory3 | (factory4 << 16), 0x104)])                                                           \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                    \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                     \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (factory << 16), 0x101),                                      \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102),                                                            \
+  STORE_TEMP(factory4, 0x103)])                                                                              \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                       \
+{ 1: name##_additional_text_hidden;                                                                          \
+     name##_additional_text_shown; }                                                                         \
 
 // Описание локомотива с 5 производителями
 #define hint_engine_5fact(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, factory4, factory5)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                               \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                               \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                                                  \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST5) << 16), 0x102),                                                     \
@@ -602,39 +939,72 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(factory3 | (factory4 << 16), 0x104),                                                                      \
   STORE_TEMP(factory5, 0x105)])                                                                                        \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                              \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                               \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST5) | (factory << 16), 0x101),                                                \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102),                                                                      \
+  STORE_TEMP(factory4 | (factory5 << 16), 0x103)])                                                                     \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                 \
+{ 1: name##_additional_text_hidden;                                                                                    \
+     name##_additional_text_shown; }                                                                                   \
 
 // Описание локомотива c вариантом в СМЕ
 #define hint_engine_with_sme(name, strengtype, strengsmetype, strengsmevar, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                        \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                        \
   STORE_TEMP(string(strengsmevar) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),           \
   STORE_TEMP(from | (to << 16), 0x102),                                                         \
   STORE_TEMP(factory, 0x103)])                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                       \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                        \
+  STORE_TEMP(string(strengsmevar) | (factory << 16), 0x101)])                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                          \
+{ 1: name##_additional_text_hidden;                                                             \
+     name##_additional_text_shown; }                                                            \
 
 // Описание локомотива c 2 вариантами в СМЕ
 #define hint_engine_with_sme2(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                        \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                        \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                            \
   STORE_TEMP(string(strengsmevar2) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                          \
   STORE_TEMP(from | (to << 16), 0x103),                                                                         \
   STORE_TEMP(factory, 0x104)])                                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                       \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                        \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                            \
+  STORE_TEMP(string(strengsmevar2) | (factory << 16), 0x102)])                                                  \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                          \
+{ 1: name##_additional_text_hidden;                                                                             \
+     name##_additional_text_shown; }                                                                            \
 
 // Описание локомотива c 3 вариантами в СМЕ
 #define hint_engine_with_sme3(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                       \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                       \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (string(strengsmevar) << 16), 0x101),                                           \
   STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                    \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x103),                                                          \
   STORE_TEMP(to | (factory << 16), 0x104)])                                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                      \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (string(strengsmevar) << 16), 0x101),                                           \
+  STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                    \
+  STORE_TEMP(factory, 0x103)])                                                                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                         \
+{ 1: name##_additional_text_hidden;                                                                                            \
+     name##_additional_text_shown; }                                                                                           \
 
 // Описание локомотива c 4 вариантами в СМЕ
 #define hint_engine_with_sme4(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                      \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                      \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (string(strengsmevar) << 16), 0x101),                                                          \
   STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                                   \
@@ -642,103 +1012,195 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | (to << 16), 0x104),                                                                                                       \
   STORE_TEMP(factory, 0x105)])                                                                                                                \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                     \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                      \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (string(strengsmevar) << 16), 0x101),                                                          \
+  STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                                   \
+  STORE_TEMP(string(strengsmevar4) | (factory << 16), 0x103)])                                                                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                        \
+{ 1: name##_additional_text_hidden;                                                                                                           \
+     name##_additional_text_shown; }                                                                                                          \
 
 // Описание локомотива c вариантом в СМЕ без окончания срока доступности
 #define hint_engine_with_sme_noto(name, strengtype, strengsmetype, strengsmevar, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                         \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                         \
   STORE_TEMP(string(strengsmevar) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),              \
   STORE_TEMP(from | (factory << 16), 0x102)])                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                        \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                         \
+  STORE_TEMP(string(strengsmevar) | (factory << 16), 0x101)])                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                  \
+{ 1: name##_additional_text_hidden;                                                              \
+     name##_additional_text_shown; }                                                             \
 
 // Описание локомотива c 2 вариантами в СМЕ без окончания срока доступности
 #define hint_engine_with_sme2_noto(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                         \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                             \
   STORE_TEMP(string(strengsmevar2) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                             \
   STORE_TEMP(from | (factory << 16), 0x103)])                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                        \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                             \
+  STORE_TEMP(string(strengsmevar2) | (factory << 16), 0x102)])                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                  \
+{ 1: name##_additional_text_hidden;                                                                              \
+     name##_additional_text_shown; }                                                                             \
 
 // Описание локомотива c 3 вариантами в СМЕ без окончания срока доступности
 #define hint_engine_with_sme3_noto(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                        \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                        \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (string(strengsmevar) << 16), 0x101),                                            \
   STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                     \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x103),                                                             \
   STORE_TEMP(factory, 0x104)])                                                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                       \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                        \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (string(strengsmevar) << 16), 0x101),                                            \
+  STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                     \
+  STORE_TEMP(factory, 0x103)])                                                                                                  \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                 \
+{ 1: name##_additional_text_hidden;                                                                                             \
+     name##_additional_text_shown; }                                                                                            \
 
 // Описание локомотива c 4 вариантами в СМЕ без окончания срока доступности
 #define hint_engine_with_sme4_noto(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                       \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                       \
-  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                                                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (string(strengsmevar) << 16), 0x101),                                                           \
   STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                                    \
   STORE_TEMP(string(strengsmevar4) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x103),                                                           \
   STORE_TEMP(from | (factory << 16), 0x104)])                                                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                      \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (string(strengsmevar) << 16), 0x101),                                                           \
+  STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                                    \
+  STORE_TEMP(string(strengsmevar4) | (factory << 16), 0x103)])                                                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                                \
+{ 1: name##_additional_text_hidden;                                                                                                            \
+     name##_additional_text_shown; }                                                                                                           \
 
 // Описание локомотива c вариантом в СМЕ с производством в течение года
 #define hint_engine_with_sme_in(name, strengtype, strengsmetype, strengsmevar, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                     \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                     \
   STORE_TEMP(string(strengsmevar) | (string(STR_PURCHASE_HINT_IN) << 16), 0x101),            \
   STORE_TEMP(in | (factory << 16), 0x102)])                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                    \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                     \
+  STORE_TEMP(string(strengsmevar) | (factory << 16), 0x101)])                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                       \
+{ 1: name##_additional_text_hidden;                                                          \
+     name##_additional_text_shown; }                                                         \
 
 // Описание локомотива c 2 вариантами в СМЕ с производством в течение года
 #define hint_engine_with_sme2_in(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                     \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                     \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                         \
   STORE_TEMP(string(strengsmevar2) | (string(STR_PURCHASE_HINT_IN) << 16), 0x102),                           \
   STORE_TEMP(in | (factory << 16), 0x103)])                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                    \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                     \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                         \
+  STORE_TEMP(string(strengsmevar2) | (factory << 16), 0x102)])                                               \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                       \
+{ 1: name##_additional_text_hidden;                                                                          \
+     name##_additional_text_shown; }                                                                         \
 
 // Описание локомотива c 3 вариантами в СМЕ с производством в течение года
 #define hint_engine_with_sme3_in(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                    \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                    \
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (string(strengsmevar) << 16), 0x101),                                        \
   STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                 \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN) | (in << 16), 0x103),                                                             \
   STORE_TEMP(factory, 0x104)])                                                                                              \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                   \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                    \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (string(strengsmevar) << 16), 0x101),                                        \
+  STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                 \
+  STORE_TEMP(factory, 0x103)])                                                                                              \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                                      \
+{ 1: name##_additional_text_hidden;                                                                                         \
+     name##_additional_text_shown; }                                                                                        \
 
 // Описание локомотива c 4 вариантами в СМЕ с производством в течение года
 #define hint_engine_with_sme4_in(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                   \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                   \
-  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (string(strengsmevar) << 16), 0x101),                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (string(strengsmevar) << 16), 0x101),                                                       \
   STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                                \
   STORE_TEMP(string(strengsmevar4) | (string(STR_PURCHASE_HINT_IN) << 16), 0x103),                                                         \
   STORE_TEMP(in | (factory << 16), 0x104)])                                                                                                \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                  \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (string(strengsmevar) << 16), 0x101),                                                       \
+  STORE_TEMP(string(strengsmevar2) | (string(strengsmevar3) << 16), 0x102),                                                                \
+  STORE_TEMP(string(strengsmevar4) | (factory << 16), 0x103)])                                                                             \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                                                     \
+{ 1: name##_additional_text_hidden;                                                                                                        \
+     name##_additional_text_shown; }                                                                                                       \
 
 // Описание локомотива c подтипом и вариантом в СМЕ
 #define hint_engine_with_subtype_sme(name, strengtype, strengsubtype, strengsmetype, strengsmevar, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                               \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                               \
   STORE_TEMP(string(strengsmetype) | (string(strengsmevar) << 16), 0x101),                                             \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                                  \
   STORE_TEMP(to | (factory << 16), 0x103)])                                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                              \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                               \
+  STORE_TEMP(string(strengsmetype) | (string(strengsmevar) << 16), 0x101),                                             \
+  STORE_TEMP(factory, 0x103)])                                                                                         \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                 \
+{ 1: name##_additional_text_hidden;                                                                                    \
+     name##_additional_text_shown; }                                                                                   \
 
 // Описание локомотива c подтипом и 2 вариантами в СМЕ
 #define hint_engine_with_subtype_sme2(name, strengtype, strengsubtype, strengsmetype, strengsmevar, strengsmevar2, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                               \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                               \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),                                                  \
   STORE_TEMP(string(strengsmevar) | (string(strengsmevar2) << 16), 0x102),                                                             \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x103),                                                                  \
   STORE_TEMP(to | (factory << 16), 0x104)])                                                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                              \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                               \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),                                                  \
+  STORE_TEMP(string(strengsmevar) | (string(strengsmevar2) << 16), 0x102),                                                             \
+  STORE_TEMP(factory, 0x103)])                                                                                                         \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                 \
+{ 1: name##_additional_text_hidden;                                                                                                    \
+     name##_additional_text_shown; }                                                                                                   \
 
 // Описание локомотива c подтипом и 3 вариантами в СМЕ
 #define hint_engine_with_subtype_sme3(name, strengtype, strengsubtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                              \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                              \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x101),                                                                 \
   STORE_TEMP(string(strengsmevar) | (string(strengsmevar2) << 16), 0x102),                                                                            \
@@ -746,10 +1208,19 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | (to << 16), 0x104),                                                                                                               \
   STORE_TEMP(factory, 0x105)])                                                                                                                        \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                             \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                              \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x101),                                                                 \
+  STORE_TEMP(string(strengsmevar) | (string(strengsmevar2) << 16), 0x102),                                                                            \
+  STORE_TEMP(string(strengsmevar3) | (factory << 16), 0x103)])                                                                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                                \
+{ 1: name##_additional_text_hidden;                                                                                                                   \
+     name##_additional_text_shown; }                                                                                                                  \
 
 // Описание локомотива c подтипом и 4 вариантами в СМЕ
 #define hint_engine_with_subtype_sme4(name, strengtype, strengsubtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                                             \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                                             \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x101),                                                                                \
   STORE_TEMP(string(strengsmevar) | (string(strengsmevar2) << 16), 0x102),                                                                                           \
@@ -757,74 +1228,139 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x104),                                                                                                \
   STORE_TEMP(to | (factory << 16), 0x105)])                                                                                                                          \
 { return string(STR_PURCHASE_HINT_ENGINE); }                                                                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                                            \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                                                                             \
+  STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x101),                                                                                \
+  STORE_TEMP(string(strengsmevar) | (string(strengsmevar2) << 16), 0x102),                                                                                           \
+  STORE_TEMP(string(strengsmevar3) | (string(strengsmevar4) << 16), 0x103),                                                                                          \
+  STORE_TEMP(factory, 0x104)])                                                                                                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                                               \
+{ 1: name##_additional_text_hidden;                                                                                                                                  \
+     name##_additional_text_shown; }                                                                                                                                 \
 
 // Описание локомотива c примечанием
 #define hint_engine_comment(name, strengtype, strengsmetype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                  \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                  \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                     \
   STORE_TEMP(to | (factory << 16), 0x102),                                                \
   STORE_TEMP(comment, 0x103)])                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                  \
+  STORE_TEMP(factory| (comment << 16), 0x101)])                                           \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                    \
+{ 1: name##_additional_text_hidden;                                                       \
+     name##_additional_text_shown; }                                                      \
 
 // Описание локомотива без окончания срока доступности c примечанием
 #define hint_engine_noto_comment(name, strengtype, strengsmetype, from, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                   \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                   \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x101),                        \
   STORE_TEMP(factory | (comment << 16), 0x102)])                                           \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                  \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                   \
+  STORE_TEMP(factory | (comment << 16), 0x101)])                                           \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)            \
+{ 1: name##_additional_text_hidden;                                                        \
+     name##_additional_text_shown; }                                                       \
 
 // Описание локомотива c подтипом c примечанием
 #define hint_engine_with_subtype_comment(name, strengtype, strengsubtype, strengsmetype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                              \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                              \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),                                \
   STORE_TEMP(from | (to << 16), 0x102),                                                                               \
   STORE_TEMP(factory | (comment << 16), 0x103)])                                                                      \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                             \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                              \
+  STORE_TEMP(string(strengsmetype) | (factory << 16), 0x101),                                                         \
+  STORE_TEMP(comment, 0x102)])                                                                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                \
+{ 1: name##_additional_text_hidden;                                                                                   \
+     name##_additional_text_shown; }                                                                                  \
 
 // Описание локомотива c подтипом без окончания срока доступности c примечанием
 #define hint_engine_with_subtype_noto_comment(name, strengtype, strengsubtype, strengsmetype, from, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                               \
 [ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                               \
   STORE_TEMP(string(strengsmetype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x101),                                   \
   STORE_TEMP(from | (factory << 16), 0x102),                                                                           \
   STORE_TEMP(comment, 0x103)])                                                                                         \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                              \
+[ STORE_TEMP(string(strengtype) | (string(strengsubtype) << 16), 0x100),                                               \
+  STORE_TEMP(string(strengsmetype) | (factory << 16), 0x101),                                                          \
+  STORE_TEMP(comment, 0x102)])                                                                                         \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                        \
+{ 1: name##_additional_text_hidden;                                                                                    \
+     name##_additional_text_shown; }                                                                                   \
 
 // Описание локомотива c вариантом в СМЕ c примечанием
 #define hint_engine_with_sme_comment(name, strengtype, strengsmetype, strengsmevar, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                         \
   STORE_TEMP(string(strengsmevar) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x101),                            \
   STORE_TEMP(from | (to << 16), 0x102),                                                                          \
   STORE_TEMP(factory | (comment << 16), 0x103)])                                                                 \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                        \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                         \
+  STORE_TEMP(string(strengsmevar) | (factory << 16), 0x101),                                                     \
+  STORE_TEMP(comment, 0x102)])                                                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                           \
+{ 1: name##_additional_text_hidden;                                                                              \
+     name##_additional_text_shown; }                                                                             \
 
-// Описание локомотива с 2 производителями с комментарием
+// Описание локомотива с 2 производителями с примичанием
 #define hint_engine_2fact_comment(name, strengtype, strengsmetype, from, to, factory, factory2, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                  \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                  \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                                     \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x102),                                        \
   STORE_TEMP(factory | (factory2 << 16), 0x103),                                                          \
   STORE_TEMP(comment, 0x104)])                                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x101),                                   \
+  STORE_TEMP(factory2 | (comment << 16), 0x102)])                                                         \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                    \
+{ 1: name##_additional_text_hidden;                                                                       \
+     name##_additional_text_shown; }                                                                      \
 
-// Описание локомотива с 3 производителями с комментарием
+// Описание локомотива с 3 производителями с примичанием
 #define hint_engine_3fact_comment(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                            \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                            \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                                               \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x102),                                                  \
   STORE_TEMP(factory | (factory2 << 16), 0x103),                                                                    \
   STORE_TEMP(factory3 | (comment << 16), 0x104)])                                                                   \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                           \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                            \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (factory << 16), 0x101),                                             \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102),                                                                   \
+  STORE_TEMP(comment, 0x103)])                                                                                      \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                              \
+{ 1: name##_additional_text_hidden;                                                                                 \
+     name##_additional_text_shown; }                                                                                \
 
-// Описание локомотива с 4 производителями с комментарием
+// Описание локомотива с 4 производителями с примичанием
 #define hint_engine_4fact_comment(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, factory4, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                      \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                      \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                                                         \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x102),                                                            \
@@ -832,68 +1368,128 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(factory3 | (factory4 << 16), 0x104),                                                                             \
   STORE_TEMP(comment, 0x105)])                                                                                                \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                     \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                      \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (factory << 16), 0x101),                                                       \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102),                                                                             \
+  STORE_TEMP(factory4 | (comment << 16), 0x103)])                                                                             \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                        \
+{ 1: name##_additional_text_hidden;                                                                                           \
+     name##_additional_text_shown; }                                                                                          \
 
-// Описание локомотива с 5 производителями с комментарием
+// Описание локомотива с 5 производителями с примичанием
 #define hint_engine_5fact_comment(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, factory4, factory5, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x101),                                                                   \
-  STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x102),                                                                      \
+  STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST5) << 16), 0x102),                                                                      \
   STORE_TEMP(factory | (factory2 << 16), 0x103),                                                                                        \
   STORE_TEMP(factory3 | (factory4 << 16), 0x104),                                                                                       \
   STORE_TEMP(factory5 | (comment << 16), 0x105)])                                                                                       \
 { return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                               \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST5) | (factory << 16), 0x101),                                                                 \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102),                                                                                       \
+  STORE_TEMP(factory4 | (factory5 << 16), 0x103),                                                                                       \
+  STORE_TEMP(comment, 0x104)])                                                                                                          \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                  \
+{ 1: name##_additional_text_hidden;                                                                                                     \
+     name##_additional_text_shown; }                                                                                                    \
 
 // Описание МВПС
 #define hint_MU(name, lspeed, straging, strmutype, strmusmetype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                             \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                              \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),               \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                \
   STORE_TEMP(to | (factory << 16), 0x103)])                                          \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                            \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                              \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),               \
+  STORE_TEMP(factory, 0x102)])                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)               \
+{ 1: name##_additional_text_hidden;                                                  \
+     name##_additional_text_shown; }                                                 \
 
 // Описание МВПС с производством в течение года
 #define hint_MU_in(name, lspeed, straging, strmutype, strmusmetype, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                          \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                           \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),            \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN) | (in << 16), 0x102),                   \
   STORE_TEMP(factory, 0x103)])                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                         \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                           \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),            \
+  STORE_TEMP(factory, 0x102)])                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)            \
+{ 1: name##_additional_text_hidden;                                               \
+     name##_additional_text_shown; }                                              \
 
 // Описание МВПС без окончания срока доступности
 #define hint_MU_noto(name, lspeed, straging, strmutype, strmusmetype, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                              \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                               \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                   \
   STORE_TEMP(factory, 0x103)])                                                        \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                             \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                               \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                \
+  STORE_TEMP(factory, 0x102)])                                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)       \
+{ 1: name##_additional_text_hidden;                                                   \
+     name##_additional_text_shown; }                                                  \
 
 // Описание МВПС c 2 производителями
 #define hint_MU_2fact(name, lspeed, straging, strmutype, strmusmetype, from, to, factory, factory2)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                             \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                              \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                               \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                \
   STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x103),                                   \
   STORE_TEMP(factory | (factory2 << 16), 0x104)])                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                            \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                              \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                               \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x102),                              \
+  STORE_TEMP(factory2, 0x103)])                                                                      \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                               \
+{ 1: name##_additional_text_hidden;                                                                  \
+     name##_additional_text_shown; }                                                                 \
 
 // Описание МВПС с подтипом
 #define hint_MU_with_subtype(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                        \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                         \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                          \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                           \
   STORE_TEMP(from | (to << 16), 0x103),                                                                         \
   STORE_TEMP(factory, 0x104)])                                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                       \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                         \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                          \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x102)])                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                          \
+{ 1: name##_additional_text_hidden;                                                                             \
+     name##_additional_text_shown; }                                                                            \
 
 // Описание МВПС с подтипом c 3 производителями
 #define hint_MU_with_subtype_3fact(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, to, factory1, factory2, factory3)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                   \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                    \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                                     \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                                                      \
@@ -901,38 +1497,73 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST3) | (factory1 << 16), 0x104),                                                                   \
   STORE_TEMP(factory2 | (factory3 << 16), 0x105)])                                                                                         \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                  \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                    \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                                     \
+  STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_LIST3) << 16), 0x102),                                                       \
+  STORE_TEMP(factory1 | (factory2 << 16), 0x103),                                                                                          \
+  STORE_TEMP(factory3, 0x104)])                                                                                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                     \
+{ 1: name##_additional_text_hidden;                                                                                                        \
+     name##_additional_text_shown; }                                                                                                       \
 
 // Описание МВПС с подтипом с производством в течение года
 #define hint_MU_with_subtype_in(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                     \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                      \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                       \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_IN) << 16), 0x102),                            \
   STORE_TEMP(in | (factory << 16), 0x103)])                                                                  \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                    \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                      \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                       \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x102)])                                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                       \
+{ 1: name##_additional_text_hidden;                                                                          \
+     name##_additional_text_shown; }                                                                         \
 
 // Описание МВПС с подтипом без окончания срока доступности
 #define hint_MU_with_subtype_noto(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                          \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                           \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                              \
   STORE_TEMP(from | (factory << 16), 0x103)])                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                        \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                          \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                           \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x102)])                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                  \
+{ 1: name##_additional_text_hidden;                                                                              \
+     name##_additional_text_shown; }                                                                             \
 
 // Описание МВПС с подтипом без окончания срока доступности и 1 вариантом в СМЕ
 #define hint_MU_with_subtype_sme_noto(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, strmusmevar, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                          \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                           \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                            \
   STORE_TEMP(string(strmusmetype) | (string(strmusmevar) << 16), 0x102),                                                          \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x103),                                                               \
   STORE_TEMP(factory, 0x104)])                                                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                         \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                           \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                            \
+  STORE_TEMP(string(strmusmetype) | (string(strmusmevar) << 16), 0x102),                                                          \
+  STORE_TEMP(factory, 0x103)])                                                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                   \
+{ 1: name##_additional_text_hidden;                                                                                               \
+     name##_additional_text_shown; }                                                                                              \
 
 // Описание МВПС с подтипом без окончания срока доступности c 4 производителями
 #define hint_MU_with_subtype_noto_4fact(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, factory1, factory2, factory3, factory4)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                              \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                               \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                                                \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                                                                   \
@@ -940,10 +1571,20 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(factory1 | (factory2 << 16), 0x104),                                                                                                     \
   STORE_TEMP(factory3 | (factory4 << 16), 0x105)])                                                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                             \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                               \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                                                \
+  STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x102),                                                                  \
+  STORE_TEMP(factory1 | (factory2 << 16), 0x103),                                                                                                     \
+  STORE_TEMP(factory3 | (factory4 << 16), 0x104)])                                                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                                       \
+{ 1: name##_additional_text_hidden;                                                                                                                   \
+     name##_additional_text_shown; }                                                                                                                  \
 
 // Описание МВПС с моделью
 #define hint_MU_with_model2(name, lspeed, straging, strmutype, modelprefix, modelsuffix, strmusmetype, from, to, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                   \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                    \
   STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                                \
   STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                    \
@@ -951,30 +1592,57 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | (to << 16), 0x104),                                                                                    \
   STORE_TEMP(factory, 0x105)])                                                                                             \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                  \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                    \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                                \
+  STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                    \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x103)])                                                              \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                     \
+{ 1: name##_additional_text_hidden;                                                                                        \
+     name##_additional_text_shown; }                                                                                       \
 
 // Описание МВПС с моделью с производством в течение года
 #define hint_MU_with_model2_in(name, lspeed, straging, strmutype, modelprefix, modelsuffix, strmusmetype, in, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                 \
   STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                             \
   STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                 \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_IN) << 16), 0x103),                                       \
   STORE_TEMP(in | (factory << 16), 0x104)])                                                                             \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                               \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                 \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                             \
+  STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                 \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x103)])                                                           \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                                  \
+{ 1: name##_additional_text_hidden;                                                                                     \
+     name##_additional_text_shown; }                                                                                    \
 
 // Описание МВПС с моделью без окончания срока доступности
 #define hint_MU_with_model2_noto(name, lspeed, straging, strmutype, modelprefix, modelsuffix, strmusmetype, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                    \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                     \
   STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                                 \
   STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                     \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x103),                                         \
   STORE_TEMP(from | (factory << 16), 0x104)])                                                                               \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                   \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                     \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                                 \
+  STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                     \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x103)])                                                               \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                             \
+{ 1: name##_additional_text_hidden;                                                                                         \
+     name##_additional_text_shown; }                                                                                        \
 
 // Описание МВПС с моделью с исполнением без окончания срока доступности
 #define hint_MU_with_model3_noto(name, lspeed, straging, strmutype, modelprefix, modelsuffix, modelpostfix, strmusmetype, from, factory)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                  \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                   \
   STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER3) << 16), 0x101),                                                               \
   STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                                   \
@@ -982,29 +1650,55 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x104),                                                                       \
   STORE_TEMP(factory, 0x105)])                                                                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                 \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                   \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER3) << 16), 0x101),                                                               \
+  STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                                   \
+  STORE_TEMP(modelpostfix | (string(strmusmetype) << 16), 0x103),                                                                         \
+  STORE_TEMP(factory, 0x104)])                                                                                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                           \
+{ 1: name##_additional_text_hidden;                                                                                                       \
+     name##_additional_text_shown; }                                                                                                      \
 
 // Описание МВПС c примечанием
 #define hint_MU_comment(name, lspeed, straging, strmutype, strmusmetype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                              \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                               \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                 \
   STORE_TEMP(to | (factory << 16), 0x103),                                                            \
   STORE_TEMP(comment, 0x104)])                                                                        \
 { return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                             \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                               \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                \
+  STORE_TEMP(factory | (comment << 16), 0x102)])                                                      \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                \
+{ 1: name##_additional_text_hidden;                                                                   \
+     name##_additional_text_shown; }                                                                  \
 
 // Описание МВПС без окончания срока доступности c примечанием
 #define hint_MU_noto_comment(name, lspeed, straging, strmutype, strmusmetype, from, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                               \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                 \
   STORE_TEMP(string(STR_PURCHASE_HINT_FROM) | (from << 16), 0x102),                                    \
   STORE_TEMP(factory | (comment << 16), 0x103)])                                                       \
 { return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                              \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                 \
+  STORE_TEMP(factory | (comment << 16), 0x102)])                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                        \
+{ 1: name##_additional_text_hidden;                                                                    \
+     name##_additional_text_shown; }                                                                   \
 
 // Описание МВПС с моделью c примечанием
 #define hint_MU_with_model2_comment(name, lspeed, straging, strmutype, modelprefix, modelsuffix, strmusmetype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                    \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                     \
   STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                                                 \
   STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                                     \
@@ -1012,36 +1706,93 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(from | (to << 16), 0x104),                                                                                                     \
   STORE_TEMP(factory | (comment << 16), 0x105)])                                                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                   \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                     \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2) << 16), 0x101),                                                                 \
+  STORE_TEMP(modelprefix | (modelsuffix << 16), 0x102),                                                                                     \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x103),                                                                                \
+  STORE_TEMP(comment, 0x104)])                                                                                                              \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                      \
+{ 1: name##_additional_text_hidden;                                                                                                         \
+     name##_additional_text_shown; }                                                                                                        \
 
-// Описание МВПС с подтипом с комментарием
+// Описание МВПС с подтипом с примичанием
 #define hint_MU_with_subtype_comment(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                         \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                          \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                           \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                                            \
   STORE_TEMP(from | (to << 16), 0x103),                                                                                          \
   STORE_TEMP(factory | (comment << 16), 0x104)])                                                                                 \
 { return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                        \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                          \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                           \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x102),                                                                     \
+  STORE_TEMP(comment, 0x103)])                                                                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                           \
+{ 1: name##_additional_text_hidden;                                                                                              \
+     name##_additional_text_shown; }                                                                                             \
 
-// Описание МВПС с подтипом без окончания срока доступности с комментарием
+// Описание МВПС с подтипом без окончания срока доступности с примичанием
 #define hint_MU_with_subtype_noto_comment(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                          \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                           \
   STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                            \
   STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROM) << 16), 0x102),                                               \
   STORE_TEMP(from | (factory << 16), 0x103),                                                                                      \
   STORE_TEMP(comment, 0x104)])                                                                                                    \
 { return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                         \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                           \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                            \
+  STORE_TEMP(string(strmusmetype) | (factory << 16), 0x102),                                                                      \
+  STORE_TEMP(comment, 0x103)])                                                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                   \
+{ 1: name##_additional_text_hidden;                                                                                               \
+     name##_additional_text_shown; }                                                                                              \
 
 // Описание МВПС c примечанием и 1 вариантом в СМЕ
 #define hint_MU_with_sme_comment(name, lspeed, straging, strmutype, strmusmetype, strmusmevar, from, to, factory, comment)  \
-switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                    \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                     \
   STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                                      \
   STORE_TEMP(string(strmusmevar) | (string(STR_PURCHASE_HINT_FROMTO) << 16), 0x102),                                        \
   STORE_TEMP(from | (to <<16), 0x103),                                                                                      \
   STORE_TEMP(factory | (comment << 16), 0x104)])                                                                            \
 { return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                   \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                     \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                                      \
+  STORE_TEMP(string(strmusmevar) | (factory << 16), 0x102),                                                                 \
+  STORE_TEMP(comment, 0x103)])                                                                                              \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                      \
+{ 1: name##_additional_text_hidden;                                                                                         \
+     name##_additional_text_shown; }                                                                                        \
+
+// Описание МВПС c 2 производителями и примичанием
+#define hint_MU_2fact_comment(name, lspeed, straging, strmutype, strmusmetype, from, to, factory, factory2, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                              \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                               \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x102),                                                 \
+  STORE_TEMP(to | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x103),                                                    \
+  STORE_TEMP(factory | (factory2 << 16), 0x104),                                                                      \
+  STORE_TEMP(comment, 0x105)])                                                                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT); }                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                             \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                               \
+  STORE_TEMP(string(strmutype) | (string(strmusmetype) << 16), 0x101),                                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x102),                                               \
+  STORE_TEMP(factory2 | (comment << 16), 0x103)])                                                                     \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_NODATES); }                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                \
+{ 1: name##_additional_text_hidden;                                                                                   \
+     name##_additional_text_shown; }                                                                                  \
 
 // Вычисление количества тиков
 #define calc_loading(speed) ((speed) <= 1 ? string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC)  :  \

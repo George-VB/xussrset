@@ -1,5 +1,42 @@
 ﻿// sr3
 
+#define PROP_sr3_h_num  0
+#define PROP_sr3_n_num  2
+#define PROP_sr3_m_num  0
+#define PROP_sr3_c_num  0
+
+#define PROP_sr3_h_CF  0
+#define PROP_sr3_h_RC  0
+#define PROP_sr3_h_SD  85
+#define PROP_sr3_h_WT  0
+#define PROP_sr3_h_TE  0
+#define PROP_sr3_h_PR  0
+#define PROP_sr3_h_CC  0
+
+#define PROP_sr3_n_CF  8 + 7 + 7
+#define PROP_sr3_n_RC  63 + 52 + 52
+#define PROP_sr3_n_SD  85
+#define PROP_sr3_n_WT  139
+#define PROP_sr3_n_TE  96.1
+#define PROP_sr3_n_PR  702
+#define PROP_sr3_n_CC  321
+
+#define PROP_sr3_m_CF  0
+#define PROP_sr3_m_RC  0
+#define PROP_sr3_m_SD  85
+#define PROP_sr3_m_WT  0
+#define PROP_sr3_m_TE  0
+#define PROP_sr3_m_PR  0
+#define PROP_sr3_m_CC  0
+
+#define PROP_sr3_c_CF  0
+#define PROP_sr3_c_RC  0
+#define PROP_sr3_c_SD  85
+#define PROP_sr3_c_WT  0
+#define PROP_sr3_c_TE  0
+#define PROP_sr3_c_PR  0
+#define PROP_sr3_c_CC  0
+
 #define IMAGEFILE  "src/emu/sr3_h.png"
 purchase_sprites(sr3, 0, 0)
 MU_head_middle_sprites(12, sr3_h_v1,  32, 40)
@@ -236,8 +273,10 @@ switch (FEAT_TRAINS, SELF, sr3_create_effect,
 }
 
 livery_template_alt0(sr3, STR_REFIT_TTD_53, STR_REFIT_TTD_63)
-engine_power_MU(sr3, 702, sr3)
-engine_capacity_MU(sr3, 321, sr3)
+
+engine_power_MU(sr3, PROP_sr3_n_PR, sr3)
+engine_capacity_MU(sr3, PROP_sr3_n_CC, sr3)
+engine_speed(sr3, PROP_sr3_n_SD)
 
 RC_head_check_new(sr3, sr3)
 switch (FEAT_TRAINS, SELF, sr3_running_cost_factor,
@@ -251,11 +290,13 @@ switch (FEAT_TRAINS, SELF, sr3_running_cost_factor,
    STORE_TEMP(85, 6),                  // Скорость
    STORE_TEMP(139, 7),                 // Тара
    STORE_TEMP(LOAD_TEMP(7) + 41, 8)])  // Максимальная масса
-{ sr3_check_running_cost_factor; }     // 63+52 + 52
+{ sr3_check_running_cost_factor; }     // 63 + 52 + 52
 
-engine_speed(sr3, 85)
+name_in_group(sr3, string(STR_NAME_IN_GROUP, string(STR_NAME_EMU_S_SERIES), string(STR_NAME_SR3)),
+                   string(STR_NAME_IN_GROUP, string(STR_NAME_EMU_S_SERIES), string(STR_LONGNAME_SR3)))
+
 hint_MU_with_subtype(sr3,
-     calc_loading(321 / (3 * 2 * DOUBLE_DOOR)),
+     calc_loading(PROP_sr3_n_CC / (3 * 2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_62_05,
      STR_SECTIONS_MU_S1_3of3,
@@ -265,11 +306,12 @@ hint_MU_with_subtype(sr3,
 item (FEAT_TRAINS, sr3, 415) {
   property {
     name: string(STR_NAME_SR3);
-    vehicle_dates(1952, 1955, 30, 10, 8, 8 + 7 + 7)
-    vehicle_emu(dc, 702, 139, 96.1, 321, 3 * 2 * DOUBLE_DOOR)
+    vehicle_dates(1952, 1955, 30, 10, 8, PROP_sr3_n_CF)
+    vehicle_emu(dc, PROP_sr3_n_PR, PROP_sr3_n_WT, PROP_sr3_n_TE, PROP_sr3_n_CC, 3 * 2 * DOUBLE_DOOR)
     vehicle_group(emu_s_group)
   }
   graphics {
+    purchase_menu(PROP_sr3_n_CF, PROP_sr3_n_RC, PROP_sr3_n_SD, PROP_sr3_n_WT, PROP_sr3_n_TE, PROP_sr3_n_PR, PROP_sr3_n_CC)
         additional_text: sr3_additional_text;
        articulated_part: sr3_articulated_part;
        can_attach_wagon: sr3_can_attach_wagon;
@@ -279,9 +321,9 @@ item (FEAT_TRAINS, sr3, 415) {
          colour_mapping: any_cc_colour;
           create_effect: sr3_create_effect;
                 default: sr3_sprites;
+                   name: sr3_name;
                   power: sr3_power;
                purchase: sr3_purchase_sprites;
-         purchase_speed: return 85;
     running_cost_factor: sr3_running_cost_factor;
                   speed: sr3_speed;
   }
