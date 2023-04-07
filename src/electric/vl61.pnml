@@ -1,33 +1,126 @@
 // vl61
 
+#define PROP_vl61_PR  2660
+
 #define IMAGEFILE  "src/electric/vl61.png"
 purchase_sprites(vl61, 0, 0)
 electric1r_2_sprites(10, vl61_v1, 32,  40)
 electric1r_2_sprites(10, vl61_v2, 32, 375)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl61d.png"
+electric1r_2_sprites(10, vl61d_v1, 32,  40)
+electric1r_2_sprites(10, vl61d_v2, 32, 375)
+#undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl61_sprites_left,
-  check_year(GREAT_CHANGE_YEAR))
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  (cargo_subtype >= 0xE0) * 100 +
+  (tile_powers_railtype("ERA0") == 0) * 10 +
+  check_year(GREAT_CHANGE_YEAR) ])
 {
-  0: vl61_v1_sprites_left;
-     vl61_v2_sprites_left;
+    0: vl61_v1_sprites_left;
+    1: vl61_v2_sprites_left;
+   10: vl61_v1_notpowered_sprites_left_d_down;
+   11: vl61_v2_notpowered_sprites_left_d_down;
+  100: vl61d_v1_sprites_left;
+  101: vl61d_v2_sprites_left;
+  110: vl61d_v1_sprites_left;
+  111: vl61d_v2_sprites_left;
+       align_10_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, vl61_sprites_right,
-  check_year(GREAT_CHANGE_YEAR))
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  (cargo_subtype >= 0xE0) * 100 +
+  (tile_powers_railtype("ERA0") == 0) * 10 +
+  check_year(GREAT_CHANGE_YEAR) ])
 {
-  0: vl61_v1_sprites_right;
-     vl61_v2_sprites_right;
+    0: vl61_v1_sprites_right;
+    1: vl61_v2_sprites_right;
+   10: vl61_v1_notpowered_sprites_right_d_down;
+   11: vl61_v2_notpowered_sprites_right_d_down;
+  100: vl61d_v1_sprites_right;
+  101: vl61d_v2_sprites_right;
+  110: vl61d_v1_sprites_right;
+  111: vl61d_v2_sprites_right;
+       align_10_sprites;
 }
 
 engine_RNDany_direction_template(vl61, 5, 3)
 
-long_vehicle_sp(vl61)
+switch (FEAT_TRAINS, SELF, vl61_sprites_current,
+  cargo_subtype + 256 * (current_year < 1963) + 256 * (1 - enable_icons))
+{
+  0x00..0xDF: icon_sprites_25ac;
+  0xE0..0xFF: icon_sprites_25ac_3dc;
+              dummy_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, vl61_sprites_depot,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: vl61_sprites_start_sp;
+  1: vl61_sprites_current;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, vl61_direction_template,
+  getbits(extra_callback_info1, 0, 8))
+{
+  0x10..0x1F: vl61_sprites_depot;
+              vl61_sprites_start_sp;
+}
+
+long_vehicle_dir(vl61)
+
+engine_penalise_speed0(vl61)
+
+switch (FEAT_TRAINS, PARENT, vl61_bitmask_vehicle_info_advanced2,
+  (vehicle_type_id == vl61) && (cargo_subtype >= 0xE0))
+{
+  1: return 0;
+     return bitmask(FLAG_PENALISE_SPEED);
+}
+
+switch (FEAT_TRAINS, SELF, vl61_bitmask_vehicle_info_advanced1,
+  position_in_consist * vehicle_is_powered)
+{
+  0: return 0;
+  2: vl61_bitmask_vehicle_info_advanced2;
+     return bitmask(FLAG_PENALISE_SPEED);
+}
+
+switch (FEAT_TRAINS, SELF, vl61_bitmask_vehicle_info_advanced,
+  cargo_subtype >= 0xE0)
+{
+  1: vl61_bitmask_vehicle_info_advanced1;
+     vl61_bitmask_vehicle_info;
+}
 
 engine_speed_change_after(vl61, 75,
                                 85, 1960)
-engine_penalise_speed0(vl61)
-engine_electric1_2_effect(vl61_create_effect, -2, 4)
+
+switch (FEAT_TRAINS, SELF, vl61_speed_advanced,
+  (position_in_consist == 0) &&
+  (cargo_subtype < 0xE0) &&
+  (tile_powers_railtype("ERA0") == 0))
+{
+  1: return NO_SPEED;
+     vl61_speed;
+}
+
+engine_electric1_2_effect(vl61_all_create_effect, -2, 4)
+  is_ER25AC_ds(vl61_0_create_effect, vl61_all_create_effect, return disable_create_effect())
+engine_change_refit(vl61_create_effect, vl61_0_create_effect, vl61_all_create_effect)
+
+  livery_template_refit_n(vl61_a1963, STR_REFIT_FACTORY_GENERAL_TYPE_D, STR_NAME_VL61, STR_ER25AC, STR_NAME_VL61D, STR_ERACDC)
+livery_template_service_year_ao(vl61, 1963)
+
+    engine_0_power(vl61_3DC)
+  is_ER25AC_ds(vl61_0_power, get_power_in_cb(PROP_vl61_PR), vl61_3DC_power)
+engine_change_refit(vl61_power, vl61_0_power, get_power_in_cb(PROP_vl61_PR))
+
+engine_refit_cost_for_a2_livery_change(vl61, 0xE0, 2, 3)
 
 switch (FEAT_TRAINS, SELF, vl61_running_cost_factor,
 [  STORE_TEMP(158, 0),  // Моторы
@@ -53,28 +146,40 @@ hint_engine_comment(vl61_a1960,
      1954, 1957,
      fact_novocherkassk(),
      string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 85, 1960))
-hint_change_after(vl61, 1960)
+hint_engine_comment(vl61_a1963,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1954, 1957,
+     fact_novocherkassk(),
+     string(STR_PURCHASE_HINT_LIST2_COMMENT,
+            string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 85, 1960),
+            string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE,
+                   string(STR_REFIT_FACTORY_GENERAL_TYPE_R, string(STR_NAME_VL61D), string(STR_ERACDC)))))
+hint_change_after2(vl61, 1960, 1963)
 
 item (FEAT_TRAINS, vl61, 189) {
   property {
     name: string(STR_NAME_VL61);
     vehicle_dates(1954, 1957, 20, 10, 8, 39)
     vehicle_passcargo()
-    vehicle_acelectric(2660, 131, 431.0)
+    vehicle_acdcelectric(PROP_vl61_PR, 131, 431.0)
   }
   graphics {
          additional_text: vl61_additional_text;
         articulated_part: articulated_part_dummy2;
-    bitmask_vehicle_info: vl61_bitmask_vehicle_info;
+    bitmask_vehicle_info: vl61_bitmask_vehicle_info_advanced;
         can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return 0;
+      cargo_subtype_text: vl61_cargo_subtype_text;
           colour_mapping: any_cc_colour;
            create_effect: vl61_create_effect;
                  default: vl61_sprites;
+                   power: vl61_power;
                 purchase: vl61_purchase_sprites;
           purchase_speed: return 75;
+              refit_cost: vl61_refit_cost;
      running_cost_factor: vl61_running_cost_factor;
-                   speed: vl61_speed;
+                   speed: vl61_speed_advanced;
               start_stop: any_start_stop;
   }
 }

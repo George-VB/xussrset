@@ -76,7 +76,7 @@ switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_current,
 {
   0x00: icon_sprites_15dc;
   0xE0: icon_sprites_ddc;
-  0xE1: icon_sprites_dc;
+  0xE1: icon_sprites_3dc;
         dummy_sprites;
 }
 
@@ -147,6 +147,8 @@ switch (FEAT_TRAINS, SELF, emu_sd_sprites_start,
 
 long_vehicle(emu_sd)
 
+// TODO change running cost according to refit
+
 switch (FEAT_TRAINS, PARENT, emu_sd_can_attach_wagon1,
   emu_s_count() < (2 + (current_year >= 1939)))
 {
@@ -170,14 +172,6 @@ switch (FEAT_TRAINS, SELF, emu_sd_articulated_part,
   4: return emu_sd_part3;
   5: return dummy4;
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
-}
-
-switch (FEAT_TRAINS, SELF, emu_sd_part2_cargo_capacity,
-[  set_offset_to(-2),
-   prev_vehicle_cargo_subtype() < 0xE1])
-{
-  1: return PROP_emu_sd_n_MC;
-     return 0;
 }
 
 switch (FEAT_TRAINS, SELF, emu_sd_create_effect2,
@@ -318,6 +312,16 @@ item (FEAT_TRAINS, emu_sd, 443) {
 
 long_name_template(emu_sd, STR_LONGNAME_SD)
 allow_dcemu(emu_sd)
+
+// TODO fix mail capacity
+
+switch (FEAT_TRAINS, SELF, emu_sd_part2_cargo_capacity,
+[  set_offset_to(-2),
+   prev_vehicle_cargo_subtype() < 0xE1])
+{
+  1: return PROP_emu_sd_n_MC;
+     return 0;
+}
 
 item (FEAT_TRAINS, emu_sd_part2, 448) {
   property {
