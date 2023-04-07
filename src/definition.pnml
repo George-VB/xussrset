@@ -16,6 +16,10 @@ retire_late_default = 31;
 age_erlanger = 8;
 delta_age = 1;
 
+// Мощность ПС / скорость, который не имеет мощности (чтобы он смог доехать до других рельсов, так как в игре нельзя послать за ним буксир.
+#define NO_POWER             5
+#define NO_SPEED             10
+
 // количество тиков на разгрузку высыпанием
 #define VERY_SLOW_FALL             5
 #define SLOW_FALL                  4
@@ -128,8 +132,8 @@ delta_age = 1;
 // задаваемое в свойстве отличается от возвращаемого функцией
 #define get_power_in_cb(value) int (value * 0.9865)
 // Получаем оштрафованную величину скорости, 15%
-// Скорость у ПС без мощности в голове - 10
-#define get_penalised_speed(speed) (vehicle_is_not_powered && (position_in_consist == 0)) ? 10  : speed * (100 - speed_penalty_percent) / 100
+// Скорость у ПС без мощности в голове - NO_SPEED
+#define get_penalised_speed(speed) (vehicle_is_not_powered && (position_in_consist == 0)) ? NO_SPEED  : speed * (100 - speed_penalty_percent) / 100
 // Флаг штрафа поезда по скорости
 #define FLAG_PENALISE_SPEED 0
 // Флаг второй головы ДРБ1
@@ -509,47 +513,6 @@ delta_age = 1;
   purchase_tractive_effort_coefficient: TE;             \
                         purchase_power: PR;             \
                purchase_cargo_capacity: CC;             \
-
-// emu_s support
-#define any_emu_s()               \
- ((vehicle_type_id == emu_sd) ||  \
-  (vehicle_type_id == emu_sr) ||  \
-  (vehicle_type_id == emu_sm) ||  \
-  (vehicle_type_id == emu_sv) )   \
-
-#define no_emu_s_inR4()          \
- (!((LOAD_TEMP(4) == emu_sd) ||  \
-    (LOAD_TEMP(4) == emu_sr) ||  \
-    (LOAD_TEMP(4) == emu_sm) ||  \
-    (LOAD_TEMP(4) == emu_sv)))   \
-
-#define emu_s_count()     \
- (count_veh_id(emu_sd) +  \
-  count_veh_id(emu_sr) +  \
-  count_veh_id(emu_sm) +  \
-  count_veh_id(emu_sv))   \
-
-#define engine_power_MU_emu_s(name, power)               \
-switch (FEAT_TRAINS, PARENT, name##_power, any_emu_s())  \
-{ 1: return get_power_in_cb(power);                      \
-     return 0; }                                         \
-
-#define engine_capacity_MU_emu_s(name, capacity)                  \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_emu_s())  \
-{ 1: return capacity;                                             \
-     return 0; }                                                  \
-
-#define RC_head_check_emu_s_new(name)                            \
-switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
-{ all_running_cost_factor; }                                     \
-switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  any_emu_s())                                                   \
-{ 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
 
 // ТЭП70БС + ЭС1 / ЭС2Г
 // голова ТЭП70БС 2018 года или новее, и общее количество (ЭС1 * 5) + (ЭС2) <= количество (ТЭП70БС * 6) и нет другого ПС

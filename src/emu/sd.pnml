@@ -20,6 +20,7 @@
 #define PROP_emu_sd_n_TE  95.0
 #define PROP_emu_sd_n_PR  680
 #define PROP_emu_sd_n_CC  306
+#define PROP_emu_sd_n_MC  20
 
 #define PROP_emu_sd_m_CF  0
 #define PROP_emu_sd_m_RC  0
@@ -48,25 +49,57 @@ MU_head_middle_sprites(12, emu_sd_h_v1u, 32, 40)
 EMU_motor2_sprites(12, emu_sd_m_v1, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_check,
+switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_check2,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
   (position_in_consist == 0) * 100 +
   (cargo_subtype >= 0xE0) * 10 +
-  (random_bits & 0x01))
+  (cargo_subtype >= 0xE1) * 10 +
+  (random_bits & 0x01) ] )
 {
     0: emu_sd_h_v1u_notpowered_normal_sprites_left;
     1: emu_sd_h_v1_notpowered_normal_sprites_left;
    10: emu_sm_h_v1u_notpowered_normal_sprites_left;
    11: emu_sm_h_v1_notpowered_normal_sprites_left;
+   20: emu_sm_h_v1_notpowered_normal_sprites_left;
+   21: emu_sm_h_v1_notpowered_normal_sprites_left;
   100: emu_sd_h_v1u_sprites_left;
   101: emu_sd_h_v1_sprites_left;
   110: emu_sm_h_v1u_sprites_left;
   111: emu_sm_h_v1_sprites_left;
+  120: emu_sm_h_v1_sprites_left;
+  121: emu_sm_h_v1_sprites_left;
        align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_current,
+  cargo_subtype + 256 * (current_year < 1946) + 256 * (1 - enable_icons))
+{
+  0x00: icon_sprites_15dc;
+  0xE0: icon_sprites_ddc;
+  0xE1: icon_sprites_dc;
+        dummy_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_depot,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: emu_sd_h_sprites_left_check2;
+  1: emu_sd_h_sprites_left_current;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, emu_sd_h_sprites_left_check,
+  getbits(extra_callback_info1, 0, 8))
+{
+  0x10..0x1F: emu_sd_h_sprites_left_depot;
+              emu_sd_h_sprites_left_check2;
 }
 
 switch (FEAT_TRAINS, SELF, emu_sd_b_sprites_start,
 [  set_offset_to(-2),
-  (no_emu_s_inR4() * 100) +
+  ((no_emu_s_inR4() ||
+   ((prev_vehicle_cargo_subtype() == 0xE1) && (tile_powers_railtype("ERD0") == 0)) ||
+   ((prev_vehicle_cargo_subtype() < 0xE0) && (tile_powers_railtype("ERd0") == 0))) * 100) +
   ((prev_vehicle_cargo_subtype() >= 0xE0) * 10) +
   (prev_vehicle_randombits() & 0x01) ])
 {
@@ -85,16 +118,21 @@ switch (FEAT_TRAINS, SELF, emu_sd_c_sprites_start,
 [ set_offset_to(-4),
   ((position_in_consist_from_end == 1) * 100) +
   ((prev_vehicle_cargo_subtype() >= 0xE0) * 10) +
+  ((prev_vehicle_cargo_subtype() >= 0xE1) * 10) +
   (prev_vehicle_randombits() & 0x01) ])
 {
     0: emu_sd_h_v1_notpowered_normal_sprites_right;
     1: emu_sd_h_v1u_notpowered_normal_sprites_right;
    10: emu_sm_h_v1_notpowered_normal_sprites_right;
    11: emu_sm_h_v1u_notpowered_normal_sprites_right;
+   20: emu_sm_h_v1_notpowered_normal_sprites_right;
+   21: emu_sm_h_v1_notpowered_normal_sprites_right;
   100: emu_sd_h_v1_sprites_right;
   101: emu_sd_h_v1u_sprites_right;
   110: emu_sm_h_v1_sprites_right;
   111: emu_sm_h_v1u_sprites_right;
+  120: emu_sm_h_v1_sprites_right;
+  121: emu_sm_h_v1_sprites_right;
        align_12_sprites;
 }
 
@@ -134,6 +172,14 @@ switch (FEAT_TRAINS, SELF, emu_sd_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
+switch (FEAT_TRAINS, SELF, emu_sd_part2_cargo_capacity,
+[  set_offset_to(-2),
+   prev_vehicle_cargo_subtype() < 0xE1])
+{
+  1: return PROP_emu_sd_n_MC;
+     return 0;
+}
+
 switch (FEAT_TRAINS, SELF, emu_sd_create_effect2,
   electric_create_effect(4)) { return 1; }
 
@@ -144,37 +190,49 @@ switch (FEAT_TRAINS, PARENT, emu_sd_create_effect1,
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, emu_sd_create_effect,
+switch (FEAT_TRAINS, SELF, emu_sd_0_create_effect,
   position_in_articulated_veh)
 {
   2: emu_sd_create_effect1;
      return disable_create_effect();
 }
 
-  livery_template_refitf(emu_sd_a1950, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_SM, STR_EMPTY)
+     is_ER15DC_ds(emu_sd_2_create_effect, emu_sd_0_create_effect, return disable_create_effect())
+  engine_change_refit_prev(emu_sd_1_create_effect, emu_sd_2_create_effect, emu_sd_0_create_effect, -2)
 
-  livery_template_refit2_diff_f(emu_sd_a1952, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_SM, STR_EMPTY, STR_NAME_SM3, STR_EMPTY)
-livery_template_service_year2_ao(emu_sd, 1950, 1952)
+  is_ER3DC_ds(emu_sd_sr3_create_effect, emu_sd_0_create_effect, return disable_create_effect())
+engine_change_refit_shift_prev(emu_sd_create_effect, emu_sd_1_create_effect, emu_sd_sr3_create_effect, 1, -2)
+
+  engine_capacity_MU_emu_s(emu_sd_0, PROP_emu_sd_n_CC)
+  engine_capacity_MU_emu_s(emu_sd_sr3, PROP_sr3_n_CC)
+engine_change_refit_shift(emu_sd_cargo_capacity, emu_sd_0_cargo_capacity, emu_sd_sr3_cargo_capacity, 1)
+
+  livery_template_refit_n(emu_sd_a1946, STR_REFIT_FACTORY_GENERAL_TYPE_D, STR_NAME_SD, STR_ER15DC, STR_NAME_SM, STR_ERDDC)
+
+  livery_template_refit2_diff_n(emu_sd_a1952, STR_REFIT_FACTORY_GENERAL_TYPE_D, STR_NAME_SD, STR_ER15DC, STR_NAME_SM, STR_ERDDC, STR_NAME_SM3, STR_ER3DC)
+livery_template_service_year2_ao(emu_sd, 1946, 1952)
 
 engine_speed(emu_sd, PROP_emu_sd_n_SD)
-engine_capacity_MU_emu_s(emu_sd, PROP_emu_sd_n_CC)
+
+        engine_power_MU_emu_s(emu_sd_0_DC_2, NO_POWER)
+      engine_0_power_alt(emu_sd_0_DC, emu_sd_0_DC_2_power)
 
       engine_power_MU_emu_s(emu_sd_0_15DC, PROP_emu_sd_n_PR)
-      engine_power_MU_emu_s(emu_sd_0_DC, 0)
-    engine_power_change_DDC(emu_sd_0)
+    is_ER15DC_ds(emu_sd_0_power, emu_sd_0_15DC_power, emu_sd_0_DC_power)
 
-    engine_power_MU_emu_s(emu_sd_refit, 680)
-  engine_change_refit(emu_sd_1_power, emu_sd_0_power, emu_sd_refit_power)
+    engine_power_MU_emu_s(emu_sd_sm, PROP_emu_sm_n_PR)
+  engine_change_refit(emu_sd_1_power, emu_sd_0_power, emu_sd_sm_power)
 
-    engine_power_MU_emu_s(emu_sd_refit2_15DC, 0)
-    engine_power_MU_emu_s(emu_sd_refit2_DC, 702)
-  engine_power_change_DDC(emu_sd_refit2)
-engine_change_refit_shift(emu_sd_power, emu_sd_1_power, emu_sd_refit2_power, 1)
+      engine_power_MU_emu_s(emu_sd_sr3_15DC_2, NO_POWER)
+    engine_0_power_alt(emu_sd_sr3_15DC, emu_sd_sr3_15DC_2_power)
 
-engine_refit_cost_for_a2_livery_change(emu_sd_3, 0xE0, 3, 4)
-engine_refit_cost_for_extra_livery_change(emu_sd_2, 0xE0, 3, emu_sd_3_refit_cost)
-engine_refit_cost_for_extra_livery_change(emu_sd, 0xE1, 2, emu_sd_2_refit_cost)
-// TODO provide code to change other props on refit
+    engine_power_MU_emu_s(emu_sd_sr3_DC, PROP_sr3_n_PR)
+  is_ER3DC_ds(emu_sd_sr3_power, emu_sd_sr3_DC_power, emu_sd_sr3_15DC_power)
+engine_change_refit_shift(emu_sd_power, emu_sd_1_power, emu_sd_sr3_power, 1)
+
+engine_refit_cost_for_a2_livery_change(emu_sd_3, 0xE0, 6, 7)
+engine_refit_cost_for_extra_livery_change(emu_sd_2, 0xE0, 6, emu_sd_3_refit_cost)
+engine_refit_cost_for_extra_livery_change(emu_sd, 0xE1, 4, emu_sd_2_refit_cost)
 
 RC_head_check_emu_s_new(emu_sd)
 switch (FEAT_TRAINS, SELF, emu_sd_running_cost_factor,
@@ -209,7 +267,7 @@ hint_MU_2fact(emu_sd_a1939,
      1939, 1945,
      fact_mytishchi(),
      string(STR_PURCHASE_HINT_FACTORY_DINAMO))
-hint_MU_2fact_comment(emu_sd_a1950,
+hint_MU_2fact_comment(emu_sd_a1946,
      calc_loading(PROP_emu_sd_n_CC / (3 * 2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_15DC,
@@ -218,7 +276,7 @@ hint_MU_2fact_comment(emu_sd_a1950,
      fact_mytishchi(),
      string(STR_PURCHASE_HINT_FACTORY_DINAMO),
      string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE,
-            string(STR_NAME_SM)))
+                 string(STR_REFIT_FACTORY_GENERAL_TYPE_R, string(STR_NAME_SM), string(STR_ERDDC))))
 hint_MU_2fact_comment(emu_sd_a1952,
      calc_loading(PROP_emu_sd_n_CC / (3 * 2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
@@ -228,8 +286,8 @@ hint_MU_2fact_comment(emu_sd_a1952,
      fact_mytishchi(),
      string(STR_PURCHASE_HINT_FACTORY_DINAMO),
      string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE,
-            string(STR_NAME_SM3)))
-hint_change_after3(emu_sd, 1939, 1950, 1952)
+                 string(STR_REFIT_FACTORY_GENERAL_TYPE_R, string(STR_NAME_SM3), string(STR_ER3DC))))
+hint_change_after3(emu_sd, 1939, 1946, 1952)
 
 item (FEAT_TRAINS, emu_sd, 443) {
   property {
