@@ -1,5 +1,13 @@
 // steam_nv
 
+#define PROP_steam_nv_CF  7
+#define PROP_steam_nv_RC  160
+#define PROP_steam_nv_SD  90
+#define PROP_steam_nv_WT  59+47
+#define PROP_steam_nv_TE  78.0
+#define PROP_steam_nv_PR  750
+#define PROP_steam_nv_CC  0
+
 #define IMAGEFILE  "src/steam/nv.png"
 purchase_sprites(steam_nv, 0, 0)
 steam_sprites(6, steam_nv_engine, 32,  40)
@@ -17,53 +25,77 @@ switch (FEAT_TRAINS, SELF, steam_nv_running_cost_factor,
    STORE_TEMP(22, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(90 + 15 * (current_year >= 1912) + 15 * (current_year >= 1936), 6),  // Скорость
-   STORE_TEMP(59 + 47, 7),                                                         // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                                   // Максимальная масса
-{ all_running_cost_factor; }                                                       // 157
+   STORE_TEMP(PROP_steam_nv_SD + 15 * (current_year >= 1912)
+                               + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_steam_nv_WT, 7),                                // Тара
+   STORE_TEMP(PROP_steam_nv_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                       // 157
 
 engine_steam_1_effect(steam_nv_create_effect, -3, 12)
-engine_speed_change_after2(steam_nv, 90,
-                               105, 1912,
-                               120, 1936)
+engine_speed_change_after2(steam_nv, PROP_steam_nv_SD,
+                                     105, 1912,
+                                     120, 1936)
 engine_penalise_speed0(steam_nv)
 engine_tender(steam_nv)
 engine_tender_length(steam_nv, 5, 1, 3, 1)
-
-hint_engine_6fact(steam_nv,
+name_in_group(steam_nv, string(STR_NAME_IN_GROUP, string(STR_NAME_N_SERIES), string(STR_NAME_NV)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_N_SERIES), string(STR_LONGNAME_NV)))
+hint_engine_5fact(steam_nv_b1912,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
      1903, 1909,
-     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
      fact_lugansk(),
-     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
      fact_putilovsky(),
      string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
      fact_kharkiv())
+hint_engine_5fact_comment(steam_nv_a1912,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1903, 1909,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     fact_lugansk(),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 105, 1912))
+hint_engine_5fact_comment(steam_nv_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1903, 1909,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     fact_lugansk(),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 120, 1936))
+hint_change_after2(steam_nv, 1912, 1936)
 
 item (FEAT_TRAINS, steam_nv, 431) {
   property {
     name: string(STR_NAME_NV);
-    vehicle_dates(1903, 1909, 40, 10, 5, 7)
+    vehicle_dates(1903, 1909, 40, 10, 5, PROP_steam_nv_CF)
     vehicle_pass()
-    vehicle_steam(750, 59+47, 78.0)
+    vehicle_steam(PROP_steam_nv_PR, PROP_steam_nv_WT, PROP_steam_nv_TE)
+    vehicle_group(steam_n_group)
   }
   graphics {
-                 default: steam_nv_sprites;
-                purchase: steam_nv_purchase_sprites;
-        articulated_part: steam_nv_articulated_part;
-        can_attach_wagon: any_can_attach_wagon;
-              start_stop: any_start_stop;
-                   speed: steam_nv_speed;
-          purchase_speed: steam_nv_purchase_speed;
-    bitmask_vehicle_info: steam_nv_bitmask_vehicle_info;
-          cargo_capacity: return 0;
-           create_effect: steam_nv_create_effect;
-     running_cost_factor: steam_nv_running_cost_factor;
-          colour_mapping: steam_pass_colour_mapping;
-      cargo_subtype_text: steam_pass_cargo_subtype_text;
-                  length: steam_nv_length;
+    purchase_menu(PROP_steam_nv_CF, PROP_steam_nv_RC, PROP_steam_nv_SD, PROP_steam_nv_WT, PROP_steam_nv_TE, PROP_steam_nv_PR, PROP_steam_nv_CC)
          additional_text: steam_nv_additional_text;
+        articulated_part: steam_nv_articulated_part;
+    bitmask_vehicle_info: steam_nv_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+          colour_mapping: steam_pass_colour_mapping;
+           create_effect: steam_nv_create_effect;
+                 default: steam_nv_sprites;
+                  length: steam_nv_length;
+                    name: steam_nv_name;
+                purchase: steam_nv_purchase_sprites;
+     running_cost_factor: steam_nv_running_cost_factor;
+                   speed: steam_nv_speed;
+              start_stop: any_start_stop;
   }
 }
 

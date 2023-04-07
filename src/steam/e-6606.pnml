@@ -1,0 +1,86 @@
+// steam_e_6606
+
+#define PROP_steam_e_6606_CF  9
+#define PROP_steam_e_6606_RC  209
+#define PROP_steam_e_6606_SD  55
+#define PROP_steam_e_6606_WT  80+64
+#define PROP_steam_e_6606_TE  184.0
+#define PROP_steam_e_6606_PR  1018
+#define PROP_steam_e_6606_CC  0
+
+#define IMAGEFILE  "src/steam/e.png"
+purchase_sprites(steam_e_6606, 0, 0)
+steam_sprites(7, steam_e_6606_engine,  32,   40)
+tender_sprites(5, steam_e_6606_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(steam_e_6606, _sprites_start)
+long_vehicle(steam_e_6606)
+
+switch (FEAT_TRAINS, SELF, steam_e_6606_running_cost_factor,
+[  STORE_TEMP(119, 0),  // Моторы
+   STORE_TEMP(17, 1),   // Бригада
+   STORE_TEMP(42, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(29, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_steam_e_6606_SD  + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_steam_e_6606_WT, 7),                                 // Тара
+   STORE_TEMP(PROP_steam_e_6606_WT, 8)])                                // Максимальная масса
+{ all_running_cost_factor; }                                            // 209
+
+engine_power_change_after(steam_e_6606, PROP_steam_e_6606_PR,
+                                        1306, 1920)
+engine_tender(steam_e_6606)
+engine_tender_length(steam_e_6606, 6, 1, 4, 1)
+engine_steam_1_effect(steam_e_6606_create_effect, -3, 12)
+engine_speed_change_after(steam_e_6606, PROP_steam_e_6606_SD,
+                                        65, 1936)
+engine_penalise_speed0(steam_e_6606)
+name_in_group(steam_e_6606, string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_NAME_E_6606)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_LONGNAME_E_6606)))
+hint_engine(steam_e_6606_b1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1912, 1913,
+     fact_lugansk())
+hint_engine_comment(steam_e_6606_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1912, 1913,
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 65, 1936))
+hint_change_after(steam_e_6606, 1936)
+
+item (FEAT_TRAINS, steam_e_6606, 330) {
+  property {
+    name: string(STR_NAME_E_6606);
+    vehicle_dates(1912, 1913, 40, 10, 6, PROP_steam_e_6606_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_steam_e_6606_PR, PROP_steam_e_6606_WT, PROP_steam_e_6606_TE)
+    vehicle_group(steam_e_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_e_6606_CF, PROP_steam_e_6606_RC, PROP_steam_e_6606_SD, PROP_steam_e_6606_WT, PROP_steam_e_6606_TE, PROP_steam_e_6606_PR, PROP_steam_e_6606_CC)
+         additional_text: steam_e_6606_additional_text;
+        articulated_part: steam_e_6606_articulated_part;
+    bitmask_vehicle_info: steam_e_6606_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_steam_e_6606_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: steam_e_6606_create_effect;
+                 default: steam_e_6606_sprites;
+                  length: steam_e_6606_length;
+                    name: steam_e_6606_name;
+                   power: steam_e_6606_power;
+                purchase: steam_e_6606_purchase_sprites;
+     running_cost_factor: steam_e_6606_running_cost_factor;
+                   speed: steam_e_6606_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_e_6606, STR_LONGNAME_E_6606)
+models_default_cargo_template(steam_e_6606)
+allow_steamer(steam_e_6606)

@@ -1,0 +1,99 @@
+// steam_nu uses steam_nv
+
+#define PROP_steam_nu_CF  7
+#define PROP_steam_nu_RC  160
+#define PROP_steam_nu_SD  90
+#define PROP_steam_nu_WT  59+47
+#define PROP_steam_nu_TE  81.0
+#define PROP_steam_nu_PR  790
+#define PROP_steam_nu_CC  0
+
+#define IMAGEFILE  "src/steam/nv.png"
+purchase_sprites(steam_nu, 0, 0)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, steam_nu_running_cost_factor,
+[  STORE_TEMP(91, 0),  // Моторы
+   STORE_TEMP(13, 1),  // Бригада
+   STORE_TEMP(32, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(22, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_steam_nu_SD + 15 * (current_year >= 1912)
+                               + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_steam_nu_WT, 7),                                // Тара
+   STORE_TEMP(PROP_steam_nu_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                       // 160
+
+engine_steam_1_effect(steam_nu_create_effect, -3, 12)
+engine_speed_change_after2(steam_nu, PROP_steam_nu_SD,
+                                     105, 1912,
+                                     120, 1936)
+engine_penalise_speed0(steam_nu)
+engine_tender(steam_nu)
+engine_tender_length(steam_nu, 5, 1, 3, 1)
+name_in_group(steam_nu, string(STR_NAME_IN_GROUP, string(STR_NAME_N_SERIES), string(STR_NAME_NU)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_N_SERIES), string(STR_LONGNAME_NU)))
+hint_engine_5fact(steam_nu_b1912,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1910, 1912,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     fact_lugansk(),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv())
+hint_engine_5fact_comment(steam_nu_a1912,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1910, 1912,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     fact_lugansk(),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 105, 1912))
+hint_engine_5fact_comment(steam_nu_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1910, 1912,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     fact_lugansk(),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     fact_kharkiv(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 120, 1936))
+hint_change_after2(steam_nu, 1912, 1936)
+
+item (FEAT_TRAINS, steam_nu, 762) {
+  property {
+    name: string(STR_NAME_NU);
+    vehicle_dates(1910, 1912, 40, 10, 5, PROP_steam_nu_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_nu_PR, PROP_steam_nu_WT, PROP_steam_nu_TE)
+    vehicle_group(steam_n_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_nu_CF, PROP_steam_nu_RC, PROP_steam_nu_SD, PROP_steam_nu_WT, PROP_steam_nu_TE, PROP_steam_nu_PR, PROP_steam_nu_CC)
+         additional_text: steam_nu_additional_text;
+        articulated_part: steam_nu_articulated_part;
+    bitmask_vehicle_info: steam_nu_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+          colour_mapping: steam_pass_colour_mapping;
+           create_effect: steam_nu_create_effect;
+                 default: steam_nv_sprites;
+                  length: steam_nu_length;
+                    name: steam_nu_name;
+                purchase: steam_nu_purchase_sprites;
+     running_cost_factor: steam_nu_running_cost_factor;
+                   speed: steam_nu_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_nu, STR_LONGNAME_NU)
+models_default_cargo_template(steam_nu)
+allow_steamer(steam_nu)

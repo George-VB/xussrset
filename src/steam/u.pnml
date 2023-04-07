@@ -1,81 +1,73 @@
 // steam_u
 
+#define PROP_steam_u_CF  10
+#define PROP_steam_u_RC  239
+#define PROP_steam_u_SD  105
+#define PROP_steam_u_WT  76+53
+#define PROP_steam_u_TE  93.0
+#define PROP_steam_u_PR  1100
+#define PROP_steam_u_CC  0
+
 #define IMAGEFILE  "src/steam/u.png"
-purchase_sprites(steam_u_v1, 0, 0)
-purchase_sprites(steam_u_v2, 102, 0)
-purchase_sprites(steam_u_v3, 204, 0)
-purchase_sprites_select2(steam_u, 1908, 1910)
+purchase_sprites(steam_u, 0, 0)
 steam_sprites(6, steam_u_engine, 32,  40)
-tender_sprites(5, steam_u_tender_b1908, 447,  40)
-tender_sprites(4, steam_u_tender_a1908, 447,  107)
-tender_sprites(5, steam_u_tender_a1910, 447,  174)
+tender_sprites(5, steam_u_tender, 447,  40)
 #undef IMAGEFILE
 
-engine_build_year2_template(steam_u_tender, 1908, 1910, start, )
 steamer_direction_template(steam_u, _sprites_start)
 long_vehicle(steam_u)
 
 switch (FEAT_TRAINS, SELF, steam_u_running_cost_factor,
-[  STORE_TEMP(136 -  4 * (build_year >= 1908)
-                  +  4 * (build_year >= 1910), 0),  // Моторы
-   STORE_TEMP(19, 1),                               // Бригада
-   STORE_TEMP(48  +  2 * (build_year >= 1908)
-                  +  2 * (build_year >= 1910), 2),  // Износ
-   STORE_TEMP(0, 3),                                // Сопровождение
-   STORE_TEMP(33  -  1 * (build_year >= 1908)
-                  +  1 * (build_year >= 1910), 4),  // ТО
-   STORE_TEMP(2, 5),                                // Сертификация
+[  STORE_TEMP(136, 0),  // Моторы
+   STORE_TEMP(19, 1),   // Бригада
+   STORE_TEMP(48, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(33, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(105, 6),  // Скорость
-   STORE_TEMP(129 -  6 * (build_year >= 1908)
-                  + 17 * (build_year >= 1910), 7),  // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                    // Максимальная масса
-{ all_running_cost_factor; }                        // 239 - 7 + 7
+   STORE_TEMP(PROP_steam_u_SD, 6),   // Скорость
+   STORE_TEMP(PROP_steam_u_WT, 7),   // Тара
+   STORE_TEMP(PROP_steam_u_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }         // 239
 
 engine_tender(steam_u)
-engine_tender_length_change_build_after2(steam_u, 5, 1, 4, 1,
-                                                  5, 1, 3, 1, 1908,
-                                                  5, 1, 4, 1, 1910)
+engine_tender_length(steam_u, 5, 1, 4, 1)
 engine_steam_1_effect(steam_u_create_effect, -3, 12)
-engine_speed(steam_u, 105)
+engine_speed(steam_u, PROP_steam_u_SD)
 engine_penalise_speed0(steam_u)
-engine_weight_change_build_after2(steam_u, 76+53,
-                                           76+47, 1908,
-                                           76+64, 1910)
-engine_TE_change_build_after2(steam_u, get_tec_int(93.0, 76+53),
-                                       get_tec_int(93.0, 76+47), 1908,
-                                       get_tec_int(93.0, 76+64), 1910)
+name_in_group(steam_u, string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_NAME_U_U)),
+                       string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_LONGNAME_U_U)))
 hint_engine(steam_u,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
-     1906, 1910,
+     1906, 1911,
      fact_putilovsky())
 
 item (FEAT_TRAINS, steam_u, 434) {
   property {
     name: string(STR_NAME_U_U);
-    vehicle_dates(1906, 1910, 40, 10, 5, 10)
+    vehicle_dates(1906, 1911, 40, 10, 5, PROP_steam_u_CF)
     vehicle_pass()
-    vehicle_steam(1100, 76+53, 93.0)
+    vehicle_steam(PROP_steam_u_PR, PROP_steam_u_WT, PROP_steam_u_TE)
+    vehicle_group(steam_u_group)
   }
   graphics {
-                        default: steam_u_sprites;
-                       purchase: steam_u_purchase_sprites;
-               articulated_part: steam_u_articulated_part;
-                         length: steam_u_length;
-               can_attach_wagon: any_can_attach_wagon;
-                     start_stop: any_start_stop;
-                          speed: steam_u_speed;
-                         weight: steam_u_weight;
-           bitmask_vehicle_info: steam_u_bitmask_vehicle_info;
-                 cargo_capacity: return 0;
-                  create_effect: steam_u_create_effect;
-            running_cost_factor: steam_u_running_cost_factor;
-                 colour_mapping: steam_pass_extra_colour_mapping;
-             cargo_subtype_text: steam_pass_extra_cargo_subtype_text;
-    tractive_effort_coefficient: steam_u_tractive_effort_coefficient;
-                 purchase_speed: return 105;
-                additional_text: steam_u_additional_text;
+    purchase_menu(PROP_steam_u_CF, PROP_steam_u_RC, PROP_steam_u_SD, PROP_steam_u_WT, PROP_steam_u_TE, PROP_steam_u_PR, PROP_steam_u_CC)
+         additional_text: steam_u_additional_text;
+        articulated_part: steam_u_articulated_part;
+    bitmask_vehicle_info: steam_u_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_extra_cargo_subtype_text;
+          colour_mapping: steam_pass_extra_colour_mapping;
+           create_effect: steam_u_create_effect;
+                 default: steam_u_sprites;
+                  length: steam_u_length;
+                    name: steam_u_name;
+                purchase: steam_u_purchase_sprites;
+     running_cost_factor: steam_u_running_cost_factor;
+                   speed: steam_u_speed;
+              start_stop: any_start_stop;
   }
 }
 

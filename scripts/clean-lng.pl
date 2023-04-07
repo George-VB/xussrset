@@ -36,7 +36,8 @@ sub ldirectory($)
 					$buff1.=$_;
 					$nameallstrings{$1}{$dir."/".$t}=1;
 				} else {
-					$buff2.="UNUSED_".$_;
+				        $_ =~ s/^((?:\/\/|\#){0,1}\s*)(STR_[_a-z0-9]*)/${1}UNUSED_${2}/i;
+					$buff2 .= $_;
 				}
 			} else {
 				$buff3 .= msort($buff1) . msort($buff2) . $_;

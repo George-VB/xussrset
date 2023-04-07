@@ -205,7 +205,7 @@ switch (FEAT_TRAINS, SELF, tgv_tmst_articulated_part,
 switch (FEAT_TRAINS, SELF, tgv_tmst_create_effect_01_d, electric_create_effect(3)) { return 1; }
 switch (FEAT_TRAINS, SELF, tgv_tmst_create_effect_20, electric_create_effect(-2)) { return 1; }
 
-is_ERD_ds(tgv_tmst_create_effect_01, tgv_tmst_create_effect_01_d, return disable_create_effect())
+is_ER3DC_ds(tgv_tmst_create_effect_01, tgv_tmst_create_effect_01_d, return disable_create_effect())
 
 switch (FEAT_TRAINS, SELF, tgv_tmst_create_effect0,
   position_in_articulated_veh)
@@ -231,9 +231,9 @@ switch (FEAT_TRAINS, SELF, tgv_tmst_running_cost_factor,
    STORE_TEMP(383, 4),   // ТО
    STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(on_any_ERA() ? 300  : 250, 6),           // Скорость
-   STORE_TEMP(752, 7),                                 // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 544 / 16 + 206 / 8, 8)])  // Максимальная масса
+   STORE_TEMP(tile_powers_railtype("ERA0") ? 300  : 250, 6),  // Скорость
+   STORE_TEMP(752, 7),                                        // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 544 / 16 + 206 / 8, 8)])         // Максимальная масса
 { tgv_tmst_check_running_cost_factor; }
 
 engine_capacity_MU(tgv_tmst, 544, tgv_tmst)
@@ -243,7 +243,7 @@ engine_power_change_AC_DC(tgv_tmst)
 engine_speed(tgv_tmst_DC, 250)
 engine_speed(tgv_tmst_AC, 300)
 engine_speed_change_AC_DC(tgv_tmst)
-is_ERA_ds(tgv_tmst_tractive_effort_coefficient, return get_tec_int(410.0, 752), return get_tec_int(350.0, 752))
+is_ER25AC_ds(tgv_tmst_tractive_effort_coefficient, return get_tec_int(410.0, 752), return get_tec_int(350.0, 752))
 
 // TODO сделать поддержку контактного рельcа 750В
 
@@ -263,22 +263,22 @@ item (FEAT_TRAINS, tgv_tmst, 678) {
     vehicle_emu(acdc, kw2hp(12240), 752, 410.0, 544, 10 * WAGON_DOOR)
   }
   graphics {
-                        default: tgv_tmst_sprites;
-                       purchase: tgv_tmst_purchase_sprites;
-               cargo_age_period: return 174;
-                          speed: tgv_tmst_speed;
-            running_cost_factor: tgv_tmst_running_cost_factor;
+                additional_text: tgv_tmst_additional_text;
                articulated_part: tgv_tmst_articulated_part;
                can_attach_wagon: return string(STR_CAN_ATTACH_NO_MORE);
-                          power: tgv_tmst_power;
+               cargo_age_period: return 174;
                  cargo_capacity: tgv_tmst_cargo_capacity;
-                    cost_factor: return 2500;
                  colour_mapping: any_cc_colour;
+                    cost_factor: return 2500;
                   create_effect: tgv_tmst_create_effect;
+                        default: tgv_tmst_sprites;
+                          power: tgv_tmst_power;
+                       purchase: tgv_tmst_purchase_sprites;
                  purchase_power: return get_power_in_cb(kw2hp(12240));
                  purchase_speed: return 300;
+            running_cost_factor: tgv_tmst_running_cost_factor;
+                          speed: tgv_tmst_speed;
     tractive_effort_coefficient: tgv_tmst_tractive_effort_coefficient;
-                additional_text: tgv_tmst_additional_text;
   }
 }
 
@@ -294,12 +294,12 @@ item (FEAT_TRAINS, tgv_tmst_part2, 679) {
     default_cargo_type: TOUR;
   }
   graphics {
-             default: tgv_tmst_sprites;
-    cargo_age_period: return 370;
-       create_effect: tgv_tmst_create_effect;
-      cargo_capacity: tgv_tmst_part2_cargo_capacity;
-          refit_cost: return 0 | CB_RESULT_AUTOREFIT;
-      colour_mapping: any_cc_colour;
+  cargo_age_period: return 370;
+    cargo_capacity: tgv_tmst_part2_cargo_capacity;
+    colour_mapping: any_cc_colour;
+     create_effect: tgv_tmst_create_effect;
+           default: tgv_tmst_sprites;
+        refit_cost: return 0 | CB_RESULT_AUTOREFIT;
   }
 }
 
@@ -309,8 +309,8 @@ item (FEAT_TRAINS, tgv_tmst_part3, 680) {
     vehicle_emu_empty(acdc)
   }
   graphics {
-           default: tgv_tmst_sprites;
-     create_effect: tgv_tmst_create_effect;
     colour_mapping: any_cc_colour;
+     create_effect: tgv_tmst_create_effect;
+           default: tgv_tmst_sprites;
   }
 }

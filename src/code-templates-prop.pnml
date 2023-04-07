@@ -1,4 +1,4 @@
-﻿  /// code definition - properties
+ /// code definition - properties
 
 // TODO выявлена проблема. шаблоны свойств не учитывают pre (получается только графика и строки). расширить шаблоны на поддержку pre
 
@@ -13,6 +13,37 @@ switch (FEAT_TRAINS, SELF, name, (build_year >= year) + (build_year >= year2))  
 { 1: new_prop;                                                                        \
   2: new_prop2;                                                                       \
      old_prop; }                                                                      \
+
+#define engine_change_build_after3(name, old_prop, new_prop, year, new_prop2, year2, new_prop3, year3)  \
+switch (FEAT_TRAINS, SELF, name, (build_year >= year) + (build_year >= year2) + (build_year >= year3))  \
+{ 1: new_prop;                                                                                          \
+  2: new_prop2;                                                                                         \
+  3: new_prop3;                                                                                         \
+     old_prop; }                                                                                        \
+
+// Общее изменение по рефиту
+#define engine_change_refit(name, prop_name, new_prop_name)  \
+switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0))    \
+{ 1: new_prop_name;                                          \
+     prop_name; }                                            \
+
+#define engine_change_refit_shift(name, prop_name, new_prop_name, shift)  \
+switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0 + shift))         \
+{ 1: new_prop_name;                                                       \
+     prop_name; }                                                         \
+
+// Общее изменение по рефиту предыдущего ПС
+#define engine_change_refit_prev(name, prop_name, new_prop_name, offset)  \
+switch (FEAT_TRAINS, SELF, name,                                          \
+[ set_offset_to(-2), (prev_vehicle_cargo_subtype()>= 0xE0) ])             \
+{ 1: new_prop_name;                                                       \
+     prop_name; }                                                         \
+
+#define engine_change_refit_shift_prev(name, prop_name, new_prop_name, shift, offset)  \
+switch (FEAT_TRAINS, SELF, name,                                                       \
+[ set_offset_to(-2), (prev_vehicle_cargo_subtype()>= 0xE0 + shift) ])                  \
+{ 1: new_prop_name;                                                                    \
+     prop_name; }                                                                      \
 
 // Определение пенальти на скорость (схема без СМЕ)
 #define engine_penalise_speed0(name)                         \
@@ -392,11 +423,9 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 
 // Определение скорости с изменением по году постройки и в заданном году
 #define engine_speed_change_build_after_and_year(name, speed, new_speed, year, new_speed2, year2)  \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed,                                                  \
-        (build_year >= year) + ((current_year >= year2) * 2))                                      \
+switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) )                           \
 { 0: return speed;                                                                                 \
-  1: return new_speed;                                                                             \
-     return new_speed2; }                                                                          \
+     return new_speed; }                                                                           \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                           \
 [ STORE_TEMP(check_year(year2) ? new_speed2                :                                       \
   build_year >= year ? new_speed                           : speed, 0),                            \
@@ -404,24 +433,16 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 { return; }                                                                                        \
 
 // Определение скорости с изменением в заданный год
-#define engine_speed_change_after(name, speed, new_speed, year)          \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, current_year >= year)  \
-{ 1: return new_speed;                                                   \
-     return speed; }                                                     \
-switch (FEAT_TRAINS, SELF, name##_speed,                                 \
-[ STORE_TEMP(check_year(year) ? new_speed:                               \
-                                speed, 0),                               \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :             \
-                        LOAD_TEMP(0) ])                                  \
-{ return; }                                                              \
+#define engine_speed_change_after(name, speed, new_speed, year)  \
+switch (FEAT_TRAINS, SELF, name##_speed,                         \
+[ STORE_TEMP(check_year(year) ? new_speed:                       \
+                                speed, 0),                       \
+  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :     \
+                        LOAD_TEMP(0) ])                          \
+{ return; }                                                      \
 
 // Определение скорости с изменением в 2 заданных года
 #define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)  \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +           \
-                                                  (current_year >= year2))           \
-{ 1: return new_speed;                                                               \
-  2: return new_speed2;                                                              \
-     return speed; }                                                                 \
 switch (FEAT_TRAINS, SELF, name##_speed,                                             \
 [ STORE_TEMP(check_year(year) ?                                                      \
               (check_year(year2) ? new_speed2:                                       \
@@ -433,13 +454,6 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                        
 
 // Определение скорости с изменением в 3 заданных года
 #define engine_speed_change_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)  \
-switch (FEAT_TRAINS, SELF, name##_purchase_speed, (current_year >= year) +                              \
-                                                  (current_year >= year2) +                             \
-                                                  (current_year >= year3))                              \
-{ 1: return new_speed;                                                                                  \
-  2: return new_speed2;                                                                                 \
-  3: return new_speed3;                                                                                 \
-     return speed; }                                                                                    \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                                \
 [ STORE_TEMP(check_year(year) ?                                                                         \
               (check_year(year2) ?                                                                      \
@@ -494,17 +508,17 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                      \
      return speed; }                                                          \
 
 // Определение скорости в зависимости от типа пути
-#define engine_speed_change_AC_DC(name)                    \
-is_ERA_ds(name##_speed, name##_AC_speed, name##_DC_speed)  \
+#define engine_speed_change_AC_DC(name)                       \
+is_ER25AC_ds(name##_speed, name##_AC_speed, name##_DC_speed)  \
 
-#define engine_speed_change_AAC_DC(name)                        \
-is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_DC_speed)  \
-is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)        \
+#define engine_speed_change_AAC_DC(name)                          \
+is_ER15AC_ds(name##_2_speed, name##_15AC_speed, name##_DC_speed)  \
+is_ER25AC_ds(name##_speed, name##_AC_speed, name##_2_speed)       \
 
-#define engine_speed_change_AAC_DDC(name)                      \
-is_ERD_ds(name##_3_speed, name##_DC_speed, name##_15DC_speed)  \
-is_ERAA_ds(name##_2_speed, name##_15AC_speed, name##_3_speed)  \
-is_ERA_ds(name##_speed, name##_AC_speed, name##_2_speed)       \
+#define engine_speed_change_AAC_DDC(name)                        \
+is_ER3DC_ds(name##_3_speed, name##_DC_speed, name##_15DC_speed)  \
+is_ER15AC_ds(name##_2_speed, name##_15AC_speed, name##_3_speed)  \
+is_ER25AC_ds(name##_speed, name##_AC_speed, name##_2_speed)      \
 
 // Определение старения груза с изменением по году постройки
 #define engine_CAP_change_build_after(name, CAP, new_CAP, year)          \
@@ -515,32 +529,32 @@ switch (FEAT_TRAINS, SELF, name##_cargo_age_period, build_year >= year)  \
 // Определение массы с изменением по году постройки
 #define engine_weight_change_build_after(name, weight, new_weight, year)  \
 switch (FEAT_TRAINS, SELF, name##_weight, build_year >= year)             \
-{ 1: return new_weight;                                                   \
-     return weight; }                                                     \
+{ 1: return int(new_weight);                                              \
+     return int(weight); }                                                \
 
 // Определение массы с изменением по 2-м годам постройки
 #define engine_weight_change_build_after2(name, weight, new_weight, year, new_weight2, year2)  \
 switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2))        \
-{ 1: return new_weight;                                                                        \
-  2: return new_weight2;                                                                       \
-     return weight; }                                                                          \
+{ 1: return int(new_weight);                                                                   \
+  2: return int(new_weight2);                                                                  \
+     return int(weight); }                                                                     \
 
 // Определение массы с изменением по 3-м годам постройки
 #define engine_weight_change_build_after3(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3)  \
 switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3))    \
-{ 1: return new_weight;                                                                                            \
-  2: return new_weight2;                                                                                           \
-  3: return new_weight3;                                                                                           \
-     return weight; }                                                                                              \
+{ 1: return int(new_weight);                                                                                       \
+  2: return int(new_weight2);                                                                                      \
+  3: return int(new_weight3);                                                                                      \
+     return int(weight); }                                                                                         \
 
 // Определение массы с изменением по 4-м годам постройки
 #define engine_weight_change_build_after4(name, weight, new_weight, year, new_weight2, year2, new_weight3, year3, new_weight4, year4)    \
 switch (FEAT_TRAINS, SELF, name##_weight, (build_year >= year) + (build_year >= year2) + (build_year >= year3) + (build_year >= year4))  \
-{ 1: return new_weight;                                                                                                                  \
-  2: return new_weight2;                                                                                                                 \
-  3: return new_weight3;                                                                                                                 \
-  4: return new_weight4;                                                                                                                 \
-     return weight; }                                                                                                                    \
+{ 1: return int(new_weight);                                                                                                             \
+  2: return int(new_weight2);                                                                                                            \
+  3: return int(new_weight3);                                                                                                            \
+  4: return int(new_weight4);                                                                                                            \
+     return int(weight); }                                                                                                               \
 
 // Определение цены с изменением по году постройки
 #define engine_cost_change_build_after(name, cost, new_cost, year)  \
@@ -631,17 +645,37 @@ switch (FEAT_TRAINS, PARENT, name##_power,                                      
      return 0; }                                                                 \
 
 // Определение мощности в зависимости от типа пути
-#define engine_power_change_AC_DC(name)                    \
-is_ERA_ds(name##_power, name##_AC_power, name##_DC_power)  \
 
-#define engine_power_change_AAC_DC(name)                        \
-is_ERAA_ds(name##_2_power, name##_15AC_power, name##_DC_power)  \
-is_ERA_ds(name##_power, name##_AC_power, name##_2_power)        \
+#define engine_0_power(name)                                   \
+switch (FEAT_TRAINS, SELF, name##_power, vehicle_is_in_depot)  \
+{ 1: return 0; return NO_POWER; }                              \
 
-#define engine_power_change_AAC_DDC(name)                      \
-is_ERD_ds(name##_3_power, name##_DC_power, name##_15DC_power)  \
-is_ERAA_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
-is_ERA_ds(name##_power, name##_AC_power, name##_2_power)       \
+#define engine_0_power_alt(name, basename)                     \
+switch (FEAT_TRAINS, SELF, name##_power, vehicle_is_in_depot)  \
+{ 1: return 0; basename; }                                     \
+
+#define engine_power(name, power)            \
+switch (FEAT_TRAINS, SELF, name##_power, 0)  \
+{ return get_power_in_cb(power); }           \
+
+#define engine_power_change_DDC(name)                       \
+is_ER15DC_ds(name##_2_power, name##_15DC_power, return 0)   \
+is_ER3DC_ds(name##_power, name##_DC_power, name##_2_power)  \
+
+#define engine_power_change_AC_DC(name)                      \
+is_ER3DC_ds(name##_2_power, name##_DC_power, return 0)       \
+is_ER25AC_ds(name##_power, name##_AC_power, name##_2_power)  \
+
+#define engine_power_change_AAC_DC(name)                         \
+is_ER3DC_ds(name##_3_power, name##_DC_power, return 0)           \
+is_ER15AC_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
+is_ER25AC_ds(name##_power, name##_AC_power, name##_2_power)      \
+
+#define engine_power_change_AAC_DDC(name)                        \
+is_ER15DC_ds(name##_4_power, name##_15DC_power, return 0)        \
+is_ER3DC_ds(name##_3_power, name##_DC_power, name##_4_power)     \
+is_ER15AC_ds(name##_2_power, name##_15AC_power, name##_3_power)  \
+is_ER25AC_ds(name##_power, name##_AC_power, name##_2_power)      \
 
 // Определение ТЕ с изменением по году постройки
 #define engine_TE_change_build_after(name, TE, new_TE, year)                        \
@@ -700,6 +734,13 @@ switch (FEAT_TRAINS, SELF, name##_refit_cost,                                   
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
 { 1: return cost;                                                                  \
   2: return cost2;                                                                 \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+
+#define engine_refit_cost_for_extra_livery_change(name, num, cost, base_name)      \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) == (num << 8)) * 2 + ((cargo_subtype == num)))  \
+{ 0..1: base_name;                                                                 \
+     2: return cost;                                                               \
      return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
 // Определение длины с изменением по году постройки
@@ -793,5 +834,46 @@ switch (FEAT_TRAINS, PARENT, name##_create_effect,            \
   (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
 { 1: name##effects;                                           \
      return disable_create_effect(); }                        \
+
+// emu_s support
+#define any_emu_s()               \
+ ((vehicle_type_id == emu_sd) ||  \
+  (vehicle_type_id == emu_sr) ||  \
+  (vehicle_type_id == emu_sm) ||  \
+  (vehicle_type_id == emu_sv) )   \
+
+#define no_emu_s_inR4()          \
+ (!((LOAD_TEMP(4) == emu_sd) ||  \
+    (LOAD_TEMP(4) == emu_sr) ||  \
+    (LOAD_TEMP(4) == emu_sm) ||  \
+    (LOAD_TEMP(4) == emu_sv)))   \
+
+#define emu_s_count()     \
+ (count_veh_id(emu_sd) +  \
+  count_veh_id(emu_sr) +  \
+  count_veh_id(emu_sm) +  \
+  count_veh_id(emu_sv))   \
+
+#define engine_power_MU_emu_s(name, power)               \
+switch (FEAT_TRAINS, PARENT, name##_power, any_emu_s())  \
+{ 1: return get_power_in_cb(power);                      \
+     return 0; }                                         \
+
+#define engine_capacity_MU_emu_s(name, capacity)                  \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_emu_s())  \
+{ 1: return capacity;                                             \
+     return 0; }                                                  \
+
+#define RC_head_check_emu_s_new(name)                            \
+switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
+[  STORE_TEMP(0, 0),                                             \
+   STORE_TEMP(0, 1),                                             \
+   STORE_TEMP(0, 3),                                             \
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
+{ all_running_cost_factor; }                                     \
+switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
+  any_emu_s())                                                   \
+{ 1: all_running_cost_factor;                                    \
+     name##_check2_running_cost_factor; }                        \
 
 // end

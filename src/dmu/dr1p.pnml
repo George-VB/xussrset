@@ -1,5 +1,42 @@
 ﻿// dr1p
 
+#define PROP_dr1p_h_num  2
+#define PROP_dr1p_n_num  0
+#define PROP_dr1p_m_num  0
+#define PROP_dr1p_c_num  5
+
+#define PROP_dr1p_h_CF  22
+#define PROP_dr1p_h_RC  176
+#define PROP_dr1p_h_SD  120
+#define PROP_dr1p_h_WT  53.5
+#define PROP_dr1p_h_TE  85.0
+#define PROP_dr1p_h_PR  800
+#define PROP_dr1p_h_CC  68
+
+#define PROP_dr1p_n_CF  0
+#define PROP_dr1p_n_RC  0
+#define PROP_dr1p_n_SD  120
+#define PROP_dr1p_n_WT  0
+#define PROP_dr1p_n_TE  0
+#define PROP_dr1p_n_PR  0
+#define PROP_dr1p_n_CC  0
+
+#define PROP_dr1p_m_CF  0
+#define PROP_dr1p_m_RC  0
+#define PROP_dr1p_m_SD  120
+#define PROP_dr1p_m_WT  0
+#define PROP_dr1p_m_TE  0
+#define PROP_dr1p_m_PR  0
+#define PROP_dr1p_m_CC  0
+
+#define PROP_dr1p_c_CF  6
+#define PROP_dr1p_c_RC  66
+#define PROP_dr1p_c_SD  120
+#define PROP_dr1p_c_WT  34.5
+#define PROP_dr1p_c_TE  0
+#define PROP_dr1p_c_PR  0
+#define PROP_dr1p_c_CC  124
+
 #define IMAGEFILE  "src/dmu/dr1p_h.png"
 purchase_sprites(dr1p_h, 0, 0)
 MU_head_middle_sprites(15, dr1p_h_mu, 32, 40)
@@ -8,6 +45,7 @@ MU_head_middle_sprites(15, dr1p_h_mu, 32, 40)
 purchase_sprites(dr1p_c, 0, 0)
 MU_car_sprites(15, dr1p_c_mu, 32, 40)
 #undef IMAGEFILE
+map_sprites(dr1p_purchase_sprites, dr1p_h_purchase_sprites)
 
 MU_head_middle_direction_template(dr1p_h, dr1p_h)
 engine_direction_template2m(dr1p_h, dr1p_c, )
@@ -117,9 +155,9 @@ switch (FEAT_TRAINS, PARENT, dr1p_h_create_effect0,
 }
 
 engine_effects_MU(dr1p_h, _create_effect0, dr1p_h)
-engine_power_MU(dr1p_h, 800, dr1p_h)
-engine_capacity_MU(dr1p_h, 68, dr1p_h)
-engine_capacity_MU(dr1p_c, 124, dr1p_h)
+engine_power_MU(dr1p_h, PROP_dr1p_h_PR, dr1p_h)
+engine_capacity_MU(dr1p_h, PROP_dr1p_h_CC, dr1p_h)
+engine_capacity_MU(dr1p_c, PROP_dr1p_c_CC, dr1p_h)
 
 RC_head_check_new(dr1p_h, dr1p_h)
 switch (FEAT_TRAINS, SELF, dr1p_h_running_cost_factor,
@@ -130,10 +168,10 @@ switch (FEAT_TRAINS, SELF, dr1p_h_running_cost_factor,
    STORE_TEMP(25, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(53, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 9, 8)])   // Максимальная масса
-{ dr1p_h_check_running_cost_factor; }  // 176
+   STORE_TEMP(PROP_dr1p_h_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_dr1p_h_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_dr1p_h_WT + PROP_dr1p_c_CC / 16), 8)])  // Максимальная масса
+{ dr1p_h_check_running_cost_factor; }                          // 176
 
 RC_head_check_new(dr1p_c, dr1p_h)
 switch (FEAT_TRAINS, SELF, dr1p_c_running_cost_factor,
@@ -144,70 +182,81 @@ switch (FEAT_TRAINS, SELF, dr1p_c_running_cost_factor,
    STORE_TEMP(7, 4),   // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(124, 6),                 // Скорость
-   STORE_TEMP(35, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 16, 8)])  // Максимальная масса
-{ dr1p_c_check_running_cost_factor; }  // 48
+   STORE_TEMP(PROP_dr1p_c_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_dr1p_c_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_dr1p_c_WT + PROP_dr1p_c_CC / 16), 8)])  // Максимальная масса
+{ dr1p_c_check_running_cost_factor; }                          // 48
 
+name_in_group_subgroup(dr1p_h, string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_NAME_DR1P)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_LONGNAME_DR1P_H)),
+                               string(STR_NAME_DR1P))
+name_in_group_subgroup(dr1p_c, string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_NAME_DR1P)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_LONGNAME_DR1P_C)),
+                               string(STR_NAME_DR1P))
 hint_MU_with_model2(dr1p_h,
-     calc_loading(68 / (2 * DOUBLE_DOOR)),
+     calc_loading(PROP_dr1p_h_CC / (2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H_WITH_SUBTYPE, 63, 320,
      STR_SECTIONS_DMU_3_7_M2,
      1970, 1976,
      fact_rigacw())
 hint_MU_with_model2(dr1p_c,
-     calc_loading(124 / (2 * DOUBLE_DOOR)),
+     calc_loading(PROP_dr1p_c_CC / (2 * DOUBLE_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, 63, 321,
      STR_SECTIONS_DMU_3_7_M2,
      1970, 1976,
      fact_rigacw())
+map_sprites(dr1p_additional_text, dr1p_h_additional_text)
 
 item (FEAT_TRAINS, dr1p_h, 210) {
   property {
     name: string(STR_NAME_DR1P);
-    vehicle_dates(1970, 1976, 25, 10, 8, 22)
-    vehicle_dmu(800, 53.5, 85.0, 68, 2 * DOUBLE_DOOR)
+    vehicle_dates(1970, 1976, 25, 10, 8, PROP_dr1p_h_CF)
+    vehicle_dmu(PROP_dr1p_h_PR, PROP_dr1p_h_WT, PROP_dr1p_h_TE, PROP_dr1p_h_CC, 2 * DOUBLE_DOOR)
+    vehicle_group(dr1_group)
   }
   graphics {
-                default: dr1p_h_sprites;
-               purchase: dr1p_h_purchase_sprites;
-       cargo_age_period: return 60;
-    running_cost_factor: dr1p_h_running_cost_factor;
+    purchase_menu(PROP_dr1p_h_CF, PROP_dr1p_h_RC, PROP_dr1p_h_SD, PROP_dr1p_h_WT, PROP_dr1p_h_TE, PROP_dr1p_h_PR, PROP_dr1p_h_CC)
+        additional_text: dr1p_h_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: dr1p_can_attach_wagon;
-             start_stop: dr1p_h_start_stop;
-          create_effect: dr1p_h_create_effect;
-                  speed: speed_after25_120to110;
-         purchase_speed: return 120;
-                  power: dr1p_h_power;
+       cargo_age_period: return 60;
          cargo_capacity: dr1p_h_cargo_capacity;
          colour_mapping: any_cc_colour;
-        additional_text: dr1p_h_additional_text;
+          create_effect: dr1p_h_create_effect;
+                default: dr1p_h_sprites;
+                   name: dr1p_h_name;
+                  power: dr1p_h_power;
+               purchase: dr1p_h_purchase_sprites;
+    running_cost_factor: dr1p_h_running_cost_factor;
+                  speed: speed_after25_120to110;
+             start_stop: dr1p_h_start_stop;
   }
 }
 
 item (FEAT_TRAINS, dr1p_c, 211) {
   property {
     name: string(STR_NAME_DR1P);
-    vehicle_dates(1970, 1976, 25, 10, 8, 6)
-    vehicle_dmu_c(34.5, 124, 2 * DOUBLE_DOOR)
+    vehicle_dates(1970, 1976, 25, 10, 8, PROP_dr1p_c_CF)
+    vehicle_dmu_c(PROP_dr1p_c_WT, PROP_dr1p_c_CC, 2 * DOUBLE_DOOR)
+    vehicle_group_mu(dr1p_h)
   }
   graphics {
-                default: dr1p_c_sprites;
-               purchase: dr1p_c_purchase_sprites;
-       cargo_age_period: return 60;
-    running_cost_factor: dr1p_c_running_cost_factor;
-       articulated_part: articulated_part_dummy7;
-                  speed: speed_after25_120to110;
-         purchase_speed: return 120;
-                  power: return 0;
-         cargo_capacity: dr1p_c_cargo_capacity;
-       can_attach_wagon: dr1p_can_attach_wagon;
-             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
-         colour_mapping: any_cc_colour;
+    purchase_menu(PROP_dr1p_c_CF, PROP_dr1p_c_RC, PROP_dr1p_c_SD, PROP_dr1p_c_WT, PROP_dr1p_c_TE, PROP_dr1p_c_PR, PROP_dr1p_c_CC)
         additional_text: dr1p_c_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: dr1p_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: dr1p_c_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: dr1p_c_sprites;
+                   name: dr1p_c_name;
+                  power: return 0;
+               purchase: dr1p_c_purchase_sprites;
+    running_cost_factor: dr1p_c_running_cost_factor;
+                  speed: speed_after25_120to110;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
   }
 }
 

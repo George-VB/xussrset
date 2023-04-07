@@ -1,0 +1,89 @@
+// steam_su_162
+
+#define PROP_steam_su_162_CF  14
+#define PROP_steam_su_162_RC  316
+#define PROP_steam_su_162_SD  115
+#define PROP_steam_su_162_WT  85+72
+#define PROP_steam_su_162_TE  129.0
+#define PROP_steam_su_162_PR  1476
+#define PROP_steam_su_162_CC  0
+
+#define IMAGEFILE  "src/steam/su-a1932.png"
+purchase_sprites(steam_su_162, 0, 0)
+steam_sprites(8, steam_su_162_engine, 32, 40)
+tender_sprites(5, steam_su_162_tender, 447, 40)
+#undef IMAGEFILE
+steamer_direction_template(steam_su_162, _sprites_start)
+long_vehicle(steam_su_162)
+
+switch (FEAT_TRAINS, SELF, steam_su_162_running_cost_factor,
+[  STORE_TEMP(181, 0),  // Моторы
+   STORE_TEMP(25, 1),   // Бригада
+   STORE_TEMP(64, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(45, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_steam_su_162_SD + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_steam_su_162_WT, 7),                                // Тара
+   STORE_TEMP(PROP_steam_su_162_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                           // 316
+
+engine_tender(steam_su_162)
+engine_tender_length(steam_su_162, 7, 1, 4, 1)
+engine_steam_1_effect(steam_su_162_create_effect, -3, 11)
+engine_speed_change_after(steam_su_162, PROP_steam_su_162_SD,
+                                        130, 1936)
+engine_penalise_speed0(steam_su_162)
+name_in_group(steam_su_162, string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_NAME_SU_162)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_LONGNAME_SU_162)))
+hint_engine_4fact(steam_su_162_b1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1932, 1936,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY),
+     fact_kharkiv())
+hint_engine_4fact_comment(steam_su_162_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1932, 1936,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA_BRYANSK),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY),
+     fact_kharkiv(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 130, 1936))
+hint_change_after(steam_su_162, 1936)
+
+item (FEAT_TRAINS, steam_su_162, 768) {
+  property {
+    name: string(STR_NAME_SU_162);
+    vehicle_dates(1932, 1936, 40, 10, 7, PROP_steam_su_162_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_su_162_PR, PROP_steam_su_162_WT, PROP_steam_su_162_TE)
+    vehicle_group(steam_s_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_su_162_CF, PROP_steam_su_162_RC, PROP_steam_su_162_SD, PROP_steam_su_162_WT, PROP_steam_su_162_TE, PROP_steam_su_162_PR, PROP_steam_su_162_CC)
+         additional_text: steam_su_162_additional_text;
+        articulated_part: steam_su_162_articulated_part;
+    bitmask_vehicle_info: steam_su_162_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_steam_su_162_CC;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+          colour_mapping: steam_pass_colour_mapping;
+           create_effect: steam_su_162_create_effect;
+                 default: steam_su_162_sprites;
+                  length: steam_su_162_length;
+                    name: steam_su_162_name;
+                purchase: steam_su_162_purchase_sprites;
+     running_cost_factor: steam_su_162_running_cost_factor;
+                   speed: steam_su_162_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_su_162, STR_LONGNAME_SU_162)
+models_default_cargo_template(steam_su_162)
+allow_steamer(steam_su_162)

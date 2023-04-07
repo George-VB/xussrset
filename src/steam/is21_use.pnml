@@ -1,5 +1,17 @@
 ﻿// is21 uses is20
 
+#define PROP_is21_CF  32
+#define PROP_is21_RC  739
+#define PROP_is21_SD  115
+#define PROP_is21_WT  133+127
+#define PROP_is21_TE  196.0
+#define PROP_is21_PR  3200
+#define PROP_is21_CC  0
+
+#define IMAGEFILE  "src/steam/is.png"
+purchase_sprites(is21, 110, 0)
+#undef IMAGEFILE
+
 switch (FEAT_TRAINS, SELF, is21_running_cost_factor,
 [  STORE_TEMP(421, 0),  // Моторы
    STORE_TEMP(59, 1),   // Бригада
@@ -8,14 +20,16 @@ switch (FEAT_TRAINS, SELF, is21_running_cost_factor,
    STORE_TEMP(103, 4),  // ТО
    STORE_TEMP(7, 5),    // Сертификация
 
-   STORE_TEMP(115, 6),            // Скорость
-   STORE_TEMP(133 + 127, 7),      // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+   STORE_TEMP(PROP_is21_SD, 6),   // Скорость
+   STORE_TEMP(PROP_is21_WT, 7),   // Тара
+   STORE_TEMP(PROP_is21_WT, 8)])  // Максимальная масса
 { all_running_cost_factor; }      // 739
 
 engine_tender(is21)
 engine_speed(is21, 115)
 engine_penalise_speed0(is21)
+name_in_group(is21, string(STR_NAME_IN_GROUP, string(STR_NAME_IS_SERIES), string(STR_NAME_IS21)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_IS_SERIES), string(STR_LONGNAME_IS21)))
 hint_engine(is21,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
@@ -25,26 +39,28 @@ hint_engine(is21,
 item (FEAT_TRAINS, is21, 293) {
   property {
     name: string(STR_NAME_IS21);
-    vehicle_dates(1941, 1942, 30, 10, 8, 32)
+    vehicle_dates(1941, 1942, 30, 10, 8, PROP_is21_CF)
     vehicle_pass()
-    vehicle_steam(3200, 133+127, 196.0)
+    vehicle_steam(PROP_is21_PR, PROP_is21_WT, PROP_is21_TE)
+    vehicle_group(steam_is_group)
   }
   graphics {
-                 default: is20_sprites;
-                purchase: is20_purchase_sprites;
+    purchase_menu(PROP_is21_CF, PROP_is21_RC, PROP_is21_SD, PROP_is21_WT, PROP_is21_TE, PROP_is21_PR, PROP_is21_CC)
+         additional_text: is21_additional_text;
         articulated_part: is21_articulated_part;
-                  length: is20_length;
-        can_attach_wagon: any_can_attach_wagon;
-              start_stop: any_start_stop;
-                   speed: is21_speed;
     bitmask_vehicle_info: is21_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return 0;
       cargo_subtype_text: steam_pass_red_arrow_cargo_subtype_text;
-           create_effect: is20_create_effect;
-     running_cost_factor: is21_running_cost_factor;
           colour_mapping: steam_pass_red_arrow_colour_mapping;
-          purchase_speed: return 115;
-         additional_text: is21_additional_text;
+           create_effect: is20_create_effect;
+                 default: is20_6p_sprites;
+                  length: is20_length;
+                    name: is21_name;
+                purchase: is20_6p_purchase_sprites;
+     running_cost_factor: is21_running_cost_factor;
+                   speed: is21_speed;
+              start_stop: any_start_stop;
   }
 }
 

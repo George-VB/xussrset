@@ -722,89 +722,89 @@ switch (FEAT_TRAINS, SELF, name##_sprites_right,        \
      name##_traveling_sprites_right; }                  \
 
 // 2-хсекционный электровоз с 3 пантографами и дизелем
-#define electric2_3d_sprites(n, name, x, y)                                            \
-/* Diesel */                                                                           \
-spriteset (name##_loading_sprites_left_down, IMAGEFILE)                                \
-{ s##n##_template(x, y+201, 0) }                                                       \
-spriteset (name##_traveling_sprites_left_down, IMAGEFILE)                              \
-{ s##n##_template(x, y+268, 0) }                                                       \
-spriteset (name##_notpowered_sprites_left_down, IMAGEFILE)                             \
-{ s##n##_template(x+415, y, 0) }                                                       \
-spriteset (name##_notpowered_sprites_right_down, IMAGEFILE)                            \
-{ s##n##_r_template(x+415, y, 0) }                                                     \
-spritegroup name##_normal_sprites_1st_left_None                                        \
-{ loading: name##_loading_sprites_left_down;                                           \
-   loaded: name##_traveling_sprites_left_down; }                                       \
-switch (FEAT_TRAINS, SELF, name##_sprites_left_None,                                   \
-  (position_in_consist == 0) * (!vehicle_is_in_depot))                                 \
-{ 1: name##_normal_sprites_1st_left_None;                                              \
-     name##_notpowered_sprites_left_down; }                                            \
-switch (FEAT_TRAINS, SELF, name##_sprites_right_None, 0)                               \
-{ name##_notpowered_sprites_right_down; }                                              \
-/* DC */                                                                               \
-spriteset (name##_notpowered_sprites_left_all_up, IMAGEFILE)                           \
-{ s##n##_template(x, y, 0) }                                                           \
-spriteset (name##_loading_sprites_left_all_up, IMAGEFILE)                              \
-{ s##n##_template(x, y+67, 0) }                                                        \
-spriteset (name##_traveling_sprites_left_2_up, IMAGEFILE)                              \
-{ s##n##_template(x, y+134, 0) }                                                       \
-spriteset (name##_notpowered_sprites_left_2_up, IMAGEFILE)                             \
-{ s##n##_template(x+415, y+134, 0) }                                                   \
-spriteset (name##_notpowered_sprites_right_all_up, IMAGEFILE)                          \
-{ s##n##_r_template(x, y, 0) }                                                         \
-spriteset (name##_notpowered_sprites_right_1_up, IMAGEFILE)                            \
-{ s##n##_r_template(x+415, y+67, 0) }                                                  \
-spritegroup name##_normal_sprites_1st_left_DC                                          \
-{ loading: name##_loading_sprites_left_all_up;                                         \
-   loaded: name##_traveling_sprites_left_2_up; }                                       \
-switch (FEAT_TRAINS, SELF, name##_sprites_left_DC,                                     \
-  ((LOAD_TEMP(1) > threshold_of_speed()) + (position_in_consist > 0) * 2 + 1) *        \
-  (!vehicle_is_in_depot))                                                              \
-{ 1..2: name##_normal_sprites_1st_left_DC;                                             \
-     3: name##_notpowered_sprites_left_all_up;                                         \
-     4: name##_notpowered_sprites_left_2_up;                                           \
-     name##_notpowered_sprites_left_down; }                                            \
-switch (FEAT_TRAINS, SELF, name##_sprites_right_DC,                                    \
-  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) * (!vehicle_is_in_depot))                \
-{ 1: name##_notpowered_sprites_right_all_up;                                           \
-  2: name##_notpowered_sprites_right_1_up;                                             \
-     name##_notpowered_sprites_right_down; }                                           \
-/* AC */                                                                               \
-spriteset (name##_loading_sprites_left_AC, IMAGEFILE)                                  \
-{ s##n##_template(x+415, y+201, 0) }                                                   \
-spriteset (name##_notpowered_sprites_right_AC, IMAGEFILE)                              \
-{ s##n##_r_template(x+415, y+268, 0) }                                                 \
-spritegroup name##_normal_sprites_1st_left_AC                                          \
-{ loading: name##_loading_sprites_left_AC;                                             \
-   loaded: name##_traveling_sprites_left_down; }                                       \
-switch (FEAT_TRAINS, SELF, name##_sprites_left_AC,                                     \
-  (position_in_consist == 0) * (!vehicle_is_in_depot))                                 \
-{ 1: name##_normal_sprites_1st_left_AC;                                                \
-     name##_notpowered_sprites_left_down; }                                            \
-switch (FEAT_TRAINS, SELF, name##_sprites_right_AC, vehicle_is_in_depot)               \
-{ 0: name##_notpowered_sprites_right_AC;                                               \
-     name##_notpowered_sprites_right_down; }                                           \
-/* Select + random */                                                                  \
-is_ERD_ds(name##_sprites_left2d, name##_sprites_left_DC, name##_sprites_left_None)     \
-is_ERA_ds(name##_sprites_left2, name##_sprites_left_AC, name##_sprites_left2d)         \
-is_ERD_ds(name##_sprites_right2d, name##_sprites_right_DC, name##_sprites_right_None)  \
-is_ERA_ds(name##_sprites_right2, name##_sprites_right_AC, name##_sprites_right2d)      \
-random_switch (FEAT_TRAINS, SELF, name##_sprites_left1,                                \
-bitmask(TRIGGER_VEHICLE_SERVICE))                                                      \
-{ 1: name##_sprites_left2;                                                             \
-  1: name##_sprites_left2; }                                                           \
-random_switch (FEAT_TRAINS, SELF, name##_sprites_left,                                 \
-bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))     \
-{ independent: name##_sprites_left1;                                                   \
-          128: name##_sprites_left1; }                                                 \
-random_switch (FEAT_TRAINS, SELF, name##_sprites_right1,                               \
-bitmask(TRIGGER_VEHICLE_SERVICE))                                                      \
-{ 1: name##_sprites_right2;                                                            \
-  1: name##_sprites_right2; }                                                          \
-random_switch (FEAT_TRAINS, SELF, name##_sprites_right,                                \
-bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))     \
-{ independent: name##_sprites_right1;                                                  \
-          128: name##_sprites_right1; }                                                \
+#define electric2_3d_sprites(n, name, x, y)                                              \
+/* Diesel */                                                                             \
+spriteset (name##_loading_sprites_left_down, IMAGEFILE)                                  \
+{ s##n##_template(x, y+201, 0) }                                                         \
+spriteset (name##_traveling_sprites_left_down, IMAGEFILE)                                \
+{ s##n##_template(x, y+268, 0) }                                                         \
+spriteset (name##_notpowered_sprites_left_down, IMAGEFILE)                               \
+{ s##n##_template(x+415, y, 0) }                                                         \
+spriteset (name##_notpowered_sprites_right_down, IMAGEFILE)                              \
+{ s##n##_r_template(x+415, y, 0) }                                                       \
+spritegroup name##_normal_sprites_1st_left_None                                          \
+{ loading: name##_loading_sprites_left_down;                                             \
+   loaded: name##_traveling_sprites_left_down; }                                         \
+switch (FEAT_TRAINS, SELF, name##_sprites_left_None,                                     \
+  (position_in_consist == 0) * (!vehicle_is_in_depot))                                   \
+{ 1: name##_normal_sprites_1st_left_None;                                                \
+     name##_notpowered_sprites_left_down; }                                              \
+switch (FEAT_TRAINS, SELF, name##_sprites_right_None, 0)                                 \
+{ name##_notpowered_sprites_right_down; }                                                \
+/* DC */                                                                                 \
+spriteset (name##_notpowered_sprites_left_all_up, IMAGEFILE)                             \
+{ s##n##_template(x, y, 0) }                                                             \
+spriteset (name##_loading_sprites_left_all_up, IMAGEFILE)                                \
+{ s##n##_template(x, y+67, 0) }                                                          \
+spriteset (name##_traveling_sprites_left_2_up, IMAGEFILE)                                \
+{ s##n##_template(x, y+134, 0) }                                                         \
+spriteset (name##_notpowered_sprites_left_2_up, IMAGEFILE)                               \
+{ s##n##_template(x+415, y+134, 0) }                                                     \
+spriteset (name##_notpowered_sprites_right_all_up, IMAGEFILE)                            \
+{ s##n##_r_template(x, y, 0) }                                                           \
+spriteset (name##_notpowered_sprites_right_1_up, IMAGEFILE)                              \
+{ s##n##_r_template(x+415, y+67, 0) }                                                    \
+spritegroup name##_normal_sprites_1st_left_DC                                            \
+{ loading: name##_loading_sprites_left_all_up;                                           \
+   loaded: name##_traveling_sprites_left_2_up; }                                         \
+switch (FEAT_TRAINS, SELF, name##_sprites_left_DC,                                       \
+  ((LOAD_TEMP(1) > threshold_of_speed()) + (position_in_consist > 0) * 2 + 1) *          \
+  (!vehicle_is_in_depot))                                                                \
+{ 1..2: name##_normal_sprites_1st_left_DC;                                               \
+     3: name##_notpowered_sprites_left_all_up;                                           \
+     4: name##_notpowered_sprites_left_2_up;                                             \
+     name##_notpowered_sprites_left_down; }                                              \
+switch (FEAT_TRAINS, SELF, name##_sprites_right_DC,                                      \
+  ((LOAD_TEMP(1) > threshold_of_speed()) + 1) * (!vehicle_is_in_depot))                  \
+{ 1: name##_notpowered_sprites_right_all_up;                                             \
+  2: name##_notpowered_sprites_right_1_up;                                               \
+     name##_notpowered_sprites_right_down; }                                             \
+/* AC */                                                                                 \
+spriteset (name##_loading_sprites_left_AC, IMAGEFILE)                                    \
+{ s##n##_template(x+415, y+201, 0) }                                                     \
+spriteset (name##_notpowered_sprites_right_AC, IMAGEFILE)                                \
+{ s##n##_r_template(x+415, y+268, 0) }                                                   \
+spritegroup name##_normal_sprites_1st_left_AC                                            \
+{ loading: name##_loading_sprites_left_AC;                                               \
+   loaded: name##_traveling_sprites_left_down; }                                         \
+switch (FEAT_TRAINS, SELF, name##_sprites_left_AC,                                       \
+  (position_in_consist == 0) * (!vehicle_is_in_depot))                                   \
+{ 1: name##_normal_sprites_1st_left_AC;                                                  \
+     name##_notpowered_sprites_left_down; }                                              \
+switch (FEAT_TRAINS, SELF, name##_sprites_right_AC, vehicle_is_in_depot)                 \
+{ 0: name##_notpowered_sprites_right_AC;                                                 \
+     name##_notpowered_sprites_right_down; }                                             \
+/* Select + random */                                                                    \
+is_ER3DC_ds(name##_sprites_left2d, name##_sprites_left_DC, name##_sprites_left_None)     \
+is_ER25AC_ds(name##_sprites_left2, name##_sprites_left_AC, name##_sprites_left2d)        \
+is_ER3DC_ds(name##_sprites_right2d, name##_sprites_right_DC, name##_sprites_right_None)  \
+is_ER25AC_ds(name##_sprites_right2, name##_sprites_right_AC, name##_sprites_right2d)     \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_left1,                                  \
+bitmask(TRIGGER_VEHICLE_SERVICE))                                                        \
+{ 1: name##_sprites_left2;                                                               \
+  1: name##_sprites_left2; }                                                             \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_left,                                   \
+bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))       \
+{ independent: name##_sprites_left1;                                                     \
+          128: name##_sprites_left1; }                                                   \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_right1,                                 \
+bitmask(TRIGGER_VEHICLE_SERVICE))                                                        \
+{ 1: name##_sprites_right2;                                                              \
+  1: name##_sprites_right2; }                                                            \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_right,                                  \
+bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))       \
+{ independent: name##_sprites_right1;                                                    \
+          128: name##_sprites_right1; }                                                  \
 
 // Вагоны пассажирские. 2 вида (погрузка/в пути) и отдельный вид последнего вагона
 #define pass_wagon_sprites(n, name, x, y)                 \

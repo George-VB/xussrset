@@ -1,0 +1,77 @@
+// steam_dk_9 uses steam_dk_2
+
+#define PROP_steam_dk_9_CF  4
+#define PROP_steam_dk_9_RC  61
+#define PROP_steam_dk_9_SD  75
+#define PROP_steam_dk_9_WT  31+20
+#define PROP_steam_dk_9_TE  40.0
+#define PROP_steam_dk_9_PR  500
+#define PROP_steam_dk_9_CC  0
+
+#define IMAGEFILE  "src/steam/dk-a1875.png"
+purchase_sprites(steam_dk_9, 0, 0)
+steam_sprites0(5, steam_dk_9_engine, 32,  40)
+#undef IMAGEFILE
+switch (FEAT_TRAINS, SELF, steam_dk_9_tender_sprites_start, 0)
+{  steam_dk_2_tender_sprites_start;  }
+
+steamer_direction_template(steam_dk_9, _sprites_start)
+long_vehicle(steam_dk_9)
+
+switch (FEAT_TRAINS, SELF, steam_dk_9_running_cost_factor,
+[  STORE_TEMP(30, 0),  // Моторы
+   STORE_TEMP(4, 1),   // Бригада
+   STORE_TEMP(14, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(8, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_steam_dk_9_SD, 6),   // Скорость
+   STORE_TEMP(PROP_steam_dk_9_WT, 7),   // Тара
+   STORE_TEMP(PROP_steam_dk_9_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 61
+
+engine_tender(steam_dk_9)
+engine_tender_length(steam_dk_9, 4, 1, 2, 1)
+engine_steam_1_effect(steam_dk_9_create_effect, -3, 10)
+engine_speed(steam_dk_9, PROP_steam_dk_9_SD)
+engine_penalise_speed0(steam_dk_9)
+name_in_group(steam_dk_9, string(STR_NAME_IN_GROUP, string(STR_NAME_D_SERIES), string(STR_NAME_DK_9)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_D_SERIES), string(STR_LONGNAME_DK_9)))
+hint_engine(steam_dk_9,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1875, 1880,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, steam_dk_9, 763) {
+  property {
+    name: string(STR_NAME_DK_9);
+    vehicle_dates(1875, 1880, 35, 10, 4, PROP_steam_dk_9_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_dk_9_PR, PROP_steam_dk_9_WT, PROP_steam_dk_9_TE)
+    vehicle_group(steam_d_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_dk_9_CF, PROP_steam_dk_9_RC, PROP_steam_dk_9_SD, PROP_steam_dk_9_WT, PROP_steam_dk_9_TE, PROP_steam_dk_9_PR, PROP_steam_dk_9_CC)
+         additional_text: steam_dk_9_additional_text;
+        articulated_part: steam_dk_9_articulated_part;
+    bitmask_vehicle_info: steam_dk_9_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_steam_dk_9_CC;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+          colour_mapping: steam_pass_colour_mapping;
+           create_effect: steam_dk_9_create_effect;
+                 default: steam_dk_9_sprites;
+                  length: steam_dk_9_length;
+                    name: steam_dk_9_name;
+                purchase: steam_dk_9_purchase_sprites;
+     running_cost_factor: steam_dk_9_running_cost_factor;
+                   speed: steam_dk_9_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_dk_9, STR_LONGNAME_DK_9)
+models_default_cargo_template(steam_dk_9)
+allow_steamer(steam_dk_9)

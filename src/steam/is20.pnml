@@ -1,76 +1,81 @@
 ﻿// is20
 
+#define PROP_is20_CF  29
+#define PROP_is20_RC  664
+#define PROP_is20_SD  110
+#define PROP_is20_WT  133+85
+#define PROP_is20_TE  196.0
+#define PROP_is20_PR  3120
+#define PROP_is20_CC  0
+
 #define IMAGEFILE  "src/steam/is.png"
-purchase_sprites(is20_v1, 0, 0)
-purchase_sprites(is20_v2, 110, 0)
-purchase_sprites_select(is20, 1936)
+purchase_sprites(is20, 0, 0)
 steam_sprites(10, is20_engine, 32, 40)
-tender_sprites(6, is20_tender_b1936, 447, 40)   // t4o
-tender_sprites(7, is20_tender_a1936, 447, 107)  // t6p
+tender_sprites(6, is20_tender, 447, 40)  // t4o
 #undef IMAGEFILE
 
-engine_build_year_template(is20_tender, 1936, start, )
 steamer_direction_template(is20, _sprites_start)
 long_vehicle(is20)
 
 switch (FEAT_TRAINS, SELF, is20_running_cost_factor,
-[  STORE_TEMP(378 + 39 * (build_year >= 1936), 0),  // Моторы
-   STORE_TEMP(53  +  4 * (build_year >= 1936), 1),  // Бригада
-   STORE_TEMP(133 + 10 * (build_year >= 1936), 2),  // Износ
-   STORE_TEMP(0, 3),                                // Сопровождение
-   STORE_TEMP(93  +  7 * (build_year >= 1936), 4),  // ТО
-   STORE_TEMP(7, 5),                                // Сертификация
+[  STORE_TEMP(378, 0),  // Моторы
+   STORE_TEMP(53, 1),   // Бригада
+   STORE_TEMP(133, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(93, 4),   // ТО
+   STORE_TEMP(7, 5),    // Сертификация
 
-   STORE_TEMP(115, 6),                              // Скорость
-   STORE_TEMP(218 + 42 * (build_year >= 1936), 7),  // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                    // Максимальная масса
-{ all_running_cost_factor; }                        // 664 + 50
+   STORE_TEMP(PROP_is20_SD, 6),   // Скорость
+   STORE_TEMP(PROP_is20_WT, 7),   // Тара
+   STORE_TEMP(PROP_is20_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 664
 
 engine_tender(is20)
-engine_tender_length_change_build_after(is20, 8, 2, 5, 1,
-                                              8, 2, 6, 1, 1936)
+engine_tender_length(is20, 8, 2, 5, 1)
 engine_steam_1_effect(is20_create_effect, -2, 14)
-engine_weight_change_build_after(is20, 133+85,
-                                       133+127, 1936)
-engine_TE_change_build_after(is20, get_tec_int(196.0, 133+85),
-                                   get_tec_int(196.0, 133+127), 1936)
-engine_cost_change_build_after(is20, 29,
-                                     31, 1936)
-engine_speed_change_after(is20, 110,
+engine_speed_change_after(is20, PROP_is20_SD,
                                 115, 1936)
 engine_penalise_speed0(is20)
-hint_engine(is20,
+name_in_group(is20, string(STR_NAME_IN_GROUP, string(STR_NAME_IS_SERIES), string(STR_NAME_IS20)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_IS_SERIES), string(STR_LONGNAME_IS20)))
+hint_engine(is20_b1936,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
-     1932, 1941,
-     fact_lugansk())
+     1932, 1936,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+hint_engine_comment(is20_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1932, 1936,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA) ,
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 115, 1936))
+hint_change_after(is20, 1936)
 
 item (FEAT_TRAINS, is20, 292) {
   property {
     name: string(STR_NAME_IS20);
-    vehicle_dates(1932, 1941, 30, 10, 8, 29)
+    vehicle_dates(1932, 1936, 30, 10, 8, PROP_is20_CF)
     vehicle_pass()
-    vehicle_steam(3120, 133+85, 196.0)
+    vehicle_steam(PROP_is20_PR, PROP_is20_WT, PROP_is20_TE)
+    vehicle_group(steam_is_group)
   }
   graphics {
-                        default: is20_sprites;
-                       purchase: is20_purchase_sprites;
-               articulated_part: is20_articulated_part;
-                         length: is20_length;
-               can_attach_wagon: any_can_attach_wagon;
-                     start_stop: any_start_stop;
-                additional_text: is20_additional_text;
-                          speed: is20_speed;
-                 purchase_speed: is20_purchase_speed;
-           bitmask_vehicle_info: is20_bitmask_vehicle_info;
-                 cargo_capacity: return 0;
-                         weight: is20_weight;
-                    cost_factor: is20_cost_factor;
-             cargo_subtype_text: steam_pass_red_arrow_cargo_subtype_text;
-    tractive_effort_coefficient: is20_tractive_effort_coefficient;
-                  create_effect: is20_create_effect;
-            running_cost_factor: is20_running_cost_factor;
-                 colour_mapping: steam_pass_red_arrow_colour_mapping;
+    purchase_menu(PROP_is20_CF, PROP_is20_RC, PROP_is20_SD, PROP_is20_WT, PROP_is20_TE, PROP_is20_PR, PROP_is20_CC)
+         additional_text: is20_additional_text;
+        articulated_part: is20_articulated_part;
+    bitmask_vehicle_info: is20_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_red_arrow_cargo_subtype_text;
+          colour_mapping: steam_pass_red_arrow_colour_mapping;
+           create_effect: is20_create_effect;
+                 default: is20_sprites;
+                  length: is20_length;
+                    name: is20_name;
+                purchase: is20_purchase_sprites;
+     running_cost_factor: is20_running_cost_factor;
+                   speed: is20_speed;
+              start_stop: any_start_stop;
   }
 }
 

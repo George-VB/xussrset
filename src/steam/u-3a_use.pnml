@@ -1,0 +1,76 @@
+// steam_u_3a uses steam_u
+
+#define PROP_steam_u_3a_CF  10
+#define PROP_steam_u_3a_RC  232
+#define PROP_steam_u_3a_SD  105
+#define PROP_steam_u_3a_WT  76+47
+#define PROP_steam_u_3a_TE  93.0
+#define PROP_steam_u_3a_PR  1100
+#define PROP_steam_u_3a_CC  0
+
+#define IMAGEFILE  "src/steam/u.png"
+purchase_sprites(steam_u_3a, 102, 0)
+tender_sprites(4, steam_u_3a_tender, 447,  107)
+#undef IMAGEFILE
+
+map_sprites(steam_u_3a_engine_sprites_start, steam_u_engine_sprites_start)
+steamer_direction_template(steam_u_3a, _sprites_start)
+long_vehicle(steam_u_3a)
+
+switch (FEAT_TRAINS, SELF, steam_u_3a_running_cost_factor,
+[  STORE_TEMP(132, 0),  // Моторы
+   STORE_TEMP(19, 1),   // Бригада
+   STORE_TEMP(46, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(32, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_steam_u_3a_SD, 6),   // Скорость
+   STORE_TEMP(PROP_steam_u_3a_WT, 7),   // Тара
+   STORE_TEMP(PROP_steam_u_3a_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 232
+
+engine_tender(steam_u_3a)
+engine_tender_length(steam_u_3a, 5, 1, 3, 1)
+engine_steam_1_effect(steam_u_3a_create_effect, -3, 12)
+engine_speed(steam_u_3a, PROP_steam_u_3a_SD)
+engine_penalise_speed0(steam_u_3a)
+name_in_group(steam_u_3a, string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_NAME_U_3A)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_LONGNAME_U_3A)))
+hint_engine(steam_u_3a,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1909, 1911,
+     fact_putilovsky())
+
+item (FEAT_TRAINS, steam_u_3a, 784) {
+  property {
+    name: string(STR_NAME_U_3A);
+    vehicle_dates(1909, 1911, 40, 10, 5, PROP_steam_u_3a_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_u_3a_PR, PROP_steam_u_3a_WT, PROP_steam_u_3a_TE)
+    vehicle_group(steam_u_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_u_3a_CF, PROP_steam_u_3a_RC, PROP_steam_u_3a_SD, PROP_steam_u_3a_WT, PROP_steam_u_3a_TE, PROP_steam_u_3a_PR, PROP_steam_u_3a_CC)
+         additional_text: steam_u_3a_additional_text;
+        articulated_part: steam_u_3a_articulated_part;
+    bitmask_vehicle_info: steam_u_3a_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_extra_cargo_subtype_text;
+          colour_mapping: steam_pass_extra_colour_mapping;
+           create_effect: steam_u_3a_create_effect;
+                 default: steam_u_3a_sprites;
+                  length: steam_u_3a_length;
+                    name: steam_u_3a_name;
+                purchase: steam_u_3a_purchase_sprites;
+     running_cost_factor: steam_u_3a_running_cost_factor;
+                   speed: steam_u_3a_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_u_3a, STR_LONGNAME_U_3A)
+models_default_cargo_template(steam_u_3a)
+allow_steamer(steam_u_3a)

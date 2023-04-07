@@ -1,0 +1,116 @@
+// steam_nd_53
+
+#define PROP_steam_nd_53_CF  5
+#define PROP_steam_nd_53_RC  123
+#define PROP_steam_nd_53_SD  75
+#define PROP_steam_nd_53_WT  54+47
+#define PROP_steam_nd_53_TE  65.0
+#define PROP_steam_nd_53_PR  650
+#define PROP_steam_nd_53_CC  0
+
+#define IMAGEFILE  "src/steam/nd.png"
+purchase_sprites(steam_nd_53, 0, 0)
+steam_sprites(6, steam_nd_53_engine, 32,  40)
+tender_sprites(4, steam_nd_53_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(steam_nd_53, _sprites_start)
+long_vehicle(steam_nd_53)
+
+switch (FEAT_TRAINS, SELF, steam_nd_53_running_cost_factor,
+[  STORE_TEMP(70, 0),  // Моторы
+   STORE_TEMP(10, 1),  // Бригада
+   STORE_TEMP(25, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(17, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_steam_nd_53_SD + 15 * (current_year >= 1903)
+                                  + 15 * (current_year >= 1912)
+                                  + 15 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_steam_nd_53_WT, 7),                                // Тара
+   STORE_TEMP(PROP_steam_nd_53_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                          // 123
+
+engine_steam_1_effect(steam_nd_53_create_effect, -3, 12)
+engine_speed_change_after3(steam_nd_53, PROP_steam_nd_53_SD,
+                                        90, 1903,
+                                        105, 1912,
+                                        120, 1936)
+engine_penalise_speed0(steam_nd_53)
+engine_tender(steam_nd_53)
+engine_tender_length(steam_nd_53, 5, 1, 3, 1)
+name_in_group(steam_nd_53, string(STR_NAME_IN_GROUP, string(STR_NAME_N_SERIES), string(STR_NAME_ND_53)),
+                           string(STR_NAME_IN_GROUP, string(STR_NAME_N_SERIES), string(STR_LONGNAME_ND_53)))
+hint_engine_5fact(steam_nd_53_b1903,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1892, 1897,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO))
+hint_engine_5fact_comment(steam_nd_53_a1903,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1892, 1897,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 90, 1903))
+hint_engine_5fact_comment(steam_nd_53_a1912,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1892, 1897,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 105, 1912))
+hint_engine_5fact_comment(steam_nd_53_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1892, 1897,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 120, 1936))
+hint_change_after3(steam_nd_53, 1903, 1912, 1936)
+
+item (FEAT_TRAINS, steam_nd_53, 505) {
+  property {
+    name: string(STR_NAME_ND_53);
+    vehicle_dates(1892, 1897, 40, 10, 5, PROP_steam_nd_53_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_nd_53_PR, PROP_steam_nd_53_WT, PROP_steam_nd_53_TE)
+    vehicle_group(steam_n_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_nd_53_CF, PROP_steam_nd_53_RC, PROP_steam_nd_53_SD, PROP_steam_nd_53_WT, PROP_steam_nd_53_TE, PROP_steam_nd_53_PR, PROP_steam_nd_53_CC)
+         additional_text: steam_nd_53_additional_text;
+        articulated_part: steam_nd_53_articulated_part;
+    bitmask_vehicle_info: steam_nd_53_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+          colour_mapping: steam_pass_colour_mapping;
+           create_effect: steam_nd_53_create_effect;
+                 default: steam_nd_53_sprites;
+                  length: steam_nd_53_length;
+                    name: steam_nd_53_name;
+                purchase: steam_nd_53_purchase_sprites;
+     running_cost_factor: steam_nd_53_running_cost_factor;
+                   speed: steam_nd_53_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_nd_53, STR_LONGNAME_ND_53)
+models_default_cargo_template(steam_nd_53)
+allow_steamer(steam_nd_53)

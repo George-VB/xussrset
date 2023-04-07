@@ -1,0 +1,80 @@
+// steam_su_x
+
+#define PROP_steam_su_x_CF  15
+#define PROP_steam_su_x_RC  344
+#define PROP_steam_su_x_SD  130
+#define PROP_steam_su_x_WT  87+82
+#define PROP_steam_su_x_TE  130.0
+#define PROP_steam_su_x_PR  1610
+#define PROP_steam_su_x_CC  0
+
+#define IMAGEFILE  "src/steam/su-a1947.png"
+purchase_sprites(steam_su_x, 0, 0)
+steam_sprites(8, steam_su_x_engine, 32, 40)
+tender_sprites(6, steam_su_x_tender, 447, 40)
+#undef IMAGEFILE
+
+steamer_direction_template(steam_su_x, _sprites_start)
+long_vehicle(steam_su_x)
+
+switch (FEAT_TRAINS, SELF, steam_su_x_running_cost_factor,
+[  STORE_TEMP(197, 0),  // Моторы
+   STORE_TEMP(28, 1),   // Бригада
+   STORE_TEMP(67, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(48, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_steam_su_x_SD, 6),   // Скорость
+   STORE_TEMP(PROP_steam_su_x_WT, 7),   // Тара
+   STORE_TEMP(PROP_steam_su_x_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 344
+
+engine_tender(steam_su_x)
+engine_tender_length(steam_su_x, 7, 1, 5, 1)
+engine_steam_1_effect(steam_su_x_create_effect, -3, 11)
+engine_speed(steam_su_x, PROP_steam_su_x_SD)
+engine_penalise_speed0(steam_su_x)
+name_in_group(steam_su_x, string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_NAME_SU_X)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_S_SERIES), string(STR_LONGNAME_SU_X)))
+hint_engine_5fact(steam_su_x,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1947, 1951,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     string(STR_PURCHASE_HINT_FACTORY_SORMOVO),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY),
+     fact_kharkiv())
+
+item (FEAT_TRAINS, steam_su_x, 770) {
+  property {
+    name: string(STR_NAME_SU_X);
+    vehicle_dates(1947, 1951, 40, 10, 7, PROP_steam_su_x_CF)
+    vehicle_pass()
+    vehicle_steam(PROP_steam_su_x_PR, PROP_steam_su_x_WT, PROP_steam_su_x_TE)
+    vehicle_group(steam_s_group)
+  }
+  graphics {
+    purchase_menu(PROP_steam_su_x_CF, PROP_steam_su_x_RC, PROP_steam_su_x_SD, PROP_steam_su_x_WT, PROP_steam_su_x_TE, PROP_steam_su_x_PR, PROP_steam_su_x_CC)
+         additional_text: steam_su_x_additional_text;
+        articulated_part: steam_su_x_articulated_part;
+    bitmask_vehicle_info: steam_su_x_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_steam_su_x_CC;
+      cargo_subtype_text: steam_pass_cargo_subtype_text;
+          colour_mapping: steam_pass_colour_mapping;
+           create_effect: steam_su_x_create_effect;
+                 default: steam_su_x_sprites;
+                  length: steam_su_x_length;
+                    name: steam_su_x_name;
+                purchase: steam_su_x_purchase_sprites;
+     running_cost_factor: steam_su_x_running_cost_factor;
+                   speed: steam_su_x_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(steam_su_x, STR_LONGNAME_SU_X)
+models_default_cargo_template(steam_su_x)
+allow_steamer(steam_su_x)
