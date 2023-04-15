@@ -51,7 +51,7 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-scripts\change.pl xussr.nml "\s*\{\s*" "\n\{\n"
+scripts\change.pl xussr.nml "\s*\{\s*" "\n\{\n  "
 scripts\change.pl xussr.nml "\s*\}\s*" "\n\}\n"
 scripts\change.pl xussr.nml "\;" "\;\n"
 scripts\change.pl xussr.nml "\n\r*\n" "\n"
