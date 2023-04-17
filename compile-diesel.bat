@@ -51,13 +51,13 @@ gcc -D REPO_REVISION=%REPO_REVISION% ^
   -E -C -P -x c -o %NMLNAME%.nml %NMLNAME%.pnml
 if /i not %errorlevel% == 0 goto :Error
 :: компилируем
-scripts\change.pl xussr-steam.nml "\s*\{\s*" "\n\{\n"
-scripts\change.pl xussr-steam.nml "\s*\}\s*" "\n\}\n"
-scripts\change.pl xussr-steam.nml "\;" "\;\n"
-scripts\change.pl xussr-steam.nml "\n\r*\n" "\n"
-scripts\change.pl xussr-steam.nml "\{\s*([a-z0-9_ ]+);\s*\}" "{ $1; }"
+scripts\change.pl xussr-diesel.nml "\s*\{\s*" "\n\{\n"
+scripts\change.pl xussr-diesel.nml "\s*\}\s*" "\n\}\n"
+scripts\change.pl xussr-diesel.nml "\;" "\;\n"
+scripts\change.pl xussr-diesel.nml "\n\r*\n" "\n"
+scripts\change.pl xussr-diesel.nml "\{\s*([a-z0-9_ ]+);\s*\}" "{ $1; }"
 
-del xussr-steam.bak
+del xussr-diesel.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
@@ -91,14 +91,14 @@ goto :EOF
 :WriteCustomTags
 echo VERSION  :%REPO_REVISION%
 echo MIN_COMPATIBLE_REVISION:%MIN_COMPATIBLE_REVISION%
-echo TITLE    :xUSSR Railway Steamers Set 0.8-dev.r%REPO_REVISION%
+echo TITLE    :xUSSR Railway Diesels Set 0.8-dev.r%REPO_REVISION%
 echo FILENAME :%NMLNAME%.grf
 goto :EOF
 
 :: SelfConfig
 :SelfConfig
 :: имя файла с набором
-set NMLNAME=xussr-steam
+set NMLNAME=xussr-diesel
 :: имя служебного файла для сборки
 set CUSTOM_TAGS=custom_tags.txt
 :: минимальная совместимая ревизия

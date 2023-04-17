@@ -288,11 +288,38 @@ spriteset (name##_sprites_start, IMAGEFILE)  \
 { s##n##_template(x, y, 0) }                 \
 
 // Бустер
-#define buster_sprites(n, name, x, y)        \
-spriteset (name##_sprites_left, IMAGEFILE)   \
-{ s##n##_template(x, y, 0) }                 \
-spriteset (name##_sprites_right, IMAGEFILE)  \
-{ s##n##_r_template(x, y, 0) }               \
+#define buster_sprites(n, name, x, y)                              \
+spriteset (name##_sprites_left_g, IMAGEFILE)                       \
+{ s##n##_template(x, y, 0) }                                       \
+switch (FEAT_TRAINS, SELF, name##_sprites_left,                    \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])  \
+{ name##_sprites_left_g; }                                         \
+spriteset (name##_sprites_right_g, IMAGEFILE)                      \
+{ s##n##_r_template(x, y, 0) }                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_right,                   \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])  \
+{ name##_sprites_right_g; }                                        \
+
+#define buster_notlast_bothsides(name, vehid)            \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_mark,    \
+  getbits(extra_callback_info1, 8, 8))                   \
+{ 0: name##_sprites_start;                               \
+  1: dummy_sprites_big;                                  \
+     return CB_FAILED; }                                 \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after,   \
+[ set_offset_to(2),                                      \
+  prev_vehicle_type_id() != vehid])                      \
+{ 1: name##_sprites_start_mark;                          \
+     name##_sprites_start; }                             \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_before,  \
+[ set_offset_to(-2),                                     \
+  prev_vehicle_type_id() != vehid])                      \
+{ 1: name##_sprites_start_mark;                          \
+     name##_sprites_start_after; }                       \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,      \
+  position_in_consist_from_end == 1)                     \
+{ 1: name##_sprites_start_mark;                          \
+     name##_sprites_start_before; }                      \
 
 // 1-о секционный тепловоз несимметричный
 #define diesel1r_sprites(n, name, x, y)                                             \
