@@ -369,6 +369,15 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= ye
 */
 
 // запрет на последнюю секцию
+// TODO CB 36 is not allowed to use var 61(other vehicle), so the code of engine_has_before and engine_has_after is not added. Add when it would be possible
+
+#define engine_notlast_bothsides(namefull, vehid, basename)              \
+switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
+{ 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
+     basename; }                                                         \
+
+// запрет на последнюю секцию
+
 #define engine_notlast(namefull, basename)                               \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
@@ -376,17 +385,15 @@ switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
 
 #define engine_has_before(namefull, vehid, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                  \
-[ STORE_TEMP(count_veh_id(vehid), 3),                 \
-  set_offset_to(-2),                                  \
-  (LOAD_TEMP(3) - count_veh_id(vehid)) > 0])          \
+[ set_offset_to(-2),                                  \
+  prev_vehicle_type_id() == vehid])                   \
 { 0: return bitmask(FLAG_WRONG_CONSIST);              \
      basename; }                                      \
 
 #define engine_has_after(namefull, vehid, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                 \
-[ STORE_TEMP(count_veh_id(vehid), 3),                \
-  set_offset_to(3),                                  \
-  (count_veh_id(vehid) - LOAD_TEMP(3)) > 0])         \
+[ set_offset_to(2),                                  \
+  prev_vehicle_type_id() == vehid])                  \
 { 0: return bitmask(FLAG_WRONG_CONSIST);             \
      basename; }                                     \
 
