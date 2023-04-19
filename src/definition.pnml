@@ -6,7 +6,7 @@ train_width_32_px = 1;
 traininfo_y_offset = 3;
 
 // Период, в который поезд считается новым (гарантийным) и не допускает депошного творчества
-new_train_age = 5;
+#define NEW_TRAIN_AGE 5
 
 // Истечение срока
 //minimal model life span
@@ -77,6 +77,7 @@ delta_age = 1;
 #define is_not_hidden_at(offset) (var[0x62, 7, 1, offset] == 0)
 
 // Для получения характеристик предыдущего ПС в цепочке
+#define prev_vehicle_GRFid() var[0x61, 0, 0xFFFF, 0x25]
 #define prev_vehicle_type_id() var[0x61, 0, 0xFFFF, 0xC6]
 #define prev_vehicle_cargo_subtype() var[0x61, 0, 0xFFFF, 0xF2]
 #define prev_vehicle_build_year() var[0x61, 0, 0xFFFF, 0x49]
@@ -140,12 +141,16 @@ delta_age = 1;
 #define FLAG_DRB1_SH 1
 // Флаг недопустимиого груза
 #define FLAG_INADMISSIBLE_CARGO 2
+// Флаг недопустимой составности
+#define FLAG_WRONG_CONSIST 3
 // Штрафуем ли по скорости
 #define is_penalise_speed() (hasbit(bitmask_consist_info, FLAG_PENALISE_SPEED))
 // Проверка 2 головы ДРБ1
 #define is_drb1sh() (hasbit(bitmask_consist_info, FLAG_DRB1_SH))
 // Проверка недопустимого груза
 #define has_inadmissible_cargo() (hasbit(bitmask_consist_info, FLAG_INADMISSIBLE_CARGO))
+// Проверка некорректного состава
+#define is_wrong_consist() (hasbit(bitmask_consist_info, FLAG_WRONG_CONSIST))
 // Вычисляем ТУ по формуле (табличное_значение/масса/9.8)
 #define get_tec(tec, weight) ((tec)/(weight)/9.8)
 // ТУ для cb tractive_effort_coefficient
@@ -517,11 +522,12 @@ delta_age = 1;
 // ТЭП70БС + ЭС1 / ЭС2Г
 // голова ТЭП70БС 2018 года или новее, и общее количество (ЭС1 * 5) + (ЭС2) <= количество (ТЭП70БС * 6) и нет другого ПС
 #define TEP70BS_WAGONS_ENERGY_LIMIT 7
+#define TEP70BS_ID 175
 #define tep70bs_es1_2()                                                                                                            \
-  (((vehicle_type_id == tep70bs) && (build_year >= 2018)) &&                                                                       \
-   ((count_veh_id(tep70bs) * TEP70BS_WAGONS_ENERGY_LIMIT) >=                                                                       \
+  (((vehicle_type_id == TEP70BS_ID) && (build_year >= 2018)) &&                                                                    \
+   ((count_veh_id(TEP70BS_ID) * TEP70BS_WAGONS_ENERGY_LIMIT) >=                                                                    \
     (count_veh_id(es1) * 5 + count_veh_id(es2g_hm) + count_veh_id(es2g_mn) + count_veh_id(es2g_c) + count_veh_id(es2g_cp))) &&     \
-   ((count_veh_id(tep70bs) + count_veh_id(es1) * 5 +                                                                               \
+   ((count_veh_id(TEP70BS_ID) + count_veh_id(es1) * 5 +                                                                            \
      count_veh_id(es2g_hm) + count_veh_id(es2g_mn) + count_veh_id(es2g_c) + count_veh_id(es2g_cp)) == (num_vehs_in_consist / 2)))  \
 
 // end

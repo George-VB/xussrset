@@ -331,7 +331,6 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info, build_year >= year)     
 { 0: name##_bitmask_vehicle_info_change2;                                              \
      name##_bitmask_vehicle_info_change1; }                                            \
 /*
-
 #define engine_penalise_speed_build_after2(name, year, year2)                                                    \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info_change3, (build_year >= year) + (build_year >= year2))  \
 { 0: name##_bitmask_vehicle_info;                                                                                \
@@ -368,6 +367,35 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info_change, (build_year >= ye
   1: name##_bitmask_vehicle_info_change2;                                                                        \
      name##_bitmask_vehicle_info_change1; }                                                                      \
 */
+
+// запрет на последнюю секцию
+// TODO CB 36 is not allowed to use var 61(other vehicle), so the code of engine_has_before and engine_has_after is not added. Add when it would be possible
+
+#define engine_notlast_bothsides(namefull, vehid, basename)              \
+switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
+{ 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
+     basename; }                                                         \
+
+// запрет на последнюю секцию
+
+#define engine_notlast(namefull, basename)                               \
+switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
+{ 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
+     basename; }                                                         \
+
+#define engine_has_before(namefull, vehid, basename)  \
+switch (FEAT_TRAINS, SELF, namefull,                  \
+[ set_offset_to(-2),                                  \
+  prev_vehicle_type_id() == vehid])                   \
+{ 0: return bitmask(FLAG_WRONG_CONSIST);              \
+     basename; }                                      \
+
+#define engine_has_after(namefull, vehid, basename)  \
+switch (FEAT_TRAINS, SELF, namefull,                 \
+[ set_offset_to(2),                                  \
+  prev_vehicle_type_id() == vehid])                  \
+{ 0: return bitmask(FLAG_WRONG_CONSIST);             \
+     basename; }                                     \
 
 // Определение скорости без вариантов
 #define engine_speed(name, speed)                             \
@@ -623,26 +651,33 @@ switch (FEAT_TRAINS, SELF, name##_power, check_year(year))       \
      return get_power_in_cb(power); }                            \
 
 // Определение мощности МВПС
-#define engine_power_MU(name, power, vehid)                  \
-switch (FEAT_TRAINS, PARENT, name##_power,                   \
-  (position_in_consist == 0) || (vehicle_type_id == vehid))  \
-{ 1: return get_power_in_cb(power);                          \
-     return 0; }                                             \
+#define engine_power_MU(name, power, vehid)                            \
+switch (FEAT_TRAINS, PARENT, name##_power2, vehicle_type_id == vehid)  \
+{ 1: return get_power_in_cb(power);                                    \
+     return 0; }                                                       \
+switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)     \
+{ 1: return get_power_in_cb(power);                                    \
+     name##_power2; }                                                  \
 
-#define engine_power_MU2(name, power, vehid, vehid2)                                        \
-switch (FEAT_TRAINS, PARENT, name##_power,                                                  \
-  (position_in_consist == 0) || (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
-{ 1: return get_power_in_cb(power);                                                         \
-     return 0; }                                                                            \
+#define engine_power_MU2(name, power, vehid, vehid2)                \
+switch (FEAT_TRAINS, PARENT, name##_power2,                         \
+  (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))        \
+{ 1: return get_power_in_cb(power);                                 \
+     return 0; }                                                    \
+switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)  \
+{ 1: return get_power_in_cb(power);                                 \
+     name##_power2; }                                               \
 
 #define engine_power_MU_change_build_after(name, power, new_power, year, vehid)  \
-switch (FEAT_TRAINS, SELF, name##_power2, build_year >= year)                    \
+switch (FEAT_TRAINS, SELF, name##_power3, build_year >= year)                    \
 { 1: return get_power_in_cb(new_power);                                          \
      return get_power_in_cb(power); }                                            \
-switch (FEAT_TRAINS, PARENT, name##_power,                                       \
-  (position_in_consist == 0) || (vehicle_type_id == vehid))                      \
-{ 1: name##_power2;                                                              \
+switch (FEAT_TRAINS, PARENT, name##_power2, vehicle_type_id == vehid)            \
+{ 1: name##_power3;                                                              \
      return 0; }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)               \
+{ 1: name##_power3;                                                              \
+     name##_power2; }                                                            \
 
 // Определение мощности в зависимости от типа пути
 
@@ -736,12 +771,14 @@ switch (FEAT_TRAINS, SELF, name##_refit_cost,                                   
   2: return cost2;                                                                 \
      return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
-#define engine_refit_cost_for_extra_livery_change(name, num, cost, base_name)      \
-switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
-  ((extra_callback_info1 & 0xFF00) == (num << 8)) * 2 + ((cargo_subtype == num)))  \
-{ 0..1: base_name;                                                                 \
-     2: return cost;                                                               \
-     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+#define engine_refit_cost_for_range_livery_change(name, num, num2, cost, base_name)  \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
+  (((extra_callback_info1 & 0xFF00) >= (num << 8)) &&                                \
+   ((extra_callback_info1 & 0xFF00) <= (num2 << 8))) * 2 +                           \
+  ((cargo_subtype >= num) && (cargo_subtype <= num2)))                               \
+{ 0..1: base_name;                                                                   \
+     2: return cost;                                                                 \
+     return 0 | CB_RESULT_AUTOREFIT; }                                               \
 
 // Определение длины с изменением по году постройки
 #define engine_length_change_build_after(name, length, new_length, year)  \
@@ -802,26 +839,32 @@ switch (FEAT_TRAINS, SELF, name##_cargo_capacity, build_year >= year)  \
      return name##_a##year##_cargo_capacity; }                         \
 
 // Определение вместимости МВПС
-#define engine_capacity_MU(name, capacity, vehid)            \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,          \
-  (position_in_consist == 0) || (vehicle_type_id == vehid))  \
-{ 1: return capacity;                                        \
-     return 0; }                                             \
+#define engine_capacity_MU(name, capacity, vehid)                               \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2, vehicle_type_id == vehid)  \
+{ 1: return capacity;                                                           \
+     return 0; }                                                                \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)     \
+{ 1: return capacity;                                                           \
+     name##_cargo_capacity2; }                                                  \
 
-#define engine_capacity_MU2(name, capacity, vehid, vehid2)                                  \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,                                         \
-  (position_in_consist == 0) || (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
-{ 1: return capacity;                                                                       \
-     return 0; }
+#define engine_capacity_MU2(name, capacity, vehid, vehid2)                                                       \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2, (vehicle_type_id == vehid) || (vehicle_type_id == vehid2))  \
+{ 1: return capacity;                                                                                            \
+     return 0; }                                                                                                 \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)                                      \
+{ 1: return capacity;                                                                                            \
+     name##_cargo_capacity2; }                                                                                   \
 
 #define engine_capacity_MU_change_build_after(name, capacity, new_capacity, year, vehid)  \
 switch (FEAT_TRAINS, SELF, name##_year_cargo_capacity, build_year >= year)                \
 { 1: return new_capacity;                                                                 \
      return capacity; }                                                                   \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,                                       \
-  (position_in_consist == 0) || (vehicle_type_id == vehid))                               \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2, vehicle_type_id == vehid)            \
 { 1: name##_year_cargo_capacity;                                                          \
      return 0; }                                                                          \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)               \
+{ 1: name##_year_cargo_capacity;                                                          \
+     name##_cargo_capacity2; }                                                            \
 
 // Определение эффектов МВПС
 #define engine_effects_MU(name, effects, vehid)                               \

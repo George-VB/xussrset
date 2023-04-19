@@ -1,90 +1,228 @@
-﻿// vl19
+// vl19
 
-#define IMAGEFILE  "src/electric/vl19-pre.png"
-purchase_sprites(vl19_v1, 0, 0)
-electric1r_2_sprites(10, vl19_v1, 32, 40)
-#undef IMAGEFILE
+#define PROP_vl19_CF  31
+#define PROP_vl19_RC  241
+#define PROP_vl19_SD  85
+#define PROP_vl19_WT  117
+#define PROP_vl19_TE  335.0
+#define PROP_vl19_PR  2447
+#define PROP_vl19_CC  0
+
+#define PROP_vl19o_ddc_CF  31
+#define PROP_vl19o_ddc_RC  245
+#define PROP_vl19o_ddc_SD  85
+#define PROP_vl19o_ddc_WT  117
+#define PROP_vl19o_ddc_TE  335.0
+#define PROP_vl19o_ddc_PR  2447
+#define PROP_vl19o_ddc_CC  0
+
+#define PROP_vl19m_SD  90
+#define PROP_vl19m_WT  120
+#define PROP_vl19m_TE  392.0
+#define PROP_vl19m_PR  2661
+
 #define IMAGEFILE  "src/electric/vl19.png"
-purchase_sprites(vl19_v2, 0, 0)
+purchase_sprites(vl19, 0, 0)
 electric1r_2_sprites(10, vl19_v2, 32, 40)
 electric1r_2_sprites(10, vl19_v3, 32, 375)
 electric1r_2_sprites(10, vl19_v4, 32, 710)
 #undef IMAGEFILE
-purchase_sprites_selectpre(vl19, 1933)
 
-switch (FEAT_TRAINS, SELF, vl19_a1933_sprites_left,
-  cargo_subtype)
+switch (FEAT_TRAINS, SELF, vl19_sprites_left_powered,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  cargo_subtype] )
 {
            0: vl19_v2_sprites_left;
            1: vl19_v4_sprites_left;
+           2: vl19_v3_sprites_left;
   LV_RAL6002: vl19_v2_sprites_left;
   LV_RAL6020: vl19_v3_sprites_left;
 
-  0xE0: vl19_v2_sprites_left;
+  0xE0: vl19_v2_sprites_left;  // VL19 ddc
   0xE1: vl19_v3_sprites_left;
   0xE2: vl19_v4_sprites_left;
+  0xE3: vl19_v2_sprites_left;  // VL19M
+  0xE4: vl19_v3_sprites_left;
+  0xE5: vl19_v4_sprites_left;
         align_10_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl19_a1933_sprites_right,
-  cargo_subtype)
+switch (FEAT_TRAINS, SELF, vl19_sprites_left_notpowered,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  cargo_subtype] )
+{
+           0: vl19_v2_notpowered_sprites_left_d_down;
+           1: vl19_v4_notpowered_sprites_left_d_down;
+           2: vl19_v3_notpowered_sprites_left_d_down;
+  LV_RAL6002: vl19_v2_notpowered_sprites_left_d_down;
+  LV_RAL6020: vl19_v3_notpowered_sprites_left_d_down;
+
+  0xE0: vl19_v2_notpowered_sprites_left_d_down;  // VL19 ddc
+  0xE1: vl19_v3_notpowered_sprites_left_d_down;
+  0xE2: vl19_v4_notpowered_sprites_left_d_down;
+  0xE3: vl19_v2_notpowered_sprites_left_d_down;  // VL19M
+  0xE4: vl19_v3_notpowered_sprites_left_d_down;
+  0xE5: vl19_v4_notpowered_sprites_left_d_down;
+        align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_right_powered,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  cargo_subtype] )
 {
            0: vl19_v2_sprites_right;
            1: vl19_v4_sprites_right;
+           2: vl19_v3_sprites_right;
   LV_RAL6002: vl19_v2_sprites_right;
   LV_RAL6020: vl19_v3_sprites_right;
 
-  0xE0: vl19_v2_sprites_right;
+  0xE0: vl19_v2_sprites_right;  // VL19 ddc
   0xE1: vl19_v3_sprites_right;
   0xE2: vl19_v4_sprites_right;
+  0xE3: vl19_v2_sprites_right;  // VL19M
+  0xE4: vl19_v3_sprites_right;
+  0xE5: vl19_v4_sprites_right;
         align_10_sprites;
 }
 
-engine_pre_template(vl19, 1933, left)
-engine_pre_template(vl19, 1933, right)
-engine_RNDany_direction_template(vl19, 5, 3)
-long_vehicle_sp(vl19)
-
-switch (FEAT_TRAINS, SELF, vl19_power,
-  (cargo_subtype >= 0xE0))
+switch (FEAT_TRAINS, SELF, vl19_sprites_right_notpowered,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  cargo_subtype] )
 {
-  1: return get_power_in_cb(2661);
-     return get_power_in_cb(2447);
+           0: vl19_v2_notpowered_sprites_right_d_down;
+           1: vl19_v4_notpowered_sprites_right_d_down;
+           2: vl19_v3_notpowered_sprites_right_d_down;
+  LV_RAL6002: vl19_v2_notpowered_sprites_right_d_down;
+  LV_RAL6020: vl19_v3_notpowered_sprites_right_d_down;
+
+  0xE0: vl19_v2_notpowered_sprites_right_d_down;  // VL19 ddc
+  0xE1: vl19_v3_notpowered_sprites_right_d_down;
+  0xE2: vl19_v4_notpowered_sprites_right_d_down;
+  0xE3: vl19_v2_notpowered_sprites_right_d_down;  // VL19M
+  0xE4: vl19_v3_notpowered_sprites_right_d_down;
+  0xE5: vl19_v4_notpowered_sprites_right_d_down;
+        align_10_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl19_weight,
-  cargo_subtype >= 0xE0)
+switch (FEAT_TRAINS, SELF, vl19_sprites_left,
+  ((cargo_subtype >= 0xE3) || (cargo_subtype < 0xE0)) && not_ER3DC())
 {
-  1: return 120;
-     return 117;
+  1: vl19_sprites_left_notpowered;
+     vl19_sprites_left_powered;
+}
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_right,
+  ((cargo_subtype >= 0xE3) || (cargo_subtype < 0xE0)) && not_ER3DC())
+{
+  1: vl19_sprites_right_notpowered;
+     vl19_sprites_right_powered;
+}
+
+engine_RNDany_direction_template(vl19, 5, 3)
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_current,
+  cargo_subtype + 256 * (current_year < 1935) + 256 * (1 - enable_icons))
+{
+  0x00..0xDF: icon_sprites_3dc;
+  0xE0..0xE2: icon_sprites_ddc;
+  0xE3..0xFF: icon_sprites_3dc;
+              dummy_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, vl19_sprites_depot,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: vl19_sprites_start_sp;
+  1: vl19_sprites_current;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, vl19_direction_template,
+  getbits(extra_callback_info1, 0, 8))
+{
+  0x10..0x1F: vl19_sprites_depot;
+              vl19_sprites_start_sp;
+}
+
+long_vehicle_dir(vl19)
+
+switch (FEAT_TRAINS, SELF, vl19_weight,
+  (cargo_subtype >= 0xE0) +
+  (cargo_subtype >= 0xE3))
+{
+  2: return PROP_vl19m_WT;
+  1: return PROP_vl19o_ddc_WT;
+     return PROP_vl19_WT;
 }
 
 switch (FEAT_TRAINS, SELF, vl19_tractive_effort_coefficient,
-  cargo_subtype >= 0xE0)
+  (cargo_subtype >= 0xE0) +
+  (cargo_subtype >= 0xE3))
 {
-  1: return get_tec_int(392.0, 120);
-     return get_tec_int(335.0, 117);
+  2: return get_tec_int(PROP_vl19m_TE, PROP_vl19m_WT);
+  1: return get_tec_int(PROP_vl19o_ddc_TE, PROP_vl19o_ddc_WT);
+     return get_tec_int(PROP_vl19_TE, PROP_vl19_WT);
 }
 
-engine_speed(vl19o, 85)
-engine_speed(vl19m, 90)
+engine_speed(vl19o, PROP_vl19_SD)
+engine_speed(vl19oo_ddc, PROP_vl19o_ddc_SD)
+engine_speed(vl19m, PROP_vl19m_SD)
+
 switch (FEAT_TRAINS, SELF, vl19_speed,
-  cargo_subtype >= 0xE0)
+  (cargo_subtype >= 0xE0) +
+  (cargo_subtype >= 0xE3))
 {
-  1: vl19m_speed;
+  2: vl19m_speed;
+  1: vl19oo_ddc_speed;
      vl19o_speed;
 }
 
-  livery_template_base_list2(vl19_a1933_b1947_alt, LV_RAL6020, LV_RAL6002)
-  livery_template_alt(vl19_a1933_b1947, STR_REFIT_TTD_96)
+switch (FEAT_TRAINS, SELF, vl19_speed_advanced,
+  (position_in_consist == 0) &&
+  (((cargo_subtype < 0xE0) && not_ER3DC()) ||
+   ((cargo_subtype >= 0xE3) && not_ER3DC())))
+{
+  1: return NO_SPEED;
+     vl19_speed;
+}
 
-  livery_template_refit3(vl19_a1933_a1947, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_VL19M, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_TTD_96, vl19_a1933_b1947)
-livery_template_service_year(vl19_a1933, 1947)
-livery_template_prealt(vl19, 1933)
+engine_penalise_speed4(vl19, vl19_ddc, vl19_15dc, vl19_pre, 2)
 
-engine_electric1_2_effect(vl19_create_effect, -2, 4)
-engine_penalise_speed(vl19, 2)
-engine_refit_cost_for_a2_livery_change(vl19, 0xE0, 2, 4)
+switch (FEAT_TRAINS, SELF, vl19_bitmask_vehicle_info_advanced,
+  ((cargo_subtype < 0xE0) && not_ER3DC()) ||
+  ((cargo_subtype >= 0xE3) && not_ER3DC()) )
+{
+  1: return 0;
+     vl19_bitmask_vehicle_info;
+}
+
+  livery_template_base_list2(vl19_b1935_alt, LV_RAL6020, LV_RAL6002)
+  livery_template_alt(vl19_b1935, STR_REFIT_TTD_96)
+
+  livery_template_refit_all_n(vl19_a1935_5,                   STR_REFIT_FACTORY_GENERAL_TYPE_ALL, STR_NAME_VL19, STR_ER3DC, STR_REFIT_TTD_53)
+  livery_template_refit_all_shifted(vl19_a1935_4, 0x01,       STR_REFIT_FACTORY_GENERAL_TYPE_ALL, STR_NAME_VL19, STR_ER3DC, STR_REFIT_TTD_96, vl19_a1935_5)
+  livery_template_refit_all_shifted(vl19_a1935_3, LV_RAL6002, STR_REFIT_FACTORY_GENERAL_TYPE_ALL, STR_NAME_VL19, STR_ER3DC, STR_REFIT_TTD_53, vl19_a1935_4)
+  livery_template_refit_all_shifted(vl19_a1935_2, LV_RAL6020, STR_REFIT_FACTORY_GENERAL_TYPE_ALL, STR_NAME_VL19, STR_ER3DC, STR_REFIT_TTD_59, vl19_a1935_3)
+
+  livery_template_refit3_all_shifted(vl19_a1935, 0xE0, STR_REFIT_FACTORY_GENERAL_TYPE_ALL, STR_NAME_VL19, STR_ERDDC, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_TTD_96, vl19_a1935_2)
+
+  livery_template_refit3_all_shifted(vl19_a1947, 0xE3, STR_REFIT_FACTORY_GENERAL_TYPE_ALL, STR_NAME_VL19M, STR_ER3DC, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_TTD_96, vl19_a1935)
+livery_template_service_year2(vl19, 1935, 1947)
+
+    engine_electric1_2_effect(vl19_0_create_effect, -2, 4)
+  is_ER3DC_ds(vl19m_3dc_create_effect, vl19_0_create_effect, return disable_create_effect())
+engine_change_refit(vl19_1_create_effect, vl19m_3dc_create_effect, vl19_0_create_effect)
+engine_change_refit_shift(vl19_create_effect, vl19_1_create_effect, vl19m_3dc_create_effect, 3)
+
+    engine_0_power(vl19_0)
+  is_ER3DC_ds(vl19_3dc_power, get_power_in_cb(PROP_vl19_PR), vl19_0_power)
+  is_ER3DC_ds(vl19m_3dc_power, get_power_in_cb(PROP_vl19m_PR), vl19_0_power)
+engine_change_refit(vl19_1_power, vl19_3dc_power, return get_power_in_cb(PROP_vl19o_ddc_PR))
+engine_change_refit_shift(vl19_power, vl19_1_power, vl19m_3dc_power, 3)
+
+    engine_refit_cost_for_a2_livery_change(vl19_3, 0xE0, 6, 7)
+  engine_refit_cost_for_range_livery_change(vl19_2, 0xE0, 0xE2, 5, vl19_3_refit_cost)
+engine_refit_cost_for_range_livery_change(vl19, 0xE3, 0xE5, 4, vl19_2_refit_cost)
 
 switch (FEAT_TRAINS, SELF, vl19o_running_cost_factor,
 [  STORE_TEMP(137, 0),  // Моторы
@@ -94,10 +232,23 @@ switch (FEAT_TRAINS, SELF, vl19o_running_cost_factor,
    STORE_TEMP(34, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(85, 6),             // Скорость
-   STORE_TEMP(117, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 241
+   STORE_TEMP(PROP_vl19_SD, 6),        // Скорость
+   STORE_TEMP(int(PROP_vl19_WT), 7),   // Тара
+   STORE_TEMP(int(PROP_vl19_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 241
+
+switch (FEAT_TRAINS, SELF, vl19oo_ddc_running_cost_factor,
+[  STORE_TEMP(142, 0),  // Моторы
+   STORE_TEMP(19, 1),   // Бригада
+   STORE_TEMP(48, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(34, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_vl19o_ddc_SD, 6),        // Скорость
+   STORE_TEMP(int(PROP_vl19o_ddc_WT), 7),   // Тара
+   STORE_TEMP(int(PROP_vl19o_ddc_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                // 241
 
 switch (FEAT_TRAINS, SELF, vl19m_running_cost_factor,
 [  STORE_TEMP(138, 0),  // Моторы
@@ -107,60 +258,69 @@ switch (FEAT_TRAINS, SELF, vl19m_running_cost_factor,
    STORE_TEMP(34, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(90, 6),             // Скорость
-   STORE_TEMP(117, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 242
+   STORE_TEMP(PROP_vl19m_SD, 6),        // Скорость
+   STORE_TEMP(int(PROP_vl19m_WT), 7),   // Тара
+   STORE_TEMP(int(PROP_vl19m_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 242
 switch (FEAT_TRAINS, SELF, vl19_running_cost_factor,
-  cargo_subtype >= 0xE0)
-{ 1: vl19m_running_cost_factor;
+  (cargo_subtype >= 0xE0) +
+  (cargo_subtype >= 0xE3))
+{ 2: vl19m_running_cost_factor;
+  1: vl19oo_ddc_running_cost_factor;
      vl19o_running_cost_factor; }
 
-hint_engine_in_2fact(vl19_b1933,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC_PROTOTYPE,
-     STR_PURCHASE_HINT_SECTIONS_1_2,
-     1932,
-     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
-     string(STR_PURCHASE_HINT_FACTORY_DINAMO))
-hint_engine_2fact(vl19_a1933,
+name_in_group(vl19, string(STR_NAME_IN_GROUP, string(STR_NAME_VL19_SERIES), string(STR_NAME_VL19)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_VL19_SERIES), string(STR_LONGNAME_VL19)))
+
+hint_engine_2fact(vl19_b1935,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     1933, 1938,
+     1934, 1938,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
      string(STR_PURCHASE_HINT_FACTORY_DINAMO))
-hint_engine_2fact_comment(vl19_a1947,
+hint_engine_2fact_comment(vl19_a1935,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     1933, 1938,
+     1934, 1938,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
      string(STR_PURCHASE_HINT_FACTORY_DINAMO),
      string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE,
-            string(STR_NAME_VL19M)))
-hint_change_pre_after2(vl19, 1933, 1947)
+            string(STR_REFIT_FACTORY_GENERAL_TYPE_R, string(STR_NAME_VL19), string(STR_ERDDC))))
+hint_engine_2fact_comment(vl19_a1947,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     1934, 1938,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     string(STR_PURCHASE_HINT_FACTORY_DINAMO),
+     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE,
+            string(STR_REFIT_FACTORY_GENERAL_TYPE_R, string(STR_NAME_VL19M), string(STR_ER3DC))))
+hint_change_after2(vl19, 1935, 1947)
 
 item (FEAT_TRAINS, vl19, 312) {
   property {
     name: string(STR_NAME_VL19);
-    vehicle_dates(1932, 1938, 40, 10, 8, 31)
+    vehicle_dates(1934, 1938, 40, 10, 8, PROP_vl19_CF)
     vehicle_passcargo()
-    vehicle_dcelectric(2447, 117, 335.0, _lowspeed)
+    vehicle_ddcelectric(PROP_vl19_PR, PROP_vl19_WT, PROP_vl19_TE, _lowspeed)
+    vehicle_group(vl19_group)
   }
   graphics {
+    purchase_menu(PROP_vl19_CF, PROP_vl19_RC, PROP_vl19_SD, PROP_vl19_WT, PROP_vl19_TE, PROP_vl19_PR, PROP_vl19_CC)
                 additional_text: vl19_additional_text;
                articulated_part: articulated_part_dummy2;
-           bitmask_vehicle_info: vl19_bitmask_vehicle_info;
+           bitmask_vehicle_info: vl19_bitmask_vehicle_info_advanced;
                can_attach_wagon: any_can_attach_wagon;
                  cargo_capacity: return 0;
              cargo_subtype_text: vl19_cargo_subtype_text;
                  colour_mapping: any_cc_colour;
                   create_effect: vl19_create_effect;
                         default: vl19_sprites;
+                           name: vl19_name;
                           power: vl19_power;
                        purchase: vl19_purchase_sprites;
-                 purchase_speed: return 85;
                      refit_cost: vl19_refit_cost;
             running_cost_factor: vl19_running_cost_factor;
-                          speed: vl19_speed;
+                          speed: vl19_speed_advanced;
                      start_stop: any_start_stop;
     tractive_effort_coefficient: vl19_tractive_effort_coefficient;
                          weight: vl19_weight;
