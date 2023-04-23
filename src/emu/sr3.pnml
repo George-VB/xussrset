@@ -1,8 +1,8 @@
 ﻿// sr3
 
 #define PROP_sr3_h_num  0
-#define PROP_sr3_n_num  2
-#define PROP_sr3_m_num  0
+#define PROP_sr3_n_num  0
+#define PROP_sr3_m_num  1
 #define PROP_sr3_c_num  0
 
 #define PROP_sr3_h_CF  0
@@ -21,13 +21,13 @@
 #define PROP_sr3_n_PR  702
 #define PROP_sr3_n_CC  321
 
-#define PROP_sr3_m_CF  0
-#define PROP_sr3_m_RC  0
-#define PROP_sr3_m_SD  85
-#define PROP_sr3_m_WT  0
-#define PROP_sr3_m_TE  0
-#define PROP_sr3_m_PR  0
-#define PROP_sr3_m_CC  0
+#define PROP_sr3_m_CF  (PROP_sr3_n_CF) / 3
+#define PROP_sr3_m_RC  (PROP_sr3_n_RC) / 3
+#define PROP_sr3_m_SD   PROP_sr3_n_SD
+#define PROP_sr3_m_WT  (PROP_sr3_n_WT) / 3
+#define PROP_sr3_m_TE  (PROP_sr3_n_TE) / 3
+#define PROP_sr3_m_PR  (PROP_sr3_n_PR) / 3
+#define PROP_sr3_m_CC  (PROP_sr3_n_CC) / 3
 
 #define PROP_sr3_c_CF  0
 #define PROP_sr3_c_RC  0
@@ -276,7 +276,6 @@ livery_template_alt0(sr3, STR_REFIT_TTD_53, STR_REFIT_TTD_63)
 
 engine_power_MU(sr3, PROP_sr3_n_PR, sr3)
 engine_capacity_MU(sr3, PROP_sr3_n_CC, sr3)
-engine_speed(sr3, PROP_sr3_n_SD)
 
 RC_head_check_new(sr3, sr3)
 switch (FEAT_TRAINS, SELF, sr3_running_cost_factor,
@@ -287,10 +286,10 @@ switch (FEAT_TRAINS, SELF, sr3_running_cost_factor,
    STORE_TEMP(23, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(85, 6),                  // Скорость
-   STORE_TEMP(139, 7),                 // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 41, 8)])  // Максимальная масса
-{ sr3_check_running_cost_factor; }     // 63 + 52 + 52
+   STORE_TEMP(PROP_sr3_n_SD, 6),                             // Скорость
+   STORE_TEMP(int(PROP_sr3_n_WT), 7),                        // Тара
+   STORE_TEMP(int(PROP_sr3_n_WT + PROP_sr3_n_CC / 16), 8)])  // Максимальная масса
+{ sr3_check_running_cost_factor; }                           // 63 + 52 + 52
 
 name_in_group(sr3, string(STR_NAME_IN_GROUP, string(STR_NAME_EMU_S_SERIES), string(STR_NAME_SR3)),
                    string(STR_NAME_IN_GROUP, string(STR_NAME_EMU_S_SERIES), string(STR_LONGNAME_SR3)))
@@ -325,7 +324,7 @@ item (FEAT_TRAINS, sr3, 415) {
                   power: sr3_power;
                purchase: sr3_purchase_sprites;
     running_cost_factor: sr3_running_cost_factor;
-                  speed: sr3_speed;
+                  speed: return PROP_sr3_n_SD;
   }
 }
 

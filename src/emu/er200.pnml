@@ -1,5 +1,42 @@
 ﻿// er200
 
+#define PROP_er200_h_num  2
+#define PROP_er200_n_num  0
+#define PROP_er200_m_num  6
+#define PROP_er200_c_num  6
+
+#define PROP_er200_h_CF  36
+#define PROP_er200_h_RC  285
+#define PROP_er200_h_SD  200
+#define PROP_er200_h_WT  48.7
+#define PROP_er200_h_TE  0
+#define PROP_er200_h_PR  0
+#define PROP_er200_h_CC  24
+
+#define PROP_er200_n_CF  0
+#define PROP_er200_n_RC  0
+#define PROP_er200_n_SD  200
+#define PROP_er200_n_WT  0
+#define PROP_er200_n_TE  0
+#define PROP_er200_n_PR  0
+#define PROP_er200_n_CC  0
+
+#define PROP_er200_m_CF  40
+#define PROP_er200_m_RC  320
+#define PROP_er200_m_SD  200
+#define PROP_er200_m_WT  58.5
+#define PROP_er200_m_TE  35.6
+#define PROP_er200_m_PR  1146
+#define PROP_er200_m_CC  64
+
+#define PROP_er200_c_CF  40
+#define PROP_er200_c_RC  317
+#define PROP_er200_c_SD  200
+#define PROP_er200_c_WT  56.5
+#define PROP_er200_c_TE  36.0
+#define PROP_er200_c_PR  1146
+#define PROP_er200_c_CC  64
+
 #define IMAGEFILE  "src/emu/er200_h.png"
 purchase_sprites(er200_h, 0, 0)
 MU_head_sprites(15, er200_h_mu,  32, 40)
@@ -12,6 +49,7 @@ EMU_motor1_sprites(15, er200_m_v1, 32, 40)
 purchase_sprites(er200_c, 0, 0)
 MU_car_sprites(15, er200_c_v1, 32, 40)
 #undef IMAGEFILE
+map_sprites(er200_purchase_sprites, er200_h_purchase_sprites)
 
 MU_head_direction_template(er200_h, er200_h)
 engine_direction_template3m2(er200_h, er200_m, er200_c, )
@@ -80,22 +118,12 @@ switch (FEAT_TRAINS, PARENT, er200_h_can_attach_wagon,
      er200_h_can_attach_wagon2;
 }
 
-switch (FEAT_TRAINS, PARENT, er200_can_attach_wagon_check_year,
-[  set_offset_to(num_vehs_in_consist-2),
-  (LOAD_TEMP(1) >= 1989) +
-  ((prev_vehicle_build_year() >= 1989) * 100) ])
-{
-   1: return string(STR_CAN_ATTACH_WRONG_YEAR_MC,"...-1988","1989-...");
- 100: return string(STR_CAN_ATTACH_WRONG_YEAR_MC,"...-1988","1989-...");
-      CB_RESULT_ATTACH_ALLOW;
-}
-
 switch (FEAT_TRAINS, PARENT, er200_m_can_attach_wagon,
 [  set_offset_to(num_vehs_in_consist-2),
    prev_vehicle_type_id()])
 {
   er200_m: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-           er200_can_attach_wagon_check_year;
+           CB_RESULT_ATTACH_ALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, er200_c_can_attach_wagon,
@@ -103,7 +131,7 @@ switch (FEAT_TRAINS, PARENT, er200_c_can_attach_wagon,
    prev_vehicle_type_id()])
 {
   er200_c: return string(STR_CAN_ATTACH_OTHERCAR_ONLY);
-           er200_can_attach_wagon_check_year;
+           CB_RESULT_ATTACH_ALLOW;
 }
 
 switch (FEAT_TRAINS, SELF, er200_can_attach_wagon3,
@@ -163,201 +191,136 @@ switch (FEAT_TRAINS, PARENT, er200_m_create_effect,
      return disable_create_effect();
 }
 
-engine_capacity_MU(er200_h_r0, 24, er200_h)
-engine_capacity_MU(er200_h_r1, 12, er200_h)
-engine_capacity_MU(er200_c_r0, 64, er200_h)
-engine_capacity_MU(er200_c_r1, 36, er200_h)
-
-switch (FEAT_TRAINS, SELF, er200_h_cargo_capacity,
-  cargo_subtype >= 0xE0)
-{
-  1: er200_h_r1_cargo_capacity;
-     er200_h_r0_cargo_capacity;
-}
-
-switch (FEAT_TRAINS, SELF, er200_m_cargo_capacity,
-  cargo_subtype >= 0xE0)
-{
-  1: er200_c_r1_cargo_capacity;
-     er200_c_r0_cargo_capacity;
-}
-
-switch (FEAT_TRAINS, SELF, er200_c_cargo_capacity,
-  cargo_subtype >= 0xE0)
-{
-  1: er200_c_r1_cargo_capacity;
-     er200_c_r0_cargo_capacity;
-}
-
-engine_CAP_change_build_after(er200_h_v1, 120,
-                                          200, 1988)
-
-switch (FEAT_TRAINS, SELF, er200_h_cargo_age_period,
-  cargo_subtype >= 0xE0)
-{
-  0: er200_h_v1_cargo_age_period;
-     return 500;
-}
-
-switch (FEAT_TRAINS, SELF, er200_cargo_age_period,
-  cargo_subtype >= 0xE0)
-{
-  0: return 120;
-     return 500;
-}
+engine_power_MU(er200_m, PROP_er200_m_PR, er200_h)
+engine_power_MU(er200_c, PROP_er200_c_PR, er200_h)
+engine_capacity_MU(er200_h_r0, PROP_er200_h_CC, er200_h)
+engine_capacity_MU(er200_h_r1, 16, er200_h)
+engine_capacity_MU(er200_m_r0, PROP_er200_m_CC, er200_h)
+engine_capacity_MU(er200_m_r1, 32, er200_h)
+engine_capacity_MU(er200_c_r0, PROP_er200_c_CC, er200_h)
+engine_capacity_MU(er200_c_r1, 32, er200_h)
+engine_change_refit(er200_h_cargo_capacity, er200_h_r0_cargo_capacity, er200_h_r1_cargo_capacity)
+engine_change_refit(er200_m_cargo_capacity, er200_m_r0_cargo_capacity, er200_m_r1_cargo_capacity)
+engine_change_refit(er200_c_cargo_capacity, er200_c_r0_cargo_capacity, er200_c_r1_cargo_capacity)
+engine_change_refit(er200_cargo_age_period, return 120, return 500)
 
 livery_template_refit_f(er200, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_CP, STR_EMPTY)
 engine_refit_cost_for_a2_livery_change(er200, 0xE0, 2, 1)
-engine_speed(er200, 200)
-engine_weight_change_build_after(er200_h, 49,
-                                          50, 1988)
-engine_weight_change_build_after(er200_m, 59,
-                                          60, 1988)
-engine_weight_change_build_after(er200_c, 57,
-                                          58, 1988)
-engine_cost_change_build_after(er200_h, 37,
-                                        35, 1988)
-engine_cost_change_build_after(er200_m, 40,
-                                        39, 1988)
-engine_cost_change_build_after(er200_c, 41,
-                                        39, 1988)
-engine_power_MU(er200_m, 1146, er200_h)
 
 RC_head_check_new(er200_h, er200_h)
 switch (FEAT_TRAINS, SELF, er200_h_running_cost_factor,
-[  STORE_TEMP(162 - 6 * (build_year >= 1988), 0),  // Моторы
-   STORE_TEMP(23 - (build_year >= 1988), 1),       // Бригада
-   STORE_TEMP(57 - 2 * (build_year >= 1988), 2),   // Износ
-   STORE_TEMP(0, 3),                               // Сопровождение
-   STORE_TEMP(40 - (build_year >= 1988), 4),       // ТО
-   STORE_TEMP(3, 5),                               // Сертификация
+[  STORE_TEMP(162, 0),  // Моторы
+   STORE_TEMP(23, 1),   // Бригада
+   STORE_TEMP(57, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(40, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(200, 6),                        // Скорость
-   STORE_TEMP(49 + (build_year >= 1988), 7),  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 3, 8)])          // Максимальная масса
-{ er200_h_check_running_cost_factor; }        // 285 - 275
+   STORE_TEMP(PROP_er200_h_SD, 6),                               // Скорость
+   STORE_TEMP(int(PROP_er200_h_WT), 7),                          // Тара
+   STORE_TEMP(int(PROP_er200_h_WT + PROP_er200_h_CC / 16), 8)])  // Максимальная масса
+{ er200_h_check_running_cost_factor; }                           // 285
 
 RC_head_check_new(er200_m, er200_h)
 switch (FEAT_TRAINS, SELF, er200_m_running_cost_factor,
-[  STORE_TEMP(182 - 6 * (build_year >= 1988), 0),  // Моторы
-   STORE_TEMP(0, 1),                               // Бригада
-   STORE_TEMP(62 - 2 * (build_year >= 1988), 2),   // Износ
-   STORE_TEMP(0, 3),                               // Сопровождение
-   STORE_TEMP(43 - 2 * (build_year >= 1988), 4),   // ТО
-   STORE_TEMP(3, 5),                               // Сертификация
+[  STORE_TEMP(182, 0),  // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(62, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(43, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(200, 6),                        // Скорость
-   STORE_TEMP(59 + (build_year >= 1988), 7),  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])          // Максимальная масса
-{ er200_m_check_running_cost_factor; }        // 320 - 309
+   STORE_TEMP(PROP_er200_m_SD, 6),                               // Скорость
+   STORE_TEMP(int(PROP_er200_m_WT), 7),                          // Тара
+   STORE_TEMP(int(PROP_er200_m_WT + PROP_er200_m_CC / 16), 8)])  // Максимальная масса
+{ er200_m_check_running_cost_factor; }                           // 320
 
 RC_head_check_new(er200_c, er200_h)
 switch (FEAT_TRAINS, SELF, er200_c_running_cost_factor,
-[  STORE_TEMP(181 - 6 * (build_year >= 1988), 0),  // Моторы
-   STORE_TEMP(0, 1),                               // Бригада
-   STORE_TEMP(63 - 2 * (build_year >= 1988), 2),   // Износ
-   STORE_TEMP(0, 3),                               // Сопровождение
-   STORE_TEMP(44 - 2 * (build_year >= 1988), 4),   // ТО
-   STORE_TEMP(3, 5),                               // Сертификация
+[  STORE_TEMP(181, 0),  // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(63, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(44, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(200, 6),                        // Скорость
-   STORE_TEMP(57 + (build_year >= 1988), 7),  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])          // Максимальная масса
-{ er200_c_check_running_cost_factor; }        // 317 - 306
+   STORE_TEMP(PROP_er200_c_SD, 6),                               // Скорость
+   STORE_TEMP(int(PROP_er200_c_WT), 7),                          // Тара
+   STORE_TEMP(int(PROP_er200_c_WT + PROP_er200_c_CC / 16), 8)])  // Максимальная масса
+{ er200_c_check_running_cost_factor; }                           // 317
 
-hint_MU_with_model2_comment(er200_h_b1984,
-     calc_loading(16 / WAGON_DOOR),
+name_in_group_subgroup(er200_h, string(STR_NAME_IN_GROUP, string(STR_NAME_ER200_SERIES), string(STR_NAME_ER200)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_ER200_SERIES), string(STR_LONGNAME_ER200_H)),
+                                string(STR_NAME_ER200))
+name_in_group_subgroup(er200_m, string(STR_NAME_IN_GROUP, string(STR_NAME_ER200_SERIES), string(STR_NAME_ER200)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_ER200_SERIES), string(STR_LONGNAME_ER200_M)),
+                                string(STR_NAME_ER200))
+name_in_group_subgroup(er200_c, string(STR_NAME_IN_GROUP, string(STR_NAME_ER200_SERIES), string(STR_NAME_ER200)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_ER200_SERIES), string(STR_LONGNAME_ER200_C)),
+                                string(STR_NAME_ER200))
+
+hint_MU_with_model2_comment(er200_h,
+     calc_loading(PROP_er200_h_CC / WAGON_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, 62, 111,
      STR_SECTIONS_EMU_AM6_8_10_12_14,
-     1979, 1994,
+     1979, 1988,
      fact_rigacw(),
      string(STR_PURCHASE_HINT_EDITION_LUX))
-hint_MU_with_model2_comment(er200_h_a1984,
-     calc_loading(16 / WAGON_DOOR),
-     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, 62, 287,
-     STR_SECTIONS_EMU_AM6_8_10_12_14,
-     1979, 1994,
-     fact_rigacw(),
-     string(STR_PURCHASE_HINT_LIST2_COMMENT,
-            string(STR_PURCHASE_HINT_EDITION_LUX),
-            string(STR_PURCHASE_HINT_ATTACH_YEAR_MC,"...-1988","1989-...")))
-hint_change_after(er200_h, 1984)
-hint_MU_with_model2_comment(er200_m_b1984,
-     calc_loading(64 / WAGON_DOOR),
+hint_MU_with_model2_comment(er200_m,
+     calc_loading(PROP_er200_m_CC / WAGON_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, 62, 112,
      STR_SECTIONS_EMU_AM6_8_10_12_14,
-     1979, 1994,
+     1979, 1988,
      fact_rigacw(),
      string(STR_PURCHASE_HINT_EDITION_LUX))
-hint_MU_with_model2_comment(er200_m_a1984,
-     calc_loading(64 / WAGON_DOOR),
-     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, 62, 286,
-     STR_SECTIONS_EMU_AM6_8_10_12_14,
-     1979, 1994,
-     fact_rigacw(),
-     string(STR_PURCHASE_HINT_LIST2_COMMENT,
-            string(STR_PURCHASE_HINT_EDITION_LUX),
-            string(STR_PURCHASE_HINT_ATTACH_YEAR_MC,"...-1988","1989-...")))
-hint_change_after(er200_m, 1984)
-hint_MU_with_model2_comment(er200_c_b1984,
-     calc_loading(64 / WAGON_DOOR),
+hint_MU_with_model2_comment(er200_c,
+     calc_loading(PROP_er200_c_CC / WAGON_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, 62, 114,
      STR_SECTIONS_EMU_AM6_8_10_12_14,
-     1979, 1994,
+     1979, 1988,
      fact_rigacw(),
      string(STR_PURCHASE_HINT_EDITION_LUX))
-hint_MU_with_model2_comment(er200_c_a1984,
-     calc_loading(64 / WAGON_DOOR),
-     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, 62, 288,
-     STR_SECTIONS_EMU_AM6_8_10_12_14,
-     1979, 1994,
-     fact_rigacw(),
-     string(STR_PURCHASE_HINT_LIST2_COMMENT,
-            string(STR_PURCHASE_HINT_EDITION_LUX),
-            string(STR_PURCHASE_HINT_ATTACH_YEAR_MC,"...-1988","1989-...")))
-hint_change_after(er200_c, 1984)
+map_sprites(er200_additional_text, er200_h_additional_text)
 
 item (FEAT_TRAINS, er200_h, 380) {
   property {
     name: string(STR_NAME_ER200);
-    vehicle_dates(1979, 1994, 30, 10, 8, 36)
-    vehicle_emu_c(dc, 48.7, 16, WAGON_DOOR, _highspeed)
+    vehicle_dates(1979, 1988, 30, 10, 8, PROP_er200_h_CF)
+    vehicle_emu_c(dc, PROP_er200_h_WT, PROP_er200_h_CC, WAGON_DOOR, _highspeed)
+    vehicle_group(er200_group)
   }
   graphics {
+  purchase_menu(PROP_er200_h_CF, PROP_er200_h_RC, PROP_er200_h_SD, PROP_er200_h_WT, PROP_er200_h_TE, PROP_er200_h_PR, PROP_er200_h_CC)
         additional_text: er200_h_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: er200_can_attach_wagon;
-       cargo_age_period: er200_h_cargo_age_period;
+       cargo_age_period: er200_cargo_age_period;
          cargo_capacity: er200_h_cargo_capacity;
      cargo_subtype_text: er200_cargo_subtype_text;
          colour_mapping: any_cc_colour;
-            cost_factor: er200_h_cost_factor;
                 default: er200_h_sprites;
+                   name: er200_h_name;
                   power: return 0;
                purchase: er200_h_purchase_sprites;
-         purchase_speed: return 200;
              refit_cost: er200_refit_cost;
     running_cost_factor: er200_h_running_cost_factor;
-                  speed: er200_speed;
+                  speed: return 200;
              start_stop: er200_h_start_stop;
-                 weight: er200_h_weight;
   }
 }
 
 item (FEAT_TRAINS, er200_m, 381) {
   property {
     name: string(STR_NAME_ER200);
-    vehicle_dates(1979, 1994, 30, 10, 8, 40)
-    vehicle_emu(dc, 1146, 58.5, 35.6, 64, WAGON_DOOR, _highspeed)
+    vehicle_dates(1979, 1988, 30, 10, 8, PROP_er200_m_CF)
+    vehicle_emu(dc, PROP_er200_m_PR, PROP_er200_m_WT, PROP_er200_m_TE, PROP_er200_m_CC, WAGON_DOOR, _highspeed)
     vehicle_group_mu(er200_h)
   }
   graphics {
+  purchase_menu(PROP_er200_m_CF, PROP_er200_m_RC, PROP_er200_m_SD, PROP_er200_m_WT, PROP_er200_m_TE, PROP_er200_m_PR, PROP_er200_m_CC)
         additional_text: er200_m_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: er200_can_attach_wagon;
@@ -365,28 +328,27 @@ item (FEAT_TRAINS, er200_m, 381) {
          cargo_capacity: er200_m_cargo_capacity;
      cargo_subtype_text: er200_cargo_subtype_text;
          colour_mapping: any_cc_colour;
-            cost_factor: er200_m_cost_factor;
           create_effect: er200_m_create_effect;
                 default: er200_m_sprites;
+                   name: er200_m_name;
                   power: er200_m_power;
                purchase: er200_m_purchase_sprites;
-         purchase_speed: return 200;
              refit_cost: er200_refit_cost;
     running_cost_factor: er200_m_running_cost_factor;
-                  speed: er200_speed;
+                  speed: return 200;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
-                 weight: er200_m_weight;
   }
 }
 
 item (FEAT_TRAINS, er200_c, 382) {
   property {
     name: string(STR_NAME_ER200);
-    vehicle_dates(1979, 1994, 30, 10, 8, 40)
-    vehicle_emu(dc, 1146, 56.5, 36.0, 64, WAGON_DOOR, _highspeed)
+    vehicle_dates(1979, 1988, 30, 10, 8, PROP_er200_c_CF)
+    vehicle_emu(dc, PROP_er200_c_PR, PROP_er200_c_WT, PROP_er200_c_TE, PROP_er200_c_CC, WAGON_DOOR, _highspeed)
     vehicle_group_mu(er200_h)
   }
   graphics {
+  purchase_menu(PROP_er200_c_CF, PROP_er200_c_RC, PROP_er200_c_SD, PROP_er200_c_WT, PROP_er200_c_TE, PROP_er200_c_PR, PROP_er200_c_CC)
         additional_text: er200_c_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: er200_can_attach_wagon;
@@ -394,16 +356,14 @@ item (FEAT_TRAINS, er200_c, 382) {
          cargo_capacity: er200_c_cargo_capacity;
      cargo_subtype_text: er200_cargo_subtype_text;
          colour_mapping: any_cc_colour;
-            cost_factor: er200_c_cost_factor;
                 default: er200_c_sprites;
-                  power: er200_m_power;
+                   name: er200_c_name;
+                  power: er200_c_power;
                purchase: er200_c_purchase_sprites;
-         purchase_speed: return 200;
              refit_cost: er200_refit_cost;
     running_cost_factor: er200_c_running_cost_factor;
-                  speed: er200_speed;
+                  speed: return 200;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
-                 weight: er200_c_weight;
   }
 }
 
