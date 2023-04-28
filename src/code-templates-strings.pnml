@@ -1559,6 +1559,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR) 
 { 1: name##_additional_text_hidden;                                                                              \
      name##_additional_text_shown; }                                                                             \
 
+// Описание МВПС с подтипом и 1 вариантом в СМЕ
+#define hint_MU_with_subtype_sme(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, strmusmevar, from, to, factory)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                         \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                          \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                           \
+  STORE_TEMP(string(strmusmetype) | (string(strmusmevar) << 16), 0x102),                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO) | (from << 16), 0x103),                                                            \
+  STORE_TEMP(to | (factory << 16), 0x104)])                                                                                      \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                                  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                        \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                          \
+  STORE_TEMP(string(strmutype) | (string(strmusubtype) << 16), 0x101),                                                           \
+  STORE_TEMP(string(strmusmetype) | (string(strmusmevar) << 16), 0x102),                                                         \
+  STORE_TEMP(factory, 0x103)])                                                                                                   \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                          \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                           \
+{ 1: name##_additional_text_hidden;                                                                                              \
+     name##_additional_text_shown; }                                                                                             \
+
 // Описание МВПС с подтипом без окончания срока доступности и 1 вариантом в СМЕ
 #define hint_MU_with_subtype_sme_noto(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, strmusmevar, from, factory)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                          \
@@ -1577,7 +1596,6 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                   \
 { 1: name##_additional_text_hidden;                                                                                               \
      name##_additional_text_shown; }                                                                                              \
-
 // Описание МВПС с подтипом без окончания срока доступности c 4 производителями
 #define hint_MU_with_subtype_noto_4fact(name, lspeed, straging, strmutype, strmusubtype, strmusmetype, from, factory1, factory2, factory3, factory4)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                              \

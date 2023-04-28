@@ -1,5 +1,42 @@
 ﻿// ep2d
 
+#define PROP_ep2d_h_num  2
+#define PROP_ep2d_n_num  0  // hm
+#define PROP_ep2d_m_num  5
+#define PROP_ep2d_c_num  4
+
+#define PROP_ep2d_h_CF  28
+#define PROP_ep2d_h_RC  215
+#define PROP_ep2d_h_SD  120
+#define PROP_ep2d_h_WT  51
+#define PROP_ep2d_h_TE  0
+#define PROP_ep2d_h_PR  0
+#define PROP_ep2d_h_CC  61
+
+#define PROP_ep2d_n_CF  40
+#define PROP_ep2d_n_RC  230
+#define PROP_ep2d_n_SD  120
+#define PROP_ep2d_n_WT  65
+#define PROP_ep2d_n_TE  57.75
+#define PROP_ep2d_n_PR  1105
+#define PROP_ep2d_n_CC  68
+
+#define PROP_ep2d_m_CF  29
+#define PROP_ep2d_m_RC  212
+#define PROP_ep2d_m_SD  120
+#define PROP_ep2d_m_WT  65
+#define PROP_ep2d_m_TE  55.0
+#define PROP_ep2d_m_PR  1105
+#define PROP_ep2d_m_CC  116
+
+#define PROP_ep2d_c_CF  17
+#define PROP_ep2d_c_RC  136
+#define PROP_ep2d_c_SD  120
+#define PROP_ep2d_c_WT  46
+#define PROP_ep2d_c_TE  0
+#define PROP_ep2d_c_PR  0
+#define PROP_ep2d_c_CC  116
+
 #define IMAGEFILE  "src/emu/ep2d_h.png"
 purchase_sprites(ep2d_h, 0, 0)
 MU_head_middle_sprites(13, ep2d_h_v1_mu, 32, 40)
@@ -25,6 +62,7 @@ MU_car_sprites(13, ep2d_c_v1_mu, 32, 40)
 #define IMAGEFILE "src/emu/ep2d_c-cpsc.png"
 MU_car_sprites(13, ep2d_c_v2_mu, 32, 40)
 #undef IMAGEFILE
+map_sprites(ep2d_purchase_sprites, ep2d_h_purchase_sprites)
 
 MU_head_middle_direction_template2(ep2d_h_v1, ep2d_h, ep2d_hm)
 MU_head_middle_direction_template2(ep2d_h_v2, ep2d_h, ep2d_hm)
@@ -167,14 +205,12 @@ engine_effects_MU2(ep2d_hm, _create_effect_sprites_start, ep2d_h, ep2d_hm)
 EMU_4_12_m_create_effect_template(ep2d, -1, 6)
 EMU_direction_calculation_template2(ep2d, _m_create_effect)
 engine_effects_MU2(ep2d_m, _create_effect_direction_template, ep2d_h, ep2d_hm)
-engine_power_MU2(ep2d_hm, 1105, ep2d_h, ep2d_hm)
-engine_power_MU2(ep2d_m, 1105, ep2d_h, ep2d_hm)
-engine_capacity_MU2(ep2d_h, 61, ep2d_h, ep2d_hm)
-engine_capacity_MU2(ep2d_hm, 68, ep2d_h, ep2d_hm)
-engine_capacity_MU2(ep2d_m, 116, ep2d_h, ep2d_hm)
-engine_capacity_MU2(ep2d_c, 116, ep2d_h, ep2d_hm)
-
-engine_speed(ep2d, 120)
+engine_power_MU2(ep2d_hm, PROP_ep2d_n_PR, ep2d_h, ep2d_hm)
+engine_power_MU2(ep2d_m, PROP_ep2d_m_PR, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_h, PROP_ep2d_h_CC, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_hm, PROP_ep2d_n_CC, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_m, PROP_ep2d_m_CC, ep2d_h, ep2d_hm)
+engine_capacity_MU2(ep2d_c, PROP_ep2d_c_CC, ep2d_h, ep2d_hm)
 
  livery_template_base_list2(ep2d_a2015, LV_CPSC, LV_RZD_PID)
 livery_template_service_year_ao(ep2d, 2015)
@@ -188,10 +224,10 @@ switch (FEAT_TRAINS, SELF, ep2d_h_running_cost_factor,
    STORE_TEMP(30, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(44, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])   // Максимальная масса
-{ ep2d_h_check_running_cost_factor; }  // 215
+   STORE_TEMP(PROP_ep2d_h_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep2d_h_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep2d_h_WT + PROP_ep2d_h_CC / 16), 8)])  // Максимальная масса
+{ ep2d_h_check_running_cost_factor; }                          // 215
 
 RC_head_check2_new(ep2d_hm, ep2d_h, ep2d_hm)
 switch (FEAT_TRAINS, SELF, ep2d_hm_running_cost_factor,
@@ -202,10 +238,10 @@ switch (FEAT_TRAINS, SELF, ep2d_hm_running_cost_factor,
    STORE_TEMP(32, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),                  // Скорость
-   STORE_TEMP(58, 7),                   // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 9, 8)])    // Максимальная масса
-{ ep2d_hm_check_running_cost_factor; }  // 230
+   STORE_TEMP(PROP_ep2d_n_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep2d_n_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep2d_n_WT + PROP_ep2d_n_CC / 16), 8)])  // Максимальная масса
+{ ep2d_hm_check_running_cost_factor; }                         // 230
 
 RC_head_check2_new(ep2d_m, ep2d_h, ep2d_hm)
 switch (FEAT_TRAINS, SELF, ep2d_m_running_cost_factor,
@@ -216,10 +252,10 @@ switch (FEAT_TRAINS, SELF, ep2d_m_running_cost_factor,
    STORE_TEMP(32, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(58, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 15, 8)])  // Максимальная масса
-{ ep2d_m_check_running_cost_factor; }  // 230
+   STORE_TEMP(PROP_ep2d_m_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep2d_m_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep2d_m_WT + PROP_ep2d_m_CC / 16), 8)])  // Максимальная масса
+{ ep2d_m_check_running_cost_factor; }                          // 212
 
 RC_head_check2_new(ep2d_c, ep2d_h, ep2d_hm)
 switch (FEAT_TRAINS, SELF, ep2d_c_running_cost_factor,
@@ -230,47 +266,63 @@ switch (FEAT_TRAINS, SELF, ep2d_c_running_cost_factor,
    STORE_TEMP(19, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(41, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 15, 8)])  // Максимальная масса
-{ ep2d_c_check_running_cost_factor; }  // 136
+   STORE_TEMP(PROP_ep2d_c_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep2d_c_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep2d_c_WT + PROP_ep2d_c_CC / 16), 8)])  // Максимальная масса
+{ ep2d_c_check_running_cost_factor; }                          // 136
+
+name_in_group_subgroup(ep2d_h, string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_NAME_EP2D)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_LONGNAME_EP2D_H)),
+                               string(STR_NAME_EP2D))
+name_in_group_subgroup(ep2d_hm, string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_NAME_EP2D)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_LONGNAME_EP2D_HM)),
+                                string(STR_NAME_EP2D))
+name_in_group_subgroup(ep2d_m, string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_NAME_EP2D)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_LONGNAME_EP2D_M)),
+                               string(STR_NAME_EP2D))
+name_in_group_subgroup(ep2d_c, string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_NAME_EP2D)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_LONGNAME_EP2D_C)),
+                               string(STR_NAME_EP2D))
 
 hint_MU_with_model2_noto(ep2d_h,
-     calc_loading(61 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep2d_h_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC_WITH_SUBTYPE, 62, 379,
      STR_SECTIONS_EMU_EP2D,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
 hint_MU_with_model2_noto(ep2d_m,
-     calc_loading(116 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep2d_m_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_DC_WITH_SUBTYPE, 62, 380,
      STR_SECTIONS_EMU_EP2D,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
 hint_MU_with_model2_noto(ep2d_c,
-     calc_loading(116 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep2d_c_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, 62, 381,
      STR_SECTIONS_EMU_EP2D,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
 hint_MU_with_model2_noto(ep2d_hm,
-     calc_loading(68 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep2d_n_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_HM_DC_WITH_SUBTYPE, 62, 381,
      STR_SECTIONS_EMU_EP2D,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
+map_sprites(ep2d_additional_text, ep2d_h_additional_text)
 
 item (FEAT_TRAINS, ep2d_h, 544) {
   property {
     name: string(STR_NAME_EP2D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 28)
-    vehicle_emu_c(dc, 51, 61, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep2d_h_CF)
+    vehicle_emu_c(dc, PROP_ep2d_h_WT, PROP_ep2d_h_CC, 2 * WIDERST_D_DOOR, )
+    vehicle_group_mu(ed4_group)
   }
   graphics {
+     purchase_menu(PROP_ep2d_h_CF, PROP_ep2d_h_RC, PROP_ep2d_h_SD, PROP_ep2d_h_WT, PROP_ep2d_h_TE, PROP_ep2d_h_PR, PROP_ep2d_h_CC)
         additional_text: ep2d_h_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep2d_can_attach_wagon;
@@ -279,11 +331,11 @@ item (FEAT_TRAINS, ep2d_h, 544) {
      cargo_subtype_text: ep2d_cargo_subtype_text;
          colour_mapping: any_cc_colour;
                 default: ep2d_h_sprites;
+                   name: ep2d_h_name;
                   power: return 0;
                purchase: ep2d_h_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: ep2d_h_running_cost_factor;
-                  speed: ep2d_speed;
+                  speed: return PROP_ep2d_h_SD;
              start_stop: ep2d_h_start_stop;
   }
 }
@@ -291,11 +343,12 @@ item (FEAT_TRAINS, ep2d_h, 544) {
 item (FEAT_TRAINS, ep2d_m, 545) {
   property {
     name: string(STR_NAME_EP2D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 29)
-    vehicle_emu(dc, 1105, 65, 55.0, 116, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep2d_m_CF)
+    vehicle_emu(dc, PROP_ep2d_m_PR, PROP_ep2d_m_WT, PROP_ep2d_m_TE, PROP_ep2d_m_CC, 2 * WIDERST_D_DOOR, )
     vehicle_group_mu(ep2d_h)
   }
   graphics {
+      purchase_menu(PROP_ep2d_m_CF, PROP_ep2d_m_RC, PROP_ep2d_m_SD, PROP_ep2d_m_WT, PROP_ep2d_m_TE, PROP_ep2d_m_PR, PROP_ep2d_m_CC)
         additional_text: ep2d_m_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep2d_can_attach_wagon;
@@ -305,11 +358,11 @@ item (FEAT_TRAINS, ep2d_m, 545) {
          colour_mapping: any_cc_colour;
           create_effect: ep2d_m_create_effect;
                 default: ep2d_m_sprites;
+                   name: ep2d_m_name;
                   power: ep2d_m_power;
                purchase: ep2d_m_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: ep2d_m_running_cost_factor;
-                  speed: ep2d_speed;
+                  speed: return PROP_ep2d_m_SD;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
   }
 }
@@ -317,11 +370,12 @@ item (FEAT_TRAINS, ep2d_m, 545) {
 item (FEAT_TRAINS, ep2d_c, 546) {
   property {
     name: string(STR_NAME_EP2D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 17)
-    vehicle_emu_c(dc, 46, 116, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep2d_c_CF)
+    vehicle_emu_c(dc, PROP_ep2d_c_WT, PROP_ep2d_c_CC, 2 * WIDERST_D_DOOR, )
     vehicle_group_mu(ep2d_h)
   }
   graphics {
+    purchase_menu(PROP_ep2d_c_CF, PROP_ep2d_c_RC, PROP_ep2d_c_SD, PROP_ep2d_c_WT, PROP_ep2d_c_TE, PROP_ep2d_c_PR, PROP_ep2d_c_CC)
         additional_text: ep2d_c_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep2d_can_attach_wagon;
@@ -330,11 +384,11 @@ item (FEAT_TRAINS, ep2d_c, 546) {
      cargo_subtype_text: ep2d_cargo_subtype_text;
          colour_mapping: any_cc_colour;
                 default: ep2d_c_sprites;
+                   name: ep2d_c_name;
                   power: return 0;
                purchase: ep2d_c_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: ep2d_c_running_cost_factor;
-                  speed: ep2d_speed;
+                  speed: return PROP_ep2d_c_SD;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
   }
 }
@@ -342,11 +396,12 @@ item (FEAT_TRAINS, ep2d_c, 546) {
 item (FEAT_TRAINS, ep2d_hm, 547) {
   property {
     name: string(STR_NAME_EP2D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 40)
-    vehicle_emu(dc, 1105, 65, 57.75, 68, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep2d_n_CF)
+    vehicle_emu(dc, PROP_ep2d_n_PR, PROP_ep2d_n_WT, PROP_ep2d_n_TE, PROP_ep2d_n_CC, 2 * WIDERST_D_DOOR, )
     vehicle_group_mu(ep2d_h)
   }
   graphics {
+    purchase_menu(PROP_ep2d_n_CF, PROP_ep2d_n_RC, PROP_ep2d_n_SD, PROP_ep2d_n_WT, PROP_ep2d_n_TE, PROP_ep2d_n_PR, PROP_ep2d_n_CC)
         additional_text: ep2d_hm_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep2d_can_attach_wagon;
@@ -355,11 +410,11 @@ item (FEAT_TRAINS, ep2d_hm, 547) {
          colour_mapping: any_cc_colour;
           create_effect: ep2d_hm_create_effect;
                 default: ep2d_hm_sprites;
+                   name: ep2d_hm_name;
                   power: ep2d_hm_power;
                purchase: ep2d_hm_purchase_sprites;
-         purchase_speed: return 120;
     running_cost_factor: ep2d_hm_running_cost_factor;
-                  speed: ep2d_speed;
+                  speed: return PROP_ep2d_n_SD;
              start_stop: ep2d_h_start_stop;
   }
 }

@@ -166,12 +166,10 @@ switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon,
   livery_template_refit_f(evs2_a2014, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
 livery_template_build_year_ao(evs2, 2014)
 
-engine_speed(evs2_250, 250)
-engine_speed(evs2_300, 300)
 switch (FEAT_TRAINS, SELF, evs2_speed,
   cargo_subtype >= 0xE0)
-{ 1: evs2_300_speed;
-     evs2_250_speed; }
+{ 1: return 300;
+     return 250; }
 engine_refit_cost_for_e2_livery_change(evs2, 0xE0, 105, 105)
 engine_capacity_MU_change_build_after(evs2, 104,
                                              75, 2014, evs2)
@@ -212,19 +210,22 @@ switch (FEAT_TRAINS, PARENT, evs2_running_cost_factor,
      evs2_v2_running_cost_factor;
 }
 
-hint_MU_with_subtype_noto(evs2_b2014,
+name_in_group(evs2, string(STR_NAME_IN_GROUP, string(STR_NAME_EVS_SERIES), string(STR_NAME_EVS2)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_EVS_SERIES), string(STR_LONGNAME_EVS2)))
+
+hint_MU_with_subtype(evs2_b2014,
      calc_loading(max(460 / (7 * WAGON_DOOR), 104 / (2 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
      STR_SECTIONS_MU_S1of10,
-     2009,
+     2009, 2022,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS))
-hint_MU_with_subtype_noto_comment(evs2_a2014,
+hint_MU_with_subtype_comment(evs2_a2014,
      calc_loading(max(433 / (7 * WAGON_DOOR), 75 / (2 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
      STR_SECTIONS_MU_S1_2of10,
-     2009,
+     2009, 2022,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
      string(STR_PURCHASE_HINT_LIST2_COMMENT,
             string(STR_PURCHASE_HINT_EDITION_NEW_SPEED, 300),
@@ -234,9 +235,10 @@ hint_change_after(evs2, 2014)
 item (FEAT_TRAINS, evs2, 401) {
   property {
     name: string(STR_NAME_EVS2);
-    vehicle_dates(2009, 2050, 30, 10, 8, 1748)
+    vehicle_dates(2009, 2022, 30, 10, 8, 1748)
     vehicle_emu(acdc, 10876, 596.2, 328.0, 104, 2 * WAGON_DOOR, _highspeed)
     vehicle_allow_tourists()
+    vehicle_group(evs_group)
   }
   graphics {
         additional_text: evs2_additional_text;
@@ -249,6 +251,7 @@ item (FEAT_TRAINS, evs2, 401) {
             cost_factor: return 1748;
           create_effect: evs2_create_effect;
                 default: evs2_sprites;
+                   name: evs2_name;
                   power: evs2_power;
                purchase: evs2_purchase_sprites;
          purchase_speed: return 250;

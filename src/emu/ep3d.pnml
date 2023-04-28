@@ -1,5 +1,42 @@
 ﻿// ep3d
 
+#define PROP_ep3d_h_num  2
+#define PROP_ep3d_n_num  0
+#define PROP_ep3d_m_num  4
+#define PROP_ep3d_c_num  2
+
+#define PROP_ep3d_h_CF  11
+#define PROP_ep3d_h_RC  115
+#define PROP_ep3d_h_SD  120
+#define PROP_ep3d_h_WT  43.5
+#define PROP_ep3d_h_TE  0
+#define PROP_ep3d_h_PR  0
+#define PROP_ep3d_h_CC  61
+
+#define PROP_ep3d_n_CF  0
+#define PROP_ep3d_n_RC  0
+#define PROP_ep3d_n_SD  120
+#define PROP_ep3d_n_WT  0
+#define PROP_ep3d_n_TE  0
+#define PROP_ep3d_n_PR  0
+#define PROP_ep3d_n_CC  0
+
+#define PROP_ep3d_m_CF  17
+#define PROP_ep3d_m_RC  101
+#define PROP_ep3d_m_SD  120
+#define PROP_ep3d_m_WT  64.4
+#define PROP_ep3d_m_TE  102.0
+#define PROP_ep3d_m_PR  1066
+#define PROP_ep3d_m_CC  116
+
+#define PROP_ep3d_c_CF  7
+#define PROP_ep3d_c_RC  62
+#define PROP_ep3d_c_SD  120
+#define PROP_ep3d_c_WT  39.7
+#define PROP_ep3d_c_TE  0
+#define PROP_ep3d_c_PR  0
+#define PROP_ep3d_c_CC  116
+
 #define IMAGEFILE  "src/emu/ep3d_h.png"
 purchase_sprites(ep3d_h, 0, 0)
 MU_head_middle_sprites(13, ep3d_h_mu, 32, 40)
@@ -12,6 +49,7 @@ EMU_motor1_sprites(13, ep3d_m_mu, 32, 40)
 purchase_sprites(ep3d_c, 0, 0)
 MU_car_sprites(13, ep3d_c_mu, 32, 40)
 #undef IMAGEFILE
+map_sprites(ep3d_purchase_sprites, ep3d_h_purchase_sprites)
 
 MU_head_middle_direction_template(ep3d_h, ep3d_h)
 
@@ -65,10 +103,10 @@ switch (FEAT_TRAINS, PARENT, ep3d_h_start_stop,
 EMU_4_12_m_create_effect_template(ep3d, -1, 6)
 EMU_direction_calculation_template(ep3d, _m_create_effect)
 engine_effects_MU(ep3d_m, _create_effect_direction_template, ep3d_h)
-engine_power_MU(ep3d_m, 1066, ep3d_h)
-engine_capacity_MU(ep3d_h, 61, ep3d_h)
-engine_capacity_MU(ep3d_m, 116, ep3d_h)
-engine_capacity_MU(ep3d_c, 116, ep3d_h)
+engine_power_MU(ep3d_m, PROP_ep3d_m_PR, ep3d_h)
+engine_capacity_MU(ep3d_h, PROP_ep3d_h_CC, ep3d_h)
+engine_capacity_MU(ep3d_m, PROP_ep3d_m_CC, ep3d_h)
+engine_capacity_MU(ep3d_c, PROP_ep3d_c_CC, ep3d_h)
 
 RC_head_check_new(ep3d_h, ep3d_h)
 switch (FEAT_TRAINS, SELF, ep3d_h_running_cost_factor,
@@ -79,10 +117,10 @@ switch (FEAT_TRAINS, SELF, ep3d_h_running_cost_factor,
    STORE_TEMP(11, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(44, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])   // Максимальная масса
-{ ep3d_h_check_running_cost_factor; }  // 77
+   STORE_TEMP(PROP_ep3d_h_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep3d_h_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep3d_h_WT + PROP_ep3d_h_CC / 16), 8)])  // Максимальная масса
+{ ep3d_h_check_running_cost_factor; }                          // 77
 
 RC_head_check_new(ep3d_m, ep3d_h)
 switch (FEAT_TRAINS, SELF, ep3d_m_running_cost_factor,
@@ -93,10 +131,10 @@ switch (FEAT_TRAINS, SELF, ep3d_m_running_cost_factor,
    STORE_TEMP(18, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(58, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 15, 8)])  // Максимальная масса
-{ ep3d_m_check_running_cost_factor; }  // 126
+   STORE_TEMP(PROP_ep3d_m_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep3d_m_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep3d_m_WT + PROP_ep3d_m_CC / 16), 8)])  // Максимальная масса
+{ ep3d_m_check_running_cost_factor; }                          // 126
 
 RC_head_check_new(ep3d_c, ep3d_h)
 switch (FEAT_TRAINS, SELF, ep3d_c_running_cost_factor,
@@ -107,40 +145,53 @@ switch (FEAT_TRAINS, SELF, ep3d_c_running_cost_factor,
    STORE_TEMP(7, 4),   // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(41, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 15, 8)])  // Максимальная масса
-{ ep3d_c_check_running_cost_factor; }  // 52
+   STORE_TEMP(PROP_ep3d_c_SD, 6),                              // Скорость
+   STORE_TEMP(int(PROP_ep3d_c_WT), 7),                         // Тара
+   STORE_TEMP(int(PROP_ep3d_c_WT + PROP_ep3d_c_CC / 16), 8)])  // Максимальная масса
+{ ep3d_c_check_running_cost_factor; }                          // 52
+
+name_in_group_subgroup(ep3d_h, string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_NAME_EP3D)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_LONGNAME_EP3D_H)),
+                               string(STR_NAME_EP3D))
+name_in_group_subgroup(ep3d_m, string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_NAME_EP3D)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_LONGNAME_EP3D_M)),
+                               string(STR_NAME_EP3D))
+name_in_group_subgroup(ep3d_c, string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_NAME_EP3D)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_LONGNAME_EP3D_C)),
+                               string(STR_NAME_EP3D))
 
 hint_MU_with_model2_noto(ep3d_h,
-     calc_loading(61 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep3d_h_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_AC_WITH_SUBTYPE, 62, 383,
      STR_SECTIONS_EMU_4_6_8_9,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
 hint_MU_with_model2_noto(ep3d_m,
-     calc_loading(116 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep3d_m_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_M_AC_WITH_SUBTYPE, 62, 384,
      STR_SECTIONS_EMU_4_6_8_9,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
 hint_MU_with_model2_noto(ep3d_c,
-     calc_loading(116 / (2 * WIDERST_D_DOOR)),
+     calc_loading(PROP_ep3d_c_CC / (2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC_WITH_SUBTYPE, 62, 385,
      STR_SECTIONS_EMU_4_6_8_9,
      2016,
      string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
+map_sprites(ep3d_additional_text, ep3d_h_additional_text)
 
 item (FEAT_TRAINS, ep3d_h, 602) {
   property {
     name: string(STR_NAME_EP3D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 11)
-    vehicle_emu_c(ac, 43.5, 61, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep3d_h_CF)
+    vehicle_emu_c(ac, PROP_ep3d_h_WT, PROP_ep3d_h_CC, 2 * WIDERST_D_DOOR, )
+    vehicle_group_mu(ed9_group)
   }
   graphics {
+     purchase_menu(PROP_ep3d_h_CF, PROP_ep3d_h_RC, PROP_ep3d_h_SD, PROP_ep3d_h_WT, PROP_ep3d_h_TE, PROP_ep3d_h_PR, PROP_ep3d_h_CC)
         additional_text: ep3d_h_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep3d_can_attach_wagon;
@@ -148,6 +199,7 @@ item (FEAT_TRAINS, ep3d_h, 602) {
          cargo_capacity: ep3d_h_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: ep3d_h_sprites;
+                   name: ep3d_h_name;
                   power: return 0;
                purchase: ep3d_h_purchase_sprites;
     running_cost_factor: ep3d_h_running_cost_factor;
@@ -159,11 +211,12 @@ item (FEAT_TRAINS, ep3d_h, 602) {
 item (FEAT_TRAINS, ep3d_m, 603) {
   property {
     name: string(STR_NAME_EP3D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 17)
-    vehicle_emu(ac, 1066, 64.4, 102.0, 116, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep3d_m_CF)
+    vehicle_emu(ac, PROP_ep3d_m_PR, PROP_ep3d_m_WT, PROP_ep3d_m_TE, PROP_ep3d_m_CC, 2 * WIDERST_D_DOOR, )
     vehicle_group_mu(ep3d_h)
   }
   graphics {
+      purchase_menu(PROP_ep3d_m_CF, PROP_ep3d_m_RC, PROP_ep3d_m_SD, PROP_ep3d_m_WT, PROP_ep3d_m_TE, PROP_ep3d_m_PR, PROP_ep3d_m_CC)
         additional_text: ep3d_m_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep3d_can_attach_wagon;
@@ -172,6 +225,7 @@ item (FEAT_TRAINS, ep3d_m, 603) {
          colour_mapping: any_cc_colour;
           create_effect: ep3d_m_create_effect;
                 default: ep3d_m_sprites;
+                   name: ep3d_m_name;
                   power: ep3d_m_power;
                purchase: ep3d_m_purchase_sprites;
     running_cost_factor: ep3d_m_running_cost_factor;
@@ -183,11 +237,12 @@ item (FEAT_TRAINS, ep3d_m, 603) {
 item (FEAT_TRAINS, ep3d_c, 604) {
   property {
     name: string(STR_NAME_EP3D);
-    vehicle_dates(2016, 2050, 30, 10, 8, 7)
-    vehicle_emu_c(ac, 39.7, 116, 2 * WIDERST_D_DOOR, )
+    vehicle_dates(2016, 2050, 30, 10, 8, PROP_ep3d_c_CF)
+    vehicle_emu_c(ac, PROP_ep3d_c_WT, PROP_ep3d_c_CC, 2 * WIDERST_D_DOOR, )
     vehicle_group_mu(ep3d_h)
   }
   graphics {
+    purchase_menu(PROP_ep3d_c_CF, PROP_ep3d_c_RC, PROP_ep3d_c_SD, PROP_ep3d_c_WT, PROP_ep3d_c_TE, PROP_ep3d_c_PR, PROP_ep3d_c_CC)
         additional_text: ep3d_c_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ep3d_can_attach_wagon;
@@ -195,6 +250,7 @@ item (FEAT_TRAINS, ep3d_c, 604) {
          cargo_capacity: ep3d_c_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: ep3d_c_sprites;
+                   name: ep3d_c_name;
                   power: return 0;
                purchase: ep3d_c_purchase_sprites;
     running_cost_factor: ep3d_c_running_cost_factor;

@@ -1,5 +1,42 @@
 ﻿// es1
 
+#define PROP_es1_h_num  0
+#define PROP_es1_n_num  0
+#define PROP_es1_m_num  1
+#define PROP_es1_c_num  0
+
+#define PROP_es1_h_CF  0
+#define PROP_es1_h_RC  0
+#define PROP_es1_h_SD  160
+#define PROP_es1_h_WT  0
+#define PROP_es1_h_TE  0
+#define PROP_es1_h_PR  0
+#define PROP_es1_h_CC  0
+
+#define PROP_es1_n_CF  506
+#define PROP_es1_n_RC  2170
+#define PROP_es1_n_SD  160
+#define PROP_es1_n_WT  263.2
+#define PROP_es1_n_TE  256.0
+#define PROP_es1_n_PR  3467
+#define PROP_es1_n_CC  443
+
+#define PROP_es1_m_CF  (PROP_es1_n_CF) / 5
+#define PROP_es1_m_RC  (PROP_es1_n_RC) / 5
+#define PROP_es1_m_SD   PROP_es1_n_SD
+#define PROP_es1_m_WT  (PROP_es1_n_WT) / 5
+#define PROP_es1_m_TE  (PROP_es1_n_TE) / 5
+#define PROP_es1_m_PR  (PROP_es1_n_PR) / 5
+#define PROP_es1_m_CC  (PROP_es1_n_CC) / 5
+
+#define PROP_es1_c_CF  0
+#define PROP_es1_c_RC  0
+#define PROP_es1_c_SD  160
+#define PROP_es1_c_WT  0
+#define PROP_es1_c_TE  0
+#define PROP_es1_c_PR  0
+#define PROP_es1_c_CC  0
+
 #define IMAGEFILE  "src/emu/es1_h.png"
 purchase_sprites(es1_h, 0, 0)
 purchase_sprites(es2g_hm, 0, 19)
@@ -13,6 +50,7 @@ EMU_motor1_middle_sprites(14, es1_m, 32, 40)
 purchase_sprites(es2g_c, 0, 0)
 MU_car_sprites(14, es1_c, 32, 40)
 #undef IMAGEFILE
+map_sprites(es1_purchase_sprites, es1_h_purchase_sprites)
 
 switch (FEAT_TRAINS, SELF, es1_h_sprites_left_check,
   position_in_consist == 0)
@@ -181,12 +219,11 @@ switch (FEAT_TRAINS, SELF, es1_can_attach_wagon,
 switch (FEAT_TRAINS, PARENT, es1_cargo_capacity,
   (vehicle_type_id == es1) || tep70bs_es1_2())
 {
-  1: return 443;
+  1: return PROP_es1_n_CC;
      return 0;
 }
 
-engine_speed(es1, 160)
-engine_power_MU(es1, 3467, es1)
+engine_power_MU(es1, PROP_es1_n_PR, es1)
 
 RC_head_check_new(es1, es1)
 switch (FEAT_TRAINS, SELF, es1_running_cost_factor,
@@ -197,40 +234,37 @@ switch (FEAT_TRAINS, SELF, es1_running_cost_factor,
    STORE_TEMP(322, 4),   // ТО
    STORE_TEMP(23, 5),    // Сертификация
 
-   STORE_TEMP(160, 6),                       // Скорость
-   STORE_TEMP(263, 7),                       // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 443 / 16, 8)])  // Максимальная масса
-{ es1_check_running_cost_factor; }
+   STORE_TEMP(PROP_es1_n_SD, 6),                             // Скорость
+   STORE_TEMP(int(PROP_es1_n_WT), 7),                        // Тара
+   STORE_TEMP(int(PROP_es1_n_WT + PROP_es1_n_CC / 16), 8)])  // Максимальная масса
+{ es1_check_running_cost_factor; }                           // 2170
 
-hint_MU_with_subtype_noto(es1_b2014,
-     calc_loading(443 / (5 * 2 * WIDERST_D_DOOR)),
+name_in_group(es1, string(STR_NAME_IN_GROUP, string(STR_NAME_ES_SERIES), string(STR_NAME_ES1)),
+                   string(STR_NAME_IN_GROUP, string(STR_NAME_ES_SERIES), string(STR_LONGNAME_ES1)))
+
+hint_MU_with_subtype(es1_b2018,
+     calc_loading(PROP_es1_n_CC / (5 * 2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_2_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SR_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_MU_S1_2of5,
-     2011,
+     2011, 2014,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS))
-hint_MU_with_subtype_noto(es1_a2014,
-     calc_loading(443 / (5 * 2 * WIDERST_D_DOOR)),
+hint_MU_with_subtype_comment(es1_a2018,
+     calc_loading(PROP_es1_n_CC / (5 * 2 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_AGING_PERIOD_2_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SR_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_MU_S1_2of5,
-     2011,
-     string(STR_PURCHASE_HINT_FACTORY_URAL))
-hint_MU_with_subtype_noto_comment(es1_a2018,
-     calc_loading(443 / (5 * 2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_2_2,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SR_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
-     STR_SECTIONS_MU_S1_2of5,
-     2011,
-     string(STR_PURCHASE_HINT_FACTORY_URAL),
+     2011, 2014,
+     string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
      string(STR_PURCHASE_HINT_TEP70BS))
-hint_change_after2(es1, 2014, 2018)
+hint_change_after(es1, 2018)
 
 item (FEAT_TRAINS, es1, 413) {
   property {
     name: string(STR_NAME_ES1);
-    vehicle_dates(2011, 2050, 40, 10, 8, 506)
-    vehicle_emu(acdc, 3467, 263.2, 256.0, 443, 5 * 2 * WIDERST_D_DOOR, _highspeed)
+    vehicle_dates(2011, 2014, 40, 10, 8, PROP_es1_n_CF)
+    vehicle_emu(acdc, PROP_es1_n_PR, PROP_es1_n_WT, PROP_es1_n_TE, PROP_es1_n_CC, 5 * 2 * WIDERST_D_DOOR, _highspeed)
+    vehicle_group(es_group)
   }
   graphics {
         additional_text: es1_additional_text;
@@ -242,11 +276,11 @@ item (FEAT_TRAINS, es1, 413) {
             cost_factor: return 506;
           create_effect: es1_create_effect;
                 default: es1_sprites;
+                   name: es1_name;
                   power: es1_power;
                purchase: es1_h_purchase_sprites;
-         purchase_speed: return 160;
     running_cost_factor: es1_running_cost_factor;
-                  speed: es1_speed;
+                  speed: return 160;
   }
 }
 
@@ -255,7 +289,7 @@ allow_acdcemu(es1)
 
 item (FEAT_TRAINS, es1_part2, 453) {
   property {
-    vehicle_no_dates(2011, 2050, 40, 10, 8, 0)
+    vehicle_no_dates(2011, 2014, 40, 10, 8, 0)
     vehicle_emu_empty(acdc, _highspeed)
   }
   graphics {
