@@ -498,6 +498,11 @@ switch (FEAT_TRAINS, SELF, name##_speed,                                      \
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])  \
 { return; }                                                                   \
 
+#define wagon_speed_change_build_after(name, speed, new_speed, year)  \
+switch (FEAT_TRAINS, SELF, name##_speed, build_year >= year)          \
+{ 1: return new_speed;                                                \
+     return speed; }                                                  \
+
 // Определение скорости с 2-я изменениями по году постройки
 #define engine_speed_change_build_after2(name, speed, new_speed, year, new_speed2, year2)        \
 switch (FEAT_TRAINS, SELF, name##_purchase_speed, (build_year >= year) + (build_year >= year2))  \
@@ -553,6 +558,11 @@ switch (FEAT_TRAINS, SELF, name##_speed,                         \
   is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :     \
                         LOAD_TEMP(0) ])                          \
 { return; }                                                      \
+
+#define wagon_speed_change_after(name, speed, new_speed, year)  \
+switch (FEAT_TRAINS, SELF, name##_speed, check_year(year))      \
+{ 1: return new_speed;                                          \
+     return speed; }                                            \
 
 // Определение скорости с изменением в 2 заданных года
 #define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)  \

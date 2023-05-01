@@ -681,205 +681,168 @@ switch (FEAT_TRAINS, SELF, name##_sprites_right,                   \
      name##_traveling_sprites_right; }                             \
 
 // рассчёт предупреждения о неккорректной позиции
-#define buster_notlast_bothsides(name, vehid, pant)         \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_prev,  \
-  getbits(extra_callback_info1, 8, 8))                      \
-{    0: name##_sprites_start;                               \
-  1..2: type_head_motor##_pant##_prev_mandatory;            \
-     return CB_FAILED; }                                    \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_next,  \
-  getbits(extra_callback_info1, 8, 8))                      \
-{    0: name##_sprites_start;                               \
-  1..2: type_head_motor##_pant##_add_mandatory;             \
-     return CB_FAILED; }                                    \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_after,      \
-[ set_offset_to(2),                                         \
-  prev_vehicle_type_id() != vehid])                         \
-{ 1: name##_sprites_start_mark_next;                        \
-     name##_sprites_start; }                                \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before,     \
-[ set_offset_to(-2),                                        \
-  prev_vehicle_type_id() != vehid])                         \
-{ 1: name##_sprites_start_mark_prev;                        \
-     name##_sprites_start_after; }                          \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,         \
-  position_in_consist_from_end == 1)                        \
-{ 1: name##_sprites_start_mark_next;                        \
-     name##_sprites_start_before; }                         \
+#define buster_notlast_bothsides(name, vehid, pant)     \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after,  \
+[ set_offset_to(2),                                     \
+  prev_vehicle_type_id() != vehid])                     \
+{ 1: type_head_motor##pant##_add_mandatory;             \
+     name##_sprites_start; }                            \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,     \
+[ set_offset_to(-2),                                    \
+  ((prev_vehicle_type_id() != vehid) + 1) *             \
+  (getbits(extra_callback_info1, 8, 8) > 0) ])          \
+{ 1: name##_sprites_start_after;                        \
+  2: type_head_motor##pant##_prev_mandatory;            \
+     name##_sprites_start; }                            \
 
 #define buster_notlast_bothsides2(name, vehid, vehid2, pant)  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_prev,    \
-  getbits(extra_callback_info1, 8, 8))                        \
-{    0: name##_sprites_start;                                 \
-  1..2: type_head_motor##_pant##_prev_mandatory;              \
-     return CB_FAILED; }                                      \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_next,    \
-  getbits(extra_callback_info1, 8, 8))                        \
-{    0: name##_sprites_start;                                 \
-  1..2: type_head_motor##_pant##_add_mandatory;               \
-     return CB_FAILED; }                                      \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_after,        \
 [ set_offset_to(2),                                           \
   (prev_vehicle_type_id() != vehid) &&                        \
   (prev_vehicle_type_id() != vehid2) ])                       \
-{ 1: name##_sprites_start_mark_next;                          \
+{ 1: type_head_motor##pant##_add_mandatory;                   \
      name##_sprites_start; }                                  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before,       \
-[ set_offset_to(-2),                                          \
-  (prev_vehicle_type_id() != vehid) &&                        \
-  (prev_vehicle_type_id() != vehid2) ])                       \
-{ 1: name##_sprites_start_mark_prev;                          \
-     name##_sprites_start_after; }                            \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,           \
-  position_in_consist_from_end == 1)                          \
-{ 1: name##_sprites_start_mark_next;                          \
-     name##_sprites_start_before; }                           \
+[ set_offset_to(-2),                                          \
+  (((prev_vehicle_type_id() != vehid) &&                      \
+    (prev_vehicle_type_id() != vehid2)) + 1) *                \
+  (getbits(extra_callback_info1, 8, 8) > 0)  ])               \
+{ 1: name##_sprites_start_after;                              \
+  2: type_head_motor##pant##_prev_mandatory;                  \
+     name##_sprites_start; }                                  \
 
 #define buster_notlast_bothsides3(name, vehid, vehid2, vehid3, pant)  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_prev,            \
-  getbits(extra_callback_info1, 8, 8))                                \
-{    0: name##_sprites_start;                                         \
-  1..2: type_head_motor##_pant##_prev_mandatory;                      \
-     return CB_FAILED; }                                              \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_next,            \
-  getbits(extra_callback_info1, 8, 8))                                \
-{    0: name##_sprites_start;                                         \
-  1..2: type_head_motor##_pant##_add_mandatory;                       \
-     return CB_FAILED; }                                              \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_after,                \
 [ set_offset_to(2),                                                   \
   (prev_vehicle_type_id() != vehid) &&                                \
   (prev_vehicle_type_id() != vehid2) &&                               \
   (prev_vehicle_type_id() != vehid3) ])                               \
-{ 1: name##_sprites_start_mark_next;                                  \
+{ 1: type_head_motor##pant##_add_mandatory;                           \
      name##_sprites_start; }                                          \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before,               \
-[ set_offset_to(-2),                                                  \
-  (prev_vehicle_type_id() != vehid) &&                                \
-  (prev_vehicle_type_id() != vehid2) &&                               \
-  (prev_vehicle_type_id() != vehid3) ])                               \
-{ 1: name##_sprites_start_mark_prev;                                  \
-     name##_sprites_start_after; }                                    \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                   \
-  position_in_consist_from_end == 1)                                  \
-{ 1: name##_sprites_start_mark_next;                                  \
-     name##_sprites_start_before; }                                   \
+[ set_offset_to(-2),                                                  \
+  (((prev_vehicle_type_id() != vehid) &&                              \
+    (prev_vehicle_type_id() != vehid2) &&                             \
+    (prev_vehicle_type_id() != vehid3)) + 1) *                        \
+  (getbits(extra_callback_info1, 8, 8) > 0)  ])                       \
+{ 1: name##_sprites_start_after;                                      \
+  2: type_head_motor##pant##_prev_mandatory;                          \
+     name##_sprites_start; }                                          \
 
 #define buster_notlast_bothsides4(name, vehid, vehid2, vehid3, vehid4, pant)  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_prev,                    \
-  getbits(extra_callback_info1, 8, 8))                                        \
-{    0: name##_sprites_start;                                                 \
-  1..2: type_head_motor##_pant##_prev_mandatory;                              \
-     return CB_FAILED; }                                                      \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark_next,                    \
-  getbits(extra_callback_info1, 8, 8))                                        \
-{    0: name##_sprites_start;                                                 \
-  1..2: type_head_motor##_pant##_add_mandatory;                               \
-     return CB_FAILED; }                                                      \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_after,                        \
 [ set_offset_to(2),                                                           \
   (prev_vehicle_type_id() != vehid) &&                                        \
   (prev_vehicle_type_id() != vehid2) &&                                       \
   (prev_vehicle_type_id() != vehid3) &&                                       \
-  (prev_vehicle_type_id() != vehid4) ])                                       \
-{ 1: name##_sprites_start_mark_next;                                          \
+  (prev_vehicle_type_id() != vehid4)])                                        \
+{ 1: type_head_motor##pant##_add_mandatory;                                   \
      name##_sprites_start; }                                                  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before,                       \
-[ set_offset_to(-2),                                                          \
-  (prev_vehicle_type_id() != vehid) &&                                        \
-  (prev_vehicle_type_id() != vehid2) &&                                       \
-  (prev_vehicle_type_id() != vehid3) &&                                       \
-  (prev_vehicle_type_id() != vehid4) ])                                       \
-{ 1: name##_sprites_start_mark_prev;                                          \
-     name##_sprites_start_after; }                                            \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                           \
-  position_in_consist_from_end == 1)                                          \
-{ 1: name##_sprites_start_mark_next;                                          \
-     name##_sprites_start_before; }                                           \
+[ set_offset_to(-2),                                                          \
+  (((prev_vehicle_type_id() != vehid) &&                                      \
+    (prev_vehicle_type_id() != vehid2) &&                                     \
+    (prev_vehicle_type_id() != vehid3) &&                                     \
+    (prev_vehicle_type_id() != vehid4)) + 1) *                                \
+  (getbits(extra_callback_info1, 8, 8) > 0)  ])                               \
+{ 1: name##_sprites_start_after;                                              \
+  2: type_head_motor##pant##_prev_mandatory;                                  \
+     name##_sprites_start; }                                                  \
 
-#define buster1_2_notlast_bothsides(name, vehid, vehmid, pant)  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark2,          \
-  getbits(extra_callback_info1, 8, 8))                          \
-   { 0: name##_sprites_start;                                   \
-  1..5: type_head_motor##pant##_car_motor_pant_add_mandatory;   \
-     return CB_FAILED; }                                        \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark,           \
-  getbits(extra_callback_info1, 8, 8))                          \
-   { 0: name##_sprites_start;                                   \
-  1..2: type_head_motor##pant##_add_mandatory;                  \
-     return CB_FAILED; }                                        \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_after2,         \
-[ set_offset_to(4),                                             \
-  prev_vehicle_type_id() == vehid ])                            \
-{ 1: name##_sprites_start;                                      \
-     name##_sprites_start_mark; }                               \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_after,          \
-[ set_offset_to(2),                                             \
-  (prev_vehicle_type_id() == vehid) +                           \
-  (prev_vehicle_type_id() == vehmid) * 2 ])                     \
-{ 1: name##_sprites_start;                                      \
-  2: name##_sprites_start_after2;                               \
-     name##_sprites_start_mark; }                               \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before2,        \
-[ set_offset_to(-4),                                            \
-  prev_vehicle_type_id() == vehid ])                            \
-{ 1: name##_sprites_start_after;                                \
-     name##_sprites_start_mark; }                               \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before,         \
-[ set_offset_to(-2),                                            \
-  (prev_vehicle_type_id() == vehid) +                           \
-  (prev_vehicle_type_id() == vehmid) * 2 ])                     \
-{ 1: name##_sprites_start_after;                                \
-  2: name##_sprites_start_before2;                              \
-     name##_sprites_start_mark; }                               \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,             \
-  position_in_consist_from_end == 1)                            \
-{ 1: name##_sprites_start_mark;                                 \
-     name##_sprites_start_before; }                             \
+#define buster1_2_notlast_bothsides(name, vehid, vehmid, pantveh, pantmid)  \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after_m,                    \
+[ set_offset_to(2),                                                         \
+  (prev_vehicle_type_id() == vehid) ])                                      \
+{ 1: name##_sprites_start;                                                  \
+     type_head_motor##pantveh##_add_mandatory; }                            \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after_h,                    \
+[ set_offset_to(2),                                                         \
+  (prev_vehicle_type_id() == vehid) ||                                      \
+  (prev_vehicle_type_id() == vehmid) ])                                     \
+{ 1: name##_sprites_start;                                                  \
+     type_head_motor##pantveh##_car_motor##pantmid##_add_mandatory; }       \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                         \
+[ set_offset_to(-2),                                                        \
+  ((prev_vehicle_type_id() == vehid) +                                      \
+   (prev_vehicle_type_id() == vehmid) * 2 + 1) *                            \
+  (getbits(extra_callback_info1, 8, 8) > 0)  ])                             \
+{ 1: type_head_motor##pantveh##_prev_mandatory;                             \
+  2: name##_sprites_start_after_h;                                          \
+  3: name##_sprites_start_after_m;                                          \
+     name##_sprites_start; }                                                \
 
-#define buster1_2_notlast_bothsides2(name, vehid, vehid2, vehmid)  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark2,             \
-  getbits(extra_callback_info1, 8, 8))                             \
-   { 0: name##_sprites_start;                                      \
-  1..5: type_head_motor_pant_car_motor_pant_add_mandatory;         \
-     return CB_FAILED; }                                           \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_mark,              \
-  getbits(extra_callback_info1, 8, 8))                             \
-   { 0: name##_sprites_start;                                      \
-  1..2: type_head_pant_add_mandatory;                              \
-     return CB_FAILED; }                                           \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_after2,            \
-[ set_offset_to(4),                                                \
-  (prev_vehicle_type_id() == vehid) ||                             \
-  (prev_vehicle_type_id() == vehid2) ])                            \
-{ 1: name##_sprites_start;                                         \
-     name##_sprites_start_mark; }                                  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_after,             \
-[ set_offset_to(2),                                                \
-  ((prev_vehicle_type_id() == vehid) ||                            \
-   (prev_vehicle_type_id() == vehid2)) +                           \
-  (prev_vehicle_type_id() == vehmid) * 2 ])                        \
-{ 1: name##_sprites_start;                                         \
-  2: name##_sprites_start_after2;                                  \
-     name##_sprites_start_mark; }                                  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before2,           \
-[ set_offset_to(-4),                                               \
-  (prev_vehicle_type_id() == vehid) ||                             \
-  (prev_vehicle_type_id() == vehid2) ])                            \
-{ 1: name##_sprites_start_after;                                   \
-     name##_sprites_start_mark; }                                  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_before,            \
-[ set_offset_to(-2),                                               \
-  ((prev_vehicle_type_id() == vehid) ||                            \
-   (prev_vehicle_type_id() == vehid2)) +                           \
-  (prev_vehicle_type_id() == vehmid) * 2 ])                        \
-{ 1: name##_sprites_start_after;                                   \
-  2: name##_sprites_start_before2;                                 \
-     name##_sprites_start_mark; }                                  \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                \
-  position_in_consist_from_end == 1)                               \
-{ 1: name##_sprites_start_mark;                                    \
-     name##_sprites_start_before; }                                \
+#define buster1_2_notlast_bothsides2(name, vehid, vehid2, vehmid, pantveh, pantmid)  \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after_m,                             \
+[ set_offset_to(2),                                                                  \
+  (prev_vehicle_type_id() == vehid) ||                                               \
+  (prev_vehicle_type_id() == vehid2) ])                                              \
+{ 1: name##_sprites_start;                                                           \
+     type_head_motor##pantveh##_add_mandatory; }                                     \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after_h,                             \
+[ set_offset_to(2),                                                                  \
+  (prev_vehicle_type_id() == vehid) ||                                               \
+  (prev_vehicle_type_id() == vehid2) ||                                              \
+  (prev_vehicle_type_id() == vehmid) ])                                              \
+{ 1: name##_sprites_start;                                                           \
+     type_head_motor##pantveh##_car_motor##pantmid##_add_mandatory; }                \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                                  \
+[ set_offset_to(-2),                                                                 \
+  (((prev_vehicle_type_id() == vehid) ||                                             \
+    (prev_vehicle_type_id() == vehid2)) +                                            \
+   (prev_vehicle_type_id() == vehmid) * 2 + 1) *                                     \
+  (getbits(extra_callback_info1, 8, 8) > 0) ])                                       \
+{ 1: type_head_motor##pantveh##_prev_mandatory;                                      \
+  2: name##_sprites_start_after_h;                                                   \
+  3: name##_sprites_start_after_m;                                                   \
+     name##_sprites_start; }                                                         \
+
+/*
+
+
+switch (FEAT_TRAINS, SELF, name##_sprites_start_mark2,      \
+  getbits(extra_callback_info1, 8, 8))                      \
+   { 0: name##_sprites_start;                               \
+  1..5: type_head_motor_pant_car_motor_pant_add_mandatory;  \
+     return CB_FAILED; }                                    \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_mark,       \
+  getbits(extra_callback_info1, 8, 8))                      \
+   { 0: name##_sprites_start;                               \
+  1..2: type_head_pant_add_mandatory;                       \
+     return CB_FAILED; }                                    \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after2,     \
+[ set_offset_to(4),                                         \
+  (prev_vehicle_type_id() == vehid) ||                      \
+  (prev_vehicle_type_id() == vehid2) ])                     \
+{ 1: name##_sprites_start;                                  \
+     name##_sprites_start_mark; }                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_after,      \
+[ set_offset_to(2),                                         \
+  ((prev_vehicle_type_id() == vehid) ||                     \
+   (prev_vehicle_type_id() == vehid2)) +                    \
+  (prev_vehicle_type_id() == vehmid) * 2 ])                 \
+{ 1: name##_sprites_start;                                  \
+  2: name##_sprites_start_after2;                           \
+     name##_sprites_start_mark; }                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_before2,    \
+[ set_offset_to(-4),                                        \
+  (prev_vehicle_type_id() == vehid) ||                      \
+  (prev_vehicle_type_id() == vehid2) ])                     \
+{ 1: name##_sprites_start_after;                            \
+     name##_sprites_start_mark; }                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_before,     \
+[ set_offset_to(-2),                                        \
+  ((prev_vehicle_type_id() == vehid) ||                     \
+   (prev_vehicle_type_id() == vehid2)) +                    \
+  (prev_vehicle_type_id() == vehmid) * 2 ])                 \
+{ 1: name##_sprites_start_after;                            \
+  2: name##_sprites_start_before2;                          \
+     name##_sprites_start_mark; }                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,         \
+  position_in_consist_from_end == 1)                        \
+{ 1: name##_sprites_start_mark;                             \
+     name##_sprites_start_before; }                         \
+*/
+
 
 // шаблон 2-х слойного симметричного вагона с фонарями (вагон - локомотив).
 #define combo_layout_lights_template(name, size, x, y)                        \

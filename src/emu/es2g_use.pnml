@@ -66,13 +66,14 @@ switch (FEAT_TRAINS, PARENT, es2g_hm_sprites_right,
      es1_h_notpowered_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, es2g_hm_sprites_start_sp,
+switch (FEAT_TRAINS, SELF, es2g_hm_sprites_start,
   ((LOAD_TEMP(0) - count_veh_id(es2g_hm)) % 2))
 {
   0: es2g_hm_sprites_left;
      es2g_hm_sprites_right;
 }
 
+EMU_attach_wagon_icon_template_only2(es2g_hm, es2g_hm, type_head_motor, type_car_pant_add_mandatory, type_head_motor_add_optional)
 long_vehicle_sp(es2g_hm)
 
 switch (FEAT_TRAINS, PARENT, es2g_c_direction_left,
@@ -108,7 +109,10 @@ switch (FEAT_TRAINS, SELF, name##_c_direction_max, LOAD_TEMP(5))          \
 
 EMU_es2g_c_template(es2g)
 EMU_direction_calculation_template2b(es2g_c, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
-long_vehicle_dir(es2g_c)
+EMU_es2g_attach_wagon_icon_template(es2g_c)
+EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, _c_next)
+EMU_attach_wagon_icon_template(es2g_c, es2g_hm, type_car)
+long_vehicle_sp(es2g_c)
 
 switch (FEAT_TRAINS, PARENT, es2g_mn_direction_left,
   tep70bs_es1_2() + 2 * (vehicle_type_id == es2g_hm))
@@ -142,7 +146,10 @@ switch (FEAT_TRAINS, SELF, name##_mn_direction_max, LOAD_TEMP(5))          \
 
 EMU_es2g_mn_template(es2g)
 EMU_direction_calculation_template2b(es2g_mn, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
-long_vehicle_dir(es2g_mn)
+EMU_es2g_attach_wagon_icon_template(es2g_mn)
+EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, _mn_next)
+EMU_attach_wagon_icon_template(es2g_mn, es2g_hm, type_car_motor)
+long_vehicle_sp(es2g_mn)
 
 // графика ЭС1_m зачем-то развёрнута
 
@@ -192,73 +199,13 @@ switch (FEAT_TRAINS, SELF, name##_cp_direction_max, LOAD_TEMP(5))          \
 
 EMU_es2g_cp_template(es2g)
 EMU_direction_calculation_template2b(es2g_cp, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
-long_vehicle_dir(es2g_cp)
-
-#define EMU_es2g_can_attach_wagon_errors_template(name)                       \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_c, vehicle_type_id)        \
-{ name##_c: return CB_RESULT_ATTACH_ALLOW;                                    \
-            return string(STR_CAN_ATTACH_CAR_ONLY); }                         \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_cp, vehicle_type_id)       \
-{ name##_cp: return CB_RESULT_ATTACH_ALLOW;                                   \
-             return string(STR_CAN_ATTACH_CARP_ONLY); }                       \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_mn, vehicle_type_id)       \
-{ name##_mn: return CB_RESULT_ATTACH_ALLOW;                                   \
-             return string(STR_CAN_ATTACH_MCAR_ONLY); }                       \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_hm, vehicle_type_id)       \
-{ name##_hm: return CB_RESULT_ATTACH_ALLOW;                                   \
-             return string(STR_CAN_ATTACH_HEAD_ONLY); }                       \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_c_mn, vehicle_type_id)     \
-{ name##_mn: return CB_RESULT_ATTACH_ALLOW;                                   \
-  name##_c: return CB_RESULT_ATTACH_ALLOW;                                    \
-             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                   \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_cp_c, vehicle_type_id)     \
-{ name##_cp: return CB_RESULT_ATTACH_ALLOW;                                   \
-  name##_c:  return CB_RESULT_ATTACH_ALLOW;                                   \
-             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                   \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_hm_mn, vehicle_type_id)    \
-{ name##_hm: return CB_RESULT_ATTACH_ALLOW;                                   \
-  name##_mn: return CB_RESULT_ATTACH_ALLOW;                                   \
-             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                   \
-switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_cp_c_mn, vehicle_type_id)  \
-{ name##_mn: return CB_RESULT_ATTACH_ALLOW;                                   \
-  name##_cp: return CB_RESULT_ATTACH_ALLOW;                                   \
-  name##_c:  return CB_RESULT_ATTACH_ALLOW;                                   \
-             return string(STR_CAN_ATTACH_CAR_ONLY); }                        \
-
-#define EMU_es2g_can_attach_wagon_template(name)                                     \
-EMU_es2g_can_attach_wagon_errors_template(name)                                      \
-switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_max, LOAD_TEMP(5))              \
-{ 0x1000000: name##_can_attach_wagon_cp;            /* Г-(Т)                     */  \
-  0x2000001: name##_can_attach_wagon_c_mn;          /* Г-Т-(П/М)                 */  \
-  0x3000004: name##_can_attach_wagon_cp_c;          /* Г-Т-П-(Т/П)               */  \
-  0x3000006: name##_can_attach_wagon_cp;            /* Г-Т-М-(Т)                 */  \
-  0x4000011: name##_can_attach_wagon_hm_mn;         /* Г-Т-П-Т-(Г/М)             */  \
-  0x4000010: name##_can_attach_wagon_cp;            /* Г-Т-П-П-(Т)               */  \
-  0x4000019: name##_can_attach_wagon_c;             /* Г-Т-М-Т-(П)               */  \
-  0x5000041: name##_can_attach_wagon_hm;            /* Г-Т-П-П-Т-(Г)             */  \
-  0x5000046: name##_can_attach_wagon_cp;            /* Г-Т-П-Т-М-(Т)             */  \
-  0x5000064: name##_can_attach_wagon_cp_c_mn;       /* Г-Т-М-Т-П-(Т/П/М)         */  \
-  0x6000119: name##_can_attach_wagon_hm;            /* Г-Т-П-Т-М-Т-(Г)           */  \
-  0x6000191: name##_can_attach_wagon_hm_mn;         /* Г-Т-М-Т-П-Т-(Г/М)         */  \
-  0x6000190: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-П-(Т)           */  \
-  0x6000192: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-М-(Т)           */  \
-  0x7000641: name##_can_attach_wagon_mn;            /* Г-Т-М-Т-П-П-Т-(М)         */  \
-  0x7000646: name##_can_attach_wagon_c;             /* Г-Т-М-Т-П-Т-М-(П)         */  \
-  0x7000649: name##_can_attach_wagon_c;             /* Г-Т-М-Т-П-М-Т-(П)         */  \
-  0x8001906: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-П-Т-М-(Т)       */  \
-  0x8001918: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-Т-М-П-(Т)       */  \
-  0x8001924: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-М-Т-П-(Т)       */  \
-  0x9006419: name##_can_attach_wagon_hm;            /* Г-Т-М-Т-П-П-Т-М-Т-(Г)     */  \
-  0x9006461: name##_can_attach_wagon_mn;            /* Г-Т-М-Т-П-Т-М-П-Т-(М)     */  \
-  0x9006491: name##_can_attach_wagon_mn;            /* Г-Т-М-Т-П-М-Т-П-Т-(М)     */  \
-  0xA019186: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-Т-М-П-Т-М-(Т)   */  \
-  0xA019246: name##_can_attach_wagon_cp;            /* Г-Т-М-Т-П-М-Т-П-Т-М-(Т)   */  \
-  0xB064619: name##_can_attach_wagon_hm;            /* Г-Т-М-Т-П-Т-М-П-Т-М-Т-(Г) */  \
-  0xB064919: name##_can_attach_wagon_hm;            /* Г-Т-М-Т-П-М-Т-П-Т-М-Т-(Г) */  \
-             return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                          \
+EMU_es2g_attach_wagon_icon_template(es2g_cp)
+EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, _cp_next)
+EMU_attach_wagon_icon_template(es2g_cp, es2g_hm, type_car_pant)
+long_vehicle_sp(es2g_cp)
 
 EMU_es2g_can_attach_wagon_template(es2g)
-EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
+EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, )
 
 switch (FEAT_TRAINS, SELF, es2g_can_attach_wagon1, vehicle_type_id)
 {
