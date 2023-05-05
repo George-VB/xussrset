@@ -1,0 +1,252 @@
+﻿// dr1_type1968 uses dr1_type1966
+
+#define PROP_dr1_type1968_h_num  2
+#define PROP_dr1_type1968_n_num  0
+#define PROP_dr1_type1968_m_num  0
+#define PROP_dr1_type1968_c_num  4
+
+#define PROP_dr1_type1968_h_CF  21
+#define PROP_dr1_type1968_h_RC  168
+#define PROP_dr1_type1968_h_SD  120
+#define PROP_dr1_type1968_h_WT  53.5
+#define PROP_dr1_type1968_h_TE  82.8
+#define PROP_dr1_type1968_h_PR  750
+#define PROP_dr1_type1968_h_CC  68
+
+#define PROP_dr1_type1968_n_CF  0
+#define PROP_dr1_type1968_n_RC  0
+#define PROP_dr1_type1968_n_SD  120
+#define PROP_dr1_type1968_n_WT  0
+#define PROP_dr1_type1968_n_TE  0
+#define PROP_dr1_type1968_n_PR  0
+#define PROP_dr1_type1968_n_CC  0
+
+#define PROP_dr1_type1968_m_CF  0
+#define PROP_dr1_type1968_m_RC  0
+#define PROP_dr1_type1968_m_SD  120
+#define PROP_dr1_type1968_m_WT  0
+#define PROP_dr1_type1968_m_TE  0
+#define PROP_dr1_type1968_m_PR  0
+#define PROP_dr1_type1968_m_CC  0
+
+#define PROP_dr1_type1968_c_CF  6
+#define PROP_dr1_type1968_c_RC  45
+#define PROP_dr1_type1968_c_SD  120
+#define PROP_dr1_type1968_c_WT  33.7
+#define PROP_dr1_type1968_c_TE  0
+#define PROP_dr1_type1968_c_PR  0
+#define PROP_dr1_type1968_c_CC  124
+
+map_sprites(dr1_type1968_h_purchase_sprites, dr1_type1966_h_purchase_sprites)
+map_sprites(dr1_type1968_c_purchase_sprites, dr1_type1966_c_purchase_sprites)
+map_sprites(dr1_type1968_purchase_sprites, dr1_type1968_h_purchase_sprites)
+
+MU_head_direction_template_reuse(dr1_type1968_h, dr1_type1966_h, dr1_type1968_h)
+engine_direction_template2m(dr1_type1968_h, dr1_type1968_c, )
+MU_attach_wagon_icon_template_only(dr1_type1968_h, dr1_type1968_h, type_head_motor, type_car_add_mandatory)
+long_vehicle_sp(dr1_type1968_h)
+
+MU_car_template_reuse(dr1_type1968_c_mu, dr1_type1966_c, dr1_type1968_h)
+MU_car_direction_template(dr1_type1968_c)
+MU_attach_wagon_icon_template_row4(dr1_type1968_c, _head_motor)
+MU_attach_wagon_icon_template_only(dr1_type1968_c, dr1_type1968_h, type_car, dr1_type1968_c_prev)
+long_vehicle_sp(dr1_type1968_c)
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_c_can_attach_wagon6,
+[
+  set_offset_to(num_vehs_in_consist-8),
+  prev_vehicle_type_id() ])
+{
+  dr1_type1968_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_6D);
+         return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_c_can_attach_wagon5,
+[
+  set_offset_to(num_vehs_in_consist-6),
+  prev_vehicle_type_id() ])
+{
+  dr1_type1968_c: dr1_type1968_c_can_attach_wagon6;
+         return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_c_can_attach_wagon4,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  dr1_type1968_c: dr1_type1968_c_can_attach_wagon5;
+         return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_c_can_attach_wagon_h,
+  count_veh_id(dr1_type1968_h) % 2)
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     dr1_type1968_c_can_attach_wagon4;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_c_can_attach_wagon,
+[
+  set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+  dr1_type1968_c: dr1_type1968_c_can_attach_wagon4;
+  dr1_type1968_h: dr1_type1968_c_can_attach_wagon_h;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_can_attach_wagon_length4,
+  count_veh_id(dr1_type1968_h) > 1)
+{
+  0: CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_can_attach_wagon_length3,
+  count_veh_id(dr1_type1968_c) == 0)
+{
+  0: dr1_type1968_can_attach_wagon_length4;
+     return string(STR_CAN_ATTACH_CAR_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, dr1_type1968_can_attach_wagon,
+  vehicle_type_id)
+{
+  dr1_type1968_h: dr1_type1968_can_attach_wagon_length3;
+  dr1_type1968_c: dr1_type1968_c_can_attach_wagon;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_h_start_stop,
+  count_veh_id(dr1_type1968_h) % 2)
+{
+  0: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+engine_diesel_1r_effect(dr1_type1968_h_create_effect_sprites, -2, 7, 12)
+
+switch (FEAT_TRAINS, SELF, dr1_type1968_h_create_effect1,
+  (LOAD_TEMP(0) - count_veh_id(dr1_type1968_h)) % 2)
+{
+  0: dr1_type1968_h_create_effect_sprites_left;
+     dr1_type1968_h_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1_type1968_h_create_effect0,
+  STORE_TEMP(count_veh_id(dr1_type1968_h), 0))
+{
+  dr1_type1968_h_create_effect1;
+}
+engine_effects_MU(dr1_type1968_h, _create_effect0, dr1_type1968_h)
+engine_power_MU(dr1_type1968_h, PROP_dr1_type1968_h_PR, dr1_type1968_h)
+engine_capacity_MU(dr1_type1968_h, PROP_dr1_type1968_h_CC, dr1_type1968_h)
+engine_capacity_MU(dr1_type1968_c, PROP_dr1_type1968_c_CC, dr1_type1968_h)
+
+RC_head_check_new(dr1_type1968_h, dr1_type1968_h)
+switch (FEAT_TRAINS, SELF, dr1_type1968_h_running_cost_factor,
+[  STORE_TEMP(96, 0),  // Моторы
+   STORE_TEMP(13, 1),  // Бригада
+   STORE_TEMP(34, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(24, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_dr1_type1968_h_SD, 6),                                      // Скорость
+   STORE_TEMP(int(PROP_dr1_type1968_h_WT), 7),                                 // Тара
+   STORE_TEMP(int(PROP_dr1_type1968_h_WT + PROP_dr1_type1968_h_CC / 16), 8)])  // Максимальная масса
+{ dr1_type1968_h_check_running_cost_factor; }                                  // 168
+
+RC_head_check_new(dr1_type1968_c, dr1_type1968_h)
+
+switch (FEAT_TRAINS, SELF, dr1_type1968_c_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(9, 1),   // Бригада
+   STORE_TEMP(26, 2),  // Износ
+   STORE_TEMP(2, 3),   // Сопровождение
+   STORE_TEMP(7, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_dr1_type1968_c_SD, 6),                                      // Скорость
+   STORE_TEMP(int(PROP_dr1_type1968_c_WT), 7),                                 // Тара
+   STORE_TEMP(int(PROP_dr1_type1968_c_WT + PROP_dr1_type1968_c_CC / 16), 8)])  // Максимальная масса
+{ dr1_type1968_c_check_running_cost_factor; }                                  // 45
+
+name_in_group_subgroup(dr1_type1968_h, string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_NAME_DR1_TYPE1968)),
+                                       string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_LONGNAME_DR1_TYPE1968_H)),
+                                       string(STR_NAME_DR1_TYPE1968))
+name_in_group_subgroup(dr1_type1968_c, string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_NAME_DR1_TYPE1968)),
+                                       string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_LONGNAME_DR1_TYPE1968_C)),
+                                       string(STR_NAME_DR1_TYPE1968))
+hint_MU(dr1_type1968_h,
+     calc_loading(PROP_dr1_type1968_h_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_H,
+     STR_SECTIONS_DMU_3_6,
+     1968, 1969,
+     fact_rigacw())
+hint_MU(dr1_type1968_c,
+     calc_loading(PROP_dr1_type1968_c_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C,
+     STR_SECTIONS_DMU_3_6,
+     1968, 1969,
+     fact_rigacw())
+map_sprites(dr1_type1968_additional_text, dr1_type1968_h_additional_text)
+
+item (FEAT_TRAINS, dr1_type1968_h, 819) {
+  property {
+    name: string(STR_NAME_DR1_TYPE1968);
+    vehicle_dates(1968, 1969, 25, 10, 8, PROP_dr1_type1968_h_CF)
+    vehicle_dmu(PROP_dr1_type1968_h_PR, PROP_dr1_type1968_h_WT, PROP_dr1_type1968_h_TE, PROP_dr1_type1968_h_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group(dr1_group)
+  }
+  graphics {
+    purchase_menu(PROP_dr1_type1968_h_CF, PROP_dr1_type1968_h_RC, PROP_dr1_type1968_h_SD, PROP_dr1_type1968_h_WT, PROP_dr1_type1968_h_TE, PROP_dr1_type1968_h_PR, PROP_dr1_type1968_h_CC)
+        additional_text: dr1_type1968_h_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: dr1_type1968_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: dr1_type1968_h_cargo_capacity;
+         colour_mapping: any_cc_colour;
+          create_effect: dr1_type1968_h_create_effect;
+                default: dr1_type1968_h_sprites;
+                   name: dr1_type1968_h_name;
+                  power: dr1_type1968_h_power;
+               purchase: dr1_type1968_h_purchase_sprites;
+    running_cost_factor: dr1_type1968_h_running_cost_factor;
+                  speed: speed_after25_120to110;
+             start_stop: dr1_type1968_h_start_stop;
+  }
+}
+
+item (FEAT_TRAINS, dr1_type1968_c, 820) {
+  property {
+    name: string(STR_NAME_DR1_TYPE1968);
+    vehicle_dates(1968, 1969, 25, 10, 8, PROP_dr1_type1968_c_CF)
+    vehicle_dmu_wagon(PROP_dr1_type1968_c_WT, PROP_dr1_type1968_c_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group_mu(dr1_type1968_h)
+  }
+  graphics {
+    purchase_menu(PROP_dr1_type1968_c_CF, PROP_dr1_type1968_c_RC, PROP_dr1_type1968_c_SD, PROP_dr1_type1968_c_WT, PROP_dr1_type1968_c_TE, PROP_dr1_type1968_c_PR, PROP_dr1_type1968_c_CC)
+        additional_text: dr1_type1968_c_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: dr1_type1968_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: dr1_type1968_c_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: dr1_type1968_c_sprites;
+                   name: dr1_type1968_c_name;
+                  power: return 0;
+               purchase: dr1_type1968_c_purchase_sprites;
+    running_cost_factor: dr1_type1968_c_running_cost_factor;
+                  speed: speed_after25_120to110;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(dr1_type1968_h, STR_LONGNAME_DR1_TYPE1968_H)
+long_name_template(dr1_type1968_c, STR_LONGNAME_DR1_TYPE1968_C)
+allow_dmu(dr1_type1968_h)
+allow_dmu(dr1_type1968_c)

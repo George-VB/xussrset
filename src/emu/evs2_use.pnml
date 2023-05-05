@@ -131,29 +131,11 @@ switch (FEAT_TRAINS, PARENT, evs2_create_effect, vehicle_type_id == evs2)
      return disable_create_effect();
 }
 
-switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon3,
-  LOAD_TEMP(0) <= 1)
+switch (FEAT_TRAINS, PARENT, evs2_can_attach_wagon1,
+ count_veh_id(evs2) <= 1)
 {
   1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon2,
-  (LOAD_TEMP(1) >= 2014) +
-  ((build_year >= 2014) * 100))
-{
-   0: return string(STR_CAN_ATTACH_NO_MORE);
-   1: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
- 100: return string(STR_CAN_ATTACH_WRONG_YEAR,"...-2013","2014-...");
- 101: evs2_can_attach_wagon3;
-      return string(STR_CAN_ATTACH_WRONG_YEAR,"2000","2000");
-}
-
-switch (FEAT_TRAINS, PARENT, evs2_can_attach_wagon1,
-[  STORE_TEMP(build_year, 1),
-   STORE_TEMP(count_veh_id(evs2), 0) ])
-{
-  evs2_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon,
@@ -163,14 +145,6 @@ switch (FEAT_TRAINS, SELF, evs2_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-  livery_template_refit_f(evs2_a2014, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
-livery_template_build_year_ao(evs2, 2014)
-
-switch (FEAT_TRAINS, SELF, evs2_speed,
-  cargo_subtype >= 0xE0)
-{ 1: return 300;
-     return 250; }
-engine_refit_cost_for_e2_livery_change(evs2, 0xE0, 105, 105)
 engine_capacity_MU_change_build_after(evs2, 104,
                                              75, 2014, evs2)
 engine_CAP_change_build_after(evs2, 200,
@@ -213,29 +187,18 @@ switch (FEAT_TRAINS, PARENT, evs2_running_cost_factor,
 name_in_group(evs2, string(STR_NAME_IN_GROUP, string(STR_NAME_EVS_SERIES), string(STR_NAME_EVS2)),
                     string(STR_NAME_IN_GROUP, string(STR_NAME_EVS_SERIES), string(STR_LONGNAME_EVS2)))
 
-hint_MU_with_subtype(evs2_b2014,
+hint_MU_with_subtype(evs2,
      calc_loading(max(460 / (7 * WAGON_DOOR), 104 / (2 * WAGON_DOOR))),
      STR_PURCHASE_HINT_AGING_PERIOD_3_2,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
      STR_SECTIONS_MU_S1of10,
-     2009, 2022,
+     2008, 2009,
      string(STR_PURCHASE_HINT_FACTORY_SIEMENS))
-hint_MU_with_subtype_comment(evs2_a2014,
-     calc_loading(max(433 / (7 * WAGON_DOOR), 75 / (2 * WAGON_DOOR))),
-     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_ACDC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
-     STR_SECTIONS_MU_S1_2of10,
-     2009, 2022,
-     string(STR_PURCHASE_HINT_FACTORY_SIEMENS),
-     string(STR_PURCHASE_HINT_LIST2_COMMENT,
-            string(STR_PURCHASE_HINT_EDITION_NEW_SPEED, 300),
-            string(STR_PURCHASE_HINT_ATTACH_YEAR,"...-2013","2014-...")))
-hint_change_after(evs2, 2014)
 
 item (FEAT_TRAINS, evs2, 401) {
   property {
     name: string(STR_NAME_EVS2);
-    vehicle_dates(2009, 2022, 30, 10, 8, 1748)
+    vehicle_dates(2008, 2009, 30, 10, 8, 1748)
     vehicle_emu(acdc, 10876, 596.2, 328.0, 104, 2 * WAGON_DOOR, _highspeed)
     vehicle_allow_tourists()
     vehicle_group(evs_group)
@@ -246,7 +209,6 @@ item (FEAT_TRAINS, evs2, 401) {
        can_attach_wagon: evs2_can_attach_wagon;
        cargo_age_period: evs2_cargo_age_period;
          cargo_capacity: evs2_cargo_capacity;
-     cargo_subtype_text: evs2_cargo_subtype_text;
          colour_mapping: any_cc_colour;
             cost_factor: return 1748;
           create_effect: evs2_create_effect;
@@ -254,10 +216,8 @@ item (FEAT_TRAINS, evs2, 401) {
                    name: evs2_name;
                   power: evs2_power;
                purchase: evs2_purchase_sprites;
-         purchase_speed: return 250;
-             refit_cost: evs2_refit_cost;
     running_cost_factor: evs2_running_cost_factor;
-                  speed: evs2_speed;
+                  speed: return 250;
   }
 }
 
@@ -269,7 +229,7 @@ engine_capacity_MU_change_build_after(evs2_part2, 460,
 
 item (FEAT_TRAINS, evs2_part2, 449) {
   property {
-    vehicle_no_dates(2009, 2050, 30, 10, 8, 0)
+    vehicle_no_dates(2008, 2009, 30, 10, 8, 0)
     vehicle_emu_c(acdc, 0, 460, 7 * WAGON_DOOR, _highspeed)
   }
   graphics {
@@ -282,7 +242,7 @@ item (FEAT_TRAINS, evs2_part2, 449) {
 
 item (FEAT_TRAINS, evs2_part3, 450) {
   property {
-    vehicle_no_dates(2009, 2050, 30, 10, 8, 0)
+    vehicle_no_dates(2008, 2009, 30, 10, 8, 0)
     vehicle_emu_empty(acdc, _highspeed)
   }
   graphics {

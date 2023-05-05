@@ -207,7 +207,8 @@ switch (FEAT_TRAINS, SELF, dr1a_h_sprites_right,
 }
 
 engine_direction_template3m(dr1a_h, dr1a_n, dr1a_c, )
-long_vehicle(dr1a_h)
+MU_attach_wagon_icon_template2_only2(dr1a_h, dr1a_h, dr1a_n, type_head_motor, type_car_add_mandatory, type_head_motor_head_add_optional, )
+long_vehicle_sp(dr1a_h)
 
 MU_head_middle_direction_template2(dr1a_n_v1, dr1a_h, dr1a_n)
 MU_head_middle_direction_template2(dr1a_n_v2, dr1a_h, dr1a_n)
@@ -263,16 +264,21 @@ switch (FEAT_TRAINS, SELF, dr1a_n_sprites_DRB1,
 }
 
 #define _2M62U_ID 168
-switch (FEAT_TRAINS, PARENT, dr1a_n_sprites_start_sp,
+switch (FEAT_TRAINS, PARENT, dr1a_n_sprites_start_drb1,
   ((num_vehs_in_consist - count_veh_id(dr1a_c) * 2
                         - count_veh_id(dr1a_n) * 2
                         - count_veh_id(_2M62U_ID) * 2) == 0) &&
-  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1))
+  ((count_veh_id(dr1a_n) + count_veh_id(dr1a_c)) >= 1) &&
+  (count_veh_id(_2M62U_ID) + (count_veh_id(dr1a_n) == 2)) &&
+  (count_veh_id(dr1a_n) + (count_veh_id(dr1a_c) <= 10)))
 {
   1: dr1a_n_sprites_DRB1;
      dr1a_n_sprites_start;
 }
 
+// TODO  вместо type_head вернуть switch, который проверяет ДРБ1 и возвращает type_head только если нет. Оформить проверку drb1 в форме шаблона
+
+MU_attach_wagon_icon_template2_only2(dr1a_n, dr1a_h, dr1a_n, type_head, type_car_add_mandatory, type_head_motor_head_add_optional, _drb1)
 long_vehicle_sp(dr1a_n)
 
 MU_car_direction_template(dr1a_c_v1)
@@ -300,7 +306,9 @@ switch (FEAT_TRAINS, SELF, dr1a_c_sprites_start,
   align_15_sprites;
 }
 
-long_vehicle(dr1a_c)
+MU_attach_wagon_icon_template_row5_is_after(dr1a_c, dr1a_n, _head_motor, _head_motor_head)
+MU_attach_wagon_icon_template2_only2(dr1a_c, dr1a_h, dr1a_n, type_car, dr1a_c_prev, dummy_sprites_big, )
+long_vehicle_sp(dr1a_c)
 
 switch (FEAT_TRAINS, PARENT, dr1a_can_attach_wagon_length,
   (count_veh_id(dr1a_h) + count_veh_id(dr1a_n)) > 3)
@@ -505,7 +513,7 @@ switch (FEAT_TRAINS, PARENT, dr1a_h_create_effect0,
 }
 
 engine_effects_MU(dr1a_h, _create_effect0, dr1a_h)
-engine_capacity_MU2(dr1a_h, 68, dr1a_h, dr1a_n)
+engine_capacity_MU2(dr1a_h, PROP_dr1a_1976_h_CC, dr1a_h, dr1a_n)
 
 switch (FEAT_TRAINS, SELF, dr1a_n_cargo_capacity_drb1,
   (cargo_subtype == 4) || (cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB))
@@ -868,7 +876,6 @@ item (FEAT_TRAINS, dr1a_c, 214) {
                   power: return 0;
                purchase: dr1a_c_purchase_sprites;
     running_cost_factor: dr1a_c_running_cost_factor;
-                  speed: speed_after25_120to110;
              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
                  weight: dr1a_c_weight;
   }
