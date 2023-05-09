@@ -1,0 +1,91 @@
+﻿// fd20_type1936 uses fd20_type1934
+
+#define PROP_fd20_type1936_CF  28
+#define PROP_fd20_type1936_RC  650
+#define PROP_fd20_type1936_SD  85
+#define PROP_fd20_type1936_WT  137+127
+#define PROP_fd20_type1936_TE  261.0
+#define PROP_fd20_type1936_PR  3140
+#define PROP_fd20_type1936_CC  0
+
+#define IMAGEFILE  "src/steam/fd20-type1934.png"
+purchase_sprites(fd20_type1936, 100, 0)
+tender_sprites(7, fd20_type1936_tender, 447, 40)  // t6p
+#undef IMAGEFILE
+map_sprites(fd20_type1936_engine_sprites_start, fd20_type1934_engine_sprites_start)
+
+steamer_direction_template(fd20_type1936, _sprites_start)
+long_vehicle(fd20_type1936)
+
+switch (FEAT_TRAINS, SELF, fd20_type1936_running_cost_factor,
+[  STORE_TEMP(368, 0),  // Моторы
+   STORE_TEMP(48, 1),   // Бригада
+   STORE_TEMP(129, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(90, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP_fd20_type1936_SD + 5 * (current_year >= 1956), 6),  // Скорость
+   STORE_TEMP(round(PROP_fd20_type1936_WT), 7),                        // Тара
+   STORE_TEMP(round(PROP_fd20_type1936_WT), 8)])                       // Максимальная масса
+{ all_running_cost_factor; }                                           // 646
+
+engine_tender(fd20_type1936)
+engine_tender_length(fd20_type1936, 8, 2, 6, 1)
+engine_steam_1_effect(fd20_type1936_create_effect, -2, 13)
+engine_speed_change_after2(fd20_type1936, PROP_fd20_type1936_SD,
+                                          85, 1936,
+                                          90, 1956)
+engine_penalise_speed0(fd20_type1936)
+name_in_group(fd20_type1936, string(STR_NAME_IN_GROUP, string(STR_NAME_FD_SERIES), string(STR_NAME_FD20_TYPE1936)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_FD_SERIES), string(STR_LONGNAME_FD20_TYPE1936)))
+hint_engine(fd20_type1936_b1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1936, 1940,
+     fact_lugansk())
+hint_engine_comment(fd20_type1936_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1936, 1940,
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 85, 1936))
+hint_engine_comment(fd20_type1936_a1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1936, 1940,
+     fact_lugansk(),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 90, 1956))
+hint_change_pre_after2(fd20_type1936, 1936, 1956)
+
+item (FEAT_TRAINS, fd20_type1936, 830) {
+  property {
+    name: string(STR_NAME_FD20_TYPE1936);
+    vehicle_dates(1936, 1940, 25, 10, 8, PROP_fd20_type1936_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_fd20_type1936_PR, PROP_fd20_type1936_WT, PROP_fd20_type1936_TE, _lowspeed)
+    vehicle_group(steam_fd_group)
+  }
+  graphics {
+    purchase_menu(PROP_fd20_type1936_CF, PROP_fd20_type1936_RC, PROP_fd20_type1936_SD, PROP_fd20_type1936_WT, PROP_fd20_type1936_TE, PROP_fd20_type1936_PR, PROP_fd20_type1936_CC)
+         additional_text: fd20_type1936_additional_text;
+        articulated_part: fd20_type1936_articulated_part;
+    bitmask_vehicle_info: fd20_type1936_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_fd20_type1936_CC;
+      cargo_subtype_text: steam_freight_cargo_subtype_text;
+          colour_mapping: steam_freight_colour_mapping;
+           create_effect: fd20_type1936_create_effect;
+                 default: fd20_type1936_sprites;
+                  length: fd20_type1936_length;
+                    name: fd20_type1936_name;
+                purchase: fd20_type1936_purchase_sprites;
+     running_cost_factor: fd20_type1936_running_cost_factor;
+                   speed: fd20_type1936_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(fd20_type1936, STR_LONGNAME_FD20_TYPE1936)
+models_default_cargo_template(fd20_type1936)
+allow_steamer(fd20_type1936)

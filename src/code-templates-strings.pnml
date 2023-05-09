@@ -1155,6 +1155,21 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR) 
 { 1: name##_additional_text_hidden;                                                        \
      name##_additional_text_shown; }                                                       \
 
+// Описание локомотива с производством в течение года c примечанием
+#define hint_engine_in_comment(name, strengtype, strengsmetype, in, factory, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                               \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),               \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, in) | (factory << 16), 0x101),               \
+  STORE_TEMP(comment, 0x102) ])                                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                              \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),               \
+  STORE_TEMP(factory | (comment << 16), 0x101) ])                                      \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                 \
+{ 1: name##_additional_text_hidden;                                                    \
+     name##_additional_text_shown; }                                                   \
+
 // Описание локомотива c подтипом c примечанием
 #define hint_engine_with_subtype_comment(name, strengtype, strengsubtype, strengsmetype, from, to, factory, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                              \
