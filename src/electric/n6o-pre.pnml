@@ -1,0 +1,70 @@
+﻿// n6o_pre
+
+#define PROP_n6o_pre_CF  89
+#define PROP_n6o_pre_RC  624
+#define PROP_n6o_pre_SD  100
+#define PROP_n6o_pre_WT  141.3
+#define PROP_n6o_pre_TE  487.0
+#define PROP_n6o_pre_PR  4830
+#define PROP_n6o_pre_CC  0
+
+#define IMAGEFILE  "src/electric/n6o-pre.png"
+purchase_sprites(n6o_pre, 0, 0)
+electric1_2_sprites(12, n6o_pre, 32, 40)
+#undef IMAGEFILE
+
+long_vehicle(n6o_pre)
+
+engine_penalise_speed0(n6o_pre)
+engine_electric1_2_effect(n6o_pre_create_effect, -2, 6)
+engine_speed(n6o_pre, 100)
+switch (FEAT_TRAINS, SELF, n6o_pre_running_cost_factor,
+[  STORE_TEMP(356, 0),  // Моторы
+   STORE_TEMP(50, 1),   // Бригада
+   STORE_TEMP(125, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(87, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP_n6o_pre_SD, 6),        // Скорость
+   STORE_TEMP(int(PROP_n6o_pre_WT), 7),   // Тара
+   STORE_TEMP(int(PROP_n6o_pre_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 624
+
+name_in_group(n6o_pre, string(STR_NAME_IN_GROUP, string(STR_NAME_VL60_SERIES), string(STR_NAME_N6O_PRE)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_VL60_SERIES), string(STR_LONGNAME_N6O_PRE)))
+hint_engine_in(n6o_pre,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1957,
+     fact_novocherkassk())
+
+item (FEAT_TRAINS, n6o_pre, 832) {
+  property {
+    name: string(STR_NAME_N6O_PRE);
+    vehicle_dates(1957, 1957, 30, 10, 8, PROP_n6o_pre_CF)
+    vehicle_passcargo()
+    vehicle_acelectric(PROP_n6o_pre_PR, PROP_n6o_pre_WT, PROP_n6o_pre_TE, )
+    vehicle_group(vl60_group)
+  }
+  graphics {
+    purchase_menu(PROP_n6o_pre_CF, PROP_n6o_pre_RC, PROP_n6o_pre_SD, PROP_n6o_pre_WT, PROP_n6o_pre_TE, PROP_n6o_pre_PR, PROP_n6o_pre_CC)
+         additional_text: n6o_pre_additional_text;
+        articulated_part: articulated_part_dummy4;
+    bitmask_vehicle_info: n6o_pre_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_n6o_pre_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: n6o_pre_create_effect;
+                 default: n6o_pre_sprites;
+                    name: n6o_pre_name;
+                purchase: n6o_pre_purchase_sprites;
+     running_cost_factor: n6o_pre_running_cost_factor;
+                   speed: n6o_pre_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(n6o_pre, STR_LONGNAME_N6O_PRE)
+models_default_cargo_template(n6o_pre)
+allow_acelectric(n6o_pre)
