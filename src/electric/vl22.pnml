@@ -1,5 +1,20 @@
 ﻿// vl22
 
+#define PROP_vl22_CF  32
+#define PROP_vl22_RC  250
+#define PROP_vl22_SD  70
+#define PROP_vl22_WT  132
+#define PROP_vl22_TE  353.0
+#define PROP_vl22_PR  2430
+#define PROP_vl22_CC  0
+
+#define PROP_vl22p_RC  252
+#define PROP_vl22p_SD  85
+#define PROP_vl22p_WT  117
+#define PROP_vl22p_TE  322.0
+#define PROP_vl22p_PR  2447
+#define PROP_vl22p_CC  0
+
 #define IMAGEFILE  "src/electric/vl22.png"
 purchase_sprites(vl22, 0, 0)
 
@@ -24,30 +39,12 @@ livery_template_alt0(vl22_base, STR_REFIT_TTD_53, STR_REFIT_TTD_96)
 livery_template_refit2(vl22, STR_REFIT_FACTORY_GENERAL_TYPE, STR_REFIT_PASSENGER_EDITION, STR_REFIT_TTD_53, STR_REFIT_TTD_96, vl22_base)
 
 engine_refit_cost_for_a2_livery_change(vl22, 0xE0, 1, 2)
-
-switch (FEAT_TRAINS, SELF, vl22_tractive_effort_coefficient,
-  cargo_subtype >= 0xE0)
-{
-  1: return get_tec_int(353.0, 132);
-     return get_tec_int(322.0, 132);
-}
-
-switch (FEAT_TRAINS, SELF, vl22_power,
-  (cargo_subtype >= 0xE0))
-{
-  0: return get_power_in_cb(2430);
-     return get_power_in_cb(2447);
-}
-
+engine_change_refit(vl22_tractive_effort_coefficient, return get_tec_int(PROP_vl22_TE, PROP_vl22_WT), return get_tec_int(PROP_vl22p_TE, PROP_vl22p_WT))
+engine_change_refit(vl22_power, return get_power_in_cb(PROP_vl22_PR), return get_power_in_cb(PROP_vl22p_PR))
 engine_electric1_2_effect(vl22_create_effect, -2, 4)
-engine_speed(vl22cargo, 70)
-engine_speed(vl22pass, 85)
-switch (FEAT_TRAINS, SELF, vl22_speed,
-  cargo_subtype >= 0xE0)
-{
-  1: vl22pass_speed;
-     vl22cargo_speed;
-}
+engine_speed(vl22cargo, PROP_vl22_SD)
+engine_speed(vl22pass, PROP_vl22p_SD)
+engine_change_refit(vl22_speed, vl22cargo_speed, vl22pass_speed)
 engine_penalise_speed(vl22, 2)
 
 switch (FEAT_TRAINS, SELF, vl22pass_running_cost_factor,
@@ -58,10 +55,10 @@ switch (FEAT_TRAINS, SELF, vl22pass_running_cost_factor,
    STORE_TEMP(35, 4),   // ТО
    STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(85, 6),             // Скорость
-   STORE_TEMP(132, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 252
+   STORE_TEMP(PROP_vl22p_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl22p_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl22p_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 252
 switch (FEAT_TRAINS, SELF, vl22cargo_running_cost_factor,
 [  STORE_TEMP(143, 0),  // Моторы
    STORE_TEMP(20, 1),   // Бригада
@@ -70,19 +67,19 @@ switch (FEAT_TRAINS, SELF, vl22cargo_running_cost_factor,
    STORE_TEMP(35, 4),   // ТО
    STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(70, 6),             // Скорость
-   STORE_TEMP(132, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 250
-switch (FEAT_TRAINS, SELF, vl22_running_cost_factor,
-  cargo_type_in_veh == PASS)
-{ 1: vl22pass_running_cost_factor;
-     vl22cargo_running_cost_factor; }
+   STORE_TEMP(PROP_vl22_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl22_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl22_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 250
+engine_change_refit(vl22_running_cost_factor, vl22cargo_running_cost_factor, vl22pass_running_cost_factor)
+
+name_in_group(vl22, string(STR_NAME_IN_GROUP, string(STR_NAME_ELECTRIC_S_SERIES), string(STR_NAME_VL22)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_ELECTRIC_S_SERIES), string(STR_LONGNAME_VL22)))
 
 hint_engine_2fact_comment(vl22,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     1938, 1946,
+     1938, 1941,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
      string(STR_PURCHASE_HINT_FACTORY_DINAMO),
      string(STR_PURCHASE_HINT_PASSENGER_EDITION1))
@@ -90,11 +87,13 @@ hint_engine_2fact_comment(vl22,
 item (FEAT_TRAINS, vl22, 313) {
   property {
     name: string(STR_NAME_VL22);
-    vehicle_dates(1938, 1946, 40, 10, 8, 32)
+    vehicle_dates(1938, 1941, 40, 10, 8, PROP_vl22_CF)
     vehicle_passcargo()
-    vehicle_dcelectric(2430, 132, 353.0, _lowspeed)
+    vehicle_dcelectric(PROP_vl22_PR, PROP_vl22_WT, PROP_vl22_TE, _lowspeed)
+    vehicle_group(electric_s_group)
   }
   graphics {
+    purchase_menu(PROP_vl22_CF, PROP_vl22_RC, PROP_vl22_SD, PROP_vl22_WT, PROP_vl22_TE, PROP_vl22_PR, PROP_vl22_CC)
                 additional_text: vl22_additional_text;
                articulated_part: articulated_part_dummy2;
            bitmask_vehicle_info: vl22_bitmask_vehicle_info;
@@ -104,9 +103,9 @@ item (FEAT_TRAINS, vl22, 313) {
                  colour_mapping: any_cc_colour;
                   create_effect: vl22_create_effect;
                         default: vl22_sprites;
+                           name: vl22_name;
                           power: vl22_power;
                        purchase: vl22_purchase_sprites;
-                 purchase_speed: return 70;
                      refit_cost: vl22_refit_cost;
             running_cost_factor: vl22_running_cost_factor;
                           speed: vl22_speed;

@@ -1,0 +1,68 @@
+﻿// ss_pre
+
+#define IMAGEFILE  "src/electric/ss-pre.png"
+purchase_sprites(ss_pre, 0, 0)
+electric1r_2_sprites(10, ss_pre,  32,   40)
+#undef IMAGEFILE
+engine_RNDany_direction_template(ss_pre, 5, 3)
+long_vehicle_sp(ss_pre)
+
+engine_electric1_2_effect(ss_pre_create_effect, -2, 4)
+engine_speed_change_after2(ss_pre, 65,
+                                   80, 1940,
+                                   70, 1945)
+
+engine_penalise_speed3(ss_pre, electric_ss, electric_si, 2)
+
+switch (FEAT_TRAINS, SELF, ss_pre_running_cost_factor,
+[  STORE_TEMP(137, 0),  // Моторы
+   STORE_TEMP(19, 1),   // Бригада
+   STORE_TEMP(48, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(34, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(65 + 15 * (current_year >= 1940)
+                 - 10 * (current_year >= 1945), 6),  // Скорость
+   STORE_TEMP(132, 7),                               // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])                     // Максимальная масса
+{ all_running_cost_factor; }                         // 241
+
+name_in_group(ss_pre, string(STR_NAME_IN_GROUP, string(STR_NAME_ELECTRIC_S_SERIES), string(STR_NAME_SS_PRE)),
+                      string(STR_NAME_IN_GROUP, string(STR_NAME_ELECTRIC_S_SERIES), string(STR_LONGNAME_SS_PRE)))
+
+hint_engine_in(ss_pre,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     1932,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, ss_pre, 837) {
+  property {
+    name: string(STR_NAME_SS_PRE);
+    vehicle_dates(1932, 1932, 40, 10, 8, 31)
+    vehicle_passcargo()
+    vehicle_dcelectric(2430, 132, 353.0, _lowspeed)
+    vehicle_group(electric_s_group)
+  }
+  graphics {
+         additional_text: ss_pre_additional_text;
+        articulated_part: articulated_part_dummy2;
+    bitmask_vehicle_info: ss_pre_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+          colour_mapping: any_cc_colour;
+           create_effect: ss_pre_create_effect;
+                 default: ss_pre_sprites;
+                    name: ss_pre_name;
+                purchase: ss_pre_purchase_sprites;
+          purchase_speed: return 65;
+     running_cost_factor: ss_pre_running_cost_factor;
+                   speed: ss_pre_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(ss_pre, STR_LONGNAME_SS_PRE)
+models_default_cargo_template(ss_pre)
+allow_dcelectric(ss_pre)
