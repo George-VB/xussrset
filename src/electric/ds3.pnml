@@ -12,17 +12,12 @@ long_vehicle_sp(ds3)
 engine_electric1_2_effect(ds3_create_effect, -2, 4)
 engine_speed(ds3cargo, 120)
 engine_speed(ds3pass, 160)
-switch (FEAT_TRAINS, SELF, ds3_speed,
-  cargo_subtype >= 0xE0)
-{
-  1: ds3pass_speed;
-     ds3cargo_speed;
-}
+engine_change_refit(ds3_speed, ds3cargo_speed, ds3pass_speed)
 engine_penalise_speed(ds3, 2)
 engine_refit_cost_for_a2_livery_change(ds3, 0xE0, 1, 2)
 livery_template_refit_f(ds3, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_INCREASED_SPEED, STR_EMPTY)
 
-switch (FEAT_TRAINS, SELF, ds3_running_cost_factor,
+switch (FEAT_TRAINS, SELF, ds3cargo_running_cost_factor,
 [  STORE_TEMP(380, 0),  // Моторы
    STORE_TEMP(53, 1),   // Бригада
    STORE_TEMP(133, 2),  // Износ
@@ -34,6 +29,19 @@ switch (FEAT_TRAINS, SELF, ds3_running_cost_factor,
    STORE_TEMP(90, 7),             // Тара
    STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
 { all_running_cost_factor; }      // 666
+switch (FEAT_TRAINS, SELF, ds3pass_running_cost_factor,
+[  STORE_TEMP(380, 0),  // Моторы
+   STORE_TEMP(53, 1),   // Бригада
+   STORE_TEMP(133, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(93, 4),   // ТО
+   STORE_TEMP(7, 5),    // Сертификация
+
+   STORE_TEMP(160, 6),            // Скорость
+   STORE_TEMP(90, 7),             // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 666
+engine_change_refit(ds3_running_cost_factor, ds3cargo_running_cost_factor, ds3pass_running_cost_factor)
 
 hint_engine_comment(ds3,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
