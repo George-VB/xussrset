@@ -3,36 +3,50 @@
 #define PROP_n8_pre_CF  2 * 28
 #define PROP_n8_pre_RC  2 * 215
 #define PROP_n8_pre_SD  90
-#define PROP_n8_pre_WT  2 * 90
+#define PROP_n8_pre_WT  191
 #define PROP_n8_pre_TE  2 * 297.6
 #define PROP_n8_pre_PR  2 * 2485
 #define PROP_n8_pre_CC  0
 
 #define IMAGEFILE  "src/electric/n8-pre.png"
 purchase_sprites(n8_pre, 0, 0)
-electric2_1_sprites(8, n8_pre_v2, 32,  40)
-electric2_1_sprites(8, n8_pre_v1, 32, 241)
+electric2_1_sprites(8, n8_pre_v1, 32,  40)
+electric2_1_sprites(8, n8_pre_v2, 32, 241)
+electric2_1_sprites(8, n8_pre_v3, 32, 442)
+electric2_1_sprites(8, n8_pre_v4, 32, 643)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, n8_pre_gr_sprites_left,
+  check_year(GREAT_CHANGE_YEAR))
+{ 0: n8_pre_v3_sprites_left;
+     n8_pre_v4_sprites_left; }
+
+switch (FEAT_TRAINS, SELF, n8_pre_gr_sprites_right,
+  check_year(GREAT_CHANGE_YEAR))
+{ 0: n8_pre_v3_sprites_right;
+     n8_pre_v4_sprites_right; }
+
 switch (FEAT_TRAINS, SELF, n8_pre_sprites_left, cargo_subtype)
-{ 0: n8_pre_v1_sprites_left;
+{ 0: n8_pre_gr_sprites_left;
   1: n8_pre_v2_sprites_left;
+  2: n8_pre_v1_sprites_left;
      align_8_sprites; }
 
 switch (FEAT_TRAINS, SELF, n8_pre_sprites_right, cargo_subtype)
-{ 0: n8_pre_v1_sprites_right;
+{ 0: n8_pre_gr_sprites_right;
   1: n8_pre_v2_sprites_right;
+  2: n8_pre_v1_sprites_right;
      align_8_sprites; }
 
 engine_direction_template_only2(n8_pre, )
 long_vehicle(n8_pre)
 
-livery_template_alt0(n8_pre, STR_REFIT_TTD_63, STR_REFIT_TTD_96)
+livery_template_alt2f(n8_pre, STR_REFIT_TTD_63, STR_REFIT_TTD_96)
 
 engine_electric2_1_effect(n8_pre_create_effect_sprites, -1, 1)
 engine_direction_template_only2(n8_pre, _create_effect)
 engine_penalise_speed0(n8_pre)
-engine_speed_change_after(n8_pre, 90, 80, 1962)
+engine_speed_change_after(n8_pre, PROP_n8_pre_SD, 80, 1962)
 engine_ARVs(n8_pre, 1)
 
 switch (FEAT_TRAINS, SELF, n8_pre_running_cost_factor,
@@ -43,23 +57,23 @@ switch (FEAT_TRAINS, SELF, n8_pre_running_cost_factor,
    STORE_TEMP(60, 4),   // ТО
    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(PROP_n8_pre_SD, 6),          // Скорость
-   STORE_TEMP(round(PROP_n8_pre_WT), 7),   // Тара
-   STORE_TEMP(round(PROP_n8_pre_WT), 8)])  // Максимальная масса
-{ all_running_cost_factor; }               // 2 * 215
+   STORE_TEMP(PROP_n8_pre_SD - 10 * (current_year >= 1962), 6),  // Скорость
+   STORE_TEMP(round(PROP_n8_pre_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_n8_pre_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                     // 2 * 215
 
 name_in_group(n8_pre, string(STR_NAME_IN_GROUP, string(STR_NAME_VL8_SERIES), string(STR_NAME_N8_PRE)),
                       string(STR_NAME_IN_GROUP, string(STR_NAME_VL8_SERIES), string(STR_LONGNAME_N8_PRE)))
 
-hint_engine_in(n8_pre_b1962,
+hint_engine(n8_pre_b1962,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC_PROTOTYPE,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1953,
+     1953, 1956,
      fact_novocherkassk())
-hint_engine_in_comment(n8_pre_a1962,
+hint_engine_comment(n8_pre_a1962,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC_PROTOTYPE,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1953,
+     1953, 1956,
      fact_novocherkassk(),
      string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE, 80, 1962))
 hint_change_after(n8_pre, 1962)
@@ -67,7 +81,7 @@ hint_change_after(n8_pre, 1962)
 item (FEAT_TRAINS, n8_pre, 842) {
   property {
     name: string(STR_NAME_N8_PRE);
-    vehicle_dates(1953, 1953, 40, 10, 7, PROP_n8_pre_CF)
+    vehicle_dates(1953, 1956, 30, 10, 7, PROP_n8_pre_CF)
     vehicle_passcargo()
     vehicle_dcelectric(PROP_n8_pre_PR, PROP_n8_pre_WT, PROP_n8_pre_TE, )
     vehicle_group_pre(vl8_group)

@@ -10,24 +10,58 @@
 
 #define IMAGEFILE  "src/electric/n8-pre2.png"
 purchase_sprites(n8_pre2, 0, 0)
-electric2_1_sprites(8, n8_pre2_v2, 32,  40)
-electric2_1_sprites(8, n8_pre2_v1, 32, 241)
+electric2_1_sprites(8, n8_pre2_v1, 32,  40)  // Grey        Factory
+electric2_1_sprites(8, n8_pre2_v2, 32, 241)  // Grey-blue
+electric2_1_sprites(8, n8_pre2_v3, 32, 442)  // Green
+electric2_1_sprites(8, n8_pre2_v4, 32, 643)  // Green-lines
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, n8_pre2_gr_sprites_left,
+  check_year(GREAT_CHANGE_YEAR))
+{ 0: n8_pre2_v3_sprites_left;
+     n8_pre2_v4_sprites_left; }
+
+switch (FEAT_TRAINS, SELF, n8_pre2_gr_sprites_right,
+  check_year(GREAT_CHANGE_YEAR))
+{ 0: n8_pre2_v3_sprites_right;
+     n8_pre2_v4_sprites_right; }
+
 switch (FEAT_TRAINS, SELF, n8_pre2_sprites_left, cargo_subtype)
-{ 0: n8_pre2_v1_sprites_left;
-  1: n8_pre2_v2_sprites_left;
+         { 0: n8_pre2_v1_sprites_left;
+           1: n8_pre2_v2_sprites_left;
+        2..4: n8_pre2_gr_sprites_left;
+  LV_RAL6002: n8_pre2_gr_sprites_left;
+  LV_RAL6020: n8_pre2_gr_sprites_left;
      align_8_sprites; }
 
 switch (FEAT_TRAINS, SELF, n8_pre2_sprites_right, cargo_subtype)
-{ 0: n8_pre2_v1_sprites_right;
-  1: n8_pre2_v2_sprites_right;
+         { 0: n8_pre2_v1_sprites_right;
+           1: n8_pre2_v2_sprites_right;
+        2..4: n8_pre2_gr_sprites_right;
+  LV_RAL6002: n8_pre2_gr_sprites_right;
+  LV_RAL6020: n8_pre2_gr_sprites_right;
      align_8_sprites; }
 
 engine_direction_template_only2(n8_pre2, )
 long_vehicle(n8_pre2)
 
-livery_template_alt0(n8_pre2, STR_REFIT_TTD_09, STR_REFIT_TTD_93)
+switch (FEAT_TRAINS, SELF, n8_pre2_colour_mapping,
+  cargo_subtype)
+{
+        0..1: any_cc_colour;
+           2: return vl11_cc + 5;  // 62
+           3: return vl11_cc + 3;  // 9D
+           4: return vl11_cc + 7;  // 94
+  LV_RAL6002: return vl11_cc + 1;  // 53
+  LV_RAL6020: return vl11_cc + 2;  // 59
+     return CB_FAILED;
+}
+
+  livery_template_altf(n8_pre2_b1963, STR_REFIT_TTD_95)
+
+  livery_template_base_list2(n8_pre2_a1963_alt, LV_RAL6002, LV_RAL6020)
+  livery_template_alt4(n8_pre2_a1963, STR_REFIT_TTD_95, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_TTD_93)
+livery_template_service_year(n8_pre2, 1963)
 
 engine_electric2_1_effect(n8_pre2_create_effect_sprites, -1, 1)
 engine_direction_template_only2(n8_pre2, _create_effect)
@@ -67,7 +101,7 @@ hint_change_after(n8_pre2, 1962)
 item (FEAT_TRAINS, n8_pre2, 843) {
   property {
     name: string(STR_NAME_N8_PRE2);
-    vehicle_dates(1955, 1956, 40, 10, 7, PROP_n8_pre2_CF)
+    vehicle_dates(1955, 1956, 30, 10, 7, PROP_n8_pre2_CF)
     vehicle_passcargo()
     vehicle_dcelectric(PROP_n8_pre2_PR, PROP_n8_pre2_WT, PROP_n8_pre2_TE, )
     vehicle_group_pre(vl8_group)
@@ -80,7 +114,7 @@ item (FEAT_TRAINS, n8_pre2, 843) {
         can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return PROP_n8_pre2_CC;
       cargo_subtype_text: n8_pre2_cargo_subtype_text;
-          colour_mapping: any_cc_colour;
+          colour_mapping: n8_pre2_colour_mapping;
            create_effect: n8_pre2_create_effect_sprites_start;
                  default: n8_pre2_sprites;
                     name: n8_pre2_name;

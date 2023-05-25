@@ -21,29 +21,30 @@ switch (FEAT_TRAINS, SELF, name, (build_year >= year) + (build_year >= year2) + 
   3: new_prop3;                                                                                         \
      old_prop; }                                                                                        \
 
-// Общее изменение по рефиту
-#define engine_change_refit(name, prop_name, new_prop_name)  \
-switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0))    \
-{ 1: new_prop_name;                                          \
-     prop_name; }                                            \
+// Общее изменение по Текущему году
+#define engine_change_year(name, old_prop_name, new_prop_name, year)  \
+switch (FEAT_TRAINS, SELF, name, (current_year >= year))              \
+{ 1: new_prop_name; old_prop_name; }                                  \
 
-#define engine_change_refit_shift(name, prop_name, new_prop_name, shift)  \
-switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0 + shift))         \
-{ 1: new_prop_name;                                                       \
-     prop_name; }                                                         \
+// Общее изменение по рефиту
+#define engine_change_refit(name, old_prop_name, new_prop_name)  \
+switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0))        \
+{ 1: new_prop_name; old_prop_name; }                             \
+
+#define engine_change_refit_shift(name, old_prop_name, new_prop_name, shift)  \
+switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0 + shift))             \
+{ 1: new_prop_name;  old_prop_name; }                                         \
 
 // Общее изменение по рефиту предыдущего ПС
-#define engine_change_refit_prev(name, prop_name, new_prop_name, offset)  \
-switch (FEAT_TRAINS, SELF, name,                                          \
-[ set_offset_to(-2), (prev_vehicle_cargo_subtype()>= 0xE0) ])             \
-{ 1: new_prop_name;                                                       \
-     prop_name; }                                                         \
+#define engine_change_refit_prev(name, old_prop_name, new_prop_name, offset)  \
+switch (FEAT_TRAINS, SELF, name,                                              \
+[ set_offset_to(-2), (prev_vehicle_cargo_subtype()>= 0xE0) ])                 \
+{ 1: new_prop_name; old_prop_name; }                                          \
 
-#define engine_change_refit_shift_prev(name, prop_name, new_prop_name, shift, offset)  \
-switch (FEAT_TRAINS, SELF, name,                                                       \
-[ set_offset_to(-2), (prev_vehicle_cargo_subtype()>= 0xE0 + shift) ])                  \
-{ 1: new_prop_name;                                                                    \
-     prop_name; }                                                                      \
+#define engine_change_refit_shift_prev(name, old_prop_name, new_prop_name, shift, offset)  \
+switch (FEAT_TRAINS, SELF, name,                                                           \
+[ set_offset_to(-2), (prev_vehicle_cargo_subtype()>= 0xE0 + shift) ])                      \
+{ 1: new_prop_name; old_prop_name; }                                                       \
 
 // Определение пенальти на скорость (схема без СМЕ)
 #define engine_penalise_speed0(name)                         \

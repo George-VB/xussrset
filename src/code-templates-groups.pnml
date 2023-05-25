@@ -28,6 +28,22 @@ switch (FEAT_TRAINS, PARENT, name##_name,                       \
 { 0x20: name##_name_tree;                                       \
         return CB_FAILED; }                                     \
 
+
+#define name_in_group_full(name, name_template, name_group, name_short, name_long)  \
+switch(FEAT_TRAINS, SELF, name##_name_all, enable_long_names)                       \
+{   0: return string(name_short);                                                   \
+       return string(name_long); }                                                  \
+switch(FEAT_TRAINS, SELF, name##_name_tree,                                         \
+  getbits(extra_callback_info1, 8, 8) * 100 +                                       \
+  enable_long_names)                                                                \
+{   0: return string(name_template, string(name_group), string(name_short));        \
+    1: return string(name_template, string(name_group), string(name_long));         \
+       name##_name_all; }                                                           \
+switch (FEAT_TRAINS, PARENT, name##_name,                                           \
+  getbits(extra_callback_info1, 0, 8) )                                             \
+{ 0x20: name##_name_tree;                                                           \
+        name##_name_all; }                                                          \
+
 // A group CBs
 
 #define group_CBs(name_g)                                             \
