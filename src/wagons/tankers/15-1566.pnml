@@ -1,0 +1,86 @@
+﻿// tanker_15_1566
+
+#define IMAGEFILE  "src/wagons/tankers/15-1566.png"
+purchase_sprites(tanker_15_1566, 0, 0)
+tanker_layout_template(tanker_15_1566, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_15_1566)
+
+switch (FEAT_TRAINS, SELF, tanker_15_1566_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1566_cargo_capacity,
+[  STORE_TEMP(62 + 5 * (build_year >= 1981) + 2 * (build_year >= 1989), 0),  // т
+   STORE_TEMP(70, 1),                                                        // м³
+   STORE_TEMP(0, 2),                                                         // м²
+   STORE_TEMP(0, 3),                                                         // палетомест
+   STORE_TEMP(7, 4)])                                                        // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1566_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(15, 2),  // Износ
+   STORE_TEMP(5, 3),   // Сопровождение (обогрев)
+   STORE_TEMP(8, 4),   // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(25, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 62, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 23
+
+engine_cost_change_build_after2(tanker_15_1566, 92,
+                                                103, 1981,
+                                                108, 1989)
+
+hint_wagon_with_uspeed(tanker_15_1566_b1981,
+           62, 70,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK_WARM,
+           1974, 1980,
+           fact_azovmach())
+hint_wagon_with_uspeed(tanker_15_1566_a1981,
+           67, 70,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK_WARM,
+           1981, 1988,
+           fact_azovmach())
+hint_wagon_with_uspeed(tanker_15_1566_a1989,
+           69, 70,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK_WARM,
+           1989, 1996,
+           fact_azovmach())
+hint_change_after2(tanker_15_1566, 1981, 1989)
+
+item (FEAT_TRAINS, tanker_15_1566, 366) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 15, 1566);
+    vehicle_dates(1974, 1996, 32, 10, 6, 92)
+    vehicle_wagon(25, 120)
+    cargo_allow_refit: [cargo_all_oil_products_tanker()];
+  }
+  graphics {
+        additional_text: tanker_15_1566_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_15_1566_cargo_capacity;
+     cargo_subtype_text: oil_tanker_cargo_subtype_text;
+         colour_mapping: oil_tanker_colour_mapping;
+            cost_factor: tanker_15_1566_cost_factor;
+                default: tanker_15_1566_sprites;
+          loading_speed: tanker_15_1566_loading_speed;
+               purchase: tanker_15_1566_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_15_1566_running_cost_factor;
+  }
+}
+
+long_name_template(tanker_15_1566, STR_LONGNAME_TANKER_15_1566)

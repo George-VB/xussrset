@@ -1,0 +1,201 @@
+﻿// flatbed_type1892
+
+#define IMAGEFILE  "src/wagons/flatbeds/type1892.png"
+purchase_sprites(flatbed_type1892_v1, 0, 0)
+combo_layout_template(flatbed_type1892_v1, 6, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/flatbeds/type1892-a1902.png"
+purchase_sprites(flatbed_type1892_v2, 0, 0)
+combo_layout_template(flatbed_type1892_v2, 6, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(flatbed_type1892, 1902)
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_b1902_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_type1892_v1_sprites_back;
+  1: cargo6flatbed_sprites;
+  2: flatbed_type1892_v1_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_a1902_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_type1892_v2_sprites_back;
+  1: cargo6flatbed_sprites;
+  2: flatbed_type1892_v2_sprites_front;
+     return CB_FAILED;
+}
+
+engine_build_year_template(flatbed_type1892, 1902, start, )
+long_vehicle(flatbed_type1892)
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_capacity_1892,
+[  STORE_TEMP(12, 0),  // т
+   STORE_TEMP(20, 1),  // м³
+   STORE_TEMP(25, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(6, 4),   // шаблон
+   cargo_type_in_veh])
+{
+flatbed_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_capacity_1909,
+[  STORE_TEMP(15, 0),  // т
+   STORE_TEMP(20, 1),  // м³
+   STORE_TEMP(25, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(6, 4),   // шаблон
+   cargo_type_in_veh])
+{
+flatbed_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_capacity_1911,
+[  STORE_TEMP(16, 0),  // т
+   STORE_TEMP(20, 1),  // м³
+   STORE_TEMP(25, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(6, 4),   // шаблон
+   cargo_type_in_veh])
+{
+flatbed_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_capacity1,
+  (build_year >= 1909) +
+  (build_year >= 1911))
+{
+  0: flatbed_type1892_cargo_capacity_1892;
+  1: flatbed_type1892_cargo_capacity_1909;
+     flatbed_type1892_cargo_capacity_1911;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_capacity,
+  cargo_subtype)
+{
+  0: flatbed_type1892_cargo_capacity1;
+  1: flatbed_type1892_cargo_capacity_1909;
+     flatbed_type1892_cargo_capacity_1911;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(1, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(60, 6),                  // Скорость
+   STORE_TEMP(6, 7),                   // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 16, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 2
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{
+  cargo6_piece_loading_speed;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_subtype_text_up1909,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_subtype_text_up1911,
+  cargo_subtype)
+{
+  0..1: return string(STR_REFIT_FACTORY);
+     2: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_subtype_text_1892,
+  check_year(1909) +
+  check_year(1911))
+{
+  1: flatbed_type1892_cargo_subtype_text_up1909;
+  2: flatbed_type1892_cargo_subtype_text_up1911;
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_subtype_text_1909,
+  check_year(1911))
+{
+  1: flatbed_type1892_cargo_subtype_text_up1911;
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1892_cargo_subtype_text,
+  (build_year >= 1909) +
+  (build_year >= 1911))
+{
+  0: flatbed_type1892_cargo_subtype_text_1892;
+  1: flatbed_type1892_cargo_subtype_text_1909;
+     return CB_RESULT_NO_TEXT;
+}
+
+// чтобы обеспечить 12 параметров исключены из производителей Мытищи, Русо-балт, Ленинградский завод
+hint_wagon_flat_3fact(flatbed_type1892_b1909,
+           12, 25,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+           1892, 1909,
+           string(STR_PURCHASE_HINT_FACTORY_UST_KATAEV),
+           string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+           fact_putilovsky())
+hint_wagon_flat_3fact(flatbed_type1892_a1909,
+           15, 25,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+           1909, 1911,
+           string(STR_PURCHASE_HINT_FACTORY_UST_KATAEV),
+           string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+           fact_putilovsky())
+hint_wagon_flat_3fact(flatbed_type1892_a1911,
+           16, 25,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+           1911, 1916,
+           string(STR_PURCHASE_HINT_FACTORY_UST_KATAEV),
+           string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+           fact_putilovsky())
+hint_change_after2(flatbed_type1892, 1909, 1911)
+
+item (FEAT_TRAINS, flatbed_type1892, 294) {
+  property {
+    name: string(STR_NAME_FLATBED_ISSUE_OF_1892);
+    vehicle_dates(1892, 1916, 30, 10, 5, 7)
+    vehicle_wagon(6.8, 60)
+    cargo_allow_refit: [cargo_all_flatbedlist()];
+  }
+  graphics {
+        additional_text: flatbed_type1892_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: flatbed_type1892_cargo_capacity;
+     cargo_subtype_text: flatbed_type1892_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: flatbed_type1892_sprites;
+          loading_speed: flatbed_type1892_loading_speed;
+               purchase: flatbed_type1892_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: flatbed_type1892_running_cost_factor;
+  }
+}
+
+use_yeti(flatbed_type1892, cargo_all_flatbedlist_uran())

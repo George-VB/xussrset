@@ -1,0 +1,166 @@
+﻿// flatbed_13_9808
+
+#define IMAGEFILE  "src/wagons/flatbeds/13-9808.png"
+purchase_sprites(flatbed_13_9808, 0, 0)
+combo_layout_template(flatbed_13_9808, 9, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_all_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_9808_sprites_back;
+  1: cargo9flatbed_sprites;
+  2: flatbed_13_9808_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_container_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_9808_sprites_back;
+  1: cargo9_container_2_20or40_sprites;
+  2: flatbed_13_9808_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_sprites_start,
+   cargo_type_in_veh)
+{
+  cargo_check_flatbedlist(flatbed_13_9808_all_sprites_start)
+  flatbed_13_9808_container_sprites_start;
+}
+
+long_vehicle(flatbed_13_9808)
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+     0: return ttdall_cc + 0x5C;
+     1: return ttdall_cc + 0x62;
+     2: return ttdall_cc + 0x63;
+  3..4: return ttdall_cc + 0x73;
+     5: return ttdall_cc + 0x83;
+     6: return ttdall_cc + 0x9C;
+     return ttdall_cc + 0xCE;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_colour_mapping,
+  cargo_subtype)
+{
+  0: flatbed_13_9808_random;
+  1: return ttdall_cc + 0x5C;
+  2: return ttdall_cc + 0x62;
+  3: return ttdall_cc + 0x63;
+  4: return ttdall_cc + 0x73;
+  5: return ttdall_cc + 0x83;
+  6: return ttdall_cc + 0x9C;
+  7: return ttdall_cc + 0xCE;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_5C);
+  2: return string(STR_REFIT_TTD_62);
+  3: return string(STR_REFIT_TTD_63);
+  4: return string(STR_REFIT_TTD_73);
+  5: return string(STR_REFIT_TTD_83);
+  6: return string(STR_REFIT_TTD_9C);
+  7: return string(STR_REFIT_TTD_CE);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_cargo_capacity,
+[  STORE_TEMP(72, 0),  // т
+   STORE_TEMP(30, 1),  // м³
+   STORE_TEMP(37, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(9, 4),   // шаблон
+   cargo_type_in_veh])
+{
+flatbed_capacity()
+  container_2_20or40_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(16, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(8, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(22, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 72, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 15
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_weight,
+[  STORE_TEMP(22, 7),
+   cargo_type_in_veh])
+{
+  cargo_check_flatbedlist(return LOAD_TEMP(7))
+  container_2_20or40_weight;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+  cargo_check_flatbedlist(return 0 | CB_RESULT_AUTOREFIT)
+  container_2_20or40_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3),
+   cargo_type_in_veh])
+{
+  cargo_check_flatbedlist(cargo9_piece_loading_speed)
+   container_loading_speed;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_9808_bitmask_vehicle_info,
+  cargo_type_in_veh)
+{
+  cargo_check_flatbedlist(return 0)
+  container_bitmask_vehicle_info;
+}
+
+hint_wagon_flat_noto(flatbed_13_9808,
+                     72, 38,
+                     string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                     STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+                     2008,
+                     string(STR_PURCHASE_HINT_FACTORY_ENGELS))
+
+item (FEAT_TRAINS, flatbed_13_9808, 417) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 13, 9808);
+    vehicle_dates(2008, 2050, 32, 10, 8, 71)
+    vehicle_wagon(22, 120)
+    cargo_allow_refit: [cargo_all_flatbedlist(), cargo_all_containerlist()];
+  }
+  graphics {
+         additional_text: flatbed_13_9808_additional_text;
+        articulated_part: articulated_part_dummy1;
+    bitmask_vehicle_info: flatbed_13_9808_bitmask_vehicle_info;
+          cargo_capacity: flatbed_13_9808_cargo_capacity;
+      cargo_subtype_text: flatbed_13_9808_cargo_subtype_text;
+          colour_mapping: flatbed_13_9808_colour_mapping;
+                 default: flatbed_13_9808_sprites;
+           loading_speed: flatbed_13_9808_loading_speed;
+                purchase: flatbed_13_9808_purchase_sprites;
+         purchase_weight: return 22;
+              refit_cost: flatbed_13_9808_refit_cost;
+     running_cost_factor: flatbed_13_9808_running_cost_factor;
+                  weight: flatbed_13_9808_weight;
+  }
+}
+
+long_name_template(flatbed_13_9808, STR_LONGNAME_FLATBED_13_9808)

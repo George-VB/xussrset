@@ -1,0 +1,107 @@
+// gondola_22_473
+
+#define IMAGEFILE  "src/wagons/gondolas/22-473.png"
+purchase_sprites(gondola_22_473, 0, 0)
+flatbed_empty_layout_template(gondola_22_473, 10, 32, 40)
+flatbed_layout2_template_fixed(gondola_22_473, 10, 32, 107, fert)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_sprites_start,
+  cargo_type_in_veh)
+{
+  gondola_22_473_fert_sprites;
+}
+
+long_vehicle(gondola_22_473)
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_random,
+[ set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+   0..4: return ttdall_cc + 0x62;
+  5..10: return ttdall_cc + 0x53;
+         return ttdall_cc + 0x59;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_colour_mapping,
+  cargo_subtype)
+{
+   0: gondola_22_473_random;
+   1: return ttdall_cc + 0x62;
+   2: return ttdall_cc + 0x53;
+   3: return ttdall_cc + 0x59;
+      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_cargo_subtype_text,
+  cargo_subtype)
+{
+   0: return string(STR_REFIT_FACTORY);
+   1: return string(STR_REFIT_TTD_62);
+   2: return string(STR_REFIT_TTD_53);
+   3: return string(STR_REFIT_TTD_59);
+      return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_cargo_capacity,
+[  STORE_TEMP(58, 0),   // т
+   STORE_TEMP(110, 1),  // м³
+   STORE_TEMP(0, 2),    // м²
+   STORE_TEMP(0, 3),    // палетомест
+   STORE_TEMP(10, 4),   // шаблон
+   cargo_type_in_veh])
+{
+  hopper_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(10, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(5, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(23, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 58, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 15
+
+switch (FEAT_TRAINS, SELF, gondola_22_473_loading_speed,
+[  STORE_TEMP(0, 0),     // определяется элеватором
+   STORE_TEMP(4, 1),     // 2 больших люка
+   STORE_TEMP(0, 2),     // верхняя загрузка не ограничена
+   STORE_TEMP(6*2, 3)])  // нижняя разгрузка ограничена 6 единицами груза на люк
+{ cargo8_piece_loading_speed; }
+
+hint_wagon_with_uspeed_noto(gondola_22_473,
+           58, 110,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+           string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_HOPPER,
+           1972,
+           fact_dneprodzerzhinskycw())
+
+item (FEAT_TRAINS, gondola_22_473, 589) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 22, 473);
+    vehicle_dates(1972, 2050, 26, 10, 8, 38)
+    vehicle_wagon(23, 120)
+    cargo_allow_refit: [cargo_all_peat_hopperlist()];
+  }
+  graphics {
+        additional_text: gondola_22_473_additional_text;
+       articulated_part: articulated_part_dummy2;
+         cargo_capacity: gondola_22_473_cargo_capacity;
+     cargo_subtype_text: gondola_22_473_cargo_subtype_text;
+         colour_mapping: gondola_22_473_colour_mapping;
+                default: gondola_22_473_sprites;
+          loading_speed: gondola_22_473_loading_speed;
+               purchase: gondola_22_473_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: gondola_22_473_running_cost_factor;
+  }
+}
+
+long_name_template(gondola_22_473, STR_LONGNAME_GONDOLA_22_473)

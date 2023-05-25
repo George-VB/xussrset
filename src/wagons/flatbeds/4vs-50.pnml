@@ -1,0 +1,84 @@
+﻿// dumpcar_4vs_50
+
+#define IMAGEFILE  "src/wagons/flatbeds/4vs-50.png"
+purchase_sprites(dumpcar_4vs_50, 0, 0)
+combo_layout_template(dumpcar_4vs_50, 7, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, dumpcar_4vs_50_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: dumpcar_4vs_50_sprites_back;
+  1: cargo7gondola_sprites;
+  2: dumpcar_4vs_50_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle(dumpcar_4vs_50)
+
+switch (FEAT_TRAINS, SELF, dumpcar_4vs_50_cargo_capacity,
+[  STORE_TEMP(50, 0),  // т
+   STORE_TEMP(23, 1),  // м³
+   STORE_TEMP(30, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(7, 4),   // шаблон
+   cargo_type_in_veh])
+{
+  dumpcar_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, dumpcar_4vs_50_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(12, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(5, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(80, 6),                  // Скорость
+   STORE_TEMP(31, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 50, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 17
+
+switch (FEAT_TRAINS, SELF, dumpcar_4vs_50_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(1, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{
+  all_wagons_bulk_loading_speed;
+}
+
+hint_wagon_with_uspeed(dumpcar_4vs_50,
+     50, 23,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_DUMPCAR,
+     1959, 1969,
+     string(STR_PURCHASE_HINT_FACTORY_KALININGRAD_CW))
+
+item (FEAT_TRAINS, dumpcar_4vs_50, 746) {
+  property {
+    name: string(STR_NAME_DUMPCAR_4VS_50);
+    vehicle_dates(1959, 1969, 22, 10, 6, 44)
+    vehicle_wagon(31, 80)
+    cargo_allow_refit: [cargo_all_bulklist()];
+  }
+  graphics {
+        additional_text: dumpcar_4vs_50_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: dumpcar_4vs_50_cargo_capacity;
+     cargo_subtype_text: dumpcar_cargo_subtype_text;
+         colour_mapping: dumpcar_colour_mapping;
+                default: dumpcar_4vs_50_sprites;
+          loading_speed: dumpcar_4vs_50_loading_speed;
+               purchase: dumpcar_4vs_50_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: dumpcar_4vs_50_running_cost_factor;
+  }
+}
+
+long_name_template(dumpcar_4vs_50, STR_LONGNAME_DUMPCAR_4VS_50)
+use_yeti(dumpcar_4vs_50, cargo_all_bulklist_uran())

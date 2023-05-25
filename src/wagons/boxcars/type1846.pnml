@@ -1,0 +1,70 @@
+﻿// boxcar_type1846
+
+#define IMAGEFILE  "src/wagons/boxcars/type1846.png"
+purchase_sprites(boxcar_type1846, 0, 0)
+combo_layout_boxcar_template(boxcar_type1846, 5, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_type1846_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_type1846_sprites_back;
+  1: cargo5all_sprites;
+  2: boxcar_type1846_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle(boxcar_type1846)
+
+switch (FEAT_TRAINS, SELF, boxcar_type1846_cargo_capacity,
+[  STORE_TEMP(8, 0),   // т
+   STORE_TEMP(12, 1),  // м³
+   STORE_TEMP(12, 2),  // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(5, 4)])  // шаблон
+{ box_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, boxcar_type1846_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(1, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(60, 6),                 // Скорость
+   STORE_TEMP(7, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 1
+
+switch (FEAT_TRAINS, SELF, boxcar_type1846_loading_speed,
+  STORE_TEMP(9, 2))
+{ all_wagons_box_loading_speed; }
+
+hint_wagon(boxcar_type1846,
+           8, 12,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
+           1846, 1875,
+           string(STR_PURCHASE_HINT_RWFACTORY_A_MB_RW))
+
+item (FEAT_TRAINS, boxcar_type1846, 519) {
+  property {
+    name: string(STR_NAME_BOXCAR_ISSUE_OF_1846);
+    vehicle_dates(1846, 1875, 20, 10, 4, 3)
+    vehicle_wagon(7, 60)
+    cargo_allow_refit: [cargo_all_old_boxcarlist()];
+  }
+  graphics {
+        additional_text: boxcar_type1846_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: boxcar_type1846_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: boxcar_type1846_sprites;
+          loading_speed: boxcar_type1846_loading_speed;
+               purchase: boxcar_type1846_purchase_sprites;
+             refit_cost: boxcar_refit_cost;
+    running_cost_factor: boxcar_type1846_running_cost_factor;
+  }
+}

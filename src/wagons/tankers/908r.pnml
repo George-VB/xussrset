@@ -1,0 +1,67 @@
+﻿// tanker_908r
+
+#define IMAGEFILE  "src/wagons/tankers/908R.png"
+purchase_sprites(tanker_908r, 0, 0)
+tanker_layout_template(tanker_908r, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_908r)
+
+switch (FEAT_TRAINS, SELF, tanker_908r_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_908r_cargo_capacity,
+[  STORE_TEMP(44, 0),  // т
+   STORE_TEMP(74, 1),  // м³
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(7, 4)])  // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_908r_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(29, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(19, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(36, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 44, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 32
+
+hint_wagon_with_uspeed_noto(tanker_908r,
+           44, 74,
+           calc_loading(44 / (15)),
+           calc_loading(44 / (10)),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+           1983,
+           string(STR_PURCHASE_HINT_FACTORY_ZASTAL))
+
+item (FEAT_TRAINS, tanker_908r, 751) {
+  property {
+    name: string(STR_NAME_TANKER_908R);
+    vehicle_dates(1983, 2050, 40, 10, 6, 200)
+    vehicle_wagon(36, 120)
+    cargo_allow_refit: [cargo_all_gas_natural_tanker()];
+  }
+  graphics {
+        additional_text: tanker_908r_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_908r_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_908r_sprites;
+          loading_speed: tanker_908r_loading_speed;
+               purchase: tanker_908r_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_908r_running_cost_factor;
+  }
+}
+
+long_name_template(tanker_908r, STR_LONGNAME_TANKER_908R)

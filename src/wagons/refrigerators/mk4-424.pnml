@@ -1,0 +1,118 @@
+﻿// refrigerator_mk4_424
+
+#define IMAGEFILE  "src/wagons/refrigerators/mk4-424.png"
+purchase_sprites(refrigerator_mk4_424_v1, 0, 0)
+combo_layout_boxcar_template(refrigerator_mk4_424_v1, 13, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/refrigerators/mk4-424-a1977.png"
+purchase_sprites(refrigerator_mk4_424_v2, 0, 0)
+combo_layout_boxcar_template(refrigerator_mk4_424_v2, 13, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(refrigerator_mk4_424, 1977)
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_b1977_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_mk4_424_v1_sprites_back;
+  1: cargo13_frut_bc_sprites;
+  2: refrigerator_mk4_424_v1_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_a1977_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_mk4_424_v2_sprites_back;
+  1: cargo13_frut_bc_sprites;
+  2: refrigerator_mk4_424_v2_sprites_front;
+     return CB_FAILED;
+}
+
+engine_build_year_template(refrigerator_mk4_424, 1977, start, )
+long_vehicle(refrigerator_mk4_424)
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+  0..3: return ttdall_cc + 0x0C;
+  4..6: return ttdall_cc + 0x0A;
+        return ttdall_cc + 0x73;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_colour_mapping,
+  cargo_subtype)
+{
+  0: refrigerator_mk4_424_random;
+  1: return ttdall_cc + 0x0C;
+  2: return ttdall_cc + 0x0A;
+  3: return ttdall_cc + 0x73;
+     return CB_FAILED;
+}
+
+  livery_template_alt3f(refrigerator_mk4_424_a1977, STR_REFIT_TTD_0C, STR_REFIT_TTD_0A, STR_REFIT_TTD_73)
+livery_template_build_year_ao(refrigerator_mk4_424, 1977)
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_cargo_capacity,
+[  STORE_TEMP(43, 0),   // т
+   STORE_TEMP(100, 1),  // м³
+   STORE_TEMP(0, 2),    // м²
+   STORE_TEMP(0, 3),    // палетомест
+   STORE_TEMP(13, 4)])  // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(66, 2),  // Износ
+   STORE_TEMP(22, 3),  // Сопровождение (охлаждение)
+   STORE_TEMP(44, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(140, 6),                 // Скорость
+   STORE_TEMP(45, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 43, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 131
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_loading_speed,
+  STORE_TEMP(10, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(refrigerator_mk4_424, 140, 120, 29)
+
+hint_wagon_comment(refrigerator_mk4_424,
+     43, 100,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_AUTONOMUS,
+     1971, 1991,
+     string(STR_PURCHASE_HINT_FACTORY_DESSAU_W),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD, 120, 29))
+
+item (FEAT_TRAINS, refrigerator_mk4_424, 399) {
+  property {
+                  name: string(STR_NAME_REFRIGERATOR_MK4_424);
+    climates_available: get_climates_available();
+    vehicle_dates(1971, 1991, 25, 10, 8, 415)
+    vehicle_wagon(45, 140)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+        additional_text: refrigerator_mk4_424_additional_text;
+       articulated_part: articulated_part_dummy5;
+       cargo_age_period: return 10000;
+         cargo_capacity: refrigerator_mk4_424_cargo_capacity;
+     cargo_subtype_text: refrigerator_mk4_424_cargo_subtype_text;
+         colour_mapping: refrigerator_mk4_424_colour_mapping;
+            cost_factor: return 415;
+                default: refrigerator_mk4_424_sprites;
+          loading_speed: refrigerator_mk4_424_loading_speed;
+               purchase: refrigerator_mk4_424_purchase_sprites;
+         purchase_speed: return 140;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: refrigerator_mk4_424_running_cost_factor;
+                  speed: refrigerator_mk4_424_speed;
+  }
+}
+
+long_name_template(refrigerator_mk4_424, STR_LONGNAME_REFRIGERATOR_MK4_424)

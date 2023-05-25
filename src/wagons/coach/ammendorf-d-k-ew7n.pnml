@@ -1,0 +1,84 @@
+﻿// ammendorf_d_k_ew7n
+
+#define IMAGEFILE  "src/wagons/coach/ammendorf-d-k-ew7n.png"
+purchase_sprites(ammendorf_d_k_ew7n, 0, 0)
+
+pass_wagon_sprites(14, ammendorf_d_k_ew7n_v1,  32, 40)
+pass_wagon_sprites(14, ammendorf_d_k_ew7n_v2,  32, 308)
+pass_wagon_sprites(14, ammendorf_d_k_ew7n_v3,  32, 576)
+pass_wagon_sprites(14, ammendorf_d_k_ew7n_v4,  32, 844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_k_ew7n_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: ammendorf_d_k_ew7n_v1_sprites_start;
+     ammendorf_d_k_ew7n_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_k_ew7n_sprites_start,
+  cargo_subtype)
+{
+                        0: ammendorf_d_k_ew7n_sprites_start_random;
+  LV_AMMENDORF_EXHIBITION: ammendorf_d_k_ew7n_v3_sprites_start;
+               LV_RAL6002: ammendorf_d_k_ew7n_v2_sprites_start;
+               LV_RAL6020: ammendorf_d_k_ew7n_v1_sprites_start;
+        LV_BALTIC_RAILWAY: ammendorf_d_k_ew7n_v4_sprites_start;
+      align_14_sprites;
+}
+
+long_vehicle(ammendorf_d_k_ew7n)
+
+hint_wagon_coach(ammendorf_d_k_ew7n_short,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     STR_PURCHASE_HINT_COACH_TYPE_SL,
+     1972, 1993,
+     string(STR_PURCHASE_HINT_FACTORY_AMMENDORF))
+hint_wagon_coach_comment(ammendorf_d_k_ew7n_long,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     STR_PURCHASE_HINT_COACH_TYPE_SL,
+     1972, 1993,
+     string(STR_PURCHASE_HINT_FACTORY_AMMENDORF),
+     string(STR_PURCHASE_HINT_INTERIOR_CHOCOLATE))
+hint_change_longnames(ammendorf_d_k_ew7n)
+
+livery_template_base_list4(ammendorf_d_k_ew7n, LV_AMMENDORF_EXHIBITION, LV_RAL6020, LV_RAL6002, LV_BALTIC_RAILWAY)
+switch (FEAT_TRAINS, SELF, ammendorf_d_k_ew7n_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(53, 1),   // Бригада
+   STORE_TEMP(143, 2),  // Износ
+   STORE_TEMP(13, 3),   // Сопровождение
+   STORE_TEMP(38, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(52, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 3, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 250
+
+item (FEAT_TRAINS, ammendorf_d_k_ew7n, 228) {
+  property {
+    name: string(STR_NAME_AMMENDORF_D_K_EW7N);
+    vehicle_dates(1972, 1993, 28, 10, 8, 400)
+    vehicle_wagon(52, 160)
+    vehicle_wagon_pass(19, 15)
+    vehicle_allow_tourists()
+  }
+  graphics {
+        additional_text: ammendorf_d_k_ew7n_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return 10000;
+     cargo_subtype_text: ammendorf_d_k_ew7n_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+            cost_factor: return 400;
+                default: ammendorf_d_k_ew7n_sprites;
+               purchase: ammendorf_d_k_ew7n_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: ammendorf_d_k_ew7n_running_cost_factor;
+  }
+}
+
+long_name_template(ammendorf_d_k_ew7n, STR_LONGNAME_AMMENDORF_D_K_EW7N)

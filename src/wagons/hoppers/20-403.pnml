@@ -1,0 +1,67 @@
+﻿// 20_403_hopper
+
+#define IMAGEFILE  "src/wagons/hoppers/20-403.png"
+purchase_sprites(hopper_20_403, 0, 0)
+tanker_layout_template(hopper_20_403, 10, 32, 40)
+#undef IMAGEFILE
+long_vehicle(hopper_20_403)
+
+switch (FEAT_TRAINS, SELF, hopper_20_403_cargo_capacity,
+[  STORE_TEMP(60, 0),   // т
+   STORE_TEMP(130, 1),  // м³
+   STORE_TEMP(0, 2),    // м²
+   STORE_TEMP(0, 3),    // палетомест
+   STORE_TEMP(10, 4)])  // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_20_403_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(30, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(18, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(24, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 60, 8)])  // Максимальная масса
+{ all_running_cost_factor; }
+
+switch (FEAT_TRAINS, SELF, hopper_20_403_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(10 * VERY_SMALL_HATCH, 2),  // 10 очень маленьких люков
+   STORE_TEMP(4 * NORMAL_HATCH, 3)])      // 4 разгрузочных люка
+{ all_wagons_hopper_loading_speed; }
+
+hint_wagon_with_uspeed(hopper_20_403,
+     60, 130,
+     calc_loading(60 / (10 * VERY_SMALL_HATCH)),
+     calc_loading(60 / (4 * NORMAL_HATCH)),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+     1960, 1979,
+     fact_dneprodzerzhinskycw())
+
+item (FEAT_TRAINS, hopper_20_403, 639) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 20, 403);
+    vehicle_dates(1960, 1979, 24, 10, 8, 90)
+    vehicle_wagon(24, 120)
+    cargo_allow_refit: [cargo_all_cement_hopperlist()];
+  }
+  graphics {
+        additional_text: hopper_20_403_additional_text;
+       articulated_part: articulated_part_dummy2;
+         cargo_capacity: hopper_20_403_cargo_capacity;
+     cargo_subtype_text: cement_hopper_cargo_subtype_text;
+         colour_mapping: cement_hopper_colour_mapping;
+                default: hopper_20_403_sprites;
+          loading_speed: hopper_20_403_loading_speed;
+               purchase: hopper_20_403_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: hopper_20_403_running_cost_factor;
+  }
+}
+
+long_name_template(hopper_20_403, STR_LONGNAME_HOPPER_20_403)

@@ -1,0 +1,185 @@
+﻿// rs1
+
+#define IMAGEFILE  "src/wagons/refrigerators/rs1.png"
+purchase_sprites(rs1, 0, 0)
+combo_layout_refsection_template(rs1, 13, 32, 40)
+ref_diesel_layout_template(rs1_diesel, 10, 32, 40 + 67*3)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, rs1_sprites_left,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: rs1_sprites_left_back;
+  1: cargo13_frut_bc_sprites_5_wagons;
+  2: rs1_sprites_left_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_sprites_right,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: rs1_sprites_right_back;
+  1: cargo13_frut_bc_sprites_5_wagons;
+  2: rs1_sprites_right_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_sprites_left_all,
+  position_in_articulated_veh)
+{
+    0: rs1_sprites_left;
+    2: rs1_sprites_left;
+    4: rs1_diesel_sprites_left;
+    6: rs1_sprites_left;
+    8: rs1_sprites_left;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_sprites_right_all,
+  position_in_articulated_veh)
+{
+    0: rs1_sprites_right;
+    2: rs1_sprites_right;
+    4: rs1_diesel_sprites_right;
+    6: rs1_sprites_right;
+    8: rs1_sprites_right;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: rs1_sprites_left_all;
+     rs1_sprites_right_all;
+}
+
+long_vehicle(rs1)
+
+engine_diesel_1r_effect(rs1int_create_effect_sprites, -2, 4, 11)
+
+switch (FEAT_TRAINS, SELF, rs1int_create_effect2,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: rs1int_create_effect_sprites_left;
+     rs1int_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, rs1int_create_effect1,
+  position_in_articulated_veh)
+{
+  4: rs1int_create_effect2;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, rs1int_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_load() > 0])
+{
+  1: rs1int_create_effect1;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, rs1_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;
+  2: return rs1int;
+  3: return dummy5;
+  4: return rs1int;
+  5: return dummy2;
+  6: return rs1int;
+  7: return dummy5;
+  8: return rs1int;
+  9: return dummy5;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_cargo_capacity,
+[  STORE_TEMP((42 + (build_year >= 1973)) * 4, 0),  // т
+   STORE_TEMP(108 * 4, 1),                          // м³
+   STORE_TEMP(0, 2),                                // м²
+   STORE_TEMP(0, 3),                                // палетомест
+   STORE_TEMP(13 * 4, 4)])                          // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, rs1_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(258, 2),  // Износ
+   STORE_TEMP(86, 3),   // Сопровождение (охлаждение)
+   STORE_TEMP(172, 4),  // ТО
+   STORE_TEMP(1, 5),    // Сертификация
+
+   STORE_TEMP(140, 6),                             // Скорость
+   STORE_TEMP(226 - 4 * (build_year >= 1973), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 42 * 4, 8)])          // Максимальная масса
+{ all_running_cost_factor; }                       // 516
+
+switch (FEAT_TRAINS, SELF, rs1_loading_speed,
+  STORE_TEMP(10 * 4, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(rs1, 140, 120, 144)
+
+engine_cost_change_build_after(rs1, 4*339+281,
+                                    4*355+281, 1973)
+
+hint_wagon_with_spectype_comment(rs1_b1973,
+     42*4, 108*4,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 340), string(STR_MODEL_NUMBER2, 16, 341)),
+     1965, 1972,
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD, 120, 144))
+hint_wagon_with_spectype_comment(rs1_a1973,
+     43*4, 108*4,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 340), string(STR_MODEL_NUMBER2, 16, 341)),
+     1973, 1978,
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD, 120, 144))
+hint_change_after(rs1, 1973)
+
+item (FEAT_TRAINS, rs1, 394) {
+  property {
+    name: string(STR_NAME_RS1);
+    vehicle_dates(1965, 1978, 25, 10, 8, 4 * 339 + 281)
+    vehicle_wagon(226, 140)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+        additional_text: rs1_additional_text;
+       articulated_part: rs1_articulated_part;
+       cargo_age_period: return 9000;
+         cargo_capacity: rs1_cargo_capacity;
+         colour_mapping: any_cc_colour;
+            cost_factor: rs1_cost_factor;
+                default: rs1_sprites;
+          loading_speed: rs1_loading_speed;
+               purchase: rs1_purchase_sprites;
+         purchase_speed: return 140;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: rs1_running_cost_factor;
+                  speed: rs1_speed;
+  }
+}
+
+long_name_template(rs1, STR_LONGNAME_RS1)
+
+item (FEAT_TRAINS, rs1int, 393) {
+  property {
+    vehicle_no_dates(1965, 2050, 25, 10, 8, 0)
+    vehicle_wagon(0, 140)
+    vehicle_wagon_cargo(0, 0)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    colour_mapping: any_cc_colour;
+     create_effect: rs1int_create_effect;
+           default: rs1_sprites;
+  }
+}

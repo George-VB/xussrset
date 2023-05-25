@@ -1,0 +1,91 @@
+﻿// _2sb
+
+#define IMAGEFILE  "src/wagons/coach/2sb.png"
+purchase_sprites(_2sb, 0, 0)
+
+pass_wagon_sprites(14, _2sb_v1, 32, 40)
+pass_wagon_sprites(14, _2sb_v2, 32, 308)
+pass_wagon_sprites(14, _2sb_v3, 32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _2sb_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _2sb_v1_sprites_start;
+     _2sb_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _2sb_sprites_start,
+  cargo_subtype)
+{
+                0: _2sb_sprites_start_random;
+       LV_RAL6002: _2sb_v1_sprites_start;
+       LV_RAL6020: _2sb_v2_sprites_start;
+  LV_BLUE_EXPRESS: _2sb_v3_sprites_start;
+     align_14_sprites;
+}
+
+long_vehicle(_2sb)
+
+livery_template_base_list3(_2sb, LV_BLUE_EXPRESS, LV_RAL6002, LV_RAL6020)
+engine_cost_change_build_after2(_2sb, 144,
+                                      149, 1948,
+                                      152, 1949)
+engine_capacity_change_build_after2(_2sb, 60,
+                                          58, 1948,
+                                          58, 1949)
+engine_weight_change_build_after(_2sb, 54,
+                                       55, 1948)
+
+switch (FEAT_TRAINS, SELF, _2sb_running_cost_factor,
+[  STORE_TEMP(0, 0),                                                     // Моторы
+   STORE_TEMP(19 + (build_year >= 1948), 1),                             // Бригада
+   STORE_TEMP(51 + 2 * (build_year >= 1948) + (build_year >= 1949), 2),  // Износ
+   STORE_TEMP(5 , 3),                                                    // Сопровождение
+   STORE_TEMP(14, 4),                                                    // ТО
+   STORE_TEMP(2, 5),                                                     // Сертификация
+
+   STORE_TEMP(120, 6),                        // Скорость
+   STORE_TEMP(54 + (build_year >= 1948), 7),  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])          // Максимальная масса
+{ all_running_cost_factor; }                  // 90 - 93 - 95
+
+hint_wagon_coach_2fact(_2sb_b1951,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_COACH_TYPE_NC,
+     1946, 1952,
+     fact_leningradcw(),
+     string(STR_PURCHASE_HINT_FACTORY_LIANOZOVSK))
+hint_wagon_coach(_2sb_a1951,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_COACH_TYPE_NC,
+     1946, 1952,
+     string(STR_PURCHASE_HINT_FACTORY_LIANOZOVSK))
+hint_change_after(_2sb, 1951)
+
+item (FEAT_TRAINS, _2sb, 240) {
+  property {
+    name: string(STR_NAME_2SB);
+    vehicle_dates(1946, 1965, 28, 10, 8, 144)
+    vehicle_wagon(54, 120)
+    vehicle_wagon_pass(60, 15)
+  }
+  graphics {
+        additional_text: _2sb_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return 110;
+         cargo_capacity: _2sb_cargo_capacity;
+     cargo_subtype_text: _2sb_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+            cost_factor: _2sb_cost_factor;
+                default: _2sb_sprites;
+               purchase: _2sb_purchase_sprites;
+    running_cost_factor: _2sb_running_cost_factor;
+                 weight: _2sb_weight;
+  }
+}
+
+long_name_template(_2sb, STR_LONGNAME_2SB)

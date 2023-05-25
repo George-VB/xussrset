@@ -1,0 +1,108 @@
+﻿// ammendorf_d_ki
+
+#define IMAGEFILE  "src/wagons/coach/ammendorf-d-ki-part1.png"
+purchase_sprites(ammendorf_d_ki, 0, 0)
+
+pass_wagon_sprites(14, ammendorf_d_ki_v1,  32, 40)
+pass_wagon_sprites(14, ammendorf_d_ki_v2,  32, 308)
+pass_wagon_sprites(14, ammendorf_d_ki_v3,  32, 576)
+pass_wagon_sprites(14, ammendorf_d_ki_v4,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/coach/ammendorf-d-ki-part2.png"
+pass_wagon_sprites(14, ammendorf_d_ki_v5,  32, 40)
+pass_wagon_sprites(14, ammendorf_d_ki_v6,  32, 308)
+pass_wagon_sprites(14, ammendorf_d_ki_v7,  32, 576)
+pass_wagon_sprites(14, ammendorf_d_ki_v8,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/coach/ammendorf-d-ki-part3.png"
+pass_wagon_sprites(14, ammendorf_d_ki_v9,  32, 40)
+pass_wagon_sprites(14, ammendorf_d_ki_v10, 32, 308)
+pass_wagon_sprites(14, ammendorf_d_ki_v11, 32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_ki_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: ammendorf_d_ki_v1_sprites_start;
+     ammendorf_d_ki_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_ki_sprites_start_lg,
+ check_year(LG_CHANGE_YEAR))
+{
+  0: ammendorf_d_ki_v9_sprites_start;
+     ammendorf_d_ki_v10_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_d_ki_sprites_start,
+  cargo_subtype)
+{
+                            0: ammendorf_d_ki_sprites_start_random;
+                   LV_RAL6002: ammendorf_d_ki_v2_sprites_start;
+                   LV_RAL6020: ammendorf_d_ki_v1_sprites_start;
+            LV_BALTIC_RAILWAY: ammendorf_d_ki_v3_sprites_start;
+       LV_KALININGRAD_RAILWAY: ammendorf_d_ki_v4_sprites_start;
+          LV_NORTHERN_RAILWAY: ammendorf_d_ki_v5_sprites_start;
+       LV_BELARUSSIAN_RAILWAY: ammendorf_d_ki_v6_sprites_start;
+         LV_UKRAINIAN_RAILWAY: ammendorf_d_ki_v7_sprites_start;
+        LV_LATVIJAS_EKSPRESIS: ammendorf_d_ki_v8_sprites_start;
+                        LV_LG: ammendorf_d_ki_sprites_start_lg;
+  LV_UZBEKISTAN_TEMIR_YOLLARI: ammendorf_d_ki_v11_sprites_start;
+                               align_14_sprites;
+}
+
+long_vehicle(ammendorf_d_ki)
+
+livery_template_base_list10(ammendorf_d_ki, LV_RAL6020, LV_RAL6002, LV_BALTIC_RAILWAY, LV_KALININGRAD_RAILWAY, LV_NORTHERN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI)
+switch (FEAT_TRAINS, SELF, ammendorf_d_ki_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(51, 1),   // Бригада
+   STORE_TEMP(138, 2),  // Износ
+   STORE_TEMP(12, 3),   // Сопровождение
+   STORE_TEMP(36, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(55, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 242
+
+hint_wagon_coach(ammendorf_d_ki_short,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_6_1,
+     STR_PURCHASE_HINT_COACH_TYPE_C,
+     1982, 1996,
+     string(STR_PURCHASE_HINT_FACTORY_AMMENDORF))
+hint_wagon_coach_comment(ammendorf_d_ki_long,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_6_1,
+     STR_PURCHASE_HINT_COACH_TYPE_C,
+     1982, 1996,
+     string(STR_PURCHASE_HINT_FACTORY_AMMENDORF),
+     string(STR_PURCHASE_HINT_INTERIOR_CHOCOLATE))
+hint_change_longnames(ammendorf_d_ki)
+
+item (FEAT_TRAINS, ammendorf_d_ki, 233) {
+  property {
+    name: string(STR_NAME_AMMENDORF_D_KI);
+    vehicle_dates(1982, 1996, 28, 10, 8, 359)
+    vehicle_wagon(55, 160)
+    vehicle_wagon_pass(36, 15)
+    vehicle_allow_tourists()
+  }
+  graphics {
+        additional_text: ammendorf_d_ki_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return 800;
+     cargo_subtype_text: ammendorf_d_ki_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+            cost_factor: return 359;
+                default: ammendorf_d_ki_sprites;
+               purchase: ammendorf_d_ki_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: ammendorf_d_ki_running_cost_factor;
+  }
+}
+
+long_name_template(ammendorf_d_ki, STR_LONGNAME_AMMENDORF_D_KI)

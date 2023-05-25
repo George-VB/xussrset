@@ -1,0 +1,77 @@
+﻿// tanker_type1885p uses tanker_type1875p
+
+#define IMAGEFILE  "src/wagons/tankers/type1875p.png"
+purchase_sprites(tanker_type1885p, 100, 0)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_type1885p_frame,
+  STORE_TEMP(ttdall_cc + 0x04, 0x100))
+{ tanker_type1875p_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1885p_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: tanker_type1875p_tank_sprites_start;
+  1: tanker_type1885p_frame;
+     return CB_FAILED;
+}
+
+long_vehicle(tanker_type1885p)
+
+switch (FEAT_TRAINS, SELF, tanker_type1885p_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1885p_cargo_capacity,
+[  STORE_TEMP(13, 0),  // т
+   STORE_TEMP(16, 1),  // м³
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(4, 4)])  // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1885p_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(1, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(60, 6),                  // Скорость
+   STORE_TEMP(7, 7),                   // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 13, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 2
+
+hint_wagon_with_uspeed_2fact(tanker_type1885p,
+                 13, 16,
+                 string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                 STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                 STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+                 1885, 1908,
+                 string(STR_PURCHASE_HINT_RWFACTORY_DTS_RW),
+                 string(STR_PURCHASE_HINT_RWFACTORY_MNN_RW))
+
+item (FEAT_TRAINS, tanker_type1885p, 526) {
+  property {
+    name: string(STR_NAME_TANKER_ISSUE_OF_1885);
+    vehicle_dates(1885, 1908, 32, 10, 3, 7)
+    vehicle_wagon(7.5, 60)
+    cargo_allow_refit: [cargo_all_petr_tanker()];
+  }
+  graphics {
+        additional_text: tanker_type1885p_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_type1885p_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_type1885p_sprites;
+          loading_speed: tanker_type1885p_loading_speed;
+               purchase: tanker_type1885p_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_type1885p_running_cost_factor;
+  }
+}

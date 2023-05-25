@@ -1,0 +1,70 @@
+﻿// 61_181
+
+#define IMAGEFILE  "src/wagons/coach/61-181-uni.png"
+purchase_sprites(_61_181, 0, 0)
+
+pass_wagon_sprites_uni(14, _61_181_v1, 32, 40)
+pass_wagon_sprites_uni(14, _61_181_v2, 32, 107)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _61_181_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _61_181_v1_sprites_start;
+     _61_181_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _61_181_sprites_start,
+  cargo_subtype)
+{
+           0: _61_181_sprites_start_random;
+  LV_RAL6002: _61_181_v1_sprites_start;
+  LV_RAL6020: _61_181_v2_sprites_start;
+     align_14_sprites;
+}
+
+long_vehicle(_61_181)
+
+livery_template_base_list2(_61_181, LV_RAL6020, LV_RAL6002)
+
+switch (FEAT_TRAINS, SELF, _61_181_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(28, 1),  // Бригада
+   STORE_TEMP(76, 2),  // Износ
+   STORE_TEMP(7, 3),   // Сопровождение
+   STORE_TEMP(20, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(50, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 7, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 134
+
+hint_wagon_coach(_61_181,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_COACH_TYPE_NC,
+     1966, 1975,
+     fact_tver())
+
+item (FEAT_TRAINS, _61_181, 242) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 61, 181);
+    vehicle_dates(1966, 1975, 28, 10, 8, 214)
+    vehicle_wagon(50, 160)
+    vehicle_wagon_pass(54, 15)
+  }
+  graphics {
+        additional_text: _61_181_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return 110;
+     cargo_subtype_text: _61_181_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: _61_181_sprites;
+               purchase: _61_181_purchase_sprites;
+    running_cost_factor: _61_181_running_cost_factor;
+  }
+}
+
+long_name_template(_61_181, STR_LONGNAME_61_181)

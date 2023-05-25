@@ -1,0 +1,85 @@
+﻿// 11_715_hopper
+
+#define IMAGEFILE  "src/wagons/hoppers/11-715.png"
+purchase_sprites(hopper_11_715_v1, 0, 0)
+tanker_layout_template(hopper_11_715_b1965, 7, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/hoppers/11-715-a1965.png"
+purchase_sprites(hopper_11_715_v2, 0, 0)
+tanker_layout_template(hopper_11_715_a1965, 7, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/hoppers/11-715-a1968.png"
+purchase_sprites(hopper_11_715_v3, 0, 0)
+tanker_layout_template(hopper_11_715_a1968, 7, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/hoppers/11-715-a1972.png"
+purchase_sprites(hopper_11_715_v4, 0, 0)
+tanker_layout_template(hopper_11_715_a1972, 7, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/hoppers/11-715-a1976.png"
+purchase_sprites(hopper_11_715_v5, 0, 0)
+tanker_layout_template(hopper_11_715_a1976, 7, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select4(hopper_11_715, 1965, 1968, 1972, 1976)
+engine_build_year4_template(hopper_11_715, 1965, 1968, 1972, 1976, start, )
+long_vehicle(hopper_11_715)
+
+switch (FEAT_TRAINS, SELF, hopper_11_715_cargo_capacity,
+[  STORE_TEMP(67, 0),  // т
+   STORE_TEMP(55, 1),  // м³
+   STORE_TEMP(0, 2),   // м²
+   STORE_TEMP(0, 3),   // палетомест
+   STORE_TEMP(7, 4)])  // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_11_715_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(19, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(10, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(19, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 67, 8)])  // Максимальная масса
+{ all_running_cost_factor; }
+
+switch (FEAT_TRAINS, SELF, hopper_11_715_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(4 * LARGE_HATCH, 2),    // 4 больших погрузочных люка
+   STORE_TEMP(4 * NORMAL_HATCH, 3)])  // 4 разгрузочных люка
+{ all_wagons_hopper_loading_speed; }
+
+hint_wagon_with_uspeed(hopper_11_715,
+     67, 55,
+     calc_loading(67 / (4 * LARGE_HATCH)),
+     calc_loading(67 / (4 * NORMAL_HATCH)),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+     1964, 1987,
+     string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW))
+
+item (FEAT_TRAINS, hopper_11_715, 613) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 11, 715);
+    vehicle_dates(1964, 1987, 26, 10, 6, 76)
+    vehicle_wagon(19, 120)
+    cargo_allow_refit: [cargo_all_cement_hopperlist()];
+  }
+  graphics {
+        additional_text: hopper_11_715_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: hopper_11_715_cargo_capacity;
+     cargo_subtype_text: cement_hopper_cargo_subtype_text;
+         colour_mapping: cement_hopper_colour_mapping;
+                default: hopper_11_715_sprites;
+          loading_speed: hopper_11_715_loading_speed;
+               purchase: hopper_11_715_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: hopper_11_715_running_cost_factor;
+  }
+}
+
+long_name_template(hopper_11_715, STR_LONGNAME_HOPPER_11_715)

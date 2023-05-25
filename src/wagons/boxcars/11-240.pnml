@@ -1,0 +1,89 @@
+﻿// boxcar_11_240
+
+#define IMAGEFILE  "src/wagons/boxcars/11-240.png"
+purchase_sprites(boxcar_11_240, 0, 0)
+combo_layout_boxcar_template(boxcar_11_240, 9, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_240_sprites_back;
+  1: cargo9_lvst_bc_sprites;
+  2: boxcar_11_240_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle(boxcar_11_240)
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+   0..8: return ttdall_cc + 0x1A;
+  9..12: return ttdall_cc + 0x19;
+         return ttdall_cc + 0x5A;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_colour_mapping,
+  cargo_subtype)
+{
+  0: boxcar_11_240_random;
+  1: return ttdall_cc + 0x1A;
+  2: return ttdall_cc + 0x19;
+  3: return ttdall_cc + 0x5A;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_1A);
+  2: return string(STR_REFIT_TTD_19);
+  3: return string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_240_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(4, 2),  // Износ
+   STORE_TEMP(1, 3),  // Сопровождение
+   STORE_TEMP(2, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(25, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 31, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 7
+
+hint_wagon(boxcar_11_240,
+           26, 109,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
+           1975, 1983,
+           string(STR_PURCHASE_HINT_FACTORY_ALTAI_CW))
+
+item (FEAT_TRAINS, boxcar_11_240, 257) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 11, 240);
+    vehicle_dates(1975, 1983, 30, 10, 8, 19)
+    vehicle_wagon(25, 120)
+    vehicle_wagon_cargo(41, 11)
+    cargo_allow_refit: [LVST];
+  }
+  graphics {
+        additional_text: boxcar_11_240_additional_text;
+       articulated_part: articulated_part_dummy1;
+       cargo_age_period: return 400;
+     cargo_subtype_text: boxcar_11_240_cargo_subtype_text;
+         colour_mapping: boxcar_11_240_colour_mapping;
+                default: boxcar_11_240_sprites;
+               purchase: boxcar_11_240_purchase_sprites;
+    running_cost_factor: boxcar_11_240_running_cost_factor;
+  }
+}
+
+long_name_template(boxcar_11_240, STR_LONGNAME_BOXCAR_11_240)

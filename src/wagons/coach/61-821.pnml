@@ -1,0 +1,98 @@
+﻿// 61_821
+
+#define IMAGEFILE  "src/wagons/coach/61-821-part1.png"
+purchase_sprites(_61_821, 0, 0)
+
+pass_wagon_sprites(14, _61_821_v1,  32, 40)
+pass_wagon_sprites(14, _61_821_v2,  32, 308)
+pass_wagon_sprites(14, _61_821_v3,  32, 576)
+pass_wagon_sprites(14, _61_821_v4,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/coach/61-821-part2.png"
+pass_wagon_sprites(14, _61_821_v5,  32, 40)
+pass_wagon_sprites(14, _61_821_v6,  32, 308)
+pass_wagon_sprites(14, _61_821_v7,  32, 576)
+pass_wagon_sprites(14, _61_821_v8,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/coach/61-821-part3.png"
+pass_wagon_sprites(14, _61_821_v9,  32, 40)
+pass_wagon_sprites(14, _61_821_v10, 32, 308)
+pass_wagon_sprites(14, _61_821_v11, 32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _61_821_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _61_821_v1_sprites_start;
+     _61_821_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _61_821_sprites_start_lg,
+ check_year(LG_CHANGE_YEAR))
+{
+  0: _61_821_v9_sprites_start;
+     _61_821_v10_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _61_821_sprites_start,
+  cargo_subtype)
+{
+                            0: _61_821_sprites_start_random;
+                   LV_RAL6002: _61_821_v1_sprites_start;
+                   LV_RAL6020: _61_821_v2_sprites_start;
+            LV_BALTIC_RAILWAY: _61_821_v3_sprites_start;
+       LV_KALININGRAD_RAILWAY: _61_821_v4_sprites_start;
+          LV_NORTHERN_RAILWAY: _61_821_v5_sprites_start;
+       LV_BELARUSSIAN_RAILWAY: _61_821_v6_sprites_start;
+         LV_UKRAINIAN_RAILWAY: _61_821_v7_sprites_start;
+        LV_LATVIJAS_EKSPRESIS: _61_821_v8_sprites_start;
+                        LV_LG: _61_821_sprites_start_lg;
+  LV_UZBEKISTAN_TEMIR_YOLLARI: _61_821_v11_sprites_start;
+  align_14_sprites;
+}
+
+long_vehicle(_61_821)
+
+livery_template_base_list10(_61_821, LV_RAL6020, LV_RAL6002, LV_BALTIC_RAILWAY, LV_KALININGRAD_RAILWAY, LV_NORTHERN_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI)
+
+switch (FEAT_TRAINS, SELF, _61_821_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(33, 1),  // Бригада
+   STORE_TEMP(89, 2),  // Износ
+   STORE_TEMP(8, 3),   // Сопровождение
+   STORE_TEMP(23, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(51, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 7, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 156
+
+hint_wagon_coach(_61_821,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_COACH_TYPE_NC,
+     1983, 1988,
+     fact_tver())
+
+item (FEAT_TRAINS, _61_821, 244) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 61, 821);
+    vehicle_dates(1983, 1988, 28, 10, 8, 250)
+    vehicle_wagon(51, 160)
+    vehicle_wagon_pass(54, 15)
+  }
+  graphics {
+        additional_text: _61_821_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return 110;
+     cargo_subtype_text: _61_821_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: _61_821_sprites;
+               purchase: _61_821_purchase_sprites;
+    running_cost_factor: _61_821_running_cost_factor;
+  }
+}
+
+long_name_template(_61_821, STR_LONGNAME_61_821)

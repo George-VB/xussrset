@@ -1,0 +1,89 @@
+﻿// boxcar_11_k651
+
+#define IMAGEFILE  "src/wagons/boxcars/11-k651.png"
+purchase_sprites(boxcar_11_k651, 0, 0)
+combo_layout_boxcar_template(boxcar_11_k651, 14, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_k651_sprites_back;
+  1: cargo14_good_bc_sprites;
+  2: boxcar_11_k651_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle(boxcar_11_k651)
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+  0..4: return ttdall_cc + 0x53;
+  5..9: return ttdall_cc + 0x3F;
+        return ttdall_cc + 0x73;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_colour_mapping,
+  cargo_subtype)
+{
+  0: boxcar_11_k651_random;
+  1: return ttdall_cc + 0x53;
+  2: return ttdall_cc + 0x3F;
+  3: return ttdall_cc + 0x73;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_53);
+  2: return string(STR_REFIT_TTD_3F);
+  3: return string(STR_REFIT_TTD_73);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_k651_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(58, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(29, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(120, 6),                 // Скорость
+   STORE_TEMP(42, 7),                  // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 30, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 87
+
+hint_wagon_noto(boxcar_11_k651,
+           42, 265,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
+           1971,
+           string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW))
+
+item (FEAT_TRAINS, boxcar_11_k651, 308) {
+  property {
+    name: string(STR_NAME_BOXCAR_11_K651);
+    vehicle_dates(1971, 2050, 33, 10, 8, 223)
+    vehicle_wagon(42, 120)
+    vehicle_wagon_cargo(12, 3)
+    cargo_allow_refit: [VEHI];
+  }
+  graphics {
+        additional_text: boxcar_11_k651_additional_text;
+       articulated_part: articulated_part_dummy6;
+     cargo_subtype_text: boxcar_11_k651_cargo_subtype_text;
+         colour_mapping: boxcar_11_k651_colour_mapping;
+                default: boxcar_11_k651_sprites;
+               purchase: boxcar_11_k651_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: boxcar_11_k651_running_cost_factor;
+  }
+}
+
+long_name_template(boxcar_11_k651, STR_LONGNAME_BOXCAR_11_K651)

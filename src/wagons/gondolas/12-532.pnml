@@ -1,0 +1,182 @@
+﻿// gondola_12_532
+
+#define IMAGEFILE  "src/wagons/gondolas/12-532.png"
+purchase_sprites(gondola_12_532_v1, 0, 0)
+combo_layout_template(gondola_12_532_v1, 8, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/gondolas/12-532-a1974.png"
+combo_layout_template(gondola_12_532_v2, 8, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/wagons/gondolas/12-532-a1981.png"
+purchase_sprites(gondola_12_532_v2, 0, 0)
+combo_layout_template(gondola_12_532_v3, 8, 32, 40)
+#undef IMAGEFILE
+purchase_sprites_select(gondola_12_532, 1981)
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_v1_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: gondola_12_532_v1_sprites_back;
+  1: cargo8gondola_sprites;
+  2: gondola_12_532_v1_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_v2_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: gondola_12_532_v2_sprites_back;
+  1: cargo8gondola_sprites;
+  2: gondola_12_532_v2_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_v3_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: gondola_12_532_v3_sprites_back;
+  1: cargo8gondola_sprites;
+  2: gondola_12_532_v3_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_sprites_start,
+  (build_year>=1974) +
+  (build_year>=1981))
+{
+  0: gondola_12_532_v1_sprites_start;
+  1: gondola_12_532_v2_sprites_start;
+     gondola_12_532_v3_sprites_start;
+}
+
+long_vehicle(gondola_12_532)
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+    0..2: return ttdall_cc + 0x7C;
+    3..5: return ttdall_cc + 0x4B;
+    6..8: return ttdall_cc + 0x7B;
+   9..10: return ttdall_cc + 0x73;
+  11..12: return ttdall_cc + 0x74;
+      13: return ttdall_cc + 0x72;
+      14: return ttdall_cc + 0x53;
+          return ttdall_cc + 0x5A;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_colour_mapping,
+  cargo_subtype)
+{
+  0: gondola_12_532_random;
+  1: return ttdall_cc + 0x7C;
+  2: return ttdall_cc + 0x4B;
+  3: return ttdall_cc + 0x7B;
+  4: return ttdall_cc + 0x73;
+  5: return ttdall_cc + 0x74;
+  6: return ttdall_cc + 0x72;
+  7: return ttdall_cc + 0x53;
+  8: return ttdall_cc + 0x5A;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_7C);
+  2: return string(STR_REFIT_TTD_4B);
+  3: return string(STR_REFIT_TTD_7B);
+  4: return string(STR_REFIT_TTD_73);
+  5: return string(STR_REFIT_TTD_74);
+  6: return string(STR_REFIT_TTD_72);
+  7: return string(STR_REFIT_TTD_53);
+  8: return string(STR_REFIT_TTD_59);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_cargo_capacity,
+[  STORE_TEMP(64 + 5 * (build_year >= 1974), 0),  // т
+   STORE_TEMP(73, 1),                             // м³
+   STORE_TEMP(36, 2),                             // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(8, 4),                              // шаблон
+   cargo_type_in_veh])
+{
+gondola_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(2, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{ cargo8_piece_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, gondola_12_532_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(8, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(4, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(120, 6),                                            // Скорость
+   STORE_TEMP(22, 7),                                             // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 64 + 5 * (build_year >= 1974), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                      // 11
+
+engine_cost_change_build_after(gondola_12_532, 29,
+                                               32, 1974)
+
+hint_wagon_with_uspeed(gondola_12_532_b1974,
+                       64, 73,
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                       STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                       STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_WITH_DOORS,
+                       1973, 1973,
+                       string(STR_PURCHASE_HINT_FACTORY_URALVAGONZAVOD))
+hint_wagon_with_uspeed(gondola_12_532_a1974,
+                       69, 73,
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                       STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                       STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_WITH_DOORS,
+                       1974, 1980,
+                       string(STR_PURCHASE_HINT_FACTORY_URALVAGONZAVOD))
+hint_wagon_with_uspeed(gondola_12_532_a1981,
+                       69, 73,
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                       STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                       STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA,
+                       1981, 1988,
+                       string(STR_PURCHASE_HINT_FACTORY_URALVAGONZAVOD))
+hint_change_after2(gondola_12_532, 1974, 1981)
+
+item (FEAT_TRAINS, gondola_12_532, 374) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 12, 532);
+    vehicle_dates(1973, 1988, 22, 10, 7, 29)
+    vehicle_wagon(22, 120)
+    cargo_allow_refit: [cargo_all_gondolalist()];
+  }
+  graphics {
+        additional_text: gondola_12_532_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: gondola_12_532_cargo_capacity;
+     cargo_subtype_text: gondola_12_532_cargo_subtype_text;
+         colour_mapping: gondola_12_532_colour_mapping;
+            cost_factor: gondola_12_532_cost_factor;
+                default: gondola_12_532_sprites;
+          loading_speed: gondola_12_532_loading_speed;
+               purchase: gondola_12_532_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: gondola_12_532_running_cost_factor;
+  }
+}
+
+long_name_template(gondola_12_532, STR_LONGNAME_GONDOLA_12_532)
+use_yeti(gondola_12_532, cargo_all_gondolalist_uran())
