@@ -1,28 +1,22 @@
 // vl65
 
-#define IMAGEFILE  "src/electric/vl65-pre.png"
-purchase_sprites(vl65_v1, 0, 0)
-electric1r_2_sprites(13, vl65_v1, 32, 40)
-#undef IMAGEFILE
+#define PROP_vl65_CF  85
+#define PROP_vl65_RC  595
+#define PROP_vl65_SD  120
+#define PROP_vl65_WT  140
+#define PROP_vl65_TE  380.0
+#define PROP_vl65_PR  6225
+#define PROP_vl65_CC  0
+
 #define IMAGEFILE  "src/electric/vl65.png"
-purchase_sprites(vl65_v2, 0, 0)
-electric1r_2_sprites(13, vl65_a1994_b1996, 32, 40)
+purchase_sprites(vl65, 0, 0)
+electric1r_2_sprites(13, vl65, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl65-a1996.png"
-purchase_sprites(vl65_v3, 0, 0)
-electric1r_2_sprites(13, vl65_a1994_a1996, 32, 40)
-#undef IMAGEFILE
-purchase_sprites_select2pre(vl65, 1994, 1996)
-engine_build_year_template(vl65_a1994, 1996, left, )
-engine_pre_template(vl65, 1994, left)
-engine_build_year_template(vl65_a1994, 1996, right, )
-engine_pre_template(vl65, 1994, right)
 engine_RNDany_direction_template(vl65, 5, 3)
 long_vehicle_sp(vl65)
 
-livery_template_preonly(vl65, 1994)
 engine_electric1_2_effect(vl65_create_effect, -2, 7)
-engine_speed(vl65, 120)
+engine_speed(vl65, PROP_vl65_SD)
 engine_penalise_speed(vl65, 2)
 
 switch (FEAT_TRAINS, SELF, vl65_running_cost_factor,
@@ -33,42 +27,40 @@ switch (FEAT_TRAINS, SELF, vl65_running_cost_factor,
    STORE_TEMP(83, 4),   // ТО
    STORE_TEMP(6, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),            // Скорость
-   STORE_TEMP(140, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 595
+   STORE_TEMP(PROP_vl65_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl65_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl65_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 595
 
-hint_engine(vl65_b1994,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC_PROTOTYPE,
-     STR_PURCHASE_HINT_SECTIONS_1_2,
-     1992, 1993,
-     fact_novocherkassk())
-hint_engine(vl65_a1994,
+name_in_group(vl65, string(STR_NAME_IN_GROUP, string(STR_NAME_VL65_SERIES), string(STR_NAME_VL65)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_VL65_SERIES), string(STR_LONGNAME_VL65)))
+
+hint_engine(vl65,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     1994, 1998,
+     1994, 1995,
      fact_novocherkassk())
-hint_change_pre_after(vl65, 1994)
 
 item (FEAT_TRAINS, vl65, 430) {
   property {
     name: string(STR_NAME_VL65);
-    vehicle_dates(1992, 1998, 30, 10, 8, 85)
+    vehicle_dates(1994, 1995, 30, 10, 8, PROP_vl65_CF)
     vehicle_passcargo()
-    vehicle_acelectric(6225, 140, 380.0, )
+    vehicle_acelectric(PROP_vl65_PR, PROP_vl65_WT, PROP_vl65_TE, )
+    vehicle_group(vl65_group)
   }
   graphics {
+    purchase_menu(PROP_vl65_CF, PROP_vl65_RC, PROP_vl65_SD, PROP_vl65_WT, PROP_vl65_TE, PROP_vl65_PR, PROP_vl65_CC)
          additional_text: vl65_additional_text;
         articulated_part: articulated_part_dummy5;
     bitmask_vehicle_info: vl65_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
-      cargo_subtype_text: vl65_cargo_subtype_text;
+          cargo_capacity: return PROP_vl65_CC;
           colour_mapping: any_cc_colour;
            create_effect: vl65_create_effect;
                  default: vl65_sprites;
+                    name: vl65_name;
                 purchase: vl65_purchase_sprites;
-          purchase_speed: return 120;
      running_cost_factor: vl65_running_cost_factor;
                    speed: vl65_speed;
               start_stop: any_start_stop;
