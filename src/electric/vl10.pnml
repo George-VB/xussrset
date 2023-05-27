@@ -1,127 +1,89 @@
 ﻿// vl10
 
-#define IMAGEFILE  "src/electric/vl10-pre.png"
-purchase_sprites(vl10_v1, 0, 0)
-electric2_1_sprites(8, t8_v1, 32,  40)
-electric2_1_sprites(8, t8_v2, 32, 241)
-#undef IMAGEFILE
+#define PROP_vl10_CF  2 * 33
+#define PROP_vl10_RC  2 * 260
+#define PROP_vl10_SD  100
+#define PROP_vl10_WT  2 * 92
+#define PROP_vl10_TE  2 * 306.9
+#define PROP_vl10_PR  2 * 3030
+#define PROP_vl10_CC  0
+
 #define IMAGEFILE  "src/electric/vl10.png"
-purchase_sprites(vl10_v2, 000, 0)
-purchase_sprites(vl10_v3, 100, 0)
-electric2_1_sprites(9, vl10_v2, 32,  40)
-electric2_1_sprites(9, vl10_v3, 32, 241)
+purchase_sprites(vl10_v1, 000, 0)
+purchase_sprites(vl10_v2, 100, 0)
+electric2_1_sprites(9, vl10_v1, 32,  40)
+electric2_1_sprites(9, vl10_v2, 32, 241)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl10-a1973.png"
-purchase_sprites(vl10_v4, 0, 0)
-electric2_1_sprites(9, vl10_a1964_a1973, 32, 40)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl10-a1974.png"
-purchase_sprites(vl10_v5, 0, 0)
-electric2_1_sprites(9, vl10_a1964_a1974, 32, 40)
-#undef IMAGEFILE
-purchase_sprites_select4pre(vl10, 1964, GREAT_CHANGE_YEAR, 1973, 1974)
+purchase_sprites_select(vl10, GREAT_CHANGE_YEAR)
 
-switch (FEAT_TRAINS, SELF, vl10_v1_sprites_left,
+switch (FEAT_TRAINS, SELF, vl10_sprites_left,
   check_year(GREAT_CHANGE_YEAR))
 {
-  0: t8_v1_sprites_left;
-     t8_v2_sprites_left;
+  0: vl10_v1_sprites_left;
+     vl10_v2_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, vl10_v1_sprites_right,
+switch (FEAT_TRAINS, SELF, vl10_sprites_right,
   check_year(GREAT_CHANGE_YEAR))
 {
-  0: t8_v1_sprites_right;
-     t8_v2_sprites_right;
+  0: vl10_v1_sprites_right;
+     vl10_v2_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, vl10_a1964_b1973_sprites_left,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl10_v2_sprites_left;
-     vl10_v3_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, vl10_a1964_b1973_sprites_right,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl10_v2_sprites_right;
-     vl10_v3_sprites_right;
-}
-
-engine_build_year2_template(vl10_a1964, 1973, 1974, left, )
-engine_pre_template(vl10, 1964, left)
-engine_build_year2_template(vl10_a1964, 1973, 1974, right, )
-engine_pre_template(vl10, 1964, right)
 engine_direction_template_only2(vl10, )
 long_vehicle(vl10)
-engine_electric2_1_effect(vl10_b1964_create_effect_sprites, 3, -3)
-engine_electric2_1_effect(vl10_a1964_create_effect_sprites, -2, 3)
-engine_build_year_template(vl10, 1964, left, _create_effect)
-engine_build_year_template(vl10, 1964, right, _create_effect)
+engine_electric2_1_effect(vl10_create_effect_sprites, -2, 3)
 engine_direction_template_only2(vl10, _create_effect)
-engine_speed(vl10, 100)
+engine_speed(vl10, PROP_vl10_SD)
 engine_penalise_speed0(vl10)
-engine_TE_change_build_after(vl10, get_tec_int(2 * 303.0, 2 * 92),
-                                   get_tec_int(2 * 306.9, 2 * 92), 1964)
-engine_power_change_build_after(vl10, 2 * 2960,
-                                      2 * 3030, 1964)
-engine_length_change_build_after(vl10, 7,
-                                       8, 1964)
 engine_ARVs(vl10, 1)
 
 switch (FEAT_TRAINS, SELF, vl10_running_cost_factor,
-[  STORE_TEMP(292 + 5 * (build_year >= 1964), 0),  // Моторы
-   STORE_TEMP(41 + (build_year >= 1964), 1),       // Бригада
-   STORE_TEMP(102 + 2 * (build_year >= 1964), 2),  // Износ
-   STORE_TEMP(0, 3),                               // Сопровождение
-   STORE_TEMP(72 + 1 * (build_year >= 1964), 4),   // ТО
-   STORE_TEMP(5, 5),                               // Сертификация
+[  STORE_TEMP(297, 0),  // Моторы
+   STORE_TEMP(42, 1),   // Бригада
+   STORE_TEMP(104, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(73, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(2 * 92, 7),         // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 2 * (256 - 260)
+   STORE_TEMP(PROP_vl10_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl10_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl10_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 2 * 260
 
-hint_engine_2fact(vl10_b1964,
-     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC_PROTOTYPE,
-     STR_PURCHASE_HINT_SECTIONS_2,
-     1961, 1962,
-     fact_novocherkassk(),
-     fact_tbilisi())
-hint_engine_2fact(vl10_a1964,
+name_in_group(vl10, string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_NAME_VL10)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_LONGNAME_VL10)))
+
+hint_engine_2fact(vl10,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1964, 1976,
+     1964, 1972,
      fact_novocherkassk(),
      fact_tbilisi())
-hint_change_pre_after(vl10, 1964)
 
 item (FEAT_TRAINS, vl10, 316) {
   property {
     name: string(STR_NAME_VL10);
-    vehicle_dates(1961, 1976, 30, 10, 8, 66)
+    vehicle_dates(1964, 1972, 30, 10, 8, PROP_vl10_CF)
     vehicle_cargo()
-    vehicle_dcelectric(2960, 92, 303.0, )
+    vehicle_dcelectric(PROP_vl10_PR, PROP_vl10_WT, PROP_vl10_TE, )
+    vehicle_group(vl10_group)
   }
   graphics {
-                additional_text: vl10_additional_text;
-               articulated_part: vl10_articulated_part;
-           bitmask_vehicle_info: vl10_bitmask_vehicle_info;
-               can_attach_wagon: any_can_attach_wagon;
-                 cargo_capacity: return 0;
-             cargo_subtype_text: vl_type_cargo_subtype_text;
-                 colour_mapping: vl_type_colour_mapping;
-                  create_effect: vl10_create_effect_sprites_start;
-                        default: vl10_sprites;
-                         length: vl10_length;
-                          power: vl10_power;
-                       purchase: vl10_purchase_sprites;
-                 purchase_speed: return 100;
-            running_cost_factor: vl10_running_cost_factor;
-                          speed: vl10_speed;
-                     start_stop: any_start_stop;
-    tractive_effort_coefficient: vl10_tractive_effort_coefficient;
+    purchase_menu(PROP_vl10_CF, PROP_vl10_RC, PROP_vl10_SD, PROP_vl10_WT, PROP_vl10_TE, PROP_vl10_PR, PROP_vl10_CC)
+         additional_text: vl10_additional_text;
+        articulated_part: vl10_articulated_part;
+    bitmask_vehicle_info: vl10_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_vl10_CC;
+          colour_mapping: vl_type_colour_mapping;
+           create_effect: vl10_create_effect_sprites_start;
+                 default: vl10_sprites;
+                    name: vl10_name;
+                purchase: vl10_purchase_sprites;
+     running_cost_factor: vl10_running_cost_factor;
+                   speed: vl10_speed;
+              start_stop: any_start_stop;
   }
 }
 

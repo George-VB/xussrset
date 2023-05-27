@@ -1,23 +1,23 @@
 ﻿// vl10u
+#define PROP_vl10u_CF  2 * 37
+#define PROP_vl10u_RC  2 * 286
+#define PROP_vl10u_SD  100
+#define PROP_vl10u_WT  2 * 100
+#define PROP_vl10u_TE  2 * 333.4
+#define PROP_vl10u_PR  2 * 3030
+#define PROP_vl10u_CC  0
 
 #define IMAGEFILE  "src/electric/vl10u.png"
-purchase_sprites(vl10u_v1, 0, 0)
-electric2_1_sprites(9, vl10u_b1976, 32, 40)
+purchase_sprites(vl10u, 0, 0)
+electric2_1_sprites(9, vl10u, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl10u-a1976.png"
-purchase_sprites(vl10u_v2, 0, 0)
-electric2_1_sprites(9, vl10u_a1976, 32, 40)
-#undef IMAGEFILE
-purchase_sprites_select(vl10u, 1976)
 
-engine_build_year_template(vl10u, 1976, left, )
-engine_build_year_template(vl10u, 1976, right, )
 engine_direction_template_only2(vl10u, )
 long_vehicle(vl10u)
 
 engine_electric2_1_effect(vl10u_create_effect_sprites, -2, 3)
 engine_direction_template_only2(vl10u, _create_effect)
-engine_speed(vl10u, 100)
+engine_speed(vl10u, PROP_vl10u_SD)
 engine_penalise_speed0(vl10u)
 engine_ARVs(vl10u, 1)
 
@@ -29,27 +29,31 @@ switch (FEAT_TRAINS, SELF, vl10u_running_cost_factor,
    STORE_TEMP(2 * 40, 4),   // ТО
    STORE_TEMP(2 * 3, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(2 * 100, 7),        // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 2 * 286
+   STORE_TEMP(PROP_vl10u_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl10u_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl10u_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 2 * 286
+
+name_in_group(vl10u, string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_NAME_VL10U)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_LONGNAME_VL10U)))
 
 hint_engine_2fact(vl10u,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1974, 1986,
+     1974, 1975,
      fact_novocherkassk(),
      fact_tbilisi())
 
 item (FEAT_TRAINS, vl10u, 317) {
   property {
     name: string(STR_NAME_VL10U);
-    vehicle_dates(1974, 1986, 30, 10, 8, 2 * 37)
+    vehicle_dates(1974, 1975, 30, 10, 8, PROP_vl10u_CF)
     vehicle_cargo()
-    vehicle_dcelectric(2 * 3030, 2 * 100, 2 * 333.4, )
-    vehicle_group(vl10)
+    vehicle_dcelectric(PROP_vl10u_PR, PROP_vl10u_WT, PROP_vl10u_TE, )
+    vehicle_group(vl10_group)
   }
   graphics {
+    purchase_menu(PROP_vl10u_CF, PROP_vl10u_RC, PROP_vl10u_SD, PROP_vl10u_WT, PROP_vl10u_TE, PROP_vl10u_PR, PROP_vl10u_CC)
          additional_text: vl10u_additional_text;
         articulated_part: vl10u_articulated_part;
     bitmask_vehicle_info: vl10u_bitmask_vehicle_info;
@@ -59,8 +63,8 @@ item (FEAT_TRAINS, vl10u, 317) {
           colour_mapping: vl_type_colour_mapping;
            create_effect: vl10u_create_effect_sprites_start;
                  default: vl10u_sprites;
+                    name: vl10u_name;
                 purchase: vl10u_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: vl10u_running_cost_factor;
                    speed: vl10u_speed;
               start_stop: any_start_stop;
