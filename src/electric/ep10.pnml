@@ -1,29 +1,23 @@
 // ep10
 
-#define IMAGEFILE  "src/electric/ep10-pre.png"
-purchase_sprites(ep10_v1, 0, 0)
-electric1r_2_sprites(13, ep10_v1, 32, 40)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/ep10.png"
-purchase_sprites(ep10_v2, 0, 0)
-electric1r_2_sprites(13, ep10_a2004_b2006, 32, 40)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/ep10-a2006.png"
-purchase_sprites(ep10_v3, 0, 0)
-electric1r_2_sprites(13, ep10_a2004_a2006, 32, 40)
-#undef IMAGEFILE
-purchase_sprites_select2pre(ep10, 2004, 2006)
+#define PROP_ep10_CF  174
+#define PROP_ep10_RC  1332
+#define PROP_ep10_SD  160
+#define PROP_ep10_WT  135
+#define PROP_ep10_TE  375.0
+#define PROP_ep10_PR  9065
+#define PROP_ep10_CC  0
 
-engine_build_year_template(ep10_a2004, 2006, left, )
-engine_pre_template(ep10, 2004, left)
-engine_build_year_template(ep10_a2004, 2006, right, )
-engine_pre_template(ep10, 2004, right)
+#define IMAGEFILE  "src/electric/ep10.png"
+purchase_sprites(ep10, 0, 0)
+electric1r_2_sprites(13, ep10, 32, 40)
+#undef IMAGEFILE
+
 engine_RNDany_direction_template(ep10, 5, 3)
 long_vehicle_sp(ep10)
 
-livery_template_preonly(ep10, 2004)
 engine_electric1_2_effect(ep10_create_effect, -1, 6)
-engine_speed_with_reduce(ep10, 160, 140, 20)
+engine_speed_with_reduce(ep10, PROP_ep10_SD, 140, 20)
 engine_penalise_speed0(ep10)
 
 switch (FEAT_TRAINS, SELF, ep10_running_cost_factor,
@@ -34,42 +28,40 @@ switch (FEAT_TRAINS, SELF, ep10_running_cost_factor,
    STORE_TEMP(186, 4),  // ТО
    STORE_TEMP(13, 5),   // Сертификация
 
-   STORE_TEMP(160, 6),            // Скорость
-   STORE_TEMP(135, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 1332
+   STORE_TEMP(PROP_ep10_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_ep10_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_ep10_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 1332
 
-hint_engine(ep10_b2004,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_ACDC_PROTOTYPE,
-     STR_PURCHASE_HINT_SECTIONS_1,
-     1998, 2003,
-     fact_novocherkassk())
-hint_engine(ep10_a2004,
+name_in_group(ep10, string(STR_NAME_IN_GROUP, string(STR_NAME_EP10_SERIES), string(STR_NAME_EP10)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_EP10_SERIES), string(STR_LONGNAME_EP10)))
+
+hint_engine(ep10,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_ACDC,
      STR_PURCHASE_HINT_SECTIONS_1,
-     2004, 2006,
+     2004, 2005,
      fact_novocherkassk())
-hint_change_pre_after(ep10, 2004)
 
 item (FEAT_TRAINS, ep10, 309) {
   property {
     name: string(STR_NAME_EP10);
-    vehicle_dates(1998, 2006, 20, 10, 8, 174)
+    vehicle_dates(2004, 2005, 20, 10, 8, PROP_ep10_CF)
     vehicle_pass()
-    vehicle_acdcelectric(9065, 135, 375.0, _highspeed)
+    vehicle_acdcelectric(PROP_ep10_PR, PROP_ep10_WT, PROP_ep10_TE, _highspeed)
+    vehicle_group_pre(ep10_group)
   }
   graphics {
+    purchase_menu(PROP_ep10_CF, PROP_ep10_RC, PROP_ep10_SD, PROP_ep10_WT, PROP_ep10_TE, PROP_ep10_PR, PROP_ep10_CC)
          additional_text: ep10_additional_text;
         articulated_part: articulated_part_dummy5;
     bitmask_vehicle_info: ep10_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
-      cargo_subtype_text: ep10_cargo_subtype_text;
+          cargo_capacity: return PROP_ep10_CC;
           colour_mapping: any_cc_colour;
            create_effect: ep10_create_effect;
                  default: ep10_sprites;
+                    name: ep10_name;
                 purchase: ep10_purchase_sprites;
-          purchase_speed: return 160;
      running_cost_factor: ep10_running_cost_factor;
                    speed: ep10_speed;
               start_stop: any_start_stop;
