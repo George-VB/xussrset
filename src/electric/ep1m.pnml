@@ -1,61 +1,22 @@
 // ep1m
 
+#define PROP_ep1m_CF  82
+#define PROP_ep1m_RC  573
+#define PROP_ep1m_SD  140
+#define PROP_ep1m_WT  132
+#define PROP_ep1m_TE  380.0
+#define PROP_ep1m_PR  5707
+#define PROP_ep1m_CC  0
+
 #define IMAGEFILE  "src/electric/ep1m.png"
-purchase_sprites(ep1m_v1, 0, 0)
-electric1r_2_sprites(13, ep1m_v1, 32, 40)
+purchase_sprites(ep1m, 0, 0)
+electric1r_2_sprites(13, ep1m, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/ep1m-a2009.png"
-purchase_sprites(ep1m_v2, 0, 0)
-purchase_sprites(ep1m_v3, 101, 0)
-electric1r_2_sprites(13, ep1m_v2, 32, 40)
-electric1r_2_sprites(13, ep1m_v3, 32, 375)
-#undef IMAGEFILE
-purchase_sprites_select2(ep1m, 2009, 2011)
-
-switch (FEAT_TRAINS, SELF, ep1m_sprites_l2,
-  cargo_subtype)
-{
-           0: ep1m_v2_sprites_left;
-  LV_RZD_PID: ep1m_v3_sprites_left;
-  align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep1m_sprites_left,
-  (build_year>= 2009) +
-  (build_year>= 2011))
-{
-  0: ep1m_v1_sprites_left;
-  1: ep1m_sprites_l2;
-  2: ep1m_v3_sprites_left;
-     align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep1m_sprites_r2,
-  cargo_subtype)
-{
-           0: ep1m_v2_sprites_right;
-  LV_RZD_PID: ep1m_v3_sprites_right;
-  align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep1m_sprites_right,
-  (build_year>= 2009) +
-  (build_year>= 2011))
-{
-  0: ep1m_v1_sprites_right;
-  1: ep1m_sprites_r2;
-  2: ep1m_v3_sprites_right;
-     align_13_sprites;
-}
-
 engine_RNDany_direction_template(ep1m, 5, 3)
 long_vehicle_sp(ep1m)
 
-    livery_template_FP(ep1m_a2009)
-livery_template_build_year2_mo(ep1m, 2009, 2011)
-
 engine_electric1_2_effect(ep1m_create_effect, -1, 6)
-engine_speed_with_reduce(ep1m, 140, 120, 30)
+engine_speed_with_reduce(ep1m, PROP_ep1m_SD, 120, 30)
 engine_penalise_speed0(ep1m)
 
 switch (FEAT_TRAINS, SELF, ep1m_running_cost_factor,
@@ -66,36 +27,40 @@ switch (FEAT_TRAINS, SELF, ep1m_running_cost_factor,
    STORE_TEMP(80, 4),   // ТО
    STORE_TEMP(6, 5),    // Сертификация
 
-   STORE_TEMP(140, 6),            // Скорость
-   STORE_TEMP(132, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 573
+   STORE_TEMP(PROP_ep1m_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_ep1m_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_ep1m_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 573
 
-hint_engine_noto(ep1m,
+name_in_group(ep1m, string(STR_NAME_IN_GROUP, string(STR_NAME_EP1_SERIES), string(STR_NAME_EP1M)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_EP1_SERIES), string(STR_LONGNAME_EP1M)))
+
+hint_engine(ep1m,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_1,
-     2006,
+     2006, 2008,
      fact_novocherkassk())
 
 item (FEAT_TRAINS, ep1m, 556) {
   property {
     name: string(STR_NAME_EP1M);
-    vehicle_dates(2006, 2050, 30, 10, 8, 82)
+    vehicle_dates(2006, 2008, 30, 10, 8, PROP_ep1m_CF)
     vehicle_pass()
-    vehicle_acelectric(5707, 132, 380.0, _highspeed)
+    vehicle_acelectric(PROP_ep1m_PR, PROP_ep1m_WT, PROP_ep1m_TE, _highspeed)
+    vehicle_group(ep1_group)
   }
   graphics {
+    purchase_menu(PROP_ep1m_CF, PROP_ep1m_RC, PROP_ep1m_SD, PROP_ep1m_WT, PROP_ep1m_TE, PROP_ep1m_PR, PROP_ep1m_CC)
          additional_text: ep1m_additional_text;
         articulated_part: articulated_part_dummy5;
     bitmask_vehicle_info: ep1m_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
-      cargo_subtype_text: ep1m_cargo_subtype_text;
+          cargo_capacity: return PROP_ep1m_CC;
           colour_mapping: any_cc_colour;
            create_effect: ep1m_create_effect;
                  default: ep1m_sprites;
+                    name: ep1m_name;
                 purchase: ep1m_purchase_sprites;
-          purchase_speed: return 140;
      running_cost_factor: ep1m_running_cost_factor;
                    speed: ep1m_speed;
               start_stop: any_start_stop;

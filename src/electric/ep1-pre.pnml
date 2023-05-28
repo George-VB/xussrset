@@ -1,0 +1,72 @@
+// ep1_pre
+
+#define PROP_ep1_pre_CF  82
+#define PROP_ep1_pre_RC  575
+#define PROP_ep1_pre_SD  140
+#define PROP_ep1_pre_WT  132
+#define PROP_ep1_pre_TE  380.0
+#define PROP_ep1_pre_PR  5706
+#define PROP_ep1_pre_CC  0
+
+#define IMAGEFILE  "src/electric/ep1-pre.png"
+purchase_sprites(ep1_pre, 0, 0)
+electric1r_2_sprites(13, ep1_pre, 32, 40)
+#undef IMAGEFILE
+engine_RNDany_direction_template(ep1_pre, 5, 3)
+long_vehicle_sp(ep1_pre)
+
+engine_electric1_2_effect(ep1_pre_create_effect, -1, 6)
+engine_speed_with_reduce(ep1_pre, PROP_ep1_pre_SD, 120, 30)
+engine_penalise_speed0(ep1_pre)
+
+switch (FEAT_TRAINS, SELF, ep1_pre_running_cost_factor,
+[  STORE_TEMP(328, 0),  // Моторы
+   STORE_TEMP(46, 1),   // Бригада
+   STORE_TEMP(115, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(81, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP_ep1_pre_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_ep1_pre_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_ep1_pre_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                // 575
+
+name_in_group(ep1_pre, string(STR_NAME_IN_GROUP, string(STR_NAME_EP1_SERIES), string(STR_NAME_EP1_PRE)),
+                       string(STR_NAME_IN_GROUP, string(STR_NAME_EP1_SERIES), string(STR_LONGNAME_EP1_PRE)))
+
+hint_engine_in(ep1_pre,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1999,
+     fact_novocherkassk())
+
+item (FEAT_TRAINS, ep1_pre, 857) {
+  property {
+    name: string(STR_NAME_EP1_PRE);
+    vehicle_dates(1999, 1999, 30, 10, 8, PROP_ep1_pre_CF)
+    vehicle_pass()
+    vehicle_acelectric(PROP_ep1_pre_PR, PROP_ep1_pre_WT, PROP_ep1_pre_TE, _highspeed)
+    vehicle_group_pre(ep1_group)
+  }
+  graphics {
+    purchase_menu(PROP_ep1_pre_CF, PROP_ep1_pre_RC, PROP_ep1_pre_SD, PROP_ep1_pre_WT, PROP_ep1_pre_TE, PROP_ep1_pre_PR, PROP_ep1_pre_CC)
+         additional_text: ep1_pre_additional_text;
+        articulated_part: articulated_part_dummy5;
+    bitmask_vehicle_info: ep1_pre_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_ep1_pre_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: ep1_pre_create_effect;
+                 default: ep1_pre_sprites;
+                    name: ep1_pre_name;
+                purchase: ep1_pre_purchase_sprites;
+     running_cost_factor: ep1_pre_running_cost_factor;
+                   speed: ep1_pre_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(ep1_pre, STR_LONGNAME_EP1_PRE)
+models_default_cargo_template(ep1_pre)
+allow_acelectric(ep1_pre)
