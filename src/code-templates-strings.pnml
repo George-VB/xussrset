@@ -1342,6 +1342,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR) 
 { 1: name##_additional_text_hidden;                                                                                                                \
      name##_additional_text_shown; }                                                                                                               \
 
+// Описание локомотива c 2 вариантами в СМЕ с производством в течение года c Мощностью и ТУ
+#define hint_engine_with_sme2_in_PTE(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, in, factory, headname, power, te)           \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                       \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2, string(strengsmevar), string(strengsmevar2)) | (string(STR_PURCHASE_HINT_IN, in) << 16), 0x101),  \
+  STORE_TEMP(factory | (headname << 16), 0x102),                                                                                               \
+  STORE_TEMP(round(power * POWER_MULT) | ((round(te * EFFORT_MULT) & 0x0000FFFF) << 16), 0x103),                                               \
+  STORE_TEMP(round(te * EFFORT_MULT) >> 16, 0x104) ])                                                                                          \
+{ return string(STR_PURCHASE_HINT_ENGINE_PTE); }                                                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                      \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2, string(strengsmevar), string(strengsmevar2)) | (factory << 16), 0x101),                           \
+  STORE_TEMP(headname | (round(power * POWER_MULT) << 16), 0x102),                                                                             \
+  STORE_TEMP(round(te * EFFORT_MULT), 0x103) ])                                                                                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_PTE_NODATES); }                                                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                                                         \
+{ 1: name##_additional_text_hidden;                                                                                                            \
+     name##_additional_text_shown; }                                                                                                           \
+
 // Описание локомотива c 4 вариантами в СМЕ c примечанием
 #define hint_engine_with_sme4_comment(name, strengtype, strengsmetype, strengsmevar, strengsmevar2, strengsmevar3, strengsmevar4, from, to, factory, comment)                                          \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                                                                               \
