@@ -28,6 +28,21 @@ switch (FEAT_TRAINS, PARENT, name##_name,                       \
 { 0x20: name##_name_tree;                                       \
         return CB_FAILED; }                                     \
 
+#define name_in_group_sub_subgroup(name, name_g, lname_g, name_sg, name_ssg)  \
+switch(FEAT_TRAINS, SELF, name##_name_tree,                                   \
+  getbits(extra_callback_info1, 8, 8) * 100 +                                 \
+  enable_long_names)                                                          \
+{   0: return name_g;                                                         \
+    1: return lname_g;                                                        \
+  100: return name_sg;                                                        \
+  101: return name_sg;                                                        \
+  200: return name_ssg;                                                       \
+  201: return name_ssg;                                                       \
+       return CB_FAILED; }                                                    \
+switch (FEAT_TRAINS, PARENT, name##_name,                                     \
+  getbits(extra_callback_info1, 0, 8) )                                       \
+{ 0x20: name##_name_tree;                                                     \
+        return CB_FAILED; }                                                   \
 
 #define name_in_group_full(name, name_template, name_group, name_short, name_long)  \
 switch(FEAT_TRAINS, SELF, name##_name_all, enable_long_names)                       \
