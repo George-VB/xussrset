@@ -348,82 +348,145 @@ if (currents_mode == 3) {
   #include "railtrack-mode3.pnml"
 }
 
-// Adjust for xUSSR Railways Set
-if (grf_future_status("AKA\08") && ((currents_mode == 0) || (currents_mode == 4))) {
+// Adjust for xUSSR Railways Set.
+if (((grf_future_status("AKA\08")) ||
+     (grf_future_status("Meo\B0")) ||
+     /* (grf_future_status("Meo\B1")) || */  // B1 is a railsway set, skipped
+     (grf_future_status("Meo\B2")) ||
+     (grf_future_status("Meo\B3")) ||
+     (grf_future_status("Meo\B4")) ||
+     (grf_future_status("Meo\B5")) ||
+     (grf_future_status("Meo\B6")) /* ||
+      (grf_future_status("Meo\B7")) */  // wagons are ignored, because they can't be used without locomotives
+    ) && ((currents_mode == 0) || (currents_mode == 4))) {
 
+// if the set is split (whole set file is not loaded), only required rails types shoud be available
+// By default remove all the tracks
+    xUSSRset_disable_steamer      = 1;
+    xUSSRset_disable_diesel       = 1;
+    xUSSRset_disable_acelectric   = 1;
+    xUSSRset_disable_dcelectric   = 1;
+    xUSSRset_disable_acdcelectric = 1;
+    xUSSRset_disable_dmu          = 1;
+    xUSSRset_disable_acemu        = 1;
+    xUSSRset_disable_dcemu        = 1;
+    xUSSRset_disable_acdcemu      = 1;
+
+// If the whole set loaded, use its' parameters
+  if (grf_future_status("AKA\08")) {
+      xUSSRset_disable_steamer      = (param["AKA\08", 2] >> 0) & 0x01;
+      xUSSRset_disable_diesel       = (param["AKA\08", 2] >> 1) & 0x01;
+      xUSSRset_disable_acelectric   = (param["AKA\08", 2] >> 2) & 0x01;
+      xUSSRset_disable_dcelectric   = (param["AKA\08", 2] >> 3) & 0x01;
+      xUSSRset_disable_acdcelectric = (param["AKA\08", 2] >> 4) & 0x01;
+      xUSSRset_disable_dmu          = (param["AKA\08", 2] >> 5) & 0x01;
+      xUSSRset_disable_acemu        = (param["AKA\08", 2] >> 6) & 0x01;
+      xUSSRset_disable_dcemu        = (param["AKA\08", 2] >> 7) & 0x01;
+      xUSSRset_disable_acdcemu      = (param["AKA\08", 3] >> 0) & 0x01;
+  }
+// Addon does not have management for engines types, all showd be available
+  if (grf_future_status("Meo\B0")) {
+    xUSSRset_disable_steamer      = 0;
+    xUSSRset_disable_diesel       = 0;
+    xUSSRset_disable_acelectric   = 0;
+    xUSSRset_disable_dcelectric   = 0;
+    xUSSRset_disable_acdcelectric = 0;
+    xUSSRset_disable_dmu          = 0;
+    xUSSRset_disable_acemu        = 0;
+    xUSSRset_disable_dcemu        = 0;
+    xUSSRset_disable_acdcemu      = 0;
+  }
+
+  if (grf_future_status("Meo\B2")) {
+    xUSSRset_disable_steamer      = 0;
+  }
+  if (grf_future_status("Meo\B3")) {
+    xUSSRset_disable_diesel       = 0;
+  }
+  if (grf_future_status("Meo\B5")) {
+    xUSSRset_disable_dmu          = 0;
+  }
+// electric
+  if (grf_future_status("Meo\B4")) {
+      xUSSRset_disable_acelectric   = (param["Meo\B4", 2] >> 2) & 0x01;
+      xUSSRset_disable_dcelectric   = (param["Meo\B4", 2] >> 3) & 0x01;
+      xUSSRset_disable_acdcelectric = (param["Meo\B4", 2] >> 4) & 0x01;
+  }
+  if (grf_future_status("Meo\B6")) {
+      xUSSRset_disable_acemu        = (param["Meo\B6", 2] >> 5) & 0x01;
+      xUSSRset_disable_dcemu        = (param["Meo\B6", 2] >> 6) & 0x01;
+      xUSSRset_disable_acdcemu      = (param["Meo\B6", 2] >> 7) & 0x01;
+  }
+
+// ER2D is available only if DCs are not disabled
+  if (!(xUSSRset_disable_dcelectric && xUSSRset_disable_dcemu)) {
     item (FEAT_RAILTYPES, er2d) { property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY); } }  // Enable ER2D
+  }
 
-    xUSSRset_disable_steamer      = (param["AKA\08", 2] >> 0) & 0x01;
-    xUSSRset_disable_diesel       = (param["AKA\08", 2] >> 1) & 0x01;
-    xUSSRset_disable_acelectric   = (param["AKA\08", 2] >> 2) & 0x01;
-    xUSSRset_disable_dcelectric   = (param["AKA\08", 2] >> 3) & 0x01;
-//    xUSSRset_disable_acdcelectric = (param["AKA\08", 2] >> 4) & 0x01;
-    xUSSRset_disable_dmu          = (param["AKA\08", 2] >> 5) & 0x01;
-    xUSSRset_disable_acemu        = (param["AKA\08", 2] >> 6) & 0x01;
-    xUSSRset_disable_dcemu        = (param["AKA\08", 2] >> 7) & 0x01;
-//    xUSSRset_disable_acdcemu      = (param["AKA\08", 3] >> 0) & 0x01;
+  if (xUSSRset_disable_dmu && xUSSRset_disable_steamer && xUSSRset_disable_diesel) {
+    item (FEAT_RAILTYPES, rla0) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, rla1) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, rla2) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, rla3) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+  }
 
-    if (xUSSRset_disable_dmu && xUSSRset_disable_steamer && xUSSRset_disable_diesel) {
-      item (FEAT_RAILTYPES, rla0) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, rla1) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, rla2) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, rla3) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-    }
+  if (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric) {
+    item (FEAT_RAILTYPES, er15dc0) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15dc1) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er3dc1) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er3dc2) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er3dc3) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    item (FEAT_RAILTYPES, er2d) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er2s) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+  }
 
-    if (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric) {
-      item (FEAT_RAILTYPES, er15dc0) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er15dc1) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er3dc1) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er3dc2) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er3dc3) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-      item (FEAT_RAILTYPES, er2d) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er2s) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    }
-
-    if (xUSSRset_disable_acemu && xUSSRset_disable_acelectric) {
-      item (FEAT_RAILTYPES, er15ac0) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er25ac1) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er25ac2) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er25ac3) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-      item (FEAT_RAILTYPES, er25ac4) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-      item (FEAT_RAILTYPES, er2s) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-    }
+// if both ACs and DCs are disabled, but AC/DCs are enabled, AC rails should be avaiable
+  if (xUSSRset_disable_acemu && xUSSRset_disable_acelectric &&
+      (!(xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric &&
+       (! xUSSRset_disable_acdcemu || !xUSSRset_disable_acdcelectric)))) {
+    item (FEAT_RAILTYPES, er15ac0) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er25ac1) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er25ac2) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er25ac3) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    item (FEAT_RAILTYPES, er25ac4) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    item (FEAT_RAILTYPES, er2s) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+  }
 
 // Adjust for xUSSR Railways Set & add-on
-    if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) {
-      item (FEAT_RAILTYPES, er15dc3) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-      item (FEAT_RAILTYPES, er15dc2) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er15ac4) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-    }
+  if ((! grf_future_status("Meo\B0")) || (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) {
+    item (FEAT_RAILTYPES, er15dc3) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    item (FEAT_RAILTYPES, er15dc2) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15ac4) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+  }
 
 // Unnecessary for add-on
-      item (FEAT_RAILTYPES, er15ac1) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er15ac2) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
-      item (FEAT_RAILTYPES, er15ac3) { property {
-          railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
+    item (FEAT_RAILTYPES, er15ac1) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15ac2) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
+    item (FEAT_RAILTYPES, er15ac3) { property {
+        railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
 }
 
 /*
