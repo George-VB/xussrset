@@ -1,0 +1,68 @@
+﻿// 3es8 uses 2es8
+
+#define PROP__3es8_CF  55
+#define PROP__3es8_RC  434
+#define PROP__3es8_SD  120
+#define PROP__3es8_WT  100
+#define PROP__3es8_TE  366.5
+#define PROP__3es8_PR  kw2hp(4000)
+#define PROP__3es8_CC  0
+
+#define IMAGEFILE  "src/electric/es6/2es8.png"
+purchase_sprites(_3es8, 0, 19)
+#undef IMAGEFILE
+
+engine_speed(_3es8, 120)
+engine_penalise_speed3(_3es8, _2es8, _3es8_m, 4)
+
+switch (FEAT_TRAINS, SELF, _3es8_running_cost_factor,
+[  STORE_TEMP(210, 0),  // Моторы
+   STORE_TEMP(29, 1),   // Бригада
+   STORE_TEMP(74, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(52, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP__3es8_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP__3es8_WT), 7),   // Тара
+   STORE_TEMP(round(PROP__3es8_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 368
+
+name_in_group(_3es8, string(STR_NAME_IN_GROUP, string(STR_NAME_ES6_SERIES), string(STR_NAME_3ES8)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_ES6_SERIES), string(STR_LONGNAME_3ES8)))
+
+hint_engine_with_sme_noto(_3es8,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2_4_WITH_ATTACH, STR_NAME_2ES8,
+     2023,
+     fact_novocherkassk())
+
+item (FEAT_TRAINS, _3es8, 876) {
+  property {
+    name: string(STR_NAME_3ES8);
+    vehicle_dates(2023, 2050, 30, 10, 8, 54)
+    vehicle_cargo()
+    vehicle_dcelectric(kw2hp(4000), 100, 366.5, )
+    vehicle_group(es6_group)
+  }
+  graphics {
+    purchase_menu(PROP__3es8_CF, PROP__3es8_RC, PROP__3es8_SD, PROP__3es8_WT, PROP__3es8_TE, PROP__3es8_PR, PROP__3es8_CC)
+         additional_text: _3es8_additional_text;
+        articulated_part: articulated_part_dummy1;
+    bitmask_vehicle_info: _3es8_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+          colour_mapping: any_cc_colour;
+           create_effect: _2es8_create_effect_sprites_start;
+                 default: _2es8_sprites;
+                    name: _3es8_name;
+                purchase: _3es8_purchase_sprites;
+     running_cost_factor: _3es8_running_cost_factor;
+                   speed: _3es8_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(_3es8, STR_LONGNAME_3ES8)
+models_default_cargo_template(_3es8)
+allow_dcelectric(_3es8)
