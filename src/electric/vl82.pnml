@@ -1,5 +1,13 @@
 ﻿// vl82
 
+#define PROP_vl82_CF  58
+#define PROP_vl82_RC  406
+#define PROP_vl82_SD  110
+#define PROP_vl82_WT  96
+#define PROP_vl82_TE  320.0
+#define PROP_vl82_PR  3360
+#define PROP_vl82_CC  0
+
 #define IMAGEFILE  "src/electric/vl82.png"
 purchase_sprites(vl82, 0, 0)
 
@@ -26,7 +34,7 @@ long_vehicle(vl82)
 
 engine_electric2_1_effect(vl82_create_effect_sprites, -2, 3)
 engine_direction_template(vl82, _create_effect)
-engine_speed(vl82, 110)
+engine_speed(vl82, PROP_vl82_SD)
 engine_penalise_speed(vl82, 4)
 
 switch (FEAT_TRAINS, SELF, vl82_running_cost_factor,
@@ -37,10 +45,13 @@ switch (FEAT_TRAINS, SELF, vl82_running_cost_factor,
    STORE_TEMP(57, 4),   // ТО
    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(110, 6),            // Скорость
-   STORE_TEMP(96, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 406
+   STORE_TEMP(PROP_vl82_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl82_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl82_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 406
+
+name_in_group(vl82, string(STR_NAME_IN_GROUP, string(STR_NAME_VL82_SERIES), string(STR_NAME_VL82)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_VL82_SERIES), string(STR_LONGNAME_VL82)))
 
 hint_engine(vl82,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_ACDC,
@@ -51,11 +62,13 @@ hint_engine(vl82,
 item (FEAT_TRAINS, vl82, 346) {
   property {
     name: string(STR_NAME_VL82);
-    vehicle_dates(1966, 1968, 30, 10, 8, 58)
+    vehicle_dates(1966, 1968, 30, 10, 8, PROP_vl82_CF)
     vehicle_passcargo()
-    vehicle_acdcelectric(3360, 96, 320.1, )
+    vehicle_acdcelectric(PROP_vl82_PR, PROP_vl82_WT, PROP_vl82_TE, )
+    vehicle_group(vl82_group)
   }
   graphics {
+    purchase_menu(PROP_vl82_CF, PROP_vl82_RC, PROP_vl82_SD, PROP_vl82_WT, PROP_vl82_TE, PROP_vl82_PR, PROP_vl82_CC)
          additional_text: vl82_additional_text;
         articulated_part: articulated_part_dummy1;
     bitmask_vehicle_info: vl82_bitmask_vehicle_info;
@@ -64,8 +77,8 @@ item (FEAT_TRAINS, vl82, 346) {
           colour_mapping: any_cc_colour;
            create_effect: vl82_create_effect_sprites_start;
                  default: vl82_sprites;
+                    name: vl82_name;
                 purchase: vl82_purchase_sprites;
-          purchase_speed: return 110;
      running_cost_factor: vl82_running_cost_factor;
                    speed: vl82_speed;
               start_stop: any_start_stop;

@@ -1,18 +1,19 @@
 // vl82m
 
-#define IMAGEFILE  "src/electric/vl82m.png"
-purchase_sprites(vl82m_v1, 0, 0)
-electric2_1_sprites(9, vl82m_b1978, 32,  40)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl82m-a1978.png"
-purchase_sprites(vl82m_v2, 0, 0)
-electric2_1_sprites(9, vl82m_a1978, 32,  40)
-#undef IMAGEFILE
-purchase_sprites_select(vl82m, 1978)
+#define PROP_vl82m_CF  68
+#define PROP_vl82m_RC  476
+#define PROP_vl82m_SD  110
+#define PROP_vl82m_WT  100
+#define PROP_vl82m_TE  333.4
+#define PROP_vl82m_PR  3820
+#define PROP_vl82m_CC  0
 
-engine_build_year_template(vl82m, 1978, left, )
-engine_build_year_template(vl82m, 1978, right, )
-engine_direction_template(vl82m, )
+#define IMAGEFILE  "src/electric/vl82m.png"
+purchase_sprites(vl82m, 0, 0)
+electric2_1_sprites(9, vl82m, 32,  40)
+#undef IMAGEFILE
+
+engine_direction_template2(vl82m, vl82m_type1978, )
 long_vehicle(vl82m)
 
 switch (FEAT_TRAINS, SELF, vl82m_colour_mapping,
@@ -28,9 +29,9 @@ switch (FEAT_TRAINS, SELF, vl82m_colour_mapping,
 is_ER25AC_ds(vl82m_tractive_effort_coefficient, return get_tec_int(333.4, 100), return get_tec_int(323.6, 100))
 livery_template_alt3f(vl82m, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_TTD_93)
 engine_electric2_1_effect(vl82m_create_effect_sprites, -2, 3)
-engine_direction_template(vl82m, _create_effect)
-engine_speed(vl82m, 110)
-engine_penalise_speed(vl82m, 4)
+engine_direction_template2(vl82m, vl82m_type1978, _create_effect)
+engine_speed(vl82m, PROP_vl82m_SD)
+engine_penalise_speed2(vl82m, vl82m_type1978, 4)
 
 switch (FEAT_TRAINS, SELF, vl82m_running_cost_factor,
 [  STORE_TEMP(271, 0),  // Моторы
@@ -40,26 +41,30 @@ switch (FEAT_TRAINS, SELF, vl82m_running_cost_factor,
    STORE_TEMP(67, 4),   // ТО
    STORE_TEMP(5, 5),    // Сертификация
 
-   STORE_TEMP(110, 6),            // Скорость
-   STORE_TEMP(100, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 476
+   STORE_TEMP(PROP_vl82m_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl82m_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl82m_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 476
+
+name_in_group(vl82m, string(STR_NAME_IN_GROUP, string(STR_NAME_VL82_SERIES), string(STR_NAME_VL82M)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_VL82_SERIES), string(STR_LONGNAME_VL82M)))
 
 hint_engine(vl82m,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_ACDC,
      STR_PURCHASE_HINT_SECTIONS_2_4,
-     1972, 1979,
+     1972, 1977,
      fact_novocherkassk())
 
 item (FEAT_TRAINS, vl82m, 402) {
   property {
     name: string(STR_NAME_VL82M);
-    vehicle_dates(1972, 1979, 30, 10, 8, 68)
+    vehicle_dates(1972, 1977, 30, 10, 8, PROP_vl82m_CF)
     vehicle_passcargo()
-    vehicle_acdcelectric(3820, 100, 333.4, )
-    vehicle_group(vl82)
+    vehicle_acdcelectric(PROP_vl82m_PR, PROP_vl82m_WT, PROP_vl82m_TE, )
+    vehicle_group(vl82_group)
   }
   graphics {
+    purchase_menu(PROP_vl82m_CF, PROP_vl82m_RC, PROP_vl82m_SD, PROP_vl82m_WT, PROP_vl82m_TE, PROP_vl82m_PR, PROP_vl82m_CC)
                 additional_text: vl82m_additional_text;
                articulated_part: articulated_part_dummy1;
            bitmask_vehicle_info: vl82m_bitmask_vehicle_info;
@@ -69,8 +74,8 @@ item (FEAT_TRAINS, vl82m, 402) {
                  colour_mapping: vl82m_colour_mapping;
                   create_effect: vl82m_create_effect_sprites_start;
                         default: vl82m_sprites;
+                           name: vl82m_name;
                        purchase: vl82m_purchase_sprites;
-                 purchase_speed: return 110;
             running_cost_factor: vl82m_running_cost_factor;
                           speed: vl82m_speed;
                      start_stop: any_start_stop;
