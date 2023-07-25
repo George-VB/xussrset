@@ -1217,6 +1217,21 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR) 
 { 1: name##_additional_text_hidden;                                                       \
      name##_additional_text_shown; }                                                      \
 
+#define hint_engine_noto_newspeed_comment(name, strengtype, strengsmetype, from, factory, speed, comment)                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                               \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                               \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x101),                                                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2_COMMENT, string(STR_PURCHASE_HINT_EDITION_NEW_SPEED), comment) | (speed << 16), 0x102) ])  \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                                   \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                              \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                               \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_LIST2_COMMENT, string(STR_PURCHASE_HINT_EDITION_NEW_SPEED), comment) << 16), 0x101),  \
+  STORE_TEMP(speed, 0x102) ])                                                                                                          \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                                           \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                        \
+{ 1: name##_additional_text_hidden;                                                                                                    \
+     name##_additional_text_shown; }                                                                                                   \
+
 // Описание локомотива с производством в течение года c примечанием
 #define hint_engine_in_comment(name, strengtype, strengsmetype, in, factory, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                               \
