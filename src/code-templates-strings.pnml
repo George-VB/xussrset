@@ -1140,6 +1140,53 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                       \
      name##_additional_text_shown; }                                                      \
 
+#define hint_engine_newspeed(name, strengtype, strengsmetype, from, to, factory, speed)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                 \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x101),       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_EDITION_NEW_SPEED) | (speed << 16), 0x102) ])      \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                 \
+  STORE_TEMP(factory| (string(STR_PURCHASE_HINT_EDITION_NEW_SPEED) << 16), 0x101),       \
+  STORE_TEMP(speed, 0x102) ])                                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                   \
+{ 1: name##_additional_text_hidden;                                                      \
+     name##_additional_text_shown; }                                                     \
+
+#define hint_engine_chande_speed_on_date(name, strengtype, strengsmetype, from, to, factory, speed, date)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                   \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x101),                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) | (speed << 16), 0x102),                       \
+  STORE_TEMP(date, 0x103) ])                                                                               \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                  \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                   \
+  STORE_TEMP(factory| (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) << 16), 0x101),                      \
+  STORE_TEMP(speed| (date << 16), 0x102) ])                                                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                     \
+{ 1: name##_additional_text_hidden;                                                                        \
+     name##_additional_text_shown; }                                                                       \
+
+#define hint_engine_chande_speed_on_date_comment(name, strengtype, strengsmetype, from, to, factory, speed, date, comment)               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                 \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x101),                                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2_COMMENT, string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE), comment) | (speed << 16), 0x102),   \
+  STORE_TEMP(date, 0x103) ])                                                                                                             \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                 \
+  STORE_TEMP(factory| (string(STR_PURCHASE_HINT_LIST2_COMMENT, string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE), comment) << 16), 0x101),  \
+  STORE_TEMP(speed| (date << 16), 0x102) ])                                                                                              \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                   \
+{ 1: name##_additional_text_hidden;                                                                                                      \
+     name##_additional_text_shown; }                                                                                                     \
+
 // Описание локомотива без окончания срока доступности c примечанием
 #define hint_engine_noto_comment(name, strengtype, strengsmetype, from, factory, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                   \
@@ -1155,6 +1202,21 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR) 
 { 1: name##_additional_text_hidden;                                                        \
      name##_additional_text_shown; }                                                       \
 
+#define hint_engine_noto_newspeed(name, strengtype, strengsmetype, from, factory, speed)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                  \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x101),              \
+  STORE_TEMP(string(STR_PURCHASE_HINT_EDITION_NEW_SPEED) | (speed << 16), 0x102) ])       \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                  \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_EDITION_NEW_SPEED) << 16), 0x101),       \
+  STORE_TEMP(speed, 0x102) ])                                                             \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)           \
+{ 1: name##_additional_text_hidden;                                                       \
+     name##_additional_text_shown; }                                                      \
+
 // Описание локомотива с производством в течение года c примечанием
 #define hint_engine_in_comment(name, strengtype, strengsmetype, in, factory, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                               \
@@ -1169,6 +1231,22 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                 \
 { 1: name##_additional_text_hidden;                                                    \
      name##_additional_text_shown; }                                                   \
+
+#define hint_engine_in_chande_speed_on_date(name, strengtype, strengsmetype, in, factory, speed, date)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, in) | (factory << 16), 0x101),                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) | (speed << 16), 0x102),                    \
+  STORE_TEMP(date, 0x103) ])                                                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                               \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) << 16), 0x101),                  \
+  STORE_TEMP(speed | (date << 16), 0x102) ])                                                            \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                  \
+{ 1: name##_additional_text_hidden;                                                                     \
+     name##_additional_text_shown; }                                                                    \
 
 // Описание локомотива c подтипом c примечанием
 #define hint_engine_with_subtype_comment(name, strengtype, strengsubtype, strengsmetype, from, to, factory, comment)  \
