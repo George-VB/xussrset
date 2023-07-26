@@ -229,6 +229,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                   \
      name##_additional_text_shown; }                                                                  \
 
+#define hint_wagon_chande_speed_on_load(name, cap, vol, lspeed, straging, strwagtype, from, to, factory, speed, units)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                 \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                                 \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO, from, to) << 16), 0x102),                           \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD) << 16), 0x103),                                  \
+  STORE_TEMP(speed | (units << 16), 0x104) ])                                                                           \
+{ return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                               \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                 \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                                 \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM, from) << 16), 0x102),                                 \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD) << 16), 0x103),                                  \
+  STORE_TEMP(speed | (units << 16), 0x104) ])                                                                           \
+{ return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                  \
+{ 1: name##_additional_text_hidden;                                                                                     \
+     name##_additional_text_shown; }                                                                                    \
+
 // Описание вагона со специальным типом (передаётся как строка, а не как ссылка) c примечанием
 #define hint_wagon_with_spectype_comment(name, cap, vol, lspeed, straging, wagtype, from, to, factory, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
@@ -246,6 +265,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                           \
 { 1: name##_additional_text_hidden;                                                                              \
      name##_additional_text_shown; }                                                                             \
+
+#define hint_wagon_with_spectype_chande_speed_on_load(name, cap, vol, lspeed, straging, wagtype, from, to, factory, speed, units)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                           \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                            \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                                            \
+  STORE_TEMP(wagtype | (string(STR_PURCHASE_HINT_FROMTO, from, to) << 16), 0x102),                                                 \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD) << 16), 0x103),                                             \
+  STORE_TEMP(speed | (units << 16), 0x104) ])                                                                                      \
+{ return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                          \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                            \
+  STORE_TEMP(lspeed | (string(straging) << 16), 0x101),                                                                            \
+  STORE_TEMP(wagtype | (string(STR_PURCHASE_HINT_FROM, from) << 16), 0x102),                                                       \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD) << 16), 0x103),                                             \
+  STORE_TEMP(speed | (units << 16), 0x104) ])                                                                                      \
+{ return string(STR_PURCHASE_HINT_WAGON_COMMENT); }                                                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                             \
+{ 1: name##_additional_text_hidden;                                                                                                \
+     name##_additional_text_shown; }                                                                                               \
 
 // Описание вагона с отличающейся скоростью разгрузки
 #define hint_wagon_with_uspeed(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory)  \
@@ -322,6 +360,27 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                     \
 { 1: name##_additional_text_hidden;                                                                                        \
      name##_additional_text_shown; }                                                                                       \
+
+#define hint_wagon_with_uspeed_chande_speed_on_load(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory, speed, units)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                     \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                                      \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                               \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x103),                                                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD) | (speed << 16), 0x104),                                                         \
+  STORE_TEMP(units, 0x105) ])                                                                                                                \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                    \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                                      \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                               \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x103),                                                                 \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_LOAD) | (speed << 16), 0x104),                                                         \
+  STORE_TEMP(units, 0x105) ])                                                                                                                \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                       \
+{ 1: name##_additional_text_hidden;                                                                                                          \
+     name##_additional_text_shown; }                                                                                                         \
 
 // Описание вагона-платформы
 #define hint_wagon_flat(name, cap, vol, lspeed, straging, strwagtype, from, to, factory)       \
@@ -441,6 +500,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                \
 { 1: name##_additional_text_hidden;                                                                   \
      name##_additional_text_shown; }                                                                  \
+
+#define hint_wagon_mail_chande_speed_on_date(name, cap, lspeed, straging, strwagtype, from, to, factory, speed, date)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                               \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                                             \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                                    \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x102),                                     \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) | (speed << 16), 0x103),                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, date), 0x104) ])                                                             \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL_COMMENT); }                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                              \
+[ STORE_TEMP(cap | (lspeed << 16), 0x100),                                                                             \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x101),                                                    \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x102),                                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) | (speed << 16), 0x103),                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, date), 0x104) ])                                                             \
+{ return string(STR_PURCHASE_HINT_WAGON_MAIL_COMMENT); }                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                 \
+{ 1: name##_additional_text_hidden;                                                                                    \
+     name##_additional_text_shown; }                                                                                   \
 
 // Описание почтового-вагона без окончания срока доступности с примечанием
 #define hint_wagon_mail_noto_comment(name, cap, lspeed, straging, strwagtype, from, factory, comment)  \
