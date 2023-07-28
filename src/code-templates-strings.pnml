@@ -1249,6 +1249,22 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                        \
      name##_additional_text_shown; }                                                                       \
 
+#define hint_engine_chande_speedpower_on_rail(name, strengtype, strengsmetype, from, to, factory, speed, power)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                         \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x101),                               \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_RAIL) | (speed << 16), 0x102),                       \
+  STORE_TEMP(power, 0x103) ])                                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                        \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                         \
+  STORE_TEMP(factory| (string(STR_PURCHASE_HINT_SPEED_POWER_CHANGE_ON_RAIL) << 16), 0x101),                      \
+  STORE_TEMP(speed | (power << 16), 0x102) ])                                                                    \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                           \
+{ 1: name##_additional_text_hidden;                                                                              \
+     name##_additional_text_shown; }                                                                             \
+
 #define hint_engine_chande_speed_on_date_comment(name, strengtype, strengsmetype, from, to, factory, speed, date, comment)               \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                 \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                                 \

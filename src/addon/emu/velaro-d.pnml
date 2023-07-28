@@ -206,7 +206,7 @@ switch (FEAT_TRAINS, SELF, velaro_d_can_attach_wagon,
 }
 
 RC_head_check_ice3_new(velaro_d)
-switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor,
+switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor_AC,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
    STORE_TEMP(548, 2),   // Износ
@@ -214,15 +214,32 @@ switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor,
    STORE_TEMP(383, 4),   // ТО
    STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(is_ER25AC() ? 320  : is_ER15AC() ? 320 : 200, 6),  // Скорость
-   STORE_TEMP(454, 7),                                           // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 333 / 16 + 111 / 8, 8)])            // Максимальная масса
+   STORE_TEMP(320, 6),                                 // Скорость
+   STORE_TEMP(454, 7),                                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 333 / 16 + 111 / 8, 8)])  // Максимальная масса
+{ velaro_d_check_running_cost_factor; }
+switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor_DC,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
+
+   STORE_TEMP(200, 6),                                 // Скорость
+   STORE_TEMP(454, 7),                                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 333 / 16 + 111 / 8, 8)])  // Максимальная масса
 { velaro_d_check_running_cost_factor; }
 
+switch (FEAT_TRAINS, SELF, velaro_d_running_cost_factor, is_ER25AC() || is_ER15AC())
+{ 1: velaro_d_running_cost_factor_AC;
+     velaro_d_running_cost_factor_DC; }
+
+engine_power_MU_ice3(velaro_d_15DC, kw2hp(4200))
 engine_power_MU_ice3(velaro_d_DC, kw2hp(4200))
 engine_power_MU_ice3(velaro_d_15AC, kw2hp(8000))
 engine_power_MU_ice3(velaro_d_AC, kw2hp(8000))
-engine_power_change_AAC_DC(velaro_d)
+engine_power_change_AAC_DDC(velaro_d)
 engine_speed(velaro_d_15AC, 320)
 engine_speed(velaro_d_AC, 320)
 engine_speed(velaro_d_DC, 200)

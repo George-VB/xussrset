@@ -123,7 +123,7 @@ switch (FEAT_TRAINS, SELF, tgv_laposte_can_attach_wagon,
 // TODO проблема загрузки каждого вагона почтой или товаром не решена. Проработать варианты
 
 RC_head_check_new(tgv_laposte, tgv_laposte)
-switch (FEAT_TRAINS, SELF, tgv_laposte_running_cost_factor,
+switch (FEAT_TRAINS, SELF, tgv_laposte_running_cost_factor_AC,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
    STORE_TEMP(548, 2),   // Износ
@@ -131,14 +131,30 @@ switch (FEAT_TRAINS, SELF, tgv_laposte_running_cost_factor,
    STORE_TEMP(383, 4),   // ТО
    STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(is_ER25AC() ? 270  : 250, 6),  // Скорость
-   STORE_TEMP(385, 7),                       // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 65, 8)])        // Максимальная масса
+   STORE_TEMP(270, 6),                 // Скорость
+   STORE_TEMP(385, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 65, 8)])  // Максимальная масса
+{ tgv_laposte_check_running_cost_factor; }
+switch (FEAT_TRAINS, SELF, tgv_laposte_running_cost_factor_DC,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
+
+   STORE_TEMP(250, 6),                 // Скорость
+   STORE_TEMP(385, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 65, 8)])  // Максимальная масса
 { tgv_laposte_check_running_cost_factor; }
 
-engine_power_MU(tgv_laposte_DC, kw2hp(3100), tgv_laposte)
+switch (FEAT_TRAINS, SELF, tgv_laposte_running_cost_factor, is_ER25AC() || is_ER15AC())
+{ 1: tgv_laposte_running_cost_factor_AC;
+     tgv_laposte_running_cost_factor_DC; }
+
+engine_power_MU(tgv_laposte_15DC, kw2hp(3100), tgv_laposte)
 engine_power_MU(tgv_laposte_AC, kw2hp(6540), tgv_laposte)
-engine_power_change_AC_DC(tgv_laposte)
+engine_power_change_AC_15DC(tgv_laposte)
 engine_speed(tgv_laposte_AC, 270)
 engine_speed(tgv_laposte_DC, 250)
 engine_speed_change_AC_DC(tgv_laposte)

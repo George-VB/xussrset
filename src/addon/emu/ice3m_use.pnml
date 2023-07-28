@@ -192,7 +192,7 @@ switch (FEAT_TRAINS, SELF, ice3m_can_attach_wagon,
 }
 
 RC_head_check_ice3_new(ice3m)
-switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor,
+switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor_AC,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
    STORE_TEMP(548, 2),   // Износ
@@ -200,15 +200,32 @@ switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor,
    STORE_TEMP(383, 4),   // ТО
    STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(is_ER25AC() ? 330  : is_ER15AC() ? 330 : 250, 6),  // Скорость
-   STORE_TEMP(435, 7),                                           // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 242 / 16 + 136 / 8, 8)])            // Максимальная масса
-{ ice3m_check_running_cost_factor; }                             // 1921+817
+   STORE_TEMP(330, 6),                                 // Скорость
+   STORE_TEMP(435, 7),                                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 242 / 16 + 136 / 8, 8)])  // Максимальная масса
+{ ice3m_check_running_cost_factor; }                   // 1921+817
+switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor_DC,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
 
+   STORE_TEMP(250, 6),                                 // Скорость
+   STORE_TEMP(435, 7),                                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 242 / 16 + 136 / 8, 8)])  // Максимальная масса
+{ ice3m_check_running_cost_factor; }                   // 1921+817
+
+switch (FEAT_TRAINS, SELF, ice3m_running_cost_factor, is_ER25AC() || is_ER15AC())
+{ 1: ice3m_running_cost_factor_AC;
+     ice3m_running_cost_factor_DC; }
+
+engine_power_MU_ice3(ice3m_15DC, kw2hp(4300))
 engine_power_MU_ice3(ice3m_DC, kw2hp(4300))
 engine_power_MU_ice3(ice3m_15AC, kw2hp(8000))
 engine_power_MU_ice3(ice3m_AC, kw2hp(8000))
-engine_power_change_AAC_DC(ice3m)
+engine_power_change_AAC_DDC(ice3m)
 engine_speed(ice3m_15AC, 330)
 engine_speed(ice3m_AC, 330)
 engine_speed(ice3m_DC, 220)

@@ -30,27 +30,36 @@ disable_acdcemu      = 0;
   count_veh_id(ice3m) +     \
   count_veh_id(ice3))       \
 
-#define engine_power_MU_ice3(name, power)               \
-switch (FEAT_TRAINS, PARENT, name##_power, any_ice3())  \
-{ 1: return get_power_in_cb(power);                     \
-     return 0; }                                        \
+#define engine_power_MU_ice3(name, power)                           \
+switch (FEAT_TRAINS, PARENT, name##_power2, any_ice3())             \
+{ 1: return get_power_in_cb(power);                                 \
+     return 0; }                                                    \
+switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)  \
+{ 1: return power;                                                  \
+     name##_power2; }                                               \
 
-#define engine_capacity_MU_ice3(name, capacity)                  \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_ice3())  \
-{ 1: return capacity;                                            \
-     return 0; }                                                 \
+#define engine_capacity_MU_ice3(name, capacity)                              \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2, any_ice3())             \
+{ 1: return capacity;                                                        \
+     return 0; }                                                             \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)  \
+{ 1: return capacity;                                                        \
+     name##_cargo_capacity2; }                                               \
 
-#define RC_head_check_ice3_new(name)                             \
-switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
-{ all_running_cost_factor; }                                     \
-switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  any_ice3())                                                    \
-{ 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+#define RC_head_check_ice3_new(name)                                                    \
+switch (FEAT_TRAINS, PARENT, name##_check3_running_cost_factor,                         \
+[  STORE_TEMP(0, 0),                                                                    \
+   STORE_TEMP(0, 1),                                                                    \
+   STORE_TEMP(0, 3),                                                                    \
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                                        \
+{ all_running_cost_factor; }                                                            \
+switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,                         \
+  any_ice3())                                                                           \
+{ 1: all_running_cost_factor;                                                           \
+     name##_check3_running_cost_factor; }                                               \
+switch (FEAT_TRAINS, SELF, name##_check_running_cost_factor, position_in_consist == 0)  \
+{ 1: all_running_cost_factor;                                                           \
+     name##_check2_running_cost_factor; }                                               \
 
 // TGVs support
 #define any_tgv()                   \
@@ -80,26 +89,35 @@ switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
   count_veh_id(tgv_rd) +     \
   count_veh_id(tgv_duplex))  \
 
-#define engine_power_MU_tgv(name, power)               \
-switch (FEAT_TRAINS, PARENT, name##_power, any_tgv())  \
-{ 1: return get_power_in_cb(power);                    \
-     return 0; }                                       \
+#define engine_power_MU_tgv(name, power)                            \
+switch (FEAT_TRAINS, PARENT, name##_power2, any_tgv())              \
+{ 1: return get_power_in_cb(power);                                 \
+     return 0; }                                                    \
+switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)  \
+{ 1: return power;                                                  \
+     name##_power2; }                                               \
 
-#define engine_capacity_MU_tgv(name, capacity)                  \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_tgv())  \
-{ 1: return capacity;                                           \
-     return 0; }                                                \
+#define engine_capacity_MU_tgv(name, capacity)                               \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2, any_tgv())              \
+{ 1: return capacity;                                                        \
+     return 0; }                                                             \
+switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)  \
+{ 1: return capacity;                                                        \
+     name##_cargo_capacity2; }                                               \
 
-#define RC_head_check_tgv_new(name)                              \
-switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
-{ all_running_cost_factor; }                                     \
-switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  any_tgv())                                                     \
-{ 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+#define RC_head_check_tgv_new(name)                                                     \
+switch (FEAT_TRAINS, PARENT, name##_check3_running_cost_factor,                         \
+[  STORE_TEMP(0, 0),                                                                    \
+   STORE_TEMP(0, 1),                                                                    \
+   STORE_TEMP(0, 3),                                                                    \
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                                        \
+{ all_running_cost_factor; }                                                            \
+switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,                         \
+  any_tgv())                                                                            \
+{ 1: all_running_cost_factor;                                                           \
+     name##_check3_running_cost_factor; }                                               \
+switch (FEAT_TRAINS, SELF, name##_check_running_cost_factor, position_in_consist == 0)  \
+{ 1: all_running_cost_factor;                                                           \
+     name##_check2_running_cost_factor; }                                               \
 
 // end

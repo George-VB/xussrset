@@ -155,7 +155,7 @@ switch (FEAT_TRAINS, SELF, etr500_can_attach_wagon,
 }
 
 RC_head_check_new(etr500, etr500)
-switch (FEAT_TRAINS, SELF, etr500_running_cost_factor,
+switch (FEAT_TRAINS, SELF, etr500_running_cost_factor_AC,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
    STORE_TEMP(548, 2),   // Износ
@@ -163,10 +163,25 @@ switch (FEAT_TRAINS, SELF, etr500_running_cost_factor,
    STORE_TEMP(383, 4),   // ТО
    STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(is_ER25AC() ? 360  : 250, 6),                   // Скорость
+   STORE_TEMP(360, 6),                                        // Скорость
    STORE_TEMP(598, 7),                                        // Тара
    STORE_TEMP(LOAD_TEMP(7) + 340 / 16 + (159+67+8) / 8, 8)])  // Максимальная масса
 { etr500_check_running_cost_factor; }                         // 1921+817
+switch (FEAT_TRAINS, SELF, etr500_running_cost_factor_DC,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
+
+   STORE_TEMP(250, 6),                                        // Скорость
+   STORE_TEMP(598, 7),                                        // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 340 / 16 + (159+67+8) / 8, 8)])  // Максимальная масса
+{ etr500_check_running_cost_factor; }                         // 1921+817
+switch (FEAT_TRAINS, SELF, etr500_running_cost_factor, is_ER15AC() || is_ER25AC())
+{ 1: etr500_running_cost_factor_AC;
+     etr500_running_cost_factor_DC; }
 
 engine_capacity_MU(etr500, 340, etr500)
 engine_power_MU(etr500, 11964, etr500)

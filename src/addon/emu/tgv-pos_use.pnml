@@ -213,7 +213,7 @@ switch (FEAT_TRAINS, SELF, tgv_pos_cargo_subtype_text,
 }
 
 RC_head_check_tgv_new(tgv_pos)
-switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor,
+switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor_AC,
 [  STORE_TEMP(1561, 0),  // Моторы
    STORE_TEMP(219, 1),   // Бригада
    STORE_TEMP(548, 2),   // Износ
@@ -221,16 +221,32 @@ switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor,
    STORE_TEMP(383, 4),   // ТО
    STORE_TEMP(27, 5),    // Сертификация
 
-   STORE_TEMP(is_ER25AC() ? 320  : is_ER15AC() ? 320 : 250, 6),  // Скорость
-   STORE_TEMP(383, 7),                                           // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 257 / 16 + 120 / 8, 8)])            // Максимальная масса
+   STORE_TEMP(320, 6),                                 // Скорость
+   STORE_TEMP(383, 7),                                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 257 / 16 + 120 / 8, 8)])  // Максимальная масса
+{ tgv_pos_check_running_cost_factor; }
+switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor_DC,
+[  STORE_TEMP(1561, 0),  // Моторы
+   STORE_TEMP(219, 1),   // Бригада
+   STORE_TEMP(548, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(383, 4),   // ТО
+   STORE_TEMP(27, 5),    // Сертификация
+
+   STORE_TEMP(250, 6),                                 // Скорость
+   STORE_TEMP(383, 7),                                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 257 / 16 + 120 / 8, 8)])  // Максимальная масса
 { tgv_pos_check_running_cost_factor; }
 
+switch (FEAT_TRAINS, SELF, tgv_pos_running_cost_factor, is_ER25AC() || is_ER15AC())
+{ 1: tgv_pos_running_cost_factor_AC;
+     tgv_pos_running_cost_factor_DC; }
+
 engine_capacity_MU_tgv(tgv_pos, 257)
-engine_power_MU_tgv(tgv_pos_DC, kw2hp(3680))
+engine_power_MU_tgv(tgv_pos_15DC, kw2hp(3680))
 engine_power_MU_tgv(tgv_pos_15AC, kw2hp(6880))
 engine_power_MU_tgv(tgv_pos_AC, kw2hp(9280))
-engine_power_change_AAC_DC(tgv_pos)
+engine_power_change_AAC_15DC(tgv_pos)
 engine_speed(tgv_pos_DC, 250)
 engine_speed(tgv_pos_15AC, 320)
 engine_speed(tgv_pos_AC, 320)
