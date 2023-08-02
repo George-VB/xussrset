@@ -1,16 +1,20 @@
 ﻿// vl80t
 
+#define PROP_vl80t_CF  2 * 53
+#define PROP_vl80t_RC  2 * 375
+#define PROP_vl80t_SD  110
+#define PROP_vl80t_WT  2 * 95
+#define PROP_vl80t_TE  2 * 330.0
+#define PROP_vl80t_PR  2 * 4055
+#define PROP_vl80t_CC  0
+
 #define IMAGEFILE  "src/electric/vl80t.png"
 purchase_sprites(vl80t_v1, 0, 0)
 purchase_sprites(vl80t_v2, 100, 0)
 electric2_1_sprites(9, vl80t_v1, 32,  40)
 electric2_1_sprites(9, vl80t_aGREAT_CHANGE_YEAR, 32, 241)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl80t-a1978.png"
-purchase_sprites(vl80t_v3, 0, 0)
-electric2_1_sprites(9, vl80t_a1978, 32, 40)
-#undef IMAGEFILE
-purchase_sprites_select2(vl80t, GREAT_CHANGE_YEAR, 1978)
+purchase_sprites_select(vl80t, GREAT_CHANGE_YEAR)
 
 switch (FEAT_TRAINS, SELF, vl80t_bGREAT_CHANGE_YEAR_sprites_left,
   check_year(GREAT_CHANGE_YEAR))
@@ -26,66 +30,63 @@ switch (FEAT_TRAINS, SELF, vl80t_bGREAT_CHANGE_YEAR_sprites_right,
      vl80t_aGREAT_CHANGE_YEAR_sprites_right;
 }
 
-engine_build_year2_template(vl80t, GREAT_CHANGE_YEAR, 1978, left, )
-engine_build_year2_template(vl80t, GREAT_CHANGE_YEAR, 1978, right, )
+engine_build_year_template(vl80t, GREAT_CHANGE_YEAR, left, )
+engine_build_year_template(vl80t, GREAT_CHANGE_YEAR, right, )
 engine_direction_template_only2(vl80t, )
 long_vehicle(vl80t)
 
 engine_electric2_1_effect(vl80t_create_effect_sprites, -2, 4)
 engine_direction_template_only2(vl80t, _create_effect)
-engine_speed_with_reduce(vl80t, 110,
-                                100, 30)
+engine_speed_with_reduce(vl80t, PROP_vl80t_SD, 100, 30)
 engine_penalise_speed0(vl80t)
-engine_TE_change_build_after(vl80t, get_tec_int(2 * 330.0, 2 * 95),
-                                    get_tec_int(2 * 324.6, 2 * 92), 1971)
-engine_weight_change_build_after(vl80t, 2 * 95,
-                                        2 * 92, 1971)
 engine_ARVs(vl80t, 1)
 
 switch (FEAT_TRAINS, SELF, vl80t_running_cost_factor,
-[  STORE_TEMP(428 - 4 * (build_year >= 1971), 0),  // Моторы
-   STORE_TEMP(60, 1),                              // Бригада
-   STORE_TEMP(150 - (build_year >= 1971), 2),      // Износ
-   STORE_TEMP(0, 3),                               // Сопровождение
-   STORE_TEMP(105 - (build_year >= 1971), 4),      // ТО
-   STORE_TEMP(8, 5),                               // Сертификация
+[  STORE_TEMP(428, 0),  // Моторы
+   STORE_TEMP(60, 1),   // Бригада
+   STORE_TEMP(150, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(105, 4),  // ТО
+   STORE_TEMP(8, 5),    // Сертификация
 
-   STORE_TEMP(110, 6),                                  // Скорость
-   STORE_TEMP(2 * (95 - 3 * (build_year >= 1971)), 7),  // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                        // Максимальная масса
-{ all_running_cost_factor; }                            // 2 * (375 - 372)
+   STORE_TEMP(PROP_vl80t_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl80t_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl80t_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 2 * 375
+
+name_in_group(vl80t, string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_NAME_VL80T)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_LONGNAME_VL80T)))
 
 hint_engine(vl80t,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1967, 1980,
+     1970, 1975,
      fact_novocherkassk())
 
 item (FEAT_TRAINS, vl80t, 326) {
   property {
     name: string(STR_NAME_VL80T);
-    vehicle_dates(1967, 1980, 30, 10, 8, 2 * 53)
+    vehicle_dates(1970, 1975, 30, 10, 8, 2 * PROP_vl80t_CF)
     vehicle_cargo()
-    vehicle_acelectric(2 * 4055, 2 * 95, 2 * 330.0, )
-    vehicle_group(vl80)
+    vehicle_acelectric(PROP_vl80t_PR, PROP_vl80t_WT, PROP_vl80t_TE, )
+    vehicle_group(vl80_group)
   }
   graphics {
-                additional_text: vl80t_additional_text;
-               articulated_part: vl80t_articulated_part;
-           bitmask_vehicle_info: vl80t_bitmask_vehicle_info;
-               can_attach_wagon: any_can_attach_wagon;
-                 cargo_capacity: return 0;
-             cargo_subtype_text: vl_type_cargo_subtype_text;
-                 colour_mapping: vl_type_colour_mapping;
-                  create_effect: vl80t_create_effect_sprites_start;
-                        default: vl80t_sprites;
-                       purchase: vl80t_purchase_sprites;
-                 purchase_speed: return 110;
-            running_cost_factor: vl80t_running_cost_factor;
-                          speed: vl80t_speed;
-                     start_stop: any_start_stop;
-    tractive_effort_coefficient: vl80t_tractive_effort_coefficient;
-                         weight: vl80t_weight;
+    purchase_menu(PROP_vl80t_CF, PROP_vl80t_RC, PROP_vl80t_SD, PROP_vl80t_WT, PROP_vl80t_TE, PROP_vl80t_PR, PROP_vl80t_CC)
+         additional_text: vl80t_additional_text;
+        articulated_part: vl80t_articulated_part;
+    bitmask_vehicle_info: vl80t_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: vl_type_cargo_subtype_text;
+          colour_mapping: vl_type_colour_mapping;
+           create_effect: vl80t_create_effect_sprites_start;
+                 default: vl80t_sprites;
+                    name: vl80t_name;
+                purchase: vl80t_purchase_sprites;
+     running_cost_factor: vl80t_running_cost_factor;
+                   speed: vl80t_speed;
+              start_stop: any_start_stop;
   }
 }
 

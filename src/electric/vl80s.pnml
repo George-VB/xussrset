@@ -1,5 +1,13 @@
 ﻿// vl80s
 
+#define PROP_vl80s_CF  53
+#define PROP_vl80s_RC  377
+#define PROP_vl80s_SD  110
+#define PROP_vl80s_WT  96
+#define PROP_vl80s_TE  338.8
+#define PROP_vl80s_PR  4055
+#define PROP_vl80s_CC  0
+
 #define IMAGEFILE  "src/electric/vl80s.png"
 purchase_sprites(vl80s, 0, 0)
 
@@ -11,7 +19,7 @@ long_vehicle(vl80s)
 
 engine_electric2_1_effect(vl80s_create_effect_sprites, -2, 4)
 engine_direction_template(vl80s, _create_effect)
-engine_speed_with_reduce(vl80s, 110, 100, 30)
+engine_speed_with_reduce(vl80s, PROP_vl80s_SD, 100, 30)
 engine_penalise_speed(vl80s, 4)
 
 switch (FEAT_TRAINS, SELF, vl80s_running_cost_factor,
@@ -22,10 +30,13 @@ switch (FEAT_TRAINS, SELF, vl80s_running_cost_factor,
    STORE_TEMP(53, 4),   // ТО
    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(110, 6),            // Скорость
-   STORE_TEMP(96, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 377
+   STORE_TEMP(PROP_vl80s_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl80s_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl80s_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 377
+
+name_in_group(vl80s, string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_NAME_VL80S)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_LONGNAME_VL80S)))
 
 hint_engine(vl80s,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_AC,
@@ -36,12 +47,13 @@ hint_engine(vl80s,
 item (FEAT_TRAINS, vl80s, 329) {
   property {
     name: string(STR_NAME_VL80S);
-    vehicle_dates(1979, 2003, 30, 10, 8, 53)
+    vehicle_dates(1979, 2003, 30, 10, 8, PROP_vl80s_CF)
     vehicle_cargo()
-    vehicle_acelectric(4055, 96, 338.8, )
-    vehicle_group(vl80)
+    vehicle_acelectric(PROP_vl80s_PR, PROP_vl80s_WT, PROP_vl80s_TE, )
+    vehicle_group(vl80_group)
   }
   graphics {
+    purchase_menu(PROP_vl80s_CF, PROP_vl80s_RC, PROP_vl80s_SD, PROP_vl80s_WT, PROP_vl80s_TE, PROP_vl80s_PR, PROP_vl80s_CC)
          additional_text: vl80s_additional_text;
         articulated_part: articulated_part_dummy1;
     bitmask_vehicle_info: vl80s_bitmask_vehicle_info;
@@ -51,8 +63,8 @@ item (FEAT_TRAINS, vl80s, 329) {
           colour_mapping: vl_type_colour_mapping;
            create_effect: vl80s_create_effect_sprites_start;
                  default: vl80s_sprites;
+                    name: vl80s_name;
                 purchase: vl80s_purchase_sprites;
-          purchase_speed: return 110;
      running_cost_factor: vl80s_running_cost_factor;
                    speed: vl80s_speed;
               start_stop: any_start_stop;

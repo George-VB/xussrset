@@ -1,76 +1,40 @@
 ﻿// vl80k
 
+#define PROP_vl80k_CF  2 * 53
+#define PROP_vl80k_RC  2 * 390
+#define PROP_vl80k_SD  110
+#define PROP_vl80k_WT  2 * 92
+#define PROP_vl80k_TE  2 * 319.0
+#define PROP_vl80k_PR  2 * 3915
+#define PROP_vl80k_CC  0
+
 #define IMAGEFILE  "src/electric/vl80k.png"
-purchase_sprites(vl80k_v1, 0, 0)
+purchase_sprites(vl80k, 0, 0)
 electric2_1_sprites(9, vl80k_v1, 32,  40)
 electric2_1_sprites(9, vl80k_v2, 32, 241)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl80k-a1965.png"
-purchase_sprites(vl80k_v2, 0, 0)
-electric2_1_sprites(9, vl80k_v3, 32,  40)
-electric2_1_sprites(9, vl80k_v4, 32, 241)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl80k-a1969.png"
-purchase_sprites(vl80k_v3, 0, 0)
-electric2_1_sprites(9, vl80k_v5, 32,  40)
-electric2_1_sprites(9, vl80k_v6, 32, 241)
-#undef IMAGEFILE
-purchase_sprites_select2(vl80k, 1965, 1969)
 
-switch (FEAT_TRAINS, SELF, vl80k_b1965_sprites_left,
+switch (FEAT_TRAINS, SELF, vl80k_sprites_left,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl80k_v1_sprites_left;
      vl80k_v2_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, vl80k_a1965_sprites_left,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl80k_v3_sprites_left;
-     vl80k_v4_sprites_left;
-}
-switch (FEAT_TRAINS, SELF, vl80k_a1969_sprites_left,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl80k_v5_sprites_left;
-     vl80k_v6_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, vl80k_b1965_sprites_right,
+switch (FEAT_TRAINS, SELF, vl80k_sprites_right,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl80k_v1_sprites_right;
      vl80k_v2_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, vl80k_a1965_sprites_right,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl80k_v3_sprites_right;
-     vl80k_v4_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, vl80k_a1969_sprites_right,
-  check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl80k_v5_sprites_right;
-     vl80k_v6_sprites_right;
-}
-
-engine_build_year2_template(vl80k, 1965, 1969, left, )
-engine_build_year2_template(vl80k, 1965, 1969, right, )
 engine_direction_template_only2(vl80k, )
 long_vehicle(vl80k)
 
 engine_electric2_1_effect(vl80k_create_effect_sprites, -2, 4)
 engine_direction_template_only2(vl80k, _create_effect)
-engine_speed_with_reduce(vl80k, 110, 100, 30)
+engine_speed_with_reduce(vl80k, PROP_vl80k_SD, 100, 30)
 engine_penalise_speed0(vl80k)
-engine_power_change_build_after(vl80k, 2 * 3915,
-                                       2 * 4055, 1966)
-engine_TE_change_build_after(vl80k, get_tec_int(2 * 319.0, 2 * 92),
-                                    get_tec_int(2 * 324.6, 2 * 92), 1966)
 engine_ARVs(vl80k, 1)
 
 switch (FEAT_TRAINS, SELF, vl80k_running_cost_factor,
@@ -81,42 +45,44 @@ switch (FEAT_TRAINS, SELF, vl80k_running_cost_factor,
    STORE_TEMP(2 * 55, 4),   // ТО
    STORE_TEMP(2 * 4, 5),    // Сертификация
 
-   STORE_TEMP(110, 6),            // Скорость
-   STORE_TEMP(2 * 92, 7),         // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 2 * 390
+   STORE_TEMP(PROP_vl80k_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl80k_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl80k_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 2 * 390
+
+name_in_group(vl80k, string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_NAME_VL80K)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_LONGNAME_VL80K)))
 
 hint_engine(vl80k,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1963, 1971,
+     1963, 1964,
      fact_novocherkassk())
 
 item (FEAT_TRAINS, vl80k, 327) {
   property {
     name: string(STR_NAME_VL80K);
-    vehicle_dates(1963, 1971, 30, 10, 8, 2 * 53)
+    vehicle_dates(1963, 1964, 30, 10, 8, PROP_vl80k_CF)
     vehicle_cargo()
-    vehicle_acelectric(2 * 3915, 2 * 92, 2 * 319.0, )
-    vehicle_group(vl80)
+    vehicle_acelectric(PROP_vl80k_PR, PROP_vl80k_WT, PROP_vl80k_TE, )
+    vehicle_group(vl80_group)
   }
   graphics {
-                additional_text: vl80k_additional_text;
-               articulated_part: vl80k_articulated_part;
-           bitmask_vehicle_info: vl80k_bitmask_vehicle_info;
-               can_attach_wagon: any_can_attach_wagon;
-                 cargo_capacity: return 0;
-             cargo_subtype_text: vl_type_cargo_subtype_text;
-                 colour_mapping: vl_type_colour_mapping;
-                  create_effect: vl80k_create_effect_sprites_start;
-                        default: vl80k_sprites;
-                          power: vl80k_power;
-                       purchase: vl80k_purchase_sprites;
-                 purchase_speed: return 110;
-            running_cost_factor: vl80k_running_cost_factor;
-                          speed: vl80k_speed;
-                     start_stop: any_start_stop;
-    tractive_effort_coefficient: vl80k_tractive_effort_coefficient;
+    purchase_menu(PROP_vl80k_CF, PROP_vl80k_RC, PROP_vl80k_SD, PROP_vl80k_WT, PROP_vl80k_TE, PROP_vl80k_PR, PROP_vl80k_CC)
+         additional_text: vl80k_additional_text;
+        articulated_part: vl80k_articulated_part;
+    bitmask_vehicle_info: vl80k_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: vl_type_cargo_subtype_text;
+          colour_mapping: vl_type_colour_mapping;
+           create_effect: vl80k_create_effect_sprites_start;
+                 default: vl80k_sprites;
+                    name: vl80k_name;
+                purchase: vl80k_purchase_sprites;
+     running_cost_factor: vl80k_running_cost_factor;
+                   speed: vl80k_speed;
+              start_stop: any_start_stop;
   }
 }
 

@@ -1,0 +1,91 @@
+﻿// vl80k_type1967
+
+#define PROP_vl80k_type1967_CF  2 * 53
+#define PROP_vl80k_type1967_RC  2 * 390
+#define PROP_vl80k_type1967_SD  110
+#define PROP_vl80k_type1967_WT  2 * 92
+#define PROP_vl80k_type1967_TE  2 * 324.6
+#define PROP_vl80k_type1967_PR  2 * 4055
+#define PROP_vl80k_type1967_CC  0
+
+#define IMAGEFILE  "src/electric/vl80k-type1967.png"
+purchase_sprites(vl80k_type1967, 0, 0)
+electric2_1_sprites(9, vl80k_type1967_v1, 32,  40)
+electric2_1_sprites(9, vl80k_type1967_v2, 32, 241)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl80k_type1967_sprites_left,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl80k_type1967_v1_sprites_left;
+     vl80k_type1967_v2_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, vl80k_type1967_sprites_right,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl80k_type1967_v1_sprites_right;
+     vl80k_type1967_v2_sprites_right;
+}
+
+engine_direction_template_only2(vl80k_type1967, )
+long_vehicle(vl80k_type1967)
+
+engine_electric2_1_effect(vl80k_type1967_create_effect_sprites, -2, 4)
+engine_direction_template_only2(vl80k_type1967, _create_effect)
+engine_speed_with_reduce(vl80k_type1967, PROP_vl80k_type1967_SD, 100, 30)
+engine_penalise_speed0(vl80k_type1967)
+engine_ARVs(vl80k_type1967, 1)
+
+switch (FEAT_TRAINS, SELF, vl80k_type1967_running_cost_factor,
+[  STORE_TEMP(2 * 222, 0),  // Моторы
+   STORE_TEMP(31, 1),       // Бригада
+   STORE_TEMP(2 * 78, 2),   // Износ
+   STORE_TEMP(2 * 0, 3),    // Сопровождение
+   STORE_TEMP(2 * 55, 4),   // ТО
+   STORE_TEMP(2 * 4, 5),    // Сертификация
+
+   STORE_TEMP(PROP_vl80k_type1967_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl80k_type1967_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl80k_type1967_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                       // 2 * 390
+
+name_in_group(vl80k_type1967, string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_NAME_VL80K_TYPE1967)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_VL80_SERIES), string(STR_LONGNAME_VL80K_TYPE1967)))
+
+hint_engine(vl80k_type1967,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1967, 1968,
+     fact_novocherkassk())
+
+item (FEAT_TRAINS, vl80k_type1967, 892) {
+  property {
+    name: string(STR_NAME_VL80K_TYPE1967);
+    vehicle_dates(1967, 1968, 30, 10, 8, PROP_vl80k_type1967_CF)
+    vehicle_cargo()
+    vehicle_acelectric(PROP_vl80k_type1967_PR, PROP_vl80k_type1967_WT, PROP_vl80k_type1967_TE, )
+    vehicle_group(vl80_group)
+  }
+  graphics {
+    purchase_menu(PROP_vl80k_type1967_CF, PROP_vl80k_type1967_RC, PROP_vl80k_type1967_SD, PROP_vl80k_type1967_WT, PROP_vl80k_type1967_TE, PROP_vl80k_type1967_PR, PROP_vl80k_type1967_CC)
+         additional_text: vl80k_type1967_additional_text;
+        articulated_part: vl80k_type1967_articulated_part;
+    bitmask_vehicle_info: vl80k_type1967_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: vl_type_cargo_subtype_text;
+          colour_mapping: vl_type_colour_mapping;
+           create_effect: vl80k_type1967_create_effect_sprites_start;
+                 default: vl80k_type1967_sprites;
+                    name: vl80k_type1967_name;
+                purchase: vl80k_type1967_purchase_sprites;
+     running_cost_factor: vl80k_type1967_running_cost_factor;
+                   speed: vl80k_type1967_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(vl80k_type1967, STR_LONGNAME_VL80K_TYPE1967)
+models_default_cargo_template(vl80k_type1967)
+allow_acelectric(vl80k_type1967)
