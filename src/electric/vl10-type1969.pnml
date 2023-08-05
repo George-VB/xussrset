@@ -1,0 +1,94 @@
+﻿// vl10_type1969
+
+#define PROP_vl10_type1969_CF  2 * 33
+#define PROP_vl10_type1969_RC  2 * 260
+#define PROP_vl10_type1969_SD  100
+#define PROP_vl10_type1969_WT  2 * 92
+#define PROP_vl10_type1969_TE  2 * 306.9
+#define PROP_vl10_type1969_PR  2 * 3030
+#define PROP_vl10_type1969_CC  0
+
+#define IMAGEFILE  "src/electric/vl10-type1969.png"
+purchase_sprites(vl10_type1969_v1, 000, 0)
+purchase_sprites(vl10_type1969_v2, 100, 0)
+electric2_1_sprites(9, vl10_type1969_v1, 32,  40)
+electric2_1_sprites(9, vl10_type1969_v2, 32, 241)
+#undef IMAGEFILE
+purchase_sprites_select(vl10_type1969, GREAT_CHANGE_YEAR)
+
+switch (FEAT_TRAINS, SELF, vl10_type1969_sprites_left,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl10_type1969_v1_sprites_left;
+     vl10_type1969_v2_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, vl10_type1969_sprites_right,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl10_type1969_v1_sprites_right;
+     vl10_type1969_v2_sprites_right;
+}
+
+engine_direction_template_only2(vl10_type1969, )
+long_vehicle(vl10_type1969)
+engine_electric2_1_effect(vl10_type1969_create_effect_sprites, -2, 3)
+engine_direction_template_only2(vl10_type1969, _create_effect)
+engine_speed(vl10_type1969, PROP_vl10_type1969_SD)
+engine_penalise_speed0(vl10_type1969)
+engine_ARVs(vl10_type1969, 1)
+
+switch (FEAT_TRAINS, SELF, vl10_type1969_running_cost_factor,
+[  STORE_TEMP(297, 0),  // Моторы
+   STORE_TEMP(42, 1),   // Бригада
+   STORE_TEMP(104, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(73, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(PROP_vl10_type1969_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl10_type1969_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl10_type1969_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                      // 2 * 260
+
+name_in_group_varsubgroup(vl10_type1969, string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_NAME_VL10_TYPE1969)),
+                                         string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_LONGNAME_VL10_TYPE1969)),
+                                         fact_tbilisi())
+
+hint_engine_2fact(vl10_type1969,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1969, 1973,
+     fact_novocherkassk(),
+     fact_tbilisi())
+
+item (FEAT_TRAINS, vl10_type1969, 316) {
+  property {
+    name: string(STR_NAME_VL10_TYPE1969);
+    vehicle_dates(1969, 1973, 30, 10, 8, PROP_vl10_type1969_CF)
+    vehicle_cargo()
+    vehicle_dcelectric(PROP_vl10_type1969_PR, PROP_vl10_type1969_WT, PROP_vl10_type1969_TE, )
+    vehicle_group(vl10_subgroup_tevz)
+  }
+  graphics {
+    purchase_menu(PROP_vl10_type1969_CF, PROP_vl10_type1969_RC, PROP_vl10_type1969_SD, PROP_vl10_type1969_WT, PROP_vl10_type1969_TE, PROP_vl10_type1969_PR, PROP_vl10_type1969_CC)
+         additional_text: vl10_type1969_additional_text;
+        articulated_part: vl10_type1969_articulated_part;
+    bitmask_vehicle_info: vl10_type1969_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_vl10_type1969_CC;
+      cargo_subtype_text: vl_type_cargo_subtype_text;
+          colour_mapping: vl_type_colour_mapping;
+           create_effect: vl10_type1969_create_effect_sprites_start;
+                 default: vl10_type1969_sprites;
+                    name: vl10_type1969_name;
+                purchase: vl10_type1969_purchase_sprites;
+     running_cost_factor: vl10_type1969_running_cost_factor;
+                   speed: vl10_type1969_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(vl10_type1969, STR_LONGNAME_VL10_TYPE1969)
+models_default_cargo_template(vl10_type1969)
+allow_dcelectric(vl10_type1969)
