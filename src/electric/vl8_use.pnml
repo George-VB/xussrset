@@ -1,0 +1,86 @@
+// vl8 uses n8 , VL8M data is also in N8 file
+
+#define PROP_vl8_CF  2 * 29
+#define PROP_vl8_RC  2 * 227
+#define PROP_vl8_SD  80
+#define PROP_vl8_WT  2 * 90
+#define PROP_vl8_TE  2 * 297.6
+#define PROP_vl8_PR  2 * 2485
+#define PROP_vl8_CC  0
+
+map_sprites(vl8_purchase_sprites, n8_purchase_sprites)
+map_sprites(vl8_sprites_left, n8_sprites_left)
+map_sprites(vl8_sprites_right, n8_sprites_right)
+
+engine_direction_template_only2(vl8, )
+long_vehicle(vl8)
+
+engine_penalise_speed0(vl8)
+engine_speed(vl8, PROP_vl8_SD)
+engine_change_refit(vl8_speed_sp, vl8_speed, vl8m_speed)
+engine_refit_cost_for_a2_livery_change(vl8, 0xE0, 1, 2)
+engine_ARVs(vl8, 1)
+
+switch (FEAT_TRAINS, SELF, vl8_o_running_cost_factor,
+[  STORE_TEMP(259, 0),  // Моторы
+   STORE_TEMP(36, 1),   // Бригада
+   STORE_TEMP(91, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(63, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP_vl8_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl8_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl8_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }            // 2 * 227
+engine_change_refit(vl8_running_cost_factor, vl8_o_running_cost_factor, vl8m_running_cost_factor)
+
+name_in_group(vl8, string(STR_NAME_IN_GROUP, string(STR_NAME_VL8_SERIES), string(STR_NAME_VL8)),
+                   string(STR_NAME_IN_GROUP, string(STR_NAME_VL8_SERIES), string(STR_LONGNAME_VL8)))
+
+hint_engine_2fact(vl8_b1976,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1964, 1967,
+     fact_novocherkassk(),
+     fact_tbilisi())
+hint_engine_2fact_comment(vl8_a1976,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1964, 1967,
+     fact_novocherkassk(),
+     fact_tbilisi(),
+     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, string(STR_NAME_VL8M)))
+hint_change_after(vl8, 1976)
+
+item (FEAT_TRAINS, vl8, 904) {
+  property {
+    name: string(STR_NAME_VL8);
+    vehicle_dates(1964, 1967, 40, 10, 7, PROP_vl8_CF)
+    vehicle_passcargo()
+    vehicle_dcelectric(PROP_vl8_PR, PROP_vl8_WT, PROP_vl8_TE, )
+    vehicle_group(vl8_group)
+  }
+  graphics {
+    purchase_menu(PROP_vl8_CF, PROP_vl8_RC, PROP_vl8_SD, PROP_vl8_WT, PROP_vl8_TE, PROP_vl8_PR, PROP_vl8_CC)
+         additional_text: vl8_additional_text;
+        articulated_part: vl8_articulated_part;
+    bitmask_vehicle_info: vl8_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: n8_cargo_subtype_text;
+          colour_mapping: n8_colour_mapping;
+           create_effect: n8_create_effect_sprites_start;
+                 default: vl8_sprites;
+                    name: vl8_name;
+                purchase: vl8_purchase_sprites;
+              refit_cost: vl8_refit_cost;
+     running_cost_factor: vl8_running_cost_factor;
+                   speed: vl8_speed_sp;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(vl8, STR_LONGNAME_VL8)
+models_default_cargo_template(vl8)
+allow_dcelectric(vl8)
