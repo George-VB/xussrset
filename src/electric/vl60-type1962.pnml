@@ -1,0 +1,124 @@
+﻿// vl60_type1962
+
+#define PROP_vl60_type1962_CF  64
+#define PROP_vl60_type1962_RC  451
+#define PROP_vl60_type1962_SD  100
+#define PROP_vl60_type1962_WT  138
+#define PROP_vl60_type1962_TE  487.1
+#define PROP_vl60_type1962_PR  4380
+#define PROP_vl60_type1962_CC  0
+
+#define IMAGEFILE  "src/electric/vl60-type1962.png"
+purchase_sprites(vl60_type1962, 0, 0)
+electric1_2_sprites(12, vl60_type1962_v2, 32,  40)
+electric1_2_sprites(12, vl60_type1962_v3, 32, 241)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl60_type1962_sprites_start,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl60_type1962_v2_sprites_start;
+     vl60_type1962_v3_sprites_start;
+}
+
+long_vehicle(vl60_type1962)
+engine_penalise_speed6(vl60_type1962, n6o_type1960, vl60_type1965, vl60k, vl60k_type1965, vl60p, 2)
+
+switch (FEAT_TRAINS, PARENT, vl60_type1962_bitmask_vehicle_info_advanced3,
+  (cargo_subtype < 0xE0) && ((vehicle_type_id == n6o_type1960) || (vehicle_type_id == vl60_type1962)))
+{
+  1: return bitmask(FLAG_PENALISE_SPEED);
+     vl60_type1962_bitmask_vehicle_info;
+}
+
+switch (FEAT_TRAINS, PARENT, vl60_type1962_bitmask_vehicle_info_advanced2,
+  (cargo_subtype < 0xE0) && (vehicle_type_id == vl60p))
+{
+  1: return bitmask(FLAG_PENALISE_SPEED);
+     vl60_type1962_bitmask_vehicle_info_advanced3;
+}
+
+switch (FEAT_TRAINS, SELF, vl60_type1962_bitmask_vehicle_info_advanced1,
+  cargo_subtype < 0xE0)
+{
+  1: return bitmask(FLAG_PENALISE_SPEED);
+     vl60_type1962_bitmask_vehicle_info_advanced2;
+}
+
+switch (FEAT_TRAINS, SELF, vl60_type1962_bitmask_vehicle_info_advanced,
+  (position_in_consist == 0) || (vehicle_is_not_powered))
+{
+  1: return 0;
+     vl60_type1962_bitmask_vehicle_info_advanced1;
+}
+
+  livery_template_refit_f(vl60_type1962_a1966, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_VL60K, STR_EMPTY)
+livery_template_service_year_ao(vl60_type1962, 1966)
+
+engine_refit_cost_for_a2_livery_change(vl60_type1962, 0xE0, 1, 2)
+engine_electric1_2_effect(vl60_type1962_create_effect, -2, 6)
+engine_speed(vl60_type1962, 100)
+switch (FEAT_TRAINS, SELF, vl60_type1962_running_cost_factor,
+[  STORE_TEMP(256, 0),  // Моторы
+   STORE_TEMP(37, 1),   // Бригада
+   STORE_TEMP(91, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(63, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP_vl60_type1962_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl60_type1962_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl60_type1962_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                      // 451
+
+name_in_group(vl60_type1962, string(STR_NAME_IN_GROUP, string(STR_NAME_VL60_SERIES), string(STR_NAME_VL60_TYPE1962)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_VL60_SERIES), string(STR_LONGNAME_VL60_TYPE1962)))
+
+hint_engine(vl60_type1962_b1966,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1962, 1965,
+     fact_novocherkassk())
+hint_engine_comment(vl60_type1962_a1966,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1962, 1965,
+     fact_novocherkassk(),
+     string(STR_PURCHASE_HINT_EDITION_NEW_SECTIONS,
+            string(STR_PURCHASE_HINT_SECTIONS_1_2_WITH_ATTACH,
+            string(STR_PURCHASE_HINT_LIST2,
+                   string(STR_NAME_VL60K),
+                   string(STR_NAME_VL60P_UPGRADED)))))
+hint_change_pre_after(vl60_type1962, 1966)
+
+item (FEAT_TRAINS, vl60_type1962, 319) {
+  property {
+    name: string(STR_NAME_VL60_TYPE1962);
+    vehicle_dates(1962, 1965, 30, 10, 8, PROP_vl60_type1962_CF)
+    vehicle_passcargo()
+    vehicle_acelectric(PROP_vl60_type1962_PR, PROP_vl60_type1962_WT, PROP_vl60_type1962_TE, )
+    vehicle_group(vl60_group)
+  }
+  graphics {
+    purchase_menu(PROP_vl60_type1962_CF, PROP_vl60_type1962_RC, PROP_vl60_type1962_SD, PROP_vl60_type1962_WT, PROP_vl60_type1962_TE, PROP_vl60_type1962_PR, PROP_vl60_type1962_CC)
+         additional_text: vl60_type1962_additional_text;
+        articulated_part: articulated_part_dummy4;
+    bitmask_vehicle_info: vl60_type1962_bitmask_vehicle_info_advanced;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_vl60_type1962_CC;
+      cargo_subtype_text: vl60_type1962_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: vl60_type1962_create_effect;
+                 default: vl60_type1962_sprites;
+                    name: vl60_type1962_name;
+                purchase: vl60_type1962_purchase_sprites;
+              refit_cost: vl60_type1962_refit_cost;
+     running_cost_factor: vl60_type1962_running_cost_factor;
+                   speed: vl60_type1962_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(vl60_type1962, STR_LONGNAME_VL60_TYPE1962)
+models_default_cargo_template(vl60_type1962)
+allow_acelectric(vl60_type1962)
