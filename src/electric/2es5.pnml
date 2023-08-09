@@ -1,23 +1,24 @@
 ﻿// _2es5
 
-#define IMAGEFILE  "src/electric/2es5.png"
-purchase_sprites(_2es5_v1, 0, 0)
-electric2_1_sprites(10, _2es5_b2015, 32,  40)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/2es5-a2015.png"
-purchase_sprites(_2es5_v2, 0, 0)
-electric2_1_sprites(10, _2es5_a2015, 32,  40)
-#undef IMAGEFILE
-purchase_sprites_select(_2es5, 2015)
+#define PROP__2es5_CF  102
+#define PROP__2es5_RC  720
+#define PROP__2es5_SD  120
+#define PROP__2es5_WT  100
+#define PROP__2es5_TE  416.5
+#define PROP__2es5_PR  5060
+#define PROP__2es5_CC  0
 
-engine_build_year_template(_2es5, 2015, left, )
-engine_build_year_template(_2es5, 2015, right, )
-engine_direction_template(_2es5, )
+#define IMAGEFILE  "src/electric/2es5.png"
+purchase_sprites(_2es5, 0, 0)
+electric2_1_sprites(10, _2es5, 32,  40)
+#undef IMAGEFILE
+
+engine_direction_template2(_2es5, _2es5_type2015, )
 long_vehicle(_2es5)
 
 engine_electric2_1_effect(_2es5_create_effect_sprites, -2, 4)
-engine_direction_template(_2es5, _create_effect)
-engine_speed(_2es5, 120)
+engine_direction_template2(_2es5, _2es5_type2015, _create_effect)
+engine_speed(_2es5, PROP__2es5_SD)
 engine_penalise_speed(_2es5, 4)
 
 switch (FEAT_TRAINS, SELF, _2es5_running_cost_factor,
@@ -28,25 +29,30 @@ switch (FEAT_TRAINS, SELF, _2es5_running_cost_factor,
    STORE_TEMP(101, 4),  // ТО
    STORE_TEMP(7, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),            // Скорость
-   STORE_TEMP(100, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 720
+   STORE_TEMP(PROP__2es5_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP__2es5_WT), 7),   // Тара
+   STORE_TEMP(round(PROP__2es5_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 720
+
+name_in_group(_2es5, string(STR_NAME_IN_GROUP, string(STR_NAME_ES5_SERIES), string(STR_NAME_2ES5)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_ES5_SERIES), string(STR_LONGNAME_2ES5)))
 
 hint_engine(_2es5,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_2_4,
-     2012, 2015,
+     2012, 2014,
      fact_novocherkassk())
 
 item (FEAT_TRAINS, _2es5, 538) {
   property {
     name: string(STR_NAME_2ES5);
-    vehicle_dates(2012, 2015, 40, 10, 8, 102)
+    vehicle_dates(2012, 2014, 40, 10, 8, PROP__2es5_CF)
     vehicle_cargo()
-    vehicle_acelectric(5060, 100, 416.5, )
+    vehicle_acelectric(PROP__2es5_PR, PROP__2es5_WT, PROP__2es5_TE, )
+    vehicle_group(es5_group)
   }
   graphics {
+    purchase_menu(PROP__2es5_CF, PROP__2es5_RC, PROP__2es5_SD, PROP__2es5_WT, PROP__2es5_TE, PROP__2es5_PR, PROP__2es5_CC)
          additional_text: _2es5_additional_text;
         articulated_part: articulated_part_dummy2;
     bitmask_vehicle_info: _2es5_bitmask_vehicle_info;
@@ -55,8 +61,8 @@ item (FEAT_TRAINS, _2es5, 538) {
           colour_mapping: any_cc_colour;
            create_effect: _2es5_create_effect_sprites_start;
                  default: _2es5_sprites;
+                    name: _2es5_name;
                 purchase: _2es5_purchase_sprites;
-          purchase_speed: return 120;
      running_cost_factor: _2es5_running_cost_factor;
                    speed: _2es5_speed;
               start_stop: any_start_stop;

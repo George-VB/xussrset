@@ -1,103 +1,23 @@
 // ep2k
 
+#define PROP_ep2k_CF  95
+#define PROP_ep2k_RC  587
+#define PROP_ep2k_SD  160
+#define PROP_ep2k_WT  135
+#define PROP_ep2k_TE  302.0
+#define PROP_ep2k_PR  5745
+#define PROP_ep2k_CC  0
+
 #define IMAGEFILE  "src/electric/ep2k.png"
-purchase_sprites(ep2k_v1, 0, 0)
-electric1r_2_sprites(13, ep2k_v1, 32,   40)
+purchase_sprites(ep2k, 0, 0)
+electric1r_2_sprites(13, ep2k, 32,   40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/ep2k-a2009.png"
-purchase_sprites(ep2k_v2, 0, 0)
-purchase_sprites(ep2k_v3, 100, 0)
-electric1r_2_sprites(13, ep2k_v2, 32,  40)
-electric1r_2_sprites(13, ep2k_v3, 32, 375)
-electric1r_2_sprites(13, ep2k_v4, 32, 710)
-#undef IMAGEFILE
-purchase_sprites_select2pre(ep2k, 2009, 2012)
-
-switch (FEAT_TRAINS, SELF, ep2k_sprites_l2,
-  cargo_subtype)
-{
-                         0: ep2k_v2_sprites_left;
-        LV_OCTOBER_RAILWAY: ep2k_v2_sprites_left;
-  LV_WEST_SIBERIAN_RAILWAY: ep2k_v3_sprites_left;
-                LV_RZD_PID: ep2k_v4_sprites_left;
-  align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep2k_bGAMEEND_sprites_left,
-  (build_year>= 2009) +
-  (build_year>= 2012))
-{
-  0: ep2k_v1_sprites_left;
-  1: ep2k_sprites_l2;
-  2: ep2k_v4_sprites_left;
-     align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep2k_aGAMEEND_sprites_left,
-  cargo_subtype)
-{
-  0: ep2k_v1_sprites_left;
-  1: ep2k_v2_sprites_left;
-  2: ep2k_v3_sprites_left;
-  3: ep2k_v4_sprites_left;
-     align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep2k_sprites_r2,
-  cargo_subtype)
-{
-                         0: ep2k_v2_sprites_right;
-        LV_OCTOBER_RAILWAY: ep2k_v2_sprites_right;
-  LV_WEST_SIBERIAN_RAILWAY: ep2k_v3_sprites_right;
-                LV_RZD_PID: ep2k_v4_sprites_right;
-  align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep2k_bGAMEEND_sprites_right,
-  (build_year>= 2009) +
-  (build_year>= 2012))
-{
-  0: ep2k_v1_sprites_right;
-  1: ep2k_sprites_r2;
-  2: ep2k_v4_sprites_right;
-     align_13_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, ep2k_aGAMEEND_sprites_right,
-  cargo_subtype)
-{
-  0: ep2k_v1_sprites_right;
-  1: ep2k_v2_sprites_right;
-  2: ep2k_v3_sprites_right;
-  3: ep2k_v4_sprites_right;
-     align_13_sprites;
-}
-
-engine_build_year_template(ep2k, GAMEEND, left, )
-engine_build_year_template(ep2k, GAMEEND, right, )
-
 engine_RNDany_direction_template(ep2k, 5, 3)
 long_vehicle_sp(ep2k)
 
-switch (FEAT_TRAINS, SELF, ep2k_aGAMEEND_cargo_subtype_text, cargo_subtype)
-{
-  0: return string(STR_REFIT_GAMEEND_SP, 2005, string(STR_REFIT_LV_OCTOBER_RAILWAY));
-  1: return string(STR_REFIT_GAMEEND_SP, 2009, string(STR_REFIT_LV_OCTOBER_RAILWAY));
-  2: return string(STR_REFIT_GAMEEND_SP, 2009, string(STR_REFIT_LV_WEST_SIBERIAN_RAILWAY));
-  3: return string(STR_REFIT_GAMEEND_SERVICE_SP, 2009, 2012, string(STR_REFIT_LV_RZD_PID));
-     return CB_FAILED;
-}
-
-  livery_template_none(ep2k_b2009)
-
-  livery_template_base_list3(ep2k_a2009, LV_OCTOBER_RAILWAY, LV_WEST_SIBERIAN_RAILWAY, LV_RZD_PID)
-
-  livery_template_none(ep2k_a2012)
-livery_template_build_year3(ep2k, 2009, 2012, GAMEEND)
-
 engine_electric1_2_effect(ep2k_create_effect, -2, 7)
-engine_speed_with_reduce(ep2k, 160, 130, 30)
-engine_penalise_speed(ep2k, 2)
+engine_speed_with_reduce(ep2k, PROP_ep2k_SD, 130, 30)
+engine_penalise_speed3(ep2k, ep2k_type2009, ep2k_type2012, 2)
 
 switch (FEAT_TRAINS, SELF, ep2k_running_cost_factor,
 [  STORE_TEMP(335, 0),  // Моторы
@@ -107,36 +27,40 @@ switch (FEAT_TRAINS, SELF, ep2k_running_cost_factor,
    STORE_TEMP(82, 4),   // ТО
    STORE_TEMP(6, 5),    // Сертификация
 
-   STORE_TEMP(160, 6),            // Скорость
-   STORE_TEMP(135, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 587
+   STORE_TEMP(PROP_ep2k_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_ep2k_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_ep2k_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 587
 
-hint_engine_noto(ep2k,
+name_in_group(ep2k, string(STR_NAME_IN_GROUP, string(STR_NAME_EP2K_SERIES), string(STR_NAME_EP2K)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_EP2K_SERIES), string(STR_LONGNAME_EP2K)))
+
+hint_engine(ep2k,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     2006,
+     2006, 2009,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
 
 item (FEAT_TRAINS, ep2k, 186) {
   property {
     name: string(STR_NAME_EP2K);
-    vehicle_dates(2005, 2050, 30, 10, 8, 95)
+    vehicle_dates(2005, 2009, 30, 10, 8, PROP_ep2k_CF)
     vehicle_pass()
-    vehicle_dcelectric(5745, 135, 302.0, _highspeed)
+    vehicle_dcelectric(PROP_ep2k_PR, PROP_ep2k_WT, PROP_ep2k_TE, )
+    vehicle_group(ep2k_group)
   }
   graphics {
+    purchase_menu(PROP_ep2k_CF, PROP_ep2k_RC, PROP_ep2k_SD, PROP_ep2k_WT, PROP_ep2k_TE, PROP_ep2k_PR, PROP_ep2k_CC)
          additional_text: ep2k_additional_text;
         articulated_part: articulated_part_dummy5;
     bitmask_vehicle_info: ep2k_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return 0;
-      cargo_subtype_text: ep2k_cargo_subtype_text;
           colour_mapping: any_cc_colour;
            create_effect: ep2k_create_effect;
                  default: ep2k_sprites;
+                    name: ep2k_name;
                 purchase: ep2k_purchase_sprites;
-          purchase_speed: return 160;
      running_cost_factor: ep2k_running_cost_factor;
                    speed: ep2k_speed;
               start_stop: any_start_stop;
