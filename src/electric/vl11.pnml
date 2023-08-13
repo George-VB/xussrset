@@ -1,20 +1,21 @@
 ﻿// vl11
 
+#define PROP_vl11_CF  33
+#define PROP_vl11_RC  260
+#define PROP_vl11_SD  100
+#define PROP_vl11_WT  92
+#define PROP_vl11_TE  306.9
+#define PROP_vl11_PR  3030
+#define PROP_vl11_CC  0
+
 #define IMAGEFILE  "src/electric/vl11.png"
-purchase_sprites(vl11_v1, 0, 0)
+purchase_sprites(vl11, 0, 0)
 electric2_1_sprites(9vl11, vl11_v1, 32,   40)
 electric2_1_sprites(9vl11, vl11_v2, 32,  241)
 electric2_1_sprites(9vl11, vl11_v3, 32,  442)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl11-a1978.png"
-purchase_sprites(vl11_v2, 0, 0)
-electric2_1_sprites(9vl11, vl11_v4, 32,   40)
-electric2_1_sprites(9vl11, vl11_v5, 32,  241)
-electric2_1_sprites(9vl11, vl11_v6, 32,  442)
-#undef IMAGEFILE
-purchase_sprites_select(vl11, 1978)
 
-switch (FEAT_TRAINS, SELF, vl11_b1978_sprites_left,
+switch (FEAT_TRAINS, SELF, vl11_sprites_left,
   cargo_subtype)
 {
                       0: vl11_v1_sprites_left;
@@ -28,21 +29,7 @@ switch (FEAT_TRAINS, SELF, vl11_b1978_sprites_left,
   align_9_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl11_a1978_sprites_left,
-  cargo_subtype)
-{
-                      0: vl11_v4_sprites_left;
-                      1: vl11_v4_sprites_left;
-                      2: vl11_v4_sprites_left;
-                      3: vl11_v5_sprites_left;
-             LV_RAL6002: vl11_v4_sprites_left;
-             LV_RAL6020: vl11_v4_sprites_left;
-      LV_MOSCOW_RAILWAY: vl11_v5_sprites_left;
-  LV_SVERDLOVSK_RAILWAY: vl11_v6_sprites_left;
-  align_9_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, vl11_b1978_sprites_right,
+switch (FEAT_TRAINS, SELF, vl11_sprites_right,
   cargo_subtype)
 {
                       0: vl11_v1_sprites_right;
@@ -56,23 +43,7 @@ switch (FEAT_TRAINS, SELF, vl11_b1978_sprites_right,
   align_9_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, vl11_a1978_sprites_right,
-  cargo_subtype)
-{
-                      0: vl11_v4_sprites_right;
-                      1: vl11_v4_sprites_right;
-                      2: vl11_v4_sprites_right;
-                      3: vl11_v5_sprites_right;
-             LV_RAL6002: vl11_v4_sprites_right;
-             LV_RAL6020: vl11_v4_sprites_right;
-      LV_MOSCOW_RAILWAY: vl11_v5_sprites_right;
-  LV_SVERDLOVSK_RAILWAY: vl11_v6_sprites_right;
-  align_9_sprites;
-}
-
-engine_build_year_template(vl11, 1978, left, )
-engine_build_year_template(vl11, 1978, right, )
-engine_direction_template(vl11, )
+engine_direction_template2(vl11, vl11_type1978, )
 long_vehicle(vl11)
 
 switch (FEAT_TRAINS, PARENT, vl11_colour_mapping_1,
@@ -109,9 +80,9 @@ livery_template_base_list4(vl11_alt, LV_RAL6002, LV_RAL6020, LV_MOSCOW_RAILWAY, 
 livery_template_alt3(vl11, STR_REFIT_TTD_9D, STR_REFIT_TTD_62, STR_REFIT_RZD_TCHE_23_BEKASOVO_SORTIROVOCHNOE)
 
 engine_electric2_1_effect(vl11_create_effect_sprites, -2, 3)
-engine_direction_template(vl11, _create_effect)
-engine_speed(vl11, 100)
-engine_penalise_speed(vl11, 4)
+engine_direction_template2(vl11, vl11_type1978, _create_effect)
+engine_speed(vl11, PROP_vl11_SD)
+engine_penalise_speed2(vl11, vl11_type1978, 4)
 
 switch (FEAT_TRAINS, SELF, vl11_running_cost_factor,
 [  STORE_TEMP(148, 0),  // Моторы
@@ -121,31 +92,30 @@ switch (FEAT_TRAINS, SELF, vl11_running_cost_factor,
    STORE_TEMP(36, 4),   // ТО
    STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(92, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 260
+   STORE_TEMP(PROP_vl11_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl11_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl11_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 260
 
-hint_engine(vl11_b1986,
+name_in_group(vl11, string(STR_NAME_IN_GROUP, string(STR_NAME_VL11_SERIES), string(STR_NAME_VL11)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_VL11_SERIES), string(STR_LONGNAME_VL11)))
+
+hint_engine(vl11,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_2_4,
-     1975, 1986,
+     1975, 1978,
      fact_tbilisi())
-hint_engine_with_subtype(vl11_a1986,
-     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_VL118,
-     STR_PURCHASE_HINT_SECTIONS_2_4,
-     1986, 1987,
-     fact_tbilisi())
-hint_change_after(vl11, 1986)
 
 item (FEAT_TRAINS, vl11, 335) {
   property {
     name: string(STR_NAME_VL11);
-    vehicle_dates(1975, 1987, 30, 10, 8, 33)
+    vehicle_dates(1975, 1978, 30, 10, 8, PROP_vl11_CF)
     vehicle_cargo()
-    vehicle_dcelectric(3030, 92, 306.9, )
+    vehicle_dcelectric(PROP_vl11_PR, PROP_vl11_WT, PROP_vl11_TE, )
+    vehicle_group(vl11_group)
   }
   graphics {
+    purchase_menu(PROP_vl11_CF, PROP_vl11_RC, PROP_vl11_SD, PROP_vl11_WT, PROP_vl11_TE, PROP_vl11_PR, PROP_vl11_CC)
          additional_text: vl11_additional_text;
         articulated_part: articulated_part_dummy1;
     bitmask_vehicle_info: vl11_bitmask_vehicle_info;
@@ -155,8 +125,8 @@ item (FEAT_TRAINS, vl11, 335) {
           colour_mapping: vl11_colour_mapping;
            create_effect: vl11_create_effect_sprites_start;
                  default: vl11_sprites;
+                    name: vl11_name;
                 purchase: vl11_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: vl11_running_cost_factor;
                    speed: vl11_speed;
               start_stop: any_start_stop;
