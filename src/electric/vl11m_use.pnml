@@ -1,22 +1,24 @@
-﻿// vl11m uses vl11
+﻿// vl11m uses vl11_type1978
 
-switch (FEAT_TRAINS, SELF, vl11m_sprites_left, 0)
-{
-  vl11_sprites_left;
-}
+#define PROP_vl11m_CF  33
+#define PROP_vl11m_RC  260
+#define PROP_vl11m_SD  100
+#define PROP_vl11m_WT  92
+#define PROP_vl11m_TE  306.9
+#define PROP_vl11m_PR  3030
+#define PROP_vl11m_CC  0
 
-switch (FEAT_TRAINS, SELF, vl11m_sprites_right, 0)
-{
-  vl11_sprites_right;
-}
+map_sprites(vl11m_purchase_sprites, vl11_type1978_purchase_sprites)
+map_sprites(vl11m_sprites_left, vl11_type1978_sprites_left)
+map_sprites(vl11m_sprites_right, vl11_type1978_sprites_right)
 
-engine_direction_template(vl11m, )
+engine_direction_template4(vl11m, vl11m4, vl11m5, vl11m6, )
 long_vehicle(vl11m)
 
 engine_electric2_1_effect(vl11m_create_effect_sprites, -2, 3)
-engine_direction_template(vl11m, _create_effect)
-engine_speed(vl11m, 100)
-engine_penalise_speed(vl11m, 4)
+engine_direction_template4(vl11m, vl11m4, vl11m5, vl11m6, _create_effect)
+engine_speed(vl11m, PROP_vl11m_SD)
+engine_penalise_speed4(vl11m, vl11m4, vl11m5, vl11m6, 4)
 
 switch (FEAT_TRAINS, SELF, vl11m_running_cost_factor,
 [  STORE_TEMP(148, 0),  // Моторы
@@ -26,26 +28,46 @@ switch (FEAT_TRAINS, SELF, vl11m_running_cost_factor,
    STORE_TEMP(36, 4),   // ТО
    STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(92, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 260
+   STORE_TEMP(PROP_vl11m_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl11m_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl11m_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 260
 
-hint_engine(vl11m,
+name_in_group(vl11m, string(STR_NAME_IN_GROUP, string(STR_NAME_VL11_SERIES), string(STR_NAME_VL11M)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_VL11_SERIES), string(STR_LONGNAME_VL11M)))
+
+hint_engine(vl11m_b2004,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_2_4,
-     1986, 1996,
+     1986, 2004,
      fact_tbilisi())
+hint_engine_with_sme(vl11m_a2004,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2_4_WITH_ATTACH, STR_NAME_VL11M4,
+     1986, 2004,
+     fact_tbilisi())
+hint_engine_with_sme2(vl11m_a2007,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2_4_WITH_ATTACH, STR_NAME_VL11M4, STR_NAME_VL11M5,
+     1986, 2004,
+     fact_tbilisi())
+hint_engine_with_sme3(vl11m_a2008,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2_4_WITH_ATTACH, STR_NAME_VL11M4, STR_NAME_VL11M5, STR_NAME_VL11M6,
+     1986, 2004,
+     fact_tbilisi())
+hint_change_after3(vl11m, 2004, 2007, 2008)
 
 item (FEAT_TRAINS, vl11m, 364) {
   property {
     name: string(STR_NAME_VL11M);
-    vehicle_dates(1986, 2006, 30, 10, 8, 33)
+    vehicle_dates(1986, 2004, 30, 10, 8, PROP_vl11m_CF)
     vehicle_cargo()
-    vehicle_dcelectric(3030, 92, 306.9, )
-    vehicle_group(vl11)
+    vehicle_dcelectric(PROP_vl11m_PR, PROP_vl11m_WT, PROP_vl11m_TE, )
+    vehicle_group(vl11_group)
   }
   graphics {
+    purchase_menu(PROP_vl11m_CF, PROP_vl11m_RC, PROP_vl11m_SD, PROP_vl11m_WT, PROP_vl11m_TE, PROP_vl11m_PR, PROP_vl11m_CC)
          additional_text: vl11m_additional_text;
         articulated_part: articulated_part_dummy1;
     bitmask_vehicle_info: vl11m_bitmask_vehicle_info;
@@ -55,8 +77,8 @@ item (FEAT_TRAINS, vl11m, 364) {
           colour_mapping: vl11_colour_mapping;
            create_effect: vl11m_create_effect_sprites_start;
                  default: vl11m_sprites;
-                purchase: vl11_purchase_sprites;
-          purchase_speed: return 100;
+                    name: vl11m_name;
+                purchase: vl11m_purchase_sprites;
      running_cost_factor: vl11m_running_cost_factor;
                    speed: vl11m_speed;
               start_stop: any_start_stop;

@@ -1,0 +1,74 @@
+﻿// vl11m6
+
+#define PROP_vl11m6_CF  33
+#define PROP_vl11m6_RC  260
+#define PROP_vl11m6_SD  100
+#define PROP_vl11m6_WT  92
+#define PROP_vl11m6_TE  306.9
+#define PROP_vl11m6_PR  3030
+#define PROP_vl11m6_CC  0
+
+#define IMAGEFILE  "src/electric/vl11m6.png"
+purchase_sprites(vl11m6, 0, 0)
+electric2_1_sprites(9, vl11m6, 32,   40)
+#undef IMAGEFILE
+
+engine_direction_template4(vl11m6, vl11m, vl11m4, vl11m5, )
+long_vehicle(vl11m6)
+
+engine_electric2_1_effect(vl11m6_create_effect_sprites, -2, 3)
+engine_direction_template4(vl11m6, vl11m, vl11m4, vl11m5, _create_effect)
+engine_speed(vl11m6, PROP_vl11m6_SD)
+engine_penalise_speed4(vl11m6, vl11m, vl11m4, vl11m5, 4)
+
+switch (FEAT_TRAINS, SELF, vl11m6_running_cost_factor,
+[  STORE_TEMP(148, 0),  // Моторы
+   STORE_TEMP(21, 1),   // Бригада
+   STORE_TEMP(52, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(36, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_vl11m6_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl11m6_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl11m6_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }               // 260
+
+name_in_group(vl11m6, string(STR_NAME_IN_GROUP, string(STR_NAME_VL11_SERIES), string(STR_NAME_VL11M6)),
+                      string(STR_NAME_IN_GROUP, string(STR_NAME_VL11_SERIES), string(STR_LONGNAME_VL11M6)))
+
+hint_engine_with_sme3(vl11m6,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_2_4_WITH_ATTACH, STR_NAME_VL11M, STR_NAME_VL11M4, STR_NAME_VL11M5,
+     2008, 2015,
+     fact_tbilisi())
+
+item (FEAT_TRAINS, vl11m6, 927) {
+  property {
+    name: string(STR_NAME_VL11M6);
+    vehicle_dates(2008, 2015, 30, 10, 8, PROP_vl11m6_CF)
+    vehicle_cargo()
+    vehicle_dcelectric(PROP_vl11m6_PR, PROP_vl11m6_WT, PROP_vl11m6_TE, )
+    vehicle_group(vl11_group)
+  }
+  graphics {
+    purchase_menu(PROP_vl11m6_CF, PROP_vl11m6_RC, PROP_vl11m6_SD, PROP_vl11m6_WT, PROP_vl11m6_TE, PROP_vl11m6_PR, PROP_vl11m6_CC)
+         additional_text: vl11m6_additional_text;
+        articulated_part: articulated_part_dummy1;
+    bitmask_vehicle_info: vl11m6_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+          colour_mapping: any_cc_colour;
+           create_effect: vl11m6_create_effect_sprites_start;
+                 default: vl11m6_sprites;
+                    name: vl11m6_name;
+                purchase: vl11m6_purchase_sprites;
+     running_cost_factor: vl11m6_running_cost_factor;
+                   speed: vl11m6_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(vl11m6, STR_LONGNAME_VL11M6)
+models_default_cargo_template(vl11m6)
+allow_dcelectric(vl11m6)
