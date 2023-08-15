@@ -1,0 +1,74 @@
+// ep1m_type2011
+
+#define PROP_ep1m_type2011_CF  82
+#define PROP_ep1m_type2011_RC  573
+#define PROP_ep1m_type2011_SD  140
+#define PROP_ep1m_type2011_WT  132
+#define PROP_ep1m_type2011_TE  380.0
+#define PROP_ep1m_type2011_PR  5707
+#define PROP_ep1m_type2011_CC  0
+
+#define IMAGEFILE  "src/electric/ep1m-type2009.png"
+purchase_sprites(ep1m_type2011, 101, 0)
+#undef IMAGEFILE
+
+map_sprites(ep1m_type2011_sprites_left, ep1m_type2009_v3_sprites_left)
+map_sprites(ep1m_type2011_sprites_right, ep1m_type2009_v3_sprites_right)
+
+engine_RNDany_direction_template(ep1m_type2011, 5, 3)
+long_vehicle_sp(ep1m_type2011)
+
+engine_speed_with_reduce(ep1m_type2011, PROP_ep1m_type2011_SD, 120, 30)
+engine_penalise_speed0(ep1m_type2011)
+
+switch (FEAT_TRAINS, SELF, ep1m_type2011_running_cost_factor,
+[  STORE_TEMP(327, 0),  // Моторы
+   STORE_TEMP(46, 1),   // Бригада
+   STORE_TEMP(115, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(80, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP_ep1m_type2011_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_ep1m_type2011_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_ep1m_type2011_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                      // 573
+
+name_in_group(ep1m_type2011, string(STR_NAME_IN_GROUP, string(STR_NAME_EP1_SERIES), string(STR_NAME_EP1M_TYPE2011)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_EP1_SERIES), string(STR_LONGNAME_EP1M_TYPE2011)))
+
+hint_engine_noto(ep1m_type2011,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     2011,
+     fact_novocherkassk())
+
+item (FEAT_TRAINS, ep1m_type2011, 928) {
+  property {
+    name: string(STR_NAME_EP1M_TYPE2011);
+    vehicle_dates(2011, 2050, 30, 10, 8, PROP_ep1m_type2011_CF)
+    vehicle_pass()
+    vehicle_acelectric(PROP_ep1m_type2011_PR, PROP_ep1m_type2011_WT, PROP_ep1m_type2011_TE, _highspeed)
+    vehicle_group(ep1_group)
+  }
+  graphics {
+    purchase_menu(PROP_ep1m_type2011_CF, PROP_ep1m_type2011_RC, PROP_ep1m_type2011_SD, PROP_ep1m_type2011_WT, PROP_ep1m_type2011_TE, PROP_ep1m_type2011_PR, PROP_ep1m_type2011_CC)
+         additional_text: ep1m_type2011_additional_text;
+        articulated_part: articulated_part_dummy5;
+    bitmask_vehicle_info: ep1m_type2011_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_ep1m_type2011_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: ep1m_type2009_create_effect;
+                 default: ep1m_type2011_sprites;
+                    name: ep1m_type2011_name;
+                purchase: ep1m_type2011_purchase_sprites;
+     running_cost_factor: ep1m_type2011_running_cost_factor;
+                   speed: ep1m_type2011_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(ep1m_type2011, STR_LONGNAME_EP1M_TYPE2011)
+models_default_cargo_template(ep1m_type2011)
+allow_acelectric(ep1m_type2011)
