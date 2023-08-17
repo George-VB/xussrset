@@ -1,48 +1,28 @@
 // vl23
 
+#define PROP_vl23_CF  50
+#define PROP_vl23_RC  392
+#define PROP_vl23_SD  100
+#define PROP_vl23_WT  137
+#define PROP_vl23_TE  446.2
+#define PROP_vl23_PR  3700
+#define PROP_vl23_CC  0
+
 #define IMAGEFILE  "src/electric/vl23.png"
-purchase_sprites(vl23_v1, 0, 0)
-electric1_2_sprites(10, vl23_v1, 32,   40)
-electric1_2_sprites(10, vl23_v2, 32,  241)
-#undef IMAGEFILE
-#define IMAGEFILE  "src/electric/vl23-a1958.png"
-purchase_sprites(vl23_v2, 0, 0)
+purchase_sprites(vl23, 0, 0)
 electric1_2_sprites(10, vl23_v3, 32,  40)
 electric1_2_sprites(10, vl23_v4, 32, 241)
 electric1_2_sprites(10, vl23_v5, 32, 442)
 electric1_2_sprites(10, vl23_v6, 32, 643)
 electric1_2_sprites(10, vl23_v7, 32, 844)
 #undef IMAGEFILE
-purchase_sprites_select(vl23, 1958)
 
-switch (FEAT_TRAINS, SELF, vl23_b1958_sprites_start,
+switch (FEAT_TRAINS, SELF, vl23_sprites_start,
   cargo_subtype)
 {
-  0: vl23_v1_sprites_start;
-  1: vl23_v2_sprites_start;
-     align_10_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, vl23_sprites_start_green,
- check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl23_v3_sprites_start;
-     vl23_v6_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, vl23_sprites_start_grey,
- check_year(GREAT_CHANGE_YEAR))
-{
-  0: vl23_v4_sprites_start;
-     vl23_v7_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, vl23_a1958_sprites_start,
-  cargo_subtype)
-{
-                    0: vl23_sprites_start_green;
-                    1: vl23_sprites_start_grey;
-           LV_RAL6002: vl23_sprites_start_green;
+                    0: vl23_v3_sprites_start;
+                    1: vl23_v4_sprites_start;
+           LV_RAL6002: vl23_v3_sprites_start;
   LV_SOUTHERN_RAILWAY: vl23_v5_sprites_start;
 
   0xE0: vl23_v6_sprites_start;
@@ -51,23 +31,56 @@ switch (FEAT_TRAINS, SELF, vl23_a1958_sprites_start,
         align_10_sprites;
 }
 
-engine_build_year_template(vl23, 1958, start, )
 long_vehicle(vl23)
 
-  livery_template_alt0(vl23_b1958, STR_REFIT_TTD_93, STR_REFIT_TTD_09)
+  livery_template_base_list2(vl23_b1987_alt, LV_RAL6002, LV_SOUTHERN_RAILWAY)
+  livery_template_alt(vl23_b1987, STR_REFIT_TTD_09)
 
-    livery_template_alt0(vl23_a1958_bGREAT_CHANGE_YEAR, STR_REFIT_TTD_53, STR_REFIT_TTD_09)
+  livery_template_refit3_diff(vl23_a1987, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_2VL23, STR_REFIT_TTD_53, STR_NAME_2VL23, STR_REFIT_TTD_B5, STR_NAME_3VL23, STR_REFIT_TTD_53, vl23_b1987)
+livery_template_service_year(vl23, 1987)
 
-    livery_template_base_list2(vl23_a1958_aGREAT_CHANGE_YEAR_alt, LV_RAL6002, LV_SOUTHERN_RAILWAY)
-    livery_template_alt(vl23_a1958_aGREAT_CHANGE_YEAR, STR_REFIT_TTD_B5)
-
-    livery_template_refit3_diff(vl23_a1958_a1987, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_2VL23, STR_REFIT_TTD_53, STR_NAME_2VL23, STR_REFIT_TTD_B5, STR_NAME_3VL23, STR_REFIT_TTD_53, vl23_a1958_aGREAT_CHANGE_YEAR)
-  livery_template_service_year2(vl23_a1958, GREAT_CHANGE_YEAR, 1987)
-livery_template_build_year(vl23, 1958)
-
-engine_speed_with_reduce(vl23, 100, 90, 40)
-engine_penalise_speed_2up3(vl23, 2)
+engine_speed_with_reduce(vl23, PROP_vl23_SD, 90, 40)
 engine_electric1_2_effect(vl23_create_effect, -2, 4)
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced_p4,
+  (cargo_subtype >= 0xE2) && (LOAD_TEMP(2)) &&
+  ((LOAD_TEMP(0) - count_veh_id(vl23) +
+    LOAD_TEMP(1) - count_veh_id(vl23_pre)) == 2))
+{ 1: return 0;
+     return bitmask(FLAG_PENALISE_SPEED); }
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced_p2,
+  (LOAD_TEMP(0) + LOAD_TEMP(1) <= 2) || (cargo_subtype >= 0xE2))
+{ 0: return bitmask(FLAG_PENALISE_SPEED);
+     return 0; }
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced2,
+  position_in_consist)
+{ 2: vl23_bitmask_vehicle_info_advanced_p2;
+  4: vl23_bitmask_vehicle_info_advanced_p4;
+     return bitmask(FLAG_PENALISE_SPEED); }
+
+switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_advanced1,
+[ STORE_TEMP(count_veh_id(vl23), 0),
+  STORE_TEMP(count_veh_id(vl23_pre), 1),
+  STORE_TEMP( ((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
+              ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2)), 2),  // head supports 3 units
+  (vehicle_type_id == vl23) ||
+  ((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE0)) ])
+{
+  1: vl23_bitmask_vehicle_info_advanced2;
+     return bitmask(FLAG_PENALISE_SPEED);
+}
+
+switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced,
+  (position_in_consist) * (vehicle_is_powered) * (position_in_articulated_veh == 0))
+{
+  0: return 0;
+     vl23_bitmask_vehicle_info_advanced1;
+}
+
+name_in_group(vl23, string(STR_NAME_IN_GROUP, string(STR_NAME_VL23_SERIES), string(STR_NAME_VL23)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_VL23_SERIES), string(STR_LONGNAME_VL23)))
 
 switch (FEAT_TRAINS, SELF, vl23_running_cost_factor,
 [  STORE_TEMP(223, 0),  // Моторы
@@ -77,45 +90,50 @@ switch (FEAT_TRAINS, SELF, vl23_running_cost_factor,
    STORE_TEMP(55, 4),   // ТО
    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(137, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 392 // weight 137
+   STORE_TEMP(PROP_vl23_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl23_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl23_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 392
 
-engine_refit_cost_for_a2_livery_change(vl23, 0xE0, 1, 2)
+    engine_refit_cost_for_a2_livery_change(vl23_3, 0xE0, 1, 1)
+  engine_refit_cost_for_range_livery_change(vl23_2, 0xE0, 0xE1, 1, vl23_3_refit_cost)
+engine_refit_cost_for_range_livery_change(vl23, 0xE2, 0xE2, 1, vl23_2_refit_cost)
 
 hint_engine(vl23_b1987,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     1956, 1961,
+     1958, 1961,
      fact_novocherkassk())
 hint_engine_comment(vl23_a1987,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
-     1956, 1961,
+     1958, 1961,
      fact_novocherkassk(),
-     string(STR_PURCHASE_HINT_UPGRADE))
+     string(STR_PURCHASE_HINT_EDITION_NEW_SECTIONS,
+            string(STR_PURCHASE_HINT_SECTIONS_1_3)))
 hint_change_after(vl23, 1987)
 
 item (FEAT_TRAINS, vl23, 180) {
   property {
     name: string(STR_NAME_VL23);
-    vehicle_dates(1956, 1961, 40, 10, 8, 50)
+    vehicle_dates(1958, 1961, 40, 10, 8, PROP_vl23_CF)
     vehicle_passcargo()
-    vehicle_dcelectric(3700, 137, 446.2, )
+    vehicle_dcelectric(PROP_vl23_PR, PROP_vl23_WT, PROP_vl23_TE, )
+    vehicle_group(vl23_group)
   }
   graphics {
+    purchase_menu(PROP_vl23_CF, PROP_vl23_RC, PROP_vl23_SD, PROP_vl23_WT, PROP_vl23_TE, PROP_vl23_PR, PROP_vl23_CC)
          additional_text: vl23_additional_text;
         articulated_part: articulated_part_dummy2;
-    bitmask_vehicle_info: vl23_bitmask_vehicle_info;
+    bitmask_vehicle_info: vl23_bitmask_vehicle_info_advanced;
         can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return 0;
       cargo_subtype_text: vl23_cargo_subtype_text;
           colour_mapping: any_cc_colour;
            create_effect: vl23_create_effect;
                  default: vl23_sprites;
+                    name: vl23_name;
                 purchase: vl23_purchase_sprites;
-          purchase_speed: return 100;
               refit_cost: vl23_refit_cost;
      running_cost_factor: vl23_running_cost_factor;
                    speed: vl23_speed;
