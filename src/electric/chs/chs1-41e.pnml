@@ -1,0 +1,83 @@
+﻿// chs1_41e
+
+#define PROP_chs1_41e_CF  31
+#define PROP_chs1_41e_RC  220
+#define PROP_chs1_41e_SD  120
+#define PROP_chs1_41e_WT  85
+#define PROP_chs1_41e_TE  201.0
+#define PROP_chs1_41e_PR  2690
+#define PROP_chs1_41e_CC  0
+
+#define IMAGEFILE  "src/electric/chs/chs1-41e.png"
+purchase_sprites(chs1_41e, 0, 0)
+electric1_2_sprites(10, chs1_41e_v1,  32,  40)
+electric1_2_sprites(10, chs1_41e_v2,  32, 241)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, chs1_41e_sprites_start, cargo_subtype)
+{
+  0: chs1_41e_v1_sprites_start;
+     chs1_41e_v2_sprites_start;
+}
+
+long_vehicle(chs1_41e)
+
+  livery_template_altf(chs1_41e_a1972, STR_REFIT_TTD_63)
+livery_template_service_year_ao(chs1_41e, 1972)
+
+engine_electric1_2_effect(chs1_41e_create_effect, -2, 4)
+engine_speed(chs1_41e, PROP_chs1_41e_SD)
+engine_penalise_speed0(chs1_41e)
+
+switch (FEAT_TRAINS, SELF, chs1_41e_running_cost_factor,
+[  STORE_TEMP(123, 0),  // Моторы
+   STORE_TEMP(18, 1),   // Бригада
+   STORE_TEMP(44, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(31, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_chs1_41e_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs1_41e_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs1_41e_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                 //  218
+
+name_in_group(chs1_41e, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS1_SERIES), string(STR_NAME_CHS1_41E)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_CHS1_SERIES), string(STR_LONGNAME_CHS1_41E)))
+
+hint_engine(chs1_41e,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1959, 1960,
+     fact_skoda())
+
+item (FEAT_TRAINS, chs1_41e, 935) {
+  property {
+    name: string(STR_NAME_CHS1_41E);
+    vehicle_dates(1959, 1960, 20, 10, 8, PROP_chs1_41e_CF)
+    vehicle_pass()
+    vehicle_dcelectric(PROP_chs1_41e_PR, PROP_chs1_41e_WT, PROP_chs1_41e_TE, )
+    vehicle_group(chs1_group)
+  }
+  graphics {
+    purchase_menu(PROP_chs1_41e_CF, PROP_chs1_41e_RC, PROP_chs1_41e_SD, PROP_chs1_41e_WT, PROP_chs1_41e_TE, PROP_chs1_41e_PR, PROP_chs1_41e_CC)
+         additional_text: chs1_41e_additional_text;
+        articulated_part: articulated_part_dummy2;
+    bitmask_vehicle_info: chs1_41e_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_chs1_41e_CC;
+      cargo_subtype_text: chs1_41e_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: chs1_41e_create_effect;
+                 default: chs1_41e_sprites;
+                    name: chs1_41e_name;
+                purchase: chs1_41e_purchase_sprites;
+     running_cost_factor: chs1_41e_running_cost_factor;
+                   speed: chs1_41e_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(chs1_41e, STR_LONGNAME_CHS1_41E)
+models_default_cargo_template(chs1_41e)
+allow_dcelectric(chs1_41e)
