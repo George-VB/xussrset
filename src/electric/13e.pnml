@@ -1,5 +1,13 @@
 // 13e
 
+#define PROP__13e_CF  18
+#define PROP__13e_RC  131
+#define PROP__13e_SD  65
+#define PROP__13e_WT  150
+#define PROP__13e_TE  200.0
+#define PROP__13e_PR  2150
+#define PROP__13e_CC  0
+
 #define IMAGEFILE  "src/electric/13e_h.png"
 purchase_sprites(_13e, 0, 0)
 diesel2nol_sprites(4, _13e_h, 32, 40)
@@ -65,10 +73,13 @@ switch (FEAT_TRAINS, SELF, _13e_running_cost_factor,
    STORE_TEMP(18, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(65, 6),             // Скорость
-   STORE_TEMP(150, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 131
+   STORE_TEMP(PROP__13e_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP__13e_WT), 7),   // Тара
+   STORE_TEMP(round(PROP__13e_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 131
+
+name_in_group(_13e, string(STR_NAME_IN_GROUP, string(STR_NAME_SKODA13E_SERIES), string(STR_NAME_13E)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_SKODA13E_SERIES), string(STR_LONGNAME_13E)))
 
 hint_engine(_13e,
      STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_15DC,
@@ -79,22 +90,24 @@ hint_engine(_13e,
 item (FEAT_TRAINS, _13e, 673) {
   property {
     name: string(STR_NAME_13E);
-    vehicle_dates(1951, 1953, 40, 5, 3, 18)
+    vehicle_dates(1951, 1953, 40, 5, 3, PROP__13e_CF)
     vehicle_cargo()
-    vehicle_15dcelectric(2150, 150, 200.0, _lowspeed)
+    vehicle_15dcelectric(PROP__13e_PR, PROP__13e_WT, PROP__13e_TE, _lowspeed)
+    vehicle_group(skoda13e_group)
   }
   graphics {
+    purchase_menu(PROP__13e_CF, PROP__13e_RC, PROP__13e_SD, PROP__13e_WT, PROP__13e_TE, PROP__13e_PR, PROP__13e_CC)
          additional_text: _13e_additional_text;
         articulated_part: _13e_articulated_part;
     bitmask_vehicle_info: _13e_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP__13e_CC;
       cargo_subtype_text: pe_type_cargo_subtype_text;
           colour_mapping: pe_type_colour_mapping;
            create_effect: _13e_create_effect;
                  default: _13e_sprites;
+                    name: _13e_name;
                 purchase: _13e_purchase_sprites;
-          purchase_speed: return 65;
      running_cost_factor: _13e_running_cost_factor;
                    speed: _13e_speed;
               start_stop: any_start_stop;

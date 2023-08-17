@@ -1,0 +1,70 @@
+// 21em uses 13e
+
+#define PROP__21em_CF  20
+#define PROP__21em_RC  142
+#define PROP__21em_SD  65
+#define PROP__21em_WT  150
+#define PROP__21em_TE  205.0
+#define PROP__21em_PR  2200
+#define PROP__21em_CC  0
+
+map_sprites(_21em_purchase_sprites, _13e_purchase_sprites)
+map_sprites(_21em_sprites_start, _13e_sprites_start)
+long_vehicle(_21em)
+
+engine_ARVs3(_21em, 1)
+engine_speed(_21em, PROP__21em_SD)
+engine_penalise_speed0(_21em)
+
+switch (FEAT_TRAINS, SELF, _21em_running_cost_factor,
+[  STORE_TEMP(85, 0),  // Моторы
+   STORE_TEMP(11, 1),  // Бригада
+   STORE_TEMP(29, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(20, 4),  // ТО
+   STORE_TEMP(4, 5),   // Сертификация
+
+   STORE_TEMP(PROP__21em_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP__21em_WT), 7),   // Тара
+   STORE_TEMP(round(PROP__21em_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 147
+
+name_in_group(_21em, string(STR_NAME_IN_GROUP, string(STR_NAME_SKODA13E_SERIES), string(STR_NAME_21EM)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_SKODA13E_SERIES), string(STR_LONGNAME_21EM)))
+
+hint_engine(_21em,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_15DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1960, 1962,
+     fact_dubnica())
+
+item (FEAT_TRAINS, _21em, 933) {
+  property {
+    name: string(STR_NAME_21EM);
+    vehicle_dates(1960, 1962, 40, 5, 3, PROP__21em_PR)
+    vehicle_cargo()
+    vehicle_15dcelectric(PROP__21em_PR, PROP__21em_WT, PROP__21em_TE, )
+    vehicle_group(skoda13e_group)
+  }
+  graphics {
+    purchase_menu(PROP__21em_CF, PROP__21em_RC, PROP__21em_SD, PROP__21em_WT, PROP__21em_TE, PROP__21em_PR, PROP__21em_CC)
+         additional_text: _21em_additional_text;
+        articulated_part: _21em_articulated_part;
+    bitmask_vehicle_info: _21em_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP__21em_CC;
+      cargo_subtype_text: pe_type_cargo_subtype_text;
+          colour_mapping: pe_type_colour_mapping;
+           create_effect: _13e_create_effect;
+                 default: _21em_sprites;
+                    name: _21em_name;
+                purchase: _21em_purchase_sprites;
+     running_cost_factor: _21em_running_cost_factor;
+                   speed: _21em_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(_21em, STR_LONGNAME_21EM)
+models_default_cargo_template(_21em)
+allow_dcelectric(_21em)
