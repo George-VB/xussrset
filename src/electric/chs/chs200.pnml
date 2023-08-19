@@ -1,4 +1,12 @@
-﻿// chs200
+// chs200
+
+#define PROP_chs200_CF  2 * 70
+#define PROP_chs200_RC  2 * 547
+#define PROP_chs200_SD  220
+#define PROP_chs200_WT  2 * 78
+#define PROP_chs200_TE  2 * 175.0
+#define PROP_chs200_PR  2 * 5308
+#define PROP_chs200_CC  0
 
 #define IMAGEFILE  "src/electric/chs/chs200-66e1-part1.png"
 purchase_sprites(chs200, 0, 0)
@@ -49,7 +57,7 @@ livery_template_service_year(chs200, 1998)
 
 engine_electric2_2_effect(chs200_create_effect_sprites, 3, -2, 3)
 engine_direction_template_only2(chs200, _create_effect)
-engine_speed(chs200, 220)
+engine_speed(chs200, PROP_chs200_SD)
 engine_penalise_speed0(chs200)
 engine_ARVs(chs200, 1)
 
@@ -61,31 +69,30 @@ switch (FEAT_TRAINS, SELF, chs200_running_cost_factor,
    STORE_TEMP(2 * 77, 4),   // ТО
    STORE_TEMP(2 * 5, 5),    // Сертификация
 
-   STORE_TEMP(220, 6),            // Скорость
-   STORE_TEMP(2 * 78, 7),         // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 2 * 547
+   STORE_TEMP(PROP_chs200_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs200_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs200_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }               // 2 * 547
 
-hint_engine_with_subtype_in(chs200_b1976,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_SKODA_66E0,
+name_in_group(chs200, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS200_SERIES), string(STR_NAME_CHS200)),
+                      string(STR_NAME_IN_GROUP, string(STR_NAME_CHS200_SERIES), string(STR_LONGNAME_CHS200)))
+
+hint_engine(chs200,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_2,
-     1975,
+     1975, 1980,
      fact_skoda())
-hint_engine_with_subtype(chs200_a1976,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_SKODA_66E1,
-     STR_PURCHASE_HINT_SECTIONS_2,
-     1976, 1980,
-     fact_skoda())
-hint_change_after(chs200, 1976)
 
 item (FEAT_TRAINS, chs200, 273) {
   property {
     name: string(STR_NAME_CHS200);
-    vehicle_dates(1975, 1980, 40, 10, 8, 2 * 70)
+    vehicle_dates(1975, 1980, 40, 10, 8, PROP_chs200_CF)
     vehicle_pass()
-    vehicle_dcelectric(2 * 5308, 2 * 78, 2 * 175.0, _highspeed)
+    vehicle_dcelectric(PROP_chs200_PR, PROP_chs200_WT, PROP_chs200_TE, _highspeed)
+    vehicle_group_pre(chs200_group)
   }
   graphics {
+    purchase_menu(PROP_chs200_CF, PROP_chs200_RC, PROP_chs200_SD, PROP_chs200_WT, PROP_chs200_TE, PROP_chs200_PR, PROP_chs200_CC)
          additional_text: chs200_additional_text;
         articulated_part: chs200_articulated_part;
     bitmask_vehicle_info: chs200_bitmask_vehicle_info;
@@ -95,8 +102,8 @@ item (FEAT_TRAINS, chs200, 273) {
           colour_mapping: any_cc_colour;
            create_effect: chs200_create_effect_sprites_start;
                  default: chs200_sprites;
+                    name: chs200_name;
                 purchase: chs200_purchase_sprites;
-          purchase_speed: return 220;
      running_cost_factor: chs200_running_cost_factor;
                    speed: chs200_speed;
               start_stop: any_start_stop;

@@ -1,5 +1,13 @@
 ﻿// chs200_57er
 
+#define PROP_chs200_57er_CF  80
+#define PROP_chs200_57er_RC  600
+#define PROP_chs200_57er_SD  200
+#define PROP_chs200_57er_WT  85
+#define PROP_chs200_57er_TE  127.0
+#define PROP_chs200_57er_PR  3280
+#define PROP_chs200_57er_CC  0
+
 #define IMAGEFILE  "src/electric/chs/chs200-57er.png"
 purchase_sprites(chs200_57er, 0, 0)
 electric1_2_sprites(10, chs200_57er, 32, 40)
@@ -18,10 +26,13 @@ switch (FEAT_TRAINS, SELF, chs200_57er_running_cost_factor,
    STORE_TEMP(84, 4),   // ТО
    STORE_TEMP(6, 5),    // Сертификация
 
-   STORE_TEMP(200, 6),            // Скорость
-   STORE_TEMP(85, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 600
+   STORE_TEMP(PROP_chs200_57er_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs200_57er_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs200_57er_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                    // 600
+
+name_in_group(chs200_57er, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS200_SERIES), string(STR_NAME_CHS200_57ER)),
+                           string(STR_NAME_IN_GROUP, string(STR_NAME_CHS200_SERIES), string(STR_LONGNAME_CHS200_57ER)))
 
 hint_engine_in(chs200_57er,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
@@ -32,11 +43,13 @@ hint_engine_in(chs200_57er,
 item (FEAT_TRAINS, chs200_57er, 588) {
   property {
     name: string(STR_NAME_CHS200_57ER);
-    vehicle_dates(1971, 1971, 10, 10, 8, 80)
+    vehicle_dates(1971, 1971, 10, 10, 8, PROP_chs200_57er_CF)
     vehicle_pass()
-    vehicle_dcelectric(3280, 85, 127, _highspeed)
+    vehicle_dcelectric(PROP_chs200_57er_PR, PROP_chs200_57er_WT, PROP_chs200_57er_TE, _highspeed)
+    vehicle_group_pre(chs200_group)
   }
   graphics {
+    purchase_menu(PROP_chs200_57er_CF, PROP_chs200_57er_RC, PROP_chs200_57er_SD, PROP_chs200_57er_WT, PROP_chs200_57er_TE, PROP_chs200_57er_PR, PROP_chs200_57er_CC)
          additional_text: chs200_57er_additional_text;
         articulated_part: articulated_part_dummy2;
     bitmask_vehicle_info: chs200_57er_bitmask_vehicle_info;
@@ -45,8 +58,8 @@ item (FEAT_TRAINS, chs200_57er, 588) {
           colour_mapping: any_cc_colour;
            create_effect: chs200_57er_create_effect;
                  default: chs200_57er_sprites;
+                    name: chs200_57er_name;
                 purchase: chs200_57er_purchase_sprites;
-          purchase_speed: return 200;
      running_cost_factor: chs200_57er_running_cost_factor;
                    speed: chs200_57er_speed;
               start_stop: any_start_stop;

@@ -1,0 +1,102 @@
+﻿// chs2t_63e2
+
+#define PROP_chs2t_63e2_CF  82
+#define PROP_chs2t_63e2_RC  596
+#define PROP_chs2t_63e2_SD  160
+#define PROP_chs2t_63e2_WT  126
+#define PROP_chs2t_63e2_TE  302.0
+#define PROP_chs2t_63e2_PR  5490
+#define PROP_chs2t_63e2_CC  0
+
+#define IMAGEFILE  "src/electric/chs/chs2t-63e2-part1.png"
+purchase_sprites(chs2t_63e2, 0, 0)
+electric1_2_sprites(11chs2t, chs2t_63e2_v9,  32,  40)
+electric1_2_sprites(11chs2t, chs2t_63e2_v10, 32, 241)
+electric1_2_sprites(11chs2t, chs2t_63e2_v11, 32, 442)
+electric1_2_sprites(11chs2t, chs2t_63e2_v12, 32, 643)
+electric1_2_sprites(11chs2t, chs2t_63e2_v13, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/chs/chs2t-63e2-part2.png"
+electric1_2_sprites(11chs2t, chs2t_63e2_v14, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, PARENT, chs2t_63e2_sprites_63E2_RND,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: chs2t_63e2_v10_sprites_start;
+     chs2t_63e2_v9_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, chs2t_63e2_sprites_start,
+  cargo_subtype)
+{
+  0: chs2t_63e2_sprites_63E2_RND;
+  1: chs2t_63e2_v11_sprites_start;
+  2: chs2t_63e2_v12_sprites_start;
+  3: chs2t_63e2_v13_sprites_start;
+  4: chs2t_63e2_v14_sprites_start;
+     align_11_sprites;
+}
+
+long_vehicle(chs2t_63e2)
+
+  livery_template_alt4f(chs2t_63e2_aUSSREND, STR_REFIT_TTD_7C, STR_REFIT_TTD_A5, STR_REFIT_TTD_B5, STR_REFIT_TTD_B6)
+livery_template_service_year_ao(chs2t_63e2, USSREND)
+
+engine_electric1_2_effect(chs2t_63e2_create_effect, -2, 5)
+engine_speed_with_reduce(chs2t_63e2, PROP_chs2t_63e2_SD, 130, 30)
+engine_penalise_speed0(chs2t_63e2)
+
+switch (FEAT_TRAINS, SELF, chs2t_63e2_running_cost_factor,
+[  STORE_TEMP(340, 0),  // Моторы
+   STORE_TEMP(48, 1),   // Бригада
+   STORE_TEMP(119, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(83, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP_chs2t_63e2_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs2t_63e2_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs2t_63e2_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                   // 596
+
+name_in_group(chs2t_63e2, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS2_SERIES), string(STR_NAME_CHS2T_63E2)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_CHS2_SERIES), string(STR_LONGNAME_CHS2T_63E2)))
+
+hint_engine(chs2t_63e2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1976, 1982,
+     fact_skoda())
+
+item (FEAT_TRAINS, chs2t_63e2, 941) {
+  property {
+    name: string(STR_NAME_CHS2T_63E2);
+    vehicle_dates(1972, 1982, 30, 10, 8, PROP_chs2t_63e2_CF)
+    vehicle_pass()
+    vehicle_dcelectric(PROP_chs2t_63e2_PR, PROP_chs2t_63e2_WT, PROP_chs2t_63e2_TE, _highspeed)
+    vehicle_group_pre(chs2_group)
+  }
+  graphics {
+    purchase_menu(PROP_chs2t_63e2_CF, PROP_chs2t_63e2_RC, PROP_chs2t_63e2_SD, PROP_chs2t_63e2_WT, PROP_chs2t_63e2_TE, PROP_chs2t_63e2_PR, PROP_chs2t_63e2_CC)
+         additional_text: chs2t_63e2_additional_text;
+        articulated_part: articulated_part_dummy3;
+    bitmask_vehicle_info: chs2t_63e2_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: chs2t_63e2_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: chs2t_63e2_create_effect;
+                 default: chs2t_63e2_sprites;
+                    name: chs2t_63e2_name;
+                purchase: chs2t_63e2_purchase_sprites;
+     running_cost_factor: chs2t_63e2_running_cost_factor;
+                   speed: chs2t_63e2_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(chs2t_63e2, STR_LONGNAME_CHS2T_63E2)
+models_default_cargo_template(chs2t_63e2)
+allow_dcelectric(chs2t_63e2)

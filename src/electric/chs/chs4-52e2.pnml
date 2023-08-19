@@ -1,0 +1,142 @@
+﻿// chs4_52e2
+
+#define PROP_chs4_52e2_CF  107
+#define PROP_chs4_52e2_RC  692
+#define PROP_chs4_52e2_SD  160
+#define PROP_chs4_52e2_WT  114
+#define PROP_chs4_52e2_TE  335.0
+#define PROP_chs4_52e2_PR  2447
+#define PROP_chs4_52e2_CC  0
+
+#define IMAGEFILE  "src/electric/chs/chs4-52e2-part1.png"
+purchase_sprites(chs4_52e2, 0, 0)
+electric1r_2_sprites(12, chs4_52e2_v2, 32,  40)
+electric1r_2_sprites(12, chs4_52e2_v3, 32, 375)
+electric1r_2_sprites(12, chs4_52e2_v4, 32, 710)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/chs/chs4-52e2-part2.png"
+electric1r_2_sprites(12, chs4_52e2_v5, 32,  40)
+electric1r_2_sprites(12, chs4_52e2_v6, 32, 375)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/chs/chs4z.png"
+electric1r_2_sprites(12, chs4_52e2z_v1, 32,  40)
+electric1r_2_sprites(12, chs4_52e2z_v2, 32, 375)
+electric1r_2_sprites(12, chs4_52e2z_v3, 32, 710)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, PARENT, chs4_52e2_sprites_left_rnd,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: chs4_52e2_v2_sprites_left;
+     chs4_52e2_v3_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, chs4_52e2_sprites_left,
+  cargo_subtype)
+{
+     0: chs4_52e2_sprites_left_rnd;
+     1: chs4_52e2_v4_sprites_left;
+     2: chs4_52e2_v5_sprites_left;
+     3: chs4_52e2_v6_sprites_left;
+  0xE0: chs4_52e2z_v1_sprites_left;
+  0xE1: chs4_52e2z_v3_sprites_left;
+  0xE2: chs4_52e2z_v2_sprites_left;
+        align_12_sprites;
+}
+
+switch (FEAT_TRAINS, PARENT, chs4_52e2_sprites_right_rnd,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: chs4_52e2_v2_sprites_right;
+     chs4_52e2_v3_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, chs4_52e2_sprites_right,
+  cargo_subtype)
+{
+     0: chs4_52e2_sprites_right_rnd;
+     1: chs4_52e2_v4_sprites_right;
+     2: chs4_52e2_v5_sprites_right;
+     3: chs4_52e2_v6_sprites_right;
+  0xE0: chs4_52e2z_v1_sprites_right;
+  0xE1: chs4_52e2z_v3_sprites_right;
+  0xE2: chs4_52e2z_v2_sprites_right;
+        align_12_sprites;
+}
+
+engine_RNDany_direction_template(chs4_52e2, 5, 3)
+long_vehicle_sp(chs4_52e2)
+
+  livery_template_alt3f(chs4_52e2_a1976, STR_REFIT_RZD_TCH15_BALASHOV, STR_REFIT_RZD_TCH8_KIROV, STR_REFIT_UZ_TCH1_KIEV)
+
+  livery_template_refit3(chs4_52e2_a2002, STR_REFIT_FACTORY_SKODA_TYPE, STR_NAME_CHS4Z, STR_EMPTY, STR_REFIT_UZ_TCH1_KIEV, STR_REFIT_LV_UZ_ARENA_2000, chs4_52e2_a1976)
+livery_template_service_year2_ao(chs4_52e2, 1976, 2002)
+
+engine_refit_cost_for_a2_livery_change(chs4_52e2, 0xE0, 1, 2)
+engine_electric1_2_effect(chs4_52e2_create_effect, -1, 5)
+engine_speed_with_reduce(chs4_52e2, PROP_chs4_52e2_SD, 140, 40)
+engine_penalise_speed0(chs4_52e2)
+
+switch (FEAT_TRAINS, SELF, chs4_52e2_running_cost_factor,
+[  STORE_TEMP(394, 0),  // Моторы
+   STORE_TEMP(55, 1),   // Бригада
+   STORE_TEMP(138, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(97, 4),   // ТО
+   STORE_TEMP(7, 5),    // Сертификация
+
+   STORE_TEMP(PROP_chs4_52e2_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs4_52e2_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs4_52e2_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                  // 692
+
+name_in_group(chs4_52e2, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS4_SERIES), string(STR_NAME_CHS4_52E2)),
+                         string(STR_NAME_IN_GROUP, string(STR_NAME_CHS4_SERIES), string(STR_LONGNAME_CHS4_52E2)))
+
+hint_engine(chs4_52e2_b2002,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1967, 1972,
+     fact_skoda())
+hint_engine_comment(chs4_52e2_a2002,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1967, 1972,
+     fact_skoda(),
+     string(STR_PURCHASE_HINT_MAJOR_OVERHAUL))
+hint_change_after(chs4_52e2, 2002)
+
+item (FEAT_TRAINS, chs4_52e2, 943) {
+  property {
+    name: string(STR_NAME_CHS4_52E2);
+    vehicle_dates(1965, 1972, 40, 10, 8, PROP_chs4_52e2_CF)
+    vehicle_pass()
+    vehicle_acelectric(6720, 123, 264.7, _highspeed)
+    vehicle_acelectric(PROP_chs4_52e2_PR, PROP_chs4_52e2_WT, PROP_chs4_52e2_TE, _highspeed)
+    vehicle_group(chs4_group)
+  }
+  graphics {
+    purchase_menu(PROP_chs4_52e2_CF, PROP_chs4_52e2_RC, PROP_chs4_52e2_SD, PROP_chs4_52e2_WT, PROP_chs4_52e2_TE, PROP_chs4_52e2_PR, PROP_chs4_52e2_CC)
+         additional_text: chs4_52e2_additional_text;
+        articulated_part: articulated_part_dummy4;
+    bitmask_vehicle_info: chs4_52e2_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: chs4_52e2_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: chs4_52e2_create_effect;
+                 default: chs4_52e2_sprites;
+                    name: chs4_52e2_name;
+                purchase: chs4_52e2_purchase_sprites;
+              refit_cost: chs4_52e2_refit_cost;
+     running_cost_factor: chs4_52e2_running_cost_factor;
+                   speed: chs4_52e2_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(chs4_52e2, STR_LONGNAME_CHS4_52E2)
+models_default_cargo_template(chs4_52e2)
+allow_acelectric(chs4_52e2)

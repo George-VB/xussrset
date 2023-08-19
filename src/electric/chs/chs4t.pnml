@@ -1,5 +1,13 @@
 // chs4t
 
+#define PROP_chs4t_CF  108
+#define PROP_chs4t_RC  698
+#define PROP_chs4t_SD  160
+#define PROP_chs4t_WT  126
+#define PROP_chs4t_TE  264.7
+#define PROP_chs4t_PR  6720
+#define PROP_chs4t_CC  0
+
 #define IMAGEFILE  "src/electric/chs/chs4t-part1.png"
 purchase_sprites(chs4t, 0, 0)
 electric1r_2_sprites(12chs4t, chs4t_v1, 32,  40)
@@ -71,7 +79,7 @@ long_vehicle_sp(chs4t)
 livery_template_service_year_ao(chs4t, USSREND)
 
 engine_electric1_2_effect(chs4t_create_effect, 0, 4)
-engine_speed_with_reduce(chs4t, 160, 140, 40)
+engine_speed_with_reduce(chs4t, PROP_chs4t_SD, 140, 40)
 engine_penalise_speed0(chs4t)
 
 switch (FEAT_TRAINS, SELF, chs4t_running_cost_factor,
@@ -82,13 +90,16 @@ switch (FEAT_TRAINS, SELF, chs4t_running_cost_factor,
    STORE_TEMP(98, 4),   // ТО
    STORE_TEMP(7, 5),    // Сертификация
 
-   STORE_TEMP(160, 6),            // Скорость
-   STORE_TEMP(126, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 698
+   STORE_TEMP(PROP_chs4t_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs4t_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs4t_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 698
 
-hint_engine_with_subtype(chs4t,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC_WITH_SUBTYPE, STR_PURCHASE_HINT_SKODA_62E,
+name_in_group(chs4t, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS4_SERIES), string(STR_NAME_CHS4T)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_CHS4_SERIES), string(STR_LONGNAME_CHS4T)))
+
+hint_engine(chs4t,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC,
      STR_PURCHASE_HINT_SECTIONS_1,
      1971, 1992,
      fact_skoda())
@@ -96,12 +107,13 @@ hint_engine_with_subtype(chs4t,
 item (FEAT_TRAINS, chs4t, 195) {
   property {
     name: string(STR_NAME_CHS4T);
-    vehicle_dates(1971, 1992, 40, 10, 8, 108)
+    vehicle_dates(1971, 1992, 40, 10, 8, PROP_chs4t_CF)
     vehicle_pass()
-    vehicle_acelectric(6720, 126, 264.7, _highspeed)
-    vehicle_group(chs4)
+    vehicle_acelectric(PROP_chs4t_PR, PROP_chs4t_WT, PROP_chs4t_TE, _highspeed)
+    vehicle_group(chs4_group)
   }
   graphics {
+    purchase_menu(PROP_chs4t_CF, PROP_chs4t_RC, PROP_chs4t_SD, PROP_chs4t_WT, PROP_chs4t_TE, PROP_chs4t_PR, PROP_chs4t_CC)
          additional_text: chs4t_additional_text;
         articulated_part: articulated_part_dummy4;
     bitmask_vehicle_info: chs4t_bitmask_vehicle_info;
@@ -111,8 +123,8 @@ item (FEAT_TRAINS, chs4t, 195) {
           colour_mapping: any_cc_colour;
            create_effect: chs4t_create_effect;
                  default: chs4t_sprites;
+                    name: chs4t_name;
                 purchase: chs4t_purchase_sprites;
-          purchase_speed: return 160;
      running_cost_factor: chs4t_running_cost_factor;
                    speed: chs4t_speed;
               start_stop: any_start_stop;
