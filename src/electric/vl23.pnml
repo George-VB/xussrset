@@ -10,47 +10,67 @@
 
 #define IMAGEFILE  "src/electric/vl23.png"
 purchase_sprites(vl23, 0, 0)
-electric1_2_sprites(10, vl23_v3, 32,  40)
-electric1_2_sprites(10, vl23_v4, 32, 241)
-electric1_2_sprites(10, vl23_v5, 32, 442)
-electric1_2_sprites(10, vl23_v6, 32, 643)
-electric1_2_sprites(10, vl23_v7, 32, 844)
+electric1_2_sprites(10, vl23_v1, 32,   40)  // Factory
+electric1_2_sprites(10, vl23_v2, 32,  241)  // RAL6002 since 1962
+electric1_2_sprites(10, vl23_v3, 32,  442)  // RAL6002 since 1972 with red lines
+electric1_2_sprites(10, vl23_v4, 32,  643)  // SZHD
+electric1_2_sprites(10, vl23_v5, 32,  844)  // SZHD since 1972
+electric1_2_sprites(10, vl23_v6, 32, 1045)  // red since 1972
 #undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl23_sprites_start_green,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl23_v2_sprites_start;
+     vl23_v3_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, vl23_sprites_start_szhd,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl23_v4_sprites_start;
+     vl23_v5_sprites_start;
+}
 
 switch (FEAT_TRAINS, SELF, vl23_sprites_start,
   cargo_subtype)
 {
-                    0: vl23_v3_sprites_start;
-                    1: vl23_v4_sprites_start;
-           LV_RAL6002: vl23_v3_sprites_start;
-  LV_SOUTHERN_RAILWAY: vl23_v5_sprites_start;
+                    0: vl23_v1_sprites_start;
+                    1: vl23_sprites_start_green;  // back compatibility
+           LV_RAL6002: vl23_sprites_start_green;
+  LV_SOUTHERN_RAILWAY: vl23_sprites_start_szhd;
 
-  0xE0: vl23_v6_sprites_start;
-  0xE1: vl23_v7_sprites_start;
-  0xE2: vl23_v6_sprites_start;
+  0xE0: vl23_v3_sprites_start;
+  0xE1: vl23_v6_sprites_start;
+  0xE2: vl23_v3_sprites_start;
         align_10_sprites;
 }
 
 long_vehicle(vl23)
 
-  livery_template_base_list2(vl23_b1987_alt, LV_RAL6002, LV_SOUTHERN_RAILWAY)
-  livery_template_alt(vl23_b1987, STR_REFIT_TTD_09)
+  livery_template_none(vl23_b1962)
 
-  livery_template_refit3_diff(vl23_a1987, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_2VL23, STR_REFIT_TTD_53, STR_NAME_2VL23, STR_REFIT_TTD_B5, STR_NAME_3VL23, STR_REFIT_TTD_53, vl23_b1987)
-livery_template_service_year(vl23, 1987)
+  livery_template_base_list2(vl23_a1962, LV_RAL6002, LV_SOUTHERN_RAILWAY)
+
+  livery_template_refit3_diff(vl23_a1987, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_2VL23, STR_REFIT_TTD_53, STR_NAME_2VL23, STR_REFIT_TTD_B5, STR_NAME_3VL23, STR_REFIT_TTD_53, vl23_a1962)
+livery_template_service_year2(vl23, 1962, 1987)
 
 engine_speed_with_reduce(vl23, PROP_vl23_SD, 90, 40)
 engine_electric1_2_effect(vl23_create_effect, -2, 4)
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced_p4,
-  (cargo_subtype >= 0xE2) && (LOAD_TEMP(2)) &&
+  (((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
+   ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2))) &&
+  (LOAD_TEMP(2)) &&
   ((LOAD_TEMP(0) - count_veh_id(vl23) +
     LOAD_TEMP(1) - count_veh_id(vl23_pre)) == 2))
 { 1: return 0;
      return bitmask(FLAG_PENALISE_SPEED); }
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced_p2,
-  (LOAD_TEMP(0) + LOAD_TEMP(1) <= 2) || (cargo_subtype >= 0xE2))
+  (LOAD_TEMP(0) + LOAD_TEMP(1) <= 2) ||
+  (((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
+   ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2))))
 { 0: return bitmask(FLAG_PENALISE_SPEED);
      return 0; }
 
