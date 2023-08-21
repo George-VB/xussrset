@@ -2,8 +2,8 @@
 
 #define IMAGEFILE  "src/electric/pe150_h.png"
 purchase_sprites(pe150, 0, 0)
-diesel2nol_sprites(4, pe150_h, 32, 40)
-buster_sprites(4, pe150_h2, 32, 40 + 67 * 2)
+diesel2nol_sprites(4, pe150_h, 32, 40)        // always down
+buster_sprites(4, pe150_h2, 32, 40 + 67 * 2)  // always up no light
 #undef IMAGEFILE
 #define IMAGEFILE  "src/electric/pe150_c.png"
 diesel2nol_sprites(4, pe150_c, 32, 40)
@@ -32,9 +32,10 @@ switch (FEAT_TRAINS, SELF, pe150_c_sprites_start,
 }
 
 switch (FEAT_TRAINS, SELF, pe150_h2_sprites_start,
-  vehicle_is_not_powered || vehicle_is_in_depot)
+[ set_offset_to(-position_in_articulated_veh),
+  prev_vehicle_is_powered() && (! vehicle_is_in_depot) ])
 {
-  0: pe150_h2_sprites_right;
+  1: pe150_h2_sprites_right;
      pe150_h_sprites_right;
 }
 
