@@ -10,18 +10,37 @@
 
 #define IMAGEFILE  "src/electric/chs/chs2-34e1.png"
 purchase_sprites(chs2_34e1, 0, 0)
-electric1_2_sprites(11, chs2_34e1_v2, 32,  40)
-electric1_2_sprites(11, chs2_34e1_v3, 32, 241)
+electric1_2_sprites(11, chs2_34e1_v1, 32,  40)  // factory
+electric1_2_sprites(11, chs2_34e1_v2, 32, 241)  // factory after 1972
+electric1_2_sprites(11, chs2_34e1_v3, 32, 442)  // avrora
+electric1_2_sprites(11, chs2_34e1_v4, 32, 643)  // RAL7010 (62) after 1972
+electric1_2_sprites(11, chs2_34e1_v5, 32, 844)  // RAL5023 (9D) after 1972
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, chs2_34e1_sprites_start,
+switch (FEAT_TRAINS, SELF, chs2_34e1_sprites_start_green,
   check_year(GREAT_CHANGE_YEAR))
 {
-  0: chs2_34e1_v2_sprites_start;
-     chs2_34e1_v3_sprites_start;
+  0: chs2_34e1_v1_sprites_start;
+     chs2_34e1_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, chs2_34e1_sprites_start,
+  cargo_subtype)
+{
+          0: chs2_34e1_sprites_start_green;
+          1: chs2_34e1_v4_sprites_start;
+          2: chs2_34e1_v5_sprites_start;
+  LV_AURORA: chs2_34e1_v3_sprites_start;
+             align_10_sprites;
 }
 
 long_vehicle(chs2_34e1)
+
+    livery_template_base_list(chs2_34e1_bGREAT_CHANGE_YEAR, LV_AURORA)
+
+    livery_template_base_list(chs2_34e1_aGREAT_CHANGE_YEAR_alt, LV_AURORA)
+  livery_template_alt2(chs2_34e1_aGREAT_CHANGE_YEAR, STR_REFIT_TTD_62, STR_REFIT_TTD_9D)
+livery_template_service_year(chs2_34e1, GREAT_CHANGE_YEAR)
 
 engine_electric1_2_effect(chs2_34e1_create_effect, -2, 5)
 engine_speed_with_reduce(chs2_34e1, PROP_chs2_34e1_SD, 130, 30)
@@ -64,6 +83,7 @@ item (FEAT_TRAINS, chs2_34e1, 937) {
     bitmask_vehicle_info: chs2_34e1_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return 0;
+      cargo_subtype_text: chs2_34e1_cargo_subtype_text;
           colour_mapping: any_cc_colour;
            create_effect: chs2_34e1_create_effect;
                  default: chs2_34e1_sprites;
