@@ -652,41 +652,69 @@ switch (FEAT_TRAINS, SELF, name##_sprites_right,                   \
 { name##_sprites_right_g; }                                        \
 
 // Бустер с 1 пантографом
-#define buster_1_sprites(n, name, x, y)                                        \
-spriteset (name##_notpowered_sprites_left_g, IMAGEFILE)                        \
-{ s##n##_template(x, y, 0) }                                                   \
-switch (FEAT_TRAINS, SELF, name##_notpowered_sprites_left,                     \
-[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])              \
-{ name##_notpowered_sprites_left_g; }                                          \
-spriteset (name##_notpowered_sprites_right_g, IMAGEFILE)                       \
-{ s##n##_r_template(x, y, 0) }                                                 \
-switch (FEAT_TRAINS, SELF, name##_notpowered_sprites_right,                    \
-[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])              \
-{ name##_notpowered_sprites_right_g; }                                         \
-spriteset (name##_traveling_sprites_left_g, IMAGEFILE)                         \
-{ s##n##_template(x, y+67, 0) }                                                \
-switch (FEAT_TRAINS, SELF, name##_traveling_sprites_left,                      \
-[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])              \
-{ name##_traveling_sprites_left_g; }                                           \
-spriteset (name##_traveling_sprites_right_g, IMAGEFILE)                        \
-{ s##n##_r_template(x, y+67, 0) }                                              \
-switch (FEAT_TRAINS, SELF, name##_traveling_sprites_right,                     \
-[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])              \
-{ name##_traveling_sprites_right_g; }                                          \
-switch (FEAT_TRAINS, SELF, name##_sprites_left_powered,                        \
-[  set_offset_to(-position_in_articulated_veh), prev_vehicle_is_powered()])  \
-{ 0: name##_notpowered_sprites_left;                                           \
-     name##_traveling_sprites_left; }                                          \
-switch (FEAT_TRAINS, SELF, name##_sprites_right_powered,                       \
-[  set_offset_to(-position_in_articulated_veh), prev_vehicle_is_powered()])  \
-{ 0: name##_notpowered_sprites_right;                                          \
-     name##_traveling_sprites_right; }                                         \
-switch (FEAT_TRAINS, SELF, name##_sprites_left, vehicle_is_in_depot)           \
-{ 1: name##_notpowered_sprites_left;                                           \
-     name##_sprites_left_powered; }                                            \
-switch (FEAT_TRAINS, SELF, name##_sprites_right, vehicle_is_in_depot)          \
-{ 1: name##_notpowered_sprites_right;                                          \
-     name##_sprites_right_powered; }                                           \
+// Предполагаем, что секций максимум две подряд, и предыдущая секция может иметь только такой же id, как и текущая секция
+// для хранения используем регистр 4 - id текущей секции, 3 - id предыдущей секции)
+#define buster_1_sprites(n, name, x, y)                                \
+spriteset (name##_notpowered_sprites_left_g, IMAGEFILE)                \
+{ s##n##_template(x, y, 0) }                                           \
+switch (FEAT_TRAINS, SELF, name##_notpowered_sprites_left,             \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])      \
+{ name##_notpowered_sprites_left_g; }                                  \
+spriteset (name##_notpowered_sprites_right_g, IMAGEFILE)               \
+{ s##n##_r_template(x, y, 0) }                                         \
+switch (FEAT_TRAINS, SELF, name##_notpowered_sprites_right,            \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])      \
+{ name##_notpowered_sprites_right_g; }                                 \
+spriteset (name##_traveling_sprites_left_g, IMAGEFILE)                 \
+{ s##n##_template(x, y+67, 0) }                                        \
+switch (FEAT_TRAINS, SELF, name##_traveling_sprites_left,              \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])      \
+{ name##_traveling_sprites_left_g; }                                   \
+spriteset (name##_traveling_sprites_right_g, IMAGEFILE)                \
+{ s##n##_r_template(x, y+67, 0) }                                      \
+switch (FEAT_TRAINS, SELF, name##_traveling_sprites_right,             \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100)])      \
+{ name##_traveling_sprites_right_g; }                                  \
+switch (FEAT_TRAINS, SELF, name##_sprites_left_powered4,               \
+[  set_offset_to(-position_in_articulated_veh-4),                      \
+   prev_vehicle_is_powered() && (LOAD_TEMP(4) == LOAD_TEMP(3))])       \
+{ 0: name##_notpowered_sprites_left;                                   \
+     name##_traveling_sprites_left; }                                  \
+switch (FEAT_TRAINS, SELF, name##_sprites_left_powered2,               \
+[  set_offset_to(-position_in_articulated_veh-2),                      \
+   STORE_TEMP(vehicle_type_id, 3),                                     \
+   prev_vehicle_is_powered()])                                         \
+{ 0: name##_sprites_left_powered4;                                     \
+     name##_traveling_sprites_left; }                                  \
+switch (FEAT_TRAINS, SELF, name##_sprites_left_powered0,               \
+[  STORE_TEMP(vehicle_type_id, 4),                                     \
+   set_offset_to(-position_in_articulated_veh),                        \
+   prev_vehicle_is_powered()])                                         \
+{ 0: name##_sprites_left_powered2;                                     \
+     name##_traveling_sprites_left; }                                  \
+switch (FEAT_TRAINS, SELF, name##_sprites_left, vehicle_is_in_depot)   \
+{ 1: name##_notpowered_sprites_left;                                   \
+     name##_sprites_left_powered0; }                                   \
+switch (FEAT_TRAINS, SELF, name##_sprites_right_powered4,              \
+[  set_offset_to(-position_in_articulated_veh-4),                      \
+   prev_vehicle_is_powered() && (LOAD_TEMP(4) == LOAD_TEMP(3))])       \
+{ 0: name##_notpowered_sprites_right;                                  \
+     name##_traveling_sprites_right; }                                 \
+switch (FEAT_TRAINS, SELF, name##_sprites_right_powered2,              \
+[  set_offset_to(-position_in_articulated_veh-2),                      \
+   STORE_TEMP(vehicle_type_id, 3),                                     \
+   prev_vehicle_is_powered()])                                         \
+{ 0: name##_sprites_right_powered4;                                    \
+     name##_traveling_sprites_right; }                                 \
+switch (FEAT_TRAINS, SELF, name##_sprites_right_powered0,              \
+[  STORE_TEMP(vehicle_type_id, 4),                                     \
+   set_offset_to(-position_in_articulated_veh),                        \
+   prev_vehicle_is_powered()])                                         \
+{ 0: name##_sprites_right_powered2;                                    \
+     name##_traveling_sprites_right; }                                 \
+switch (FEAT_TRAINS, SELF, name##_sprites_right, vehicle_is_in_depot)  \
+{ 1: name##_notpowered_sprites_right;                                  \
+     name##_sprites_right_powered0; }                                  \
 
 // рассчёт предупреждения о неккорректной позиции
 #define buster_notlast_bothsides(name, vehid, pant)     \
