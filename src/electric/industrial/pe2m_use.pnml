@@ -1,0 +1,71 @@
+// pe2m uses pe2
+
+#define PROP_pe2m_CF  13
+#define PROP_pe2m_RC  41
+#define PROP_pe2m_SD  65
+#define PROP_pe2m_WT  120
+#define PROP_pe2m_TE  227.0
+#define PROP_pe2m_PR  930
+#define PROP_pe2m_CC  0
+
+map_sprites(pe2m_purchase_sprites, pe2_purchase_sprites)
+map_sprites(pe2m_sprites_left, pe2_sprites_left)
+map_sprites(pe2m_sprites_right, pe2_sprites_right)
+
+engine_RNDany_direction_template(pe2m, 7, 1)
+long_vehicle_sp(pe2m)
+
+engine_speed(pe2m, PROP_pe2m_SD)
+
+switch (FEAT_TRAINS, SELF, pe2m_running_cost_factor,
+[  STORE_TEMP(24, 0),  // Моторы
+   STORE_TEMP(3, 1),   // Бригада
+   STORE_TEMP(8, 2),   // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(6, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_pe2m_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_pe2m_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_pe2m_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 41
+
+name_in_group(pe2m, string(STR_NAME_IN_GROUP, string(STR_NAME_PE2_SERIES), string(STR_NAME_PE2M)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_PE2_SERIES), string(STR_LONGNAME_PE2M)))
+
+hint_engine(pe2m,
+     STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_DDC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1970, 1985,
+     fact_dnepropetrovsk())
+
+item (FEAT_TRAINS, pe2m, 778) {
+  property {
+    name: string(STR_NAME_PE2M);
+    vehicle_dates(1970, 1985, 20, 15, 8, PROP_pe2m_CF)
+    vehicle_cargo()
+    vehicle_ddcelectric(PROP_pe2m_PR, PROP_pe2m_WT, PROP_pe2m_TE, _lowspeed)
+    vehicle_group(pe2_group)
+  }
+  graphics {
+    purchase_menu(PROP_pe2m_CF, PROP_pe2m_RC, PROP_pe2m_SD, PROP_pe2m_WT, PROP_pe2m_TE, PROP_pe2m_PR, PROP_pe2m_CC)
+         additional_text: pe2m_additional_text;
+        articulated_part: articulated_part_dummy3;
+    bitmask_vehicle_info: pe2_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_pe2m_CC;
+      cargo_subtype_text: pe_type_cargo_subtype_text;
+          colour_mapping: pe_type_colour_mapping;
+           create_effect: pe2_create_effect;
+                 default: pe2m_sprites;
+                    name: pe2m_name;
+                purchase: pe2m_purchase_sprites;
+     running_cost_factor: pe2m_running_cost_factor;
+                   speed: pe2m_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(pe2m, STR_LONGNAME_PE2M)
+models_default_cargo_template(pe2m)
+allow_dcelectric(pe2m)
