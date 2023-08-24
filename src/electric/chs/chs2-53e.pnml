@@ -15,8 +15,14 @@ electric1r_2_sprites(11, chs2_53e_v2, 32,  375)  // factory after 1972
 electric1r_2_sprites(11, chs2_53e_v3, 32,  710)  // avrora
 electric1r_2_sprites(11, chs2_53e_v4, 32, 1045)  // RAL7010 (62) after 1972
 electric1r_2_sprites(11, chs2_53e_v5, 32, 1380)  // RAL5023 (9D) after 1972
-electric1r_2_sprites(11, chs2_53e_v6, 32, 1715)  // TCH27 after 2003
+electric1r_2_sprites(11, chs2_53e_v6, 32, 1715)  // TCH27 after 2003 (сделано с 2002 чтобы совместить с капремонтом)
 electric1r_2_sprites(11, chs2_53e_v7, 32, 2050)  // UZ after 2020
+#undef IMAGEFILE
+
+#define IMAGEFILE  "src/electric/chs/chs2k.png"
+// ЧС2К ЯРЗ. Доступна как платный рефит с 2002 года для ЧС2 Е53.
+electric1r_2_sprites(11, chs2k_v1, 32,   40)  // UZ
+electric1r_2_sprites(11, chs2k_v2, 32,  375)  // PID
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, chs2_53e_sprites_left_green,
@@ -42,6 +48,8 @@ switch (FEAT_TRAINS, SELF, chs2_53e_sprites_left,
                      3: chs2_53e_v6_sprites_left;
              LV_AURORA: chs2_53e_v3_sprites_left;
   LV_UKRAINIAN_RAILWAY: chs2_53e_v7_sprites_left;
+                  0xE0: chs2k_v1_sprites_left;
+                  0xE1: chs2k_v2_sprites_left;
              align_10_sprites;
 }
 
@@ -54,6 +62,8 @@ switch (FEAT_TRAINS, SELF, chs2_53e_sprites_right,
                      3: chs2_53e_v6_sprites_right;
              LV_AURORA: chs2_53e_v3_sprites_right;
   LV_UKRAINIAN_RAILWAY: chs2_53e_v7_sprites_right;
+                  0xE0: chs2k_v1_sprites_right;
+                  0xE1: chs2k_v2_sprites_right;
              align_10_sprites;
 }
 
@@ -65,13 +75,16 @@ long_vehicle_sp(chs2_53e)
     livery_template_base_list(chs2_53e_aGREAT_CHANGE_YEAR_alt, LV_AURORA)
   livery_template_alt2(chs2_53e_aGREAT_CHANGE_YEAR, STR_REFIT_TTD_62, STR_REFIT_TTD_9D)
 
-    livery_template_base_list(chs2_53e_a2003_alt, LV_AURORA)
-  livery_template_alt3(chs2_53e_a2003, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_RZD_TCHE_7_OREL_SORTIROVOCHNIY)
+    livery_template_base_list(chs2_53e_a2002_refit_alt, LV_AURORA)
+  livery_template_alt3(chs2_53e_a2002_refit, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_RZD_TCHE_7_OREL_SORTIROVOCHNIY)
+  livery_template_refit(chs2_53e_a2002, STR_REFIT_FACTORY_SKODA_TYPE, STR_NAME_CHS2K, STR_REFIT_LV_UKRAINIAN_RAILWAY, chs2_53e_a2002_refit)
+// TODO PID с 2012, а не с 2020
+    livery_template_base_list2(chs2_53e_a2020_refit_alt, LV_AURORA, LV_UKRAINIAN_RAILWAY)
+  livery_template_alt3(chs2_53e_a2020_refit, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_RZD_TCHE_7_OREL_SORTIROVOCHNIY)
+  livery_template_refit2(chs2_53e_a2020, STR_REFIT_FACTORY_SKODA_TYPE, STR_NAME_CHS2K, STR_REFIT_LV_UKRAINIAN_RAILWAY, STR_REFIT_LV_RZD_PID, chs2_53e_a2020_refit)
+livery_template_service_year3(chs2_53e, GREAT_CHANGE_YEAR, 2002, 2020)
 
-    livery_template_base_list2(chs2_53e_a2020_alt, LV_AURORA, LV_UKRAINIAN_RAILWAY)
-  livery_template_alt3(chs2_53e_a2020, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_RZD_TCHE_7_OREL_SORTIROVOCHNIY)
-livery_template_service_year3(chs2_53e, GREAT_CHANGE_YEAR, 2003, 2020)
-
+engine_refit_cost_for_a2_livery_change(chs2_53e, 0xE0, 1, 2)
 engine_electric1_2_effect(chs2_53e_create_effect, -2, 5)
 engine_speed_with_reduce(chs2_53e, PROP_chs2_53e_SD, 130, 30)
 engine_penalise_speed4(chs2_53e, chs2_34e1, chs2_34e2, chs2_25e0, 2)
@@ -92,11 +105,18 @@ switch (FEAT_TRAINS, SELF, chs2_53e_running_cost_factor,
 name_in_group(chs2_53e, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS2_SERIES), string(STR_NAME_CHS2_53E)),
                         string(STR_NAME_IN_GROUP, string(STR_NAME_CHS2_SERIES), string(STR_LONGNAME_CHS2_53E)))
 
-hint_engine(chs2_53e,
+hint_engine(chs2_53e_b2002,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
      1964, 1972,
      fact_skoda())
+hint_engine_comment(chs2_53e_a2002,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_AC,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     1964, 1972,
+     fact_skoda(),
+     string(STR_PURCHASE_HINT_MAJOR_OVERHAUL))
+hint_change_after(chs2_53e, 2002)
 
 item (FEAT_TRAINS, chs2_53e, 939) {
   property {
@@ -119,6 +139,7 @@ item (FEAT_TRAINS, chs2_53e, 939) {
                  default: chs2_53e_sprites;
                     name: chs2_53e_name;
                 purchase: chs2_53e_purchase_sprites;
+              refit_cost: chs2_53e_refit_cost;
      running_cost_factor: chs2_53e_running_cost_factor;
                    speed: chs2_53e_speed;
               start_stop: any_start_stop;
