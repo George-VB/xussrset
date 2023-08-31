@@ -103,7 +103,7 @@ set NMLNAME=xussr-wagons
 :: имя служебного файла для сборки
 set CUSTOM_TAGS=custom_tags.txt
 :: минимальная совместимая ревизия
-set MIN_COMPATIBLE_REVISION=496
+set MIN_COMPATIBLE_REVISION=1
 goto :EOF
 
 :EchoParams

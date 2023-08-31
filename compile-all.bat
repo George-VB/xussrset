@@ -6,4 +6,4 @@ call  compile-emu.bat
 call  compile-rails.bat
 call  compile-steam.bat
 call  compile-wagons.bat
-call  compile.bat
+rem call  compile.bat
