@@ -1,0 +1,96 @@
+// n8_type1955 uses n8_pre
+
+#define PROP_n8_type1955_CF  2 * 28
+#define PROP_n8_type1955_RC  2 * 215
+#define PROP_n8_type1955_SD  90
+#define PROP_n8_type1955_WT  191
+#define PROP_n8_type1955_TE  2 * 297.6
+#define PROP_n8_type1955_PR  2 * 2485
+#define PROP_n8_type1955_CC  0
+
+#define IMAGEFILE  "src/electric/n8-pre.png"
+purchase_sprites(n8_type1955, 100, 0)
+electric2_1_sprites(8, n8_type1955_v2, 32, 241)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, n8_type1955_sprites_left, cargo_subtype)
+{ 0: n8_type1955_v2_sprites_left;
+  1: n8_pre_gr_sprites_left;
+  2: n8_pre_v1_sprites_left;  // back compatibility
+     align_8_sprites; }
+
+switch (FEAT_TRAINS, SELF, n8_type1955_sprites_right, cargo_subtype)
+{ 0: n8_type1955_v2_sprites_right;
+  1: n8_pre_gr_sprites_right;
+  2: n8_pre_v1_sprites_right;  // back compatibility
+     align_8_sprites; }
+
+engine_direction_template_only2(n8_type1955, )
+long_vehicle(n8_type1955)
+
+livery_template_alt0(n8_type1955, STR_REFIT_TTD_09, STR_REFIT_TTD_62)
+
+engine_penalise_speed0(n8_type1955)
+engine_speed_change_after(n8_type1955, PROP_n8_type1955_SD, 80, 1962)
+engine_ARVs(n8_type1955, 1)
+
+switch (FEAT_TRAINS, SELF, n8_type1955_running_cost_factor,
+[  STORE_TEMP(245, 0),  // Моторы
+   STORE_TEMP(34, 1),   // Бригада
+   STORE_TEMP(86, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(60, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP_n8_type1955_SD - 10 * (current_year >= 1962), 6),  // Скорость
+   STORE_TEMP(round(PROP_n8_type1955_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_n8_type1955_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                          // 2 * 215
+
+name_in_group_varsubgroup(n8_type1955, string(STR_NAME_IN_GROUP, string(STR_NAME_VL8_SERIES), string(STR_NAME_N8_TYPE1955)),
+                                       string(STR_NAME_IN_GROUP, string(STR_NAME_VL8_SERIES), string(STR_LONGNAME_N8_TYPE1955)),
+                                       fact_novocherkassk())
+
+hint_engine_in(n8_type1955_b1962,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1956,
+     fact_novocherkassk())
+hint_engine_chande_speed_on_date_in(n8_type1955_a1962,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1956,
+     fact_novocherkassk(),
+     80, 1962)
+hint_change_after(n8_type1955, 1962)
+
+item (FEAT_TRAINS, n8_type1955, 953) {
+  property {
+    name: string(STR_NAME_N8_TYPE1955);
+    vehicle_dates(1956, 1956, 30, 10, 7, PROP_n8_type1955_CF)
+    vehicle_passcargo()
+    vehicle_dcelectric(PROP_n8_type1955_PR, PROP_n8_type1955_WT, PROP_n8_type1955_TE, )
+    vehicle_group_pre(vl8_subgroup_nevz)
+  }
+  graphics {
+    purchase_menu(PROP_n8_type1955_CF, PROP_n8_type1955_RC, PROP_n8_type1955_SD, PROP_n8_type1955_WT, PROP_n8_type1955_TE, PROP_n8_type1955_PR, PROP_n8_type1955_CC)
+         additional_text: n8_type1955_additional_text;
+        articulated_part: n8_type1955_articulated_part;
+    bitmask_vehicle_info: n8_type1955_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_n8_type1955_CC;
+      cargo_subtype_text: n8_type1955_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: n8_pre_create_effect_sprites_start;
+                 default: n8_type1955_sprites;
+                    name: n8_type1955_name;
+                purchase: n8_type1955_purchase_sprites;
+     running_cost_factor: n8_type1955_running_cost_factor;
+                   speed: n8_type1955_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(n8_type1955, STR_LONGNAME_N8_TYPE1955)
+models_default_cargo_template(n8_type1955)
+allow_dcelectric(n8_type1955)
