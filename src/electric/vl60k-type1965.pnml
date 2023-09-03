@@ -8,13 +8,49 @@
 #define PROP_vl60k_type1965_PR  5360
 #define PROP_vl60k_type1965_CC  0
 
-map_sprites(vl60k_type1965_purchase_sprites, vl60k_purchase_sprites)
-map_sprites(vl60k_type1965_sprites_start, vl60k_sprites_start)
+#define IMAGEFILE  "src/electric/vl60k-type1965-part1.png"
+purchase_sprites(vl60k_type1965, 0, 0)
+
+electric1_2_sprites(12, vl60k_type1965_v1, 32,  40)
+electric1_2_sprites(12, vl60k_type1965_v2, 32, 241)
+electric1_2_sprites(12, vl60k_type1965_v3, 32, 442)
+electric1_2_sprites(12, vl60k_type1965_v4, 32, 643)
+electric1_2_sprites(12, vl60k_type1965_v5, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/electric/vl60k-type1965-part2.png"
+electric1_2_sprites(12, vl60k_type1965_v6, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl60k_type1965_sprites_start_gr1,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl60k_type1965_v1_sprites_start;
+     vl60k_type1965_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, vl60k_type1965_sprites_start_gr2,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl60k_type1965_v3_sprites_start;
+     vl60k_type1965_v4_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, vl60k_type1965_sprites_start,
+  cargo_subtype)
+{
+                     0: vl60k_type1965_sprites_start_gr1;
+            LV_RAL6002: vl60k_type1965_sprites_start_gr1;
+            LV_RAL6020: vl60k_type1965_sprites_start_gr2;
+  LV_UKRAINIAN_RAILWAY: vl60k_type1965_v5_sprites_start;
+   LV_NORTHERN_RAILWAY: vl60k_type1965_v6_sprites_start;
+  align_12_sprites;
+}
+
 long_vehicle(vl60k_type1965)
 
-engine_penalise_speed5(vl60k_type1965, vl60_type1962, vl60_type1965, vl60k, vl60p, 2)
+engine_penalise_speed5(vl60k_type1965, vl60_type1962, vl60_type1964, n6ok, vl60p, 2)
 switch (FEAT_TRAINS, PARENT, vl60k_type1965_bitmask_vehicle_info_advanced,
-  (((vehicle_type_id == vl60_type1962) || (vehicle_type_id == vl60_type1965)) && (cargo_subtype < 0xE0) && vehicle_is_powered) ||
+  (((vehicle_type_id == vl60_type1962) || (vehicle_type_id == vl60_type1964)) && (cargo_subtype < 0xE0) && vehicle_is_powered) ||
   ((vehicle_type_id == vl60p) && (cargo_subtype < 0xE0) && vehicle_is_powered))
 {
   1: return bitmask(FLAG_PENALISE_SPEED);
