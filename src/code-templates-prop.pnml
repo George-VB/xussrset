@@ -1069,45 +1069,4 @@ switch (FEAT_TRAINS, PARENT, name##_create_effect,            \
 { 1: name##effects;                                           \
      return disable_create_effect(); }                        \
 
-// emu_s support
-#define any_emu_s()               \
- ((vehicle_type_id == emu_sd) ||  \
-  (vehicle_type_id == emu_sr) ||  \
-  (vehicle_type_id == emu_sm) ||  \
-  (vehicle_type_id == emu_sv) )   \
-
-#define no_emu_s_inR4()          \
- (!((LOAD_TEMP(4) == emu_sd) ||  \
-    (LOAD_TEMP(4) == emu_sr) ||  \
-    (LOAD_TEMP(4) == emu_sm) ||  \
-    (LOAD_TEMP(4) == emu_sv)))   \
-
-#define emu_s_count()     \
- (count_veh_id(emu_sd) +  \
-  count_veh_id(emu_sr) +  \
-  count_veh_id(emu_sm) +  \
-  count_veh_id(emu_sv))   \
-
-#define engine_power_MU_emu_s(name, power)               \
-switch (FEAT_TRAINS, PARENT, name##_power, any_emu_s())  \
-{ 1: return get_power_in_cb(power);                      \
-     return 0; }                                         \
-
-#define engine_capacity_MU_emu_s(name, capacity)                  \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_emu_s())  \
-{ 1: return capacity;                                             \
-     return 0; }                                                  \
-
-#define RC_head_check_emu_s_new(name)                            \
-switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
-{ all_running_cost_factor; }                                     \
-switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  any_emu_s())                                                   \
-{ 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
-
 // end
