@@ -143,6 +143,30 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
 spriteset (name##_sprites_start, IMAGEFILE)  \
 { s##n##_template(x, y, 0) }                 \
 
+// 1-о секционный тепловоз симметричный
+#define diesel1_sprites(n, name, x, y)                                              \
+spriteset (name##_notpowered_sprites_start, IMAGEFILE)                              \
+{ s##n##_template(x, y, 0) }                                                        \
+spriteset (name##_loading_sprites_start, IMAGEFILE)                                 \
+{ s##n##_template(x, y+67, 0) }                                                     \
+spriteset (name##_traveling_sprites_start, IMAGEFILE)                               \
+{ s##n##_template(x, y+134, 0) }                                                    \
+spritegroup name##_normal_sprites_start                                             \
+{ loading: name##_loading_sprites_start;                                            \
+   loaded: name##_traveling_sprites_start; }                                        \
+switch (FEAT_TRAINS, SELF, name##_sprites_start2,                                   \
+  (position_in_consist == 0) && (!vehicle_is_in_depot))                             \
+{ 1: name##_normal_sprites_start;                                                   \
+     name##_notpowered_sprites_start; }                                             \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_start1,                            \
+bitmask(TRIGGER_VEHICLE_SERVICE))                                                   \
+{ 1: name##_sprites_start2;                                                         \
+  1: name##_sprites_start2; }                                                       \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_start,                             \
+bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))  \
+{ independent: name##_sprites_start1;                                               \
+          128: name##_sprites_start1; }                                             \
+
 // 1-о секционный тепловоз несимметричный
 #define diesel1r_sprites(n, name, x, y)                                             \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                               \
