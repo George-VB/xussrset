@@ -905,7 +905,7 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                         \
      name##_additional_text_shown; }                                                                        \
 
-#define hint_engine_2fact_in(name, strengtype, strengsmetype, in, factory, factory2)              \
+#define hint_engine_in_2fact(name, strengtype, strengsmetype, in, factory, factory2)              \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                          \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                          \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN, in) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),  \
@@ -1631,7 +1631,7 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                         \
      name##_additional_text_shown; }                                                                        \
 
-#define hint_engine_2fact_comment_in(name, strengtype, strengsmetype, in, factory, factory2, comment)  \
+#define hint_engine_in_2fact_comment(name, strengtype, strengsmetype, in, factory, factory2, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                               \
 [ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                               \
   STORE_TEMP(string(STR_PURCHASE_HINT_IN, in) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),       \
@@ -2030,6 +2030,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                     \
 { 1: name##_additional_text_hidden;                                                                                        \
      name##_additional_text_shown; }                                                                                       \
+
+// Описание МВПС с моделью c 2 производителями
+#define hint_MU_with_model2_2fact(name, lspeed, straging, strmutype, modelprefix, modelsuffix, strmusmetype, from, to, factory, factory2)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                   \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                    \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2, modelprefix, modelsuffix) << 16), 0x101),                                      \
+  STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_FROMTO, from, to) << 16), 0x102),                                            \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                                    \
+  STORE_TEMP(factory2, 0x104) ])                                                                                                           \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU); }                                                                                            \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                  \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                                    \
+  STORE_TEMP(string(strmutype) | (string(STR_MODEL_NUMBER2, modelprefix, modelsuffix) << 16), 0x101),                                      \
+  STORE_TEMP(string(strmusmetype) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x102),                                                       \
+  STORE_TEMP(factory | (factory2 << 16), 0x103) ])                                                                                         \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_NODATES); }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                     \
+{ 1: name##_additional_text_hidden;                                                                                                        \
+     name##_additional_text_shown; }                                                                                                       \
 
 // Описание МВПС с моделью с производством в течение года
 #define hint_MU_with_model2_in(name, lspeed, straging, strmutype, modelprefix, modelsuffix, strmusmetype, in, factory)  \
