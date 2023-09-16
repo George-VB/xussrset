@@ -1,9 +1,18 @@
  /// code definition - mu
 
-// NB: На самом деле вариант _c не проверяется, проверяется _m и (не _m), что позволяет там иметь любые альтернативы.
-// Правильнее было бы и их проверять и выдавать какое-то большое число при несовпадении в качестве ошибки
+/*
+NB: In fact, option _c is not checked, only _m and [not _m] are checked, which allows to have any alternatives instead
+of _c, that is not correct. It would be more correct to check them and issue some large number as an error if there is
+a mismatch (not done yet)
+NB: it is not the best solution to hardcode the car's types as _h, _m, _c, they should be passed in parameters (right
+names should look like _cmp for _m with pantograph). This problem can be solved by 2setdiff templates, which provide
+sets of names of all parts. Technically it can be used with imcomplete sets, including on the single set itself,
+using it also for the second set, since the calculation of the number of ids is carried out outside the template,
+and duplicates can be prevented there.
+*/
 
-// Шаблон расчёта конфигурации ЭМВПС
+// EMU configuration calculation template
+
 #define EMU_attach_calculation_template(name, suffix)                                         \
 switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template12,                      \
 [  set_offset_to(num_vehs_in_consist-24),                                                     \
@@ -77,7 +86,8 @@ switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template,          
 { 1: name##suffix##_can_attach_wagon_max;                                                     \
      name##suffix##_can_attach_wagon_template2; }                                             \
 
-// Шаблон расчёта конфигурации ЭМВПС с 2-я типами головных вагонов
+// EMU configuration calculation template with 2 types of head cars
+
 #define EMU_attach_calculation_template2(name, suffix)                                        \
 switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template12,                      \
 [  set_offset_to(num_vehs_in_consist-24),                                                     \
@@ -163,7 +173,8 @@ switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template,          
 { 1: name##suffix##_can_attach_wagon_max;                                                     \
      name##suffix##_can_attach_wagon_template2; }                                             \
 
-// Шаблон расчёта конфигурации ЭМВПС с одним набором альтернатив
+// EMU configuration calculation template with one alternative set
+
 #define EMU_attach_calculation_template2set(name, suffix, name2)                                                                         \
 switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template12,                                                                 \
 [  set_offset_to(num_vehs_in_consist-24),                                                                                                \
@@ -237,7 +248,7 @@ switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template,          
 { 1: name##suffix##_can_attach_wagon_max;                                                                                                \
      name##suffix##_can_attach_wagon_template2; }                                                                                        \
 
-// Шаблон расчёта конфигурации ЭМВПС с одним набором альтернатив с разными названиями (на самом деле name2_c не используется)
+// EMU configuration calculation template with one alternative set with specified names (NB: _c are not used yet)
 
 #define EMU_attach_calculation_template2setdiff(name, suffix, name1_h, name1_m, name1_c, name2_h, name2_m, name2_c)                   \
 switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template12,                                                              \
@@ -312,11 +323,12 @@ switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template,          
 { 1: name##suffix##_can_attach_wagon_max;                                                                                             \
      name##suffix##_can_attach_wagon_template2; }                                                                                     \
 
-// Шаблон расчёта конфигурации ЭМВПС 2-х битный с 4-я вариантами головного вагона
-// 0 - П
-// 1 - ПТ
-// 2 - М
-// 3 - МТ
+// EMU configuration calculation template 2bit with 4 head cars
+// 0 - car
+// 1 - car with pantograph
+// 2 - motorized car
+// 3 - motorized car with pantograph
+
 #define EMU_attach_calculation_template2b(name, name_cp, name_mn, name_m, name_h, name_hp, name_hm, name_hmp, suffix)                \
 switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template12,                                                             \
 [  set_offset_to(num_vehs_in_consist-24),                                                                                            \
@@ -390,8 +402,8 @@ switch (FEAT_TRAINS, PARENT, name##suffix##_can_attach_wagon_template,          
 { 1: name##suffix##_can_attach_wagon_max;                                                                                            \
      name##suffix##_can_attach_wagon_template2; }                                                                                    \
 
-// TODO неправильно жёстко зашивать тип головного вагона _h, он должен передаваться в параметрах
-// Шаблон расчёта ориентации ЭМВПС
+// EMU orientation calculation template
+
 #define EMU_direction_calculation_template(name, suffix)                       \
 switch (FEAT_TRAINS, SELF, name##suffix##_direction_template1,                 \
    STORE_TEMP(LOAD_TEMP(5) + LOAD_TEMP(6), 5))                                 \
@@ -544,7 +556,8 @@ switch (FEAT_TRAINS, SELF, name##suffix##_direction_template,                  \
 { 1: name##suffix##_direction_template_back0;                                  \
      name##suffix##_direction_template2; }                                     \
 
-// Шаблон расчёта ориентации ЭМВПС с 2-я типами головных вагонов
+// EMU orientation calculation template  with 2 types of head cars
+
 #define EMU_direction_calculation_template2(name, suffix)                      \
 switch (FEAT_TRAINS, SELF, name##suffix##_direction_template1,                 \
    STORE_TEMP(LOAD_TEMP(5) + LOAD_TEMP(6), 5))                                 \
@@ -709,7 +722,8 @@ switch (FEAT_TRAINS, SELF, name##suffix##_direction_template,                  \
 { 1: name##suffix##_direction_template_back0;                                  \
      name##suffix##_direction_template2; }                                     \
 
-// Шаблон расчёта ориентации ЭМВПС с одним набором альтернатив
+// EMU orientation calculation template with one alternative set
+
 #define EMU_direction_calculation_template2set(name, suffix, name2)                                                       \
 switch (FEAT_TRAINS, SELF, name##suffix##_direction_template1,                                                            \
    STORE_TEMP(LOAD_TEMP(5) + LOAD_TEMP(6), 5))                                                                            \
@@ -875,7 +889,7 @@ switch (FEAT_TRAINS, SELF, name##suffix##_direction_template,                   
 { 1: name##suffix##_direction_template_back0;                                                                             \
      name##suffix##_direction_template2; }                                                                                \
 
-// Шаблон расчёта ориентации ЭМВПС с одним набором альтернатив с разными названиями (на самом деле name2_c не используется)
+// EMU orientation calculation template with one alternative set with specified names (NB: _c are not used yet)
 
 #define EMU_direction_calculation_template2setdiff(name, suffix, name1_h, name1_m, name1_c, name2_h, name2_m, name2_c)  \
 switch (FEAT_TRAINS, SELF, name##suffix##_direction_template1,                                                          \
@@ -1042,11 +1056,12 @@ switch (FEAT_TRAINS, SELF, name##suffix##_direction_template,                   
 { 1: name##suffix##_direction_template_back0;                                                                           \
      name##suffix##_direction_template2; }                                                                              \
 
-// Шаблон расчёта ориентации ЭМВПС 2-х битный с 4-я вариантами головного вагона
-// 0 - П
-// 1 - ПТ
-// 2 - М
-// 3 - МТ
+// EMU orientation calculation template 2bit with 4 head cars
+// 0 - car
+// 1 - car with pantograph
+// 2 - motorized car
+// 3 - motorized car with pantograph
+
 #define EMU_direction_calculation_template2b(name, name_cp, name_mn, name_m, name_h, name_hp, name_hm, name_hmp)      \
 switch (FEAT_TRAINS, SELF, name##_direction_template1,                                                                \
    STORE_TEMP(LOAD_TEMP(5) + LOAD_TEMP(6), 5))                                                                        \
