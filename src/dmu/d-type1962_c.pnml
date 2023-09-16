@@ -1,0 +1,81 @@
+﻿// d_type1962_c
+
+#define PROP_d_type1962_c_CF  5
+#define PROP_d_type1962_c_RC  35
+#define PROP_d_type1962_c_SD  120
+#define PROP_d_type1962_c_WT  36.5
+#define PROP_d_type1962_c_TE  0
+#define PROP_d_type1962_c_PR  0
+#define PROP_d_type1962_c_CC  128
+
+#define IMAGEFILE  "src/dmu/d-type1962_c.png"
+purchase_sprites(d_type1962_c, 0, 0)
+MU_car_sprites(15, d_type1962_c_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_car_direction_template(d_type1962_c)
+MU_attach_wagon_icon_template2_only(d_type1962_c, d_h, d_type1962_h, type_car, type_head_motor_add_mandatory)
+long_vehicle_sp(d_type1962_c)
+
+engine_capacity_MU2(d_type1962_c, PROP_d_type1962_c_CC, d_h, d_type1962_h)
+
+RC_head_check2(d_type1962_c, d_h, d_type1962_h)
+switch (FEAT_TRAINS, SELF, d_type1962_c_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(7, 1),   // Бригада
+   STORE_TEMP(20, 2),  // Износ
+   STORE_TEMP(2, 3),   // Сопровождение
+   STORE_TEMP(5, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_d_type1962_c_SD, 6),                                      // Скорость
+   STORE_TEMP(round(PROP_d_type1962_c_WT), 7),                               // Тара
+   STORE_TEMP(round(PROP_d_type1962_c_WT + PROP_d_type1962_c_CC / 16), 8)])  // Максимальная масса
+{ d_type1962_c_check_running_cost_factor; }                                  // 35
+
+name_in_group_subgroup(d_type1962_c, string(STR_NAME_IN_GROUP, string(STR_NAME_DD1_SERIES), string(STR_NAME_D_TYPE1962)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_DD1_SERIES), string(STR_LONGNAME_D_TYPE1962_C)),
+                                     string(STR_NAME_D))
+hint_MU(d_type1962_c_b1963,
+     calc_loading(PROP_d_type1962_c_CC / 2 * DOUBLE_DOOR),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C,
+     STR_SECTIONS_DMU_2_3_M2,
+     1962, 1964,
+     fact_mavag())
+hint_MU(d_type1962_c_a1963,
+     calc_loading(PROP_d_type1962_c_CC / 2 * DOUBLE_DOOR),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C,
+     STR_SECTIONS_DMU_2_3_M2,
+     1962, 1964,
+     string(STR_PURCHASE_HINT_FACTORY_GYOR))
+hint_change_after(d_type1962_c, 1963)
+
+item (FEAT_TRAINS, d_type1962_c, 975) {
+  property {
+    name: string(STR_NAME_D_TYPE1962);
+    vehicle_dates(1962, 1964, 25, 10, 8, PROP_d_type1962_c_CF)
+    vehicle_dmu_wagon(PROP_d_type1962_c_WT, PROP_d_type1962_c_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group_mu(d_h)
+  }
+  graphics {
+  purchase_menu_wagon(PROP_d_type1962_c_CF, PROP_d_type1962_c_RC, PROP_d_type1962_c_SD, PROP_d_type1962_c_WT, PROP_d_type1962_c_TE, PROP_d_type1962_c_PR, PROP_d_type1962_c_CC)
+        additional_text: d_type1962_c_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: d_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: d_type1962_c_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: d_type1962_c_sprites;
+                   name: d_type1962_c_name;
+                  power: return 0;
+               purchase: d_type1962_c_purchase_sprites;
+    running_cost_factor: d_type1962_c_running_cost_factor;
+                  speed: speed_after25_120to100;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(d_type1962_c, STR_LONGNAME_D_TYPE1962_C)
+allow_dmu(d_type1962_c)
