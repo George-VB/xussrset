@@ -1,0 +1,129 @@
+﻿// dr1a_type1976_c
+
+#define PROP_dr1a_type1976_c_CF  7
+#define PROP_dr1a_type1976_c_RC  48
+#define PROP_dr1a_type1976_c_SD  120
+#define PROP_dr1a_type1976_c_WT  38
+#define PROP_dr1a_type1976_c_TE  0
+#define PROP_dr1a_type1976_c_PR  0
+#define PROP_dr1a_type1976_c_CC  124
+
+#define IMAGEFILE  "src/dmu/dr1a-type1976_c-part1.png"
+purchase_sprites(dr1a_type1976_c, 0, 0)
+MU_car_sprites(15, dr1a_type1976_c_v1_mu, 32, 40)
+MU_car_sprites(15, dr1a_type1976_c_v2_mu, 32, 308)
+MU_car_sprites(15, dr1a_type1976_c_v3_mu, 32, 576)
+MU_car_sprites(15, dr1a_type1976_c_v4_mu, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/dmu/dr1a-type1976_c-part2.png"
+MU_car_sprites(15, dr1a_type1976_c_v5_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_car_direction_template(dr1a_type1976_c_v1)
+MU_car_direction_template(dr1a_type1976_c_v2)
+MU_car_direction_template(dr1a_type1976_c_v3)
+MU_car_direction_template(dr1a_type1976_c_v4)
+MU_car_direction_template(dr1a_type1976_c_v5)
+
+switch (FEAT_TRAINS, SELF, dr1a_type1976_c_sprites_start_ldz,
+ check_year(LDZ_CHANGE_YEAR))
+{
+  0: dr1a_type1976_c_v2_sprites_start;
+     dr1a_type1976_c_v3_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, dr1a_type1976_c_sprites_start,
+  cargo_subtype)
+{
+                           0: dr1a_type1976_c_v1_sprites_start;
+                      LV_SZD: dr1a_type1976_c_v1_sprites_start;
+                      LV_LDZ: dr1a_type1976_c_sprites_start_ldz;
+                       LV_LG: dr1a_type1976_c_v4_sprites_start;
+      LV_BELARUSSIAN_RAILWAY: dr1a_type1976_c_v5_sprites_start;
+  LV_BELARUSSIAN_RAILWAY_DRB: dr1a_type1976_c_v5_sprites_start;  // ДРБ1
+  align_15_sprites;
+}
+
+MU_attach_wagon_icon_template_row5_is_after(dr1a_type1976_c, dr1a_type1991_n, _head_motor, _head_motor_head)
+MU_attach_wagon_icon_template4_only2(dr1a_type1976_c, dr1a_type1976_h, dr1a_type1978_h, dr1a_type1985_h, dr1a_type1991_n, type_car, dr1a_type1976_c_prev, dummy_sprites_big, )
+long_vehicle_sp(dr1a_type1976_c)
+
+switch (FEAT_TRAINS, SELF, dr1a_type1976_c_cargo_capacity_drb1,
+  cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB)
+{
+  1: return PROP_dr1a_type1976_c_CC;
+     return 0;
+}
+
+switch (FEAT_TRAINS, PARENT, dr1a_type1976_c_cargo_capacity,
+  drb1_2m62u_dr1a())
+{
+  0: return 0;
+  1: return PROP_dr1a_type1976_c_CC;
+     dr1a_type1976_c_cargo_capacity_drb1;
+}
+
+livery_template_base_list5(dr1a_c, LV_SZD, LV_LDZ, LV_LG, LV_BELARUSSIAN_RAILWAY, LV_BELARUSSIAN_RAILWAY_DRB)
+
+RC_head_check4(dr1a_type1976_c, dr1a_type1976_h, dr1a_type1978_h, dr1a_type1985_h, dr1a_type1991_n)
+switch (FEAT_TRAINS, SELF, dr1a_type1976_c_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(10, 1),  // Бригада
+   STORE_TEMP(27, 2),  // Износ
+   STORE_TEMP(2, 3),   // Сопровождение
+   STORE_TEMP(7, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_dr1a_type1976_c_SD, 6),                                         // Скорость
+   STORE_TEMP(round(PROP_dr1a_type1976_c_WT), 7),                                  // Тара
+   STORE_TEMP(round(PROP_dr1a_type1976_c_WT + PROP_dr1a_type1976_c_CC / 16), 8)])  // Максимальная масса
+{ dr1a_type1976_c_check_running_cost_factor; }                                     // 48
+
+name_in_group_subgroup(dr1a_type1976_c, string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_NAME_DR1A_TYPE1976)),
+                                        string(STR_NAME_IN_GROUP, string(STR_NAME_DR1_SERIES), string(STR_LONGNAME_DR1A_TYPE1976_C)),
+                                        string(STR_NAME_DR1A))
+
+hint_MU_with_model2(dr1a_type1976_c_b1994,
+     calc_loading(PROP_dr1a_type1976_c_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, 63, 325,
+     STR_SECTIONS_DMU_3_7_M2,
+     1976, 1977,
+     fact_rigacw())
+hint_MU_with_model2_comment(dr1a_type1976_c_a1994,
+     calc_loading(PROP_dr1a_type1976_c_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C_WITH_SUBTYPE, 63, 325,
+     STR_SECTIONS_DMU_N3_7_M2,
+     1976, 1977,
+     fact_rigacw(),
+     string(STR_PURCHASE_HINT_DRB1))
+hint_change_after(dr1a_type1976_c, 1994)
+
+item (FEAT_TRAINS, dr1a_type1976_c, 214) {
+  property {
+    name: string(STR_NAME_DR1A_TYPE1976);
+    vehicle_dates(1976, 1977, 25, 10, 8, PROP_dr1a_type1976_c_CF)
+    vehicle_dmu_wagon(PROP_dr1a_type1976_c_WT, PROP_dr1a_type1976_c_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group_mu(dr1a_type1976_h)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_dr1a_type1976_c_CF, PROP_dr1a_type1976_c_RC, PROP_dr1a_type1976_c_SD, PROP_dr1a_type1976_c_WT, PROP_dr1a_type1976_c_TE, PROP_dr1a_type1976_c_PR, PROP_dr1a_type1976_c_CC)
+        additional_text: dr1a_type1976_c_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: dr1a_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: dr1a_type1976_c_cargo_capacity;
+     cargo_subtype_text: dr1a_c_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: dr1a_type1976_c_sprites;
+                   name: dr1a_type1976_c_name;
+                  power: return 0;
+               purchase: dr1a_type1976_c_purchase_sprites;
+    running_cost_factor: dr1a_type1976_c_running_cost_factor;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(dr1a_type1976_c, STR_LONGNAME_DR1A_TYPE1976_C)
+allow_dmu(dr1a_type1976_c)

@@ -8,14 +8,6 @@ traininfo_y_offset = 3;
 // Период, в который поезд считается новым (гарантийным) и не допускает депошного творчества
 #define NEW_TRAIN_AGE 5
 
-// Истечение срока
-//minimal model life span
-retire_early_default = -8;
-//extended reliability time span 30-8-8 = 15 years
-retire_late_default = 31;
-#define AGE_ERLANGER  8
-delta_age = 1;
-
 // Разница в базе цены вагона и локомотива
 #define ENGINE_WAGON_CF 50
 
@@ -54,10 +46,25 @@ delta_age = 1;
 #define PID_YEAR                2009
 #define FUTURE_YEAR             2023
 
-// RE
-#define get_retire_early(x, y) x-y-2 < retire_early_default ? retire_early_default+1+retire_late_default  : x-y-1+retire_late_default
+// Истечение срока
+//minimal model life span
+retire_early_default = 5;
+//extended reliability time span 30-8-8 = 15 years
+retire_late_default = 31;
+reducer = 5;
+min_model_life = 16;
+delta_age = 1;
 // модель
-#define get_model_life(x, y) y >= 2050 ? VEHICLE_NEVER_EXPIRES  : (x-y-2 < retire_early_default ? y-x+2+retire_late_default : -retire_early_default+retire_late_default)
+#define get_model_life(x, y) y >= 2050 ? VEHICLE_NEVER_EXPIRES  :  (y - x + 1 + min_model_life + reducer + reducer)
+
+// ((y - x + 1) > retire_early_default ? (y - x + 1) + min_model_life  : min_model_life + retire_early_default)
+
+//                                                                         ML > 5                                           ML + 13  : 5 + 13
+// RE
+#define get_retire_early(x, y) 0
+//((y - x + 1) > retire_early_default ? min_model_life - retire_early_default - reducer  : min_model_life - (y - x + 1) - reducer)
+
+//                                       ML > 5                                                     13 - 5 - 4  : 13 - ML -4
 // вычитаем delta_age из года ввода ТС, для прицепных и немоторных вагонов
 #define get_car_year(year) year - delta_age
 // вычитаем delta_age из года ввода ТС, для головных вагонов и локомотивов
@@ -587,22 +594,5 @@ delta_age = 1;
   purchase_tractive_effort_coefficient: TE;             \
                         purchase_power: PR;             \
                purchase_cargo_capacity: CC;             \
-
-// ТЭП70БС + ЭС1 / ЭС2Г
-// голова ТЭП70БС 2018 года или новее, и общее количество (ЭС1 * 5) + (ЭС2) <= количество (ТЭП70БС * 6) и нет другого ПС
-#define TEP70BS_WAGONS_ENERGY_LIMIT 7
-#define TEP70BS_ID 175
-#define ES1_ID 413
-#define ES2G_HM_ID 630
-#define ES2G_MN_ID 631
-#define ES2G_C_ID  632
-#define ES2G_CP_ID 633
-
-#define tep70bs_es1_2()                                                                                                                        \
-  (((vehicle_type_id == TEP70BS_ID) && (build_year >= 2018)) &&                                                                                \
-   ((count_veh_id(TEP70BS_ID) * TEP70BS_WAGONS_ENERGY_LIMIT) >=                                                                                \
-    (count_veh_id(ES1_ID) * 5 + count_veh_id(ES2G_HM_ID) + count_veh_id(ES2G_MN_ID) + count_veh_id(ES2G_C_ID) + count_veh_id(ES2G_CP_ID))) &&  \
-   ((count_veh_id(TEP70BS_ID) + count_veh_id(ES1_ID) * 5 +                                                                                     \
-     count_veh_id(ES2G_HM_ID) + count_veh_id(ES2G_MN_ID) + count_veh_id(ES2G_C_ID) + count_veh_id(ES2G_CP_ID)) == (num_vehs_in_consist / 2)))  \
 
 // end
