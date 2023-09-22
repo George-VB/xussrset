@@ -1,4 +1,4 @@
-﻿// vl22m
+﻿// vl22m_type1957
 
 #define PROP_vl22m_type1957_CF  30
 #define PROP_vl22m_type1957_RC  234
@@ -15,12 +15,51 @@
 #define PROP_vl22m_type1957_p_PR  2460
 #define PROP_vl22m_type1957_p_CC  0
 
-map_sprites(vl22m_type1957_purchase_sprites, vl22m_purchase_sprites)
-map_sprites(vl22m_type1957_sprites_start, vl22m_sprites_start)
+#define IMAGEFILE  "src/electric/surami/vl22m-type1957.png"
+purchase_sprites(vl22m_type1957, 0, 0)
+
+electric1_2_sprites(12, vl22m_type1957_v1, 32,   40)
+electric1_2_sprites(12, vl22m_type1957_v2, 32,  241)
+electric1_2_sprites(12, vl22m_type1957_v3, 32,  442)
+electric1_2_sprites(12, vl22m_type1957_v4, 32,  643)
+electric1_2_sprites(12, vl22m_type1957_v5, 32,  844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, vl22m_type1957_sprites_start_gr,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl22m_type1957_v1_sprites_start;
+     vl22m_type1957_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, vl22m_type1957_sprites_start_bm,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl22m_type1957_v3_sprites_start;
+     vl22m_type1957_v4_sprites_start;
+}
+switch (FEAT_TRAINS, SELF, vl22m_type1957_sprites_start,
+  cargo_subtype)
+{
+           0: vl22m_type1957_sprites_start_gr;
+           1: vl22m_type1957_sprites_start_bm;
+           2: vl22m_type1957_v5_sprites_start;
+  LV_RAL6002: vl22m_type1957_sprites_start_gr;
+        0xE0: vl22m_type1957_sprites_start_gr;
+        0xE1: vl22m_type1957_sprites_start_bm;
+  align_10_sprites;
+}
+
 long_vehicle(vl22m_type1957)
 
-livery_template_alt0(vl22m_type1957_base, STR_REFIT_TTD_53, STR_REFIT_TTD_96)
+      livery_template_base_list(vl22m_type1957_base_b2017_alt, LV_RAL6002)
+    livery_template_alt(vl22m_type1957_base_b2017, STR_REFIT_TTD_96)
+
+      livery_template_base_list(vl22m_type1957_base_a2017_alt, LV_RAL6002)
+    livery_template_alt2(vl22m_type1957_base_a2017, STR_REFIT_TTD_96, STR_REFIT_CHMK)
+  livery_template_service_year(vl22m_type1957_base, 2017)
 livery_template_refit2(vl22m_type1957, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_PASSENGER_EDITION, STR_REFIT_TTD_53, STR_REFIT_TTD_96, vl22m_type1957_base)
+
 engine_refit_cost_for_a2_livery_change(vl22m_type1957, 0xE0, 1, 2)
 engine_change_refit(vl22m_type1957_tractive_effort_coefficient, return get_tec_int(PROP_vl22m_type1957_TE, PROP_vl22m_type1957_WT), return get_tec_int(PROP_vl22m_type1957_p_TE, PROP_vl22m_type1957_p_WT))
 engine_change_refit(vl22m_type1957_power, get_power_in_cb(PROP_vl22m_type1957_PR), get_power_in_cb(PROP_vl22m_type1957_p_PR))
@@ -28,9 +67,9 @@ engine_electric1_2_effect(vl22m_type1957_create_effect, -2, 4)
 engine_speed(vl22m_type1957pass, PROP_vl22m_type1957_p_SD)
 engine_speed(vl22m_type1957cargo, PROP_vl22m_type1957_SD)
 engine_change_refit(vl22m_type1957_speed, vl22m_type1957cargo_speed, vl22m_type1957pass_speed)
-engine_penalise_speed3(vl22m_type1957, vl22m, vl22m_type1956, 2)
+engine_penalise_speed4(vl22m_type1957, vl22m_pre, vl22m_type1947, vl22m_type1956, 2)
 
-switch (FEAT_TRAINS, SELF, vl22m_type1957pass_running_cost_factor,
+switch (FEAT_TRAINS, SELF, vl22m_type1957_pass_running_cost_factor,
 [  STORE_TEMP(147, 0),  // Моторы
    STORE_TEMP(21, 1),   // Бригада
    STORE_TEMP(52, 2),   // Износ
@@ -42,7 +81,7 @@ switch (FEAT_TRAINS, SELF, vl22m_type1957pass_running_cost_factor,
    STORE_TEMP(round(PROP_vl22m_type1956_p_WT), 7),   // Тара
    STORE_TEMP(round(PROP_vl22m_type1956_p_WT), 8)])  // Максимальная масса
 { all_running_cost_factor; }                         // 260
-switch (FEAT_TRAINS, SELF, vl22m_type1957cargo_running_cost_factor,
+switch (FEAT_TRAINS, SELF, vl22m_type1957_cargo_running_cost_factor,
 [  STORE_TEMP(134, 0),  // Моторы
    STORE_TEMP(18, 1),   // Бригада
    STORE_TEMP(46, 2),   // Износ
@@ -54,17 +93,16 @@ switch (FEAT_TRAINS, SELF, vl22m_type1957cargo_running_cost_factor,
    STORE_TEMP(round(PROP_vl22m_type1956_WT), 7),   // Тара
    STORE_TEMP(round(PROP_vl22m_type1956_WT), 8)])  // Максимальная масса
 { all_running_cost_factor; }                       // 234
-engine_change_refit(vl22m_type1957_running_cost_factor, vl22m_type1957cargo_running_cost_factor, vl22m_type1957pass_running_cost_factor)
+engine_change_refit(vl22m_type1957_running_cost_factor, vl22m_type1957_cargo_running_cost_factor, vl22m_type1957_pass_running_cost_factor)
 
 name_in_group(vl22m_type1957, string(STR_NAME_IN_GROUP, string(STR_NAME_ELECTRIC_S_SERIES), string(STR_NAME_VL22M_TYPE1957)),
                               string(STR_NAME_IN_GROUP, string(STR_NAME_ELECTRIC_S_SERIES), string(STR_LONGNAME_VL22M_TYPE1957)))
 
-hint_engine_2fact_comment(vl22m_type1957,
+hint_engine_comment(vl22m_type1957,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
      STR_PURCHASE_HINT_SECTIONS_1_2,
      1957, 1958,
      string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
-     string(STR_PURCHASE_HINT_FACTORY_DINAMO),
      string(STR_PURCHASE_HINT_PASSENGER_EDITION1))
 
 item (FEAT_TRAINS, vl22m_type1957, 839) {
