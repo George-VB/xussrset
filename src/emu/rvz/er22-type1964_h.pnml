@@ -1,0 +1,183 @@
+﻿// er22_type1964_h
+
+#define PROP_er22_type1964_h_num  2
+#define PROP_er22_type1964_n_num  0
+#define PROP_er22_type1964_m_num  0
+#define PROP_er22_type1964_c_num  2
+
+#define PROP_er22_type1964_h_CF  15
+#define PROP_er22_type1964_h_RC  114
+#define PROP_er22_type1964_h_SD  130
+#define PROP_er22_type1964_h_WT  66.0
+#define PROP_er22_type1964_h_TE  59
+#define PROP_er22_type1964_h_PR  948.5
+#define PROP_er22_type1964_h_CC  116
+
+#define PROP_er22_type1964_n_CF  0
+#define PROP_er22_type1964_n_RC  0
+#define PROP_er22_type1964_n_SD  130
+#define PROP_er22_type1964_n_WT  0
+#define PROP_er22_type1964_n_TE  0
+#define PROP_er22_type1964_n_PR  0
+#define PROP_er22_type1964_n_CC  0
+
+#define PROP_er22_type1964_m_CF  0
+#define PROP_er22_type1964_m_RC  0
+#define PROP_er22_type1964_m_SD  130
+#define PROP_er22_type1964_m_WT  0
+#define PROP_er22_type1964_m_TE  0
+#define PROP_er22_type1964_m_PR  0
+#define PROP_er22_type1964_m_CC  0
+
+#define IMAGEFILE "src/emu/rvz/er22-type1964_h.png"
+purchase_sprites(er22_type1964_h, 0, 0)
+MU_head_middle_sp_sprites(15, er22_type1964_h_v1_mu,  32, 40)
+MU_head_middle_sp_sprites(15, er22_type1964_h_v2_mu,  32, 308)
+MU_head_middle_sp_sprites(15, er22_type1964_h_v2u_mu, 32, 576)
+#undef IMAGEFILE
+map_sprites(er22_type1964_purchase_sprites, er22_type1964_h_purchase_sprites)
+
+MU_head_middle_sp_direction_template2(er22_type1964_h_v1, er22_type1964_h, er22_type1967_h)
+MU_head_middle_sp_direction_template2(er22_type1964_h_v2, er22_type1964_h, er22_type1967_h)
+MU_head_middle_sp_direction_template2(er22_type1964_h_v2u, er22_type1964_h, er22_type1967_h)
+
+switch (FEAT_TRAINS, SELF, er22_type1964_h_sprites_left_gr, check_year(GREAT_CHANGE_YEAR))
+{
+  0: er22_type1964_h_v2_sprites_left;
+     er22_type1964_h_v2u_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, er22_type1964_h_sprites_left, cargo_subtype)
+{
+           0: er22_type1964_h_v1_sprites_left;
+  LV_RAL6002: er22_type1964_h_sprites_left_gr;
+  align_15_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er22_type1964_h_sprites_right_gr, check_year(GREAT_CHANGE_YEAR))
+{
+  0: er22_type1964_h_v2_sprites_right;
+     er22_type1964_h_v2u_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, er22_type1964_h_sprites_right, cargo_subtype)
+{
+           0: er22_type1964_h_v1_sprites_right;
+  LV_RAL6002: er22_type1964_h_sprites_right_gr;
+  align_15_sprites;
+}
+
+engine_direction_template3m(er22_type1964_h, er22_type1967_h, er22_type1964_c, )
+MU_attach_wagon_icon_template2_only2(er22_type1964_h, er22_type1964_h, er22_type1967_h, type_head_motor_pant, type_head_motor_pant_car_add_mandatory, type_head_motor_pant_add_optional, )
+long_vehicle_sp(er22_type1964_h)
+
+switch (FEAT_TRAINS, PARENT, er22_can_attach_wagon_length,
+  count_veh_id(er22_type1964_h) + count_veh_id(er22_type1967_h) > 3)
+{
+  0: CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, er22_c_can_attach_wagon_h,
+  (count_veh_id(er22_type1964_h) + count_veh_id(er22_type1967_h)) % 2)
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, er22_c_can_attach_wagon2,
+[
+  set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+  er22_type1964_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_4E);
+                   return CB_RESULT_ATTACH_ALLOW;
+}
+
+switch (FEAT_TRAINS, PARENT, er22_c_can_attach_wagon,
+[
+  set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+  er22_type1964_c: er22_c_can_attach_wagon2;
+  er22_type1964_h: er22_c_can_attach_wagon_h;
+  er22_type1967_h: er22_c_can_attach_wagon_h;
+                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, er22_can_attach_wagon,
+  vehicle_type_id)
+{
+  er22_type1964_h: er22_can_attach_wagon_length;
+  er22_type1967_h: er22_can_attach_wagon_length;
+  er22_type1964_c: er22_c_can_attach_wagon;
+                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er22_h_start_stop,
+  (count_veh_id(er22_type1964_h) + count_veh_id(er22_type1967_h)) % 2)
+{
+  0: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+livery_template_base_list(er22, LV_RAL6002)
+
+engine_electric1r_1_effect(er22_type1964_h_create_effect_sprites, 9, -2)
+engine_direction_template3m(er22_type1964_h, er22_type1967_h, er22_type1964_c, _create_effect)
+engine_effects_MU2(er22_type1964_h, _create_effect_sprites_start, er22_type1964_h, er22_type1967_h)
+engine_capacity_MU2(er22_type1964_h, PROP_er22_type1964_h_CC, er22_type1964_h, er22_type1967_h)
+
+RC_head_check2(er22_type1964_h, er22_type1964_h, er22_type1967_h)
+switch (FEAT_TRAINS, SELF, er22_type1964_h_running_cost_factor,
+[  STORE_TEMP(65, 0),  // Моторы
+   STORE_TEMP(9, 1),   // Бригада
+   STORE_TEMP(23, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(16, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_er22_type1964_h_SD, 6),                                         // Скорость
+   STORE_TEMP(round(PROP_er22_type1964_h_WT), 7),                                  // Тара
+   STORE_TEMP(round(PROP_er22_type1964_h_WT + PROP_er22_type1964_h_CC / 16), 8)])  // Максимальная масса
+{ er22_type1964_h_check_running_cost_factor; }                                     // 114
+
+name_in_group(er22_type1964_h, string(STR_NAME_IN_GROUP, string(STR_NAME_ER22_SERIES), string(STR_NAME_ER22_TYPE1964)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ER22_SERIES), string(STR_LONGNAME_ER22_TYPE1964_H)))
+hint_MU_with_model2(er22_type1964_h,
+     calc_loading(PROP_er22_type1964_h_CC / (3 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_S_DC_WITH_SUBTYPE, 62, 106,
+     STR_SECTIONS_EMU_2_4_M2,
+     1964, 1967,
+     fact_rigacw())
+map_sprites(er22_type1964_additional_text, er22_type1964_h_additional_text)
+
+item (FEAT_TRAINS, er22_type1964_h, 426) {
+  property {
+    name: string(STR_NAME_ER22_TYPE1964);
+    vehicle_dates(1964, 1967, 30, 10, 8, PROP_er22_type1964_h_CF)
+    vehicle_emu(dc, PROP_er22_type1964_h_PR, PROP_er22_type1964_h_WT, PROP_er22_type1964_h_TE, PROP_er22_type1964_h_CC, 3 * DOUBLE_DOOR, )
+    vehicle_group_mu(er22_group)
+  }
+  graphics {
+    purchase_menu(PROP_er22_type1964_h_CF, PROP_er22_type1964_h_RC, PROP_er22_type1964_h_SD, PROP_er22_type1964_h_WT, PROP_er22_type1964_h_TE, PROP_er22_type1964_h_PR, PROP_er22_type1964_h_CC)
+        additional_text: er22_type1964_h_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: er22_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: er22_type1964_h_cargo_capacity;
+     cargo_subtype_text: er22_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+          create_effect: er22_type1964_h_create_effect;
+                default: er22_type1964_h_sprites;
+                   name: er22_type1964_h_name;
+               purchase: er22_type1964_h_purchase_sprites;
+    running_cost_factor: er22_type1964_h_running_cost_factor;
+                  speed: speed_after30_130to110;
+             start_stop: er22_h_start_stop;
+  }
+}
+
+long_name_template(er22_type1964_h, STR_LONGNAME_ER22_TYPE1964_H)
+allow_dcemu(er22_type1964_h)
