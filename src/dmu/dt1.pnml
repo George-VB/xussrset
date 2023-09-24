@@ -11,7 +11,7 @@
 #define PROP_dt1_h_WT  58
 #define PROP_dt1_h_TE  0
 #define PROP_dt1_h_PR  0
-#define PROP_dt1_h_CC  76
+#define PROP_dt1_h_CC  64
 
 #define PROP_dt1_n_CF  0
 #define PROP_dt1_n_RC  0
@@ -27,7 +27,7 @@
 #define PROP_dt1_m_WT  66
 #define PROP_dt1_m_TE  70.0
 #define PROP_dt1_m_PR  1108
-#define PROP_dt1_m_CC  73
+#define PROP_dt1_m_CC  108
 
 #define PROP_dt1_c_CF  7
 #define PROP_dt1_c_RC  91
@@ -35,7 +35,7 @@
 #define PROP_dt1_c_WT  39
 #define PROP_dt1_c_TE  0
 #define PROP_dt1_c_PR  0
-#define PROP_dt1_c_CC  145
+#define PROP_dt1_c_CC  108
 
 #define IMAGEFILE  "src/dmu/dt1_h.png"
 purchase_sprites(dt1_h, 0, 0)
@@ -226,11 +226,33 @@ switch (FEAT_TRAINS, PARENT, dt1_h_start_stop,
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
 }
 
-switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_left,
+/*
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_left2,
   [diesel_create_effect_dy(6, 1, 11), diesel_create_effect_dy2(6, -1, 11)]) { return 2; }
 
-switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_right,
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_right2,
   [diesel_create_effect_dy(-2, 1, 11), diesel_create_effect_dy2(-2, -1, 11)]) { return 2; }
+*/
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_left2,
+  [diesel_create_effect_dy(6, 1, 11)]) { return 1; }
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_left3,
+  [diesel_create_effect_dy2(6, -1, 11)]) { return 1; }
+
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_right2,
+  [diesel_create_effect_dy(-2, 1, 11)]) { return 1; }
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_right3,
+  [diesel_create_effect_dy2(-2, -1, 11)]) { return 1; }
+
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_left,
+  animation_counter % 4)
+{ 1: dt1_h_create_effect_sprites_left2;
+  3: dt1_h_create_effect_sprites_left3;
+     return disable_create_effect(); }
+switch (FEAT_TRAINS, SELF, dt1_h_create_effect_sprites_right,
+  animation_counter % 4)
+{ 1: dt1_h_create_effect_sprites_right2;
+  3: dt1_h_create_effect_sprites_right3;
+     return disable_create_effect(); }
 
 engine_direction_template3m2(dt1_h, dt1_mp, dt1_c, _create_effect)
 is_ER3DC_ds(dt1_h_create_effect_DC, return 0, dt1_h_create_effect_sprites_start)

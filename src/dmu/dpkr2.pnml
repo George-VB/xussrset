@@ -53,75 +53,14 @@ MU_attach_wagon_icon_template2_only(dpkr2_h1, dpkr2_h1, dpkr2_h2, type_head_moto
 long_vehicle_sp(dpkr2_h1)
 
 MU_car_direction_template(dpkr2_c)
-MU_attach_wagon_icon_template_row3(dpkr2_c, _head_motor)
+MU_attach_wagon_icon_template_row3(dpkr2_c, _head_motor_car_motor, _head_motor)
 MU_attach_wagon_icon_template2_only(dpkr2_c, dpkr2_h1, dpkr2_h2, type_car_motor, dpkr2_c_prev)
 long_vehicle_sp(dpkr2_c)
 
-switch (FEAT_TRAINS, PARENT, dpkr2_can_attach_wagon_length,
-  (count_veh_id(dpkr2_h1) + count_veh_id(dpkr2_h2)) > 1)
-{
-  0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon2,
-[
-  set_offset_to(num_vehs_in_consist-6),
-  prev_vehicle_type_id() ])
-{
-  dpkr2_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_5DWCM);
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon1,
-[
-  set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id() ])
-{
-  dpkr2_c: dpkr2_c_can_attach_wagon2;
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon_h,
-  (count_veh_id(dpkr2_h1) + count_veh_id(dpkr2_h2)) % 2)
-{
-  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     dpkr2_c_can_attach_wagon1;
-}
-
-switch (FEAT_TRAINS, PARENT, dpkr2_c_can_attach_wagon,
-[
-  set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-   dpkr2_c: dpkr2_c_can_attach_wagon1;
-  dpkr2_h2: dpkr2_c_can_attach_wagon_h;
-  dpkr2_h1: dpkr2_c_can_attach_wagon_h;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, dpkr2_h2_can_attach_wagon,
-  count_veh_id(dpkr2_h1) >= count_veh_id(dpkr2_h2))
-{
-  1: dpkr2_can_attach_wagon_length;
-     return string(STR_CAN_ATTACH_MHEADWC_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, dpkr2_can_attach_wagon,
-  vehicle_type_id)
-{
-  dpkr2_h1: dpkr2_can_attach_wagon_length;
-  dpkr2_h2: dpkr2_h2_can_attach_wagon;
-   dpkr2_c: dpkr2_c_can_attach_wagon;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, dpkr2_h1_start_stop,
-  (count_veh_id(dpkr2_h1) + count_veh_id(dpkr2_h2)) % 2)
-{
-  0: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
+MU_can_attach_wagon_h03ch_template3m(dpkr2,
+                                     dpkr2_h1, dpkr2_h2, dpkr2_c,
+                                     1, return string(STR_WRONG_STRUCTURE_OF_TRAIN_5DWCM))
+MU_start_stop_template2_even(dpkr2, dpkr2_h1, dpkr2_h2)
 
 engine_diesel_1r_effect(dpkr2_h1_create_effect_sprites, -2, 7, 12)
 engine_direction_template3m(dpkr2_h1, dpkr2_h2, dpkr2_c, _create_effect)
@@ -173,12 +112,12 @@ switch (FEAT_TRAINS, SELF, dpkr2_c_running_cost_factor,
    STORE_TEMP(round(PROP_dpkr2_c_WT + PROP_dpkr2_c_CC / 16), 8)])  // Максимальная масса
 { dpkr2_c_check_running_cost_factor; }                             // 235
 
-name_in_group(dpkr2_h1, string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR_SERIES), string(STR_NAME_DPKR2)),
-                        string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR_SERIES), string(STR_LONGNAME_DPKR2_H1)))
-name_in_group(dpkr2_h2, string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR_SERIES), string(STR_NAME_DPKR2)),
-                        string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR_SERIES), string(STR_LONGNAME_DPKR2_H2)))
-name_in_group(dpkr2_c, string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR_SERIES), string(STR_NAME_DPKR2)),
-                       string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR_SERIES), string(STR_LONGNAME_DPKR2_C)))
+name_in_group(dpkr2_h1, string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR2_SERIES), string(STR_NAME_DPKR2)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR2_SERIES), string(STR_LONGNAME_DPKR2_H1)))
+name_in_group(dpkr2_h2, string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR2_SERIES), string(STR_NAME_DPKR2)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR2_SERIES), string(STR_LONGNAME_DPKR2_H2)))
+name_in_group(dpkr2_c, string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR2_SERIES), string(STR_NAME_DPKR2)),
+                       string(STR_NAME_IN_GROUP, string(STR_NAME_DPKR2_SERIES), string(STR_LONGNAME_DPKR2_C)))
 
 hint_MU_with_model3_noto(dpkr2_h1,
      calc_loading(PROP_dpkr2_n_CC / (2 * WIDER_D_DOOR)),
@@ -210,7 +149,7 @@ item (FEAT_TRAINS, dpkr2_h1, 478) {
     vehicle_dates(2014, 2050, 40, 10, 8, PROP_dpkr2_n_CF)
     vehicle_dmu(PROP_dpkr2_n_PR, PROP_dpkr2_n_WT, PROP_dpkr2_n_TE, PROP_dpkr2_n_CC, 2 * WIDER_D_DOOR, _highspeed)
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    vehicle_group(dpkr_group)
+    vehicle_group(dpkr2_group)
   }
   graphics {
     purchase_menu(PROP_dpkr2_n_CF, PROP_dpkr2_n_RC, PROP_dpkr2_n_SD, PROP_dpkr2_n_WT, PROP_dpkr2_n_TE, PROP_dpkr2_n_PR, PROP_dpkr2_n_CC)
@@ -227,7 +166,7 @@ item (FEAT_TRAINS, dpkr2_h1, 478) {
                purchase: dpkr2_h1_purchase_sprites;
     running_cost_factor: dpkr2_h1_running_cost_factor;
                   speed: return 140;
-             start_stop: dpkr2_h1_start_stop;
+             start_stop: dpkr2_start_stop;
   }
 }
 
@@ -237,7 +176,7 @@ item (FEAT_TRAINS, dpkr2_h2, 479) {
     vehicle_dates(2014, 2050, 40, 10, 8, PROP_dpkr2_h_CF)
     vehicle_dmu(PROP_dpkr2_h_PR, PROP_dpkr2_h_WT, PROP_dpkr2_h_TE, PROP_dpkr2_h_CC, 2 * WIDER_D_DOOR, _highspeed)
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    vehicle_group(dpkr_group)
+    vehicle_group(dpkr2_group)
   }
   graphics {
     purchase_menu(PROP_dpkr2_h_CF, PROP_dpkr2_h_RC, PROP_dpkr2_h_SD, PROP_dpkr2_h_WT, PROP_dpkr2_h_TE, PROP_dpkr2_h_PR, PROP_dpkr2_h_CC)
@@ -254,7 +193,7 @@ item (FEAT_TRAINS, dpkr2_h2, 479) {
                purchase: dpkr2_h1_purchase_sprites;
     running_cost_factor: dpkr2_h2_running_cost_factor;
                   speed: return 140;
-             start_stop: dpkr2_h1_start_stop;
+             start_stop: dpkr2_start_stop;
   }
 }
 
@@ -264,7 +203,7 @@ item (FEAT_TRAINS, dpkr2_c, 480) {
     vehicle_dates(2014, 2050, 40, 10, 8, PROP_dpkr2_c_CF)
     vehicle_dmu_wagon(PROP_dpkr2_c_WT, PROP_dpkr2_c_CC, 2 * WIDER_D_DOOR, _highspeed)
     effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
-    vehicle_group_mu(dpkr_group)
+    vehicle_group_mu(dpkr2_group)
   }
   graphics {
     purchase_menu_wagon(PROP_dpkr2_c_CF, PROP_dpkr2_c_RC, PROP_dpkr2_c_SD, PROP_dpkr2_c_WT, PROP_dpkr2_c_TE, PROP_dpkr2_c_PR, PROP_dpkr2_c_CC)

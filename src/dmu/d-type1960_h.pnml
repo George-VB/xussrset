@@ -40,48 +40,10 @@ engine_direction_template4m2(d_type1960_h, d_type1962_h, d_type1960_c, d_type196
 MU_attach_wagon_icon_template2_only2(d_type1960_h, d_type1960_h, d_type1962_h, type_head_motor, type_head_motor_car_add_mandatory, type_head_motor_add_optional, )
 long_vehicle_sp(d_type1960_h)
 
-switch (FEAT_TRAINS, PARENT, d_type1960_can_attach_wagon_length,
-  count_veh_id(d_type1960_h) + count_veh_id(d_type1962_h)> 3)
-{
-  0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, d_type1960_c_can_attach_wagon_h,
-  (count_veh_id(d_type1960_h) + count_veh_id(d_type1962_h)) % 2)
-{
-  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, d_type1960_c_can_attach_wagon,
-[
-  set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-  d_type1960_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3D);
-  d_type1960_h: d_type1960_c_can_attach_wagon_h;
-  d_type1962_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3D);
-  d_type1962_h: d_type1960_c_can_attach_wagon_h;
-       return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, d_type1960_can_attach_wagon,
-  vehicle_type_id)
-{
-  d_type1960_h: d_type1960_can_attach_wagon_length;
-  d_type1960_c: d_type1960_c_can_attach_wagon;
-  d_type1962_h: d_type1960_can_attach_wagon_length;
-  d_type1962_c: d_type1960_c_can_attach_wagon;
-       return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, d_type1960_h_start_stop,
-  (count_veh_id(d_type1960_h) + count_veh_id(d_type1962_h)) % 2)
-{
-  0: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
+MU_can_attach_wagon_h01ch_template4m2(d,
+                                      d_type1960_h, d_type1962_h, d_type1960_c, d_type1962_c,
+                                      2, return string(STR_WRONG_STRUCTURE_OF_TRAIN_3D))
+MU_start_stop_template2_even(d, d_type1960_h, d_type1962_h)
 
 engine_diesel_1r_effect(d_type1960_h_create_effect_sprites, -2, 7, 12)
 engine_direction_template4m2(d_type1960_h, d_type1962_h, d_type1960_c, d_type1962_c, _create_effect)
@@ -128,7 +90,7 @@ item (FEAT_TRAINS, d_type1960_h, 203) {
   purchase_menu(PROP_d_type1960_h_CF, PROP_d_type1960_h_RC, PROP_d_type1960_h_SD, PROP_d_type1960_h_WT, PROP_d_type1960_h_TE, PROP_d_type1960_h_PR, PROP_d_type1960_h_CC)
         additional_text: d_type1960_h_additional_text;
        articulated_part: articulated_part_dummy7;
-       can_attach_wagon: d_type1960_can_attach_wagon;
+       can_attach_wagon: d_can_attach_wagon;
        cargo_age_period: return 60;
          cargo_capacity: d_type1960_h_cargo_capacity;
          colour_mapping: any_cc_colour;
@@ -139,7 +101,7 @@ item (FEAT_TRAINS, d_type1960_h, 203) {
                purchase: d_type1960_h_purchase_sprites;
     running_cost_factor: d_type1960_h_running_cost_factor;
                   speed: speed_after25_120to100;
-             start_stop: d_type1960_h_start_stop;
+             start_stop: d_start_stop;
   }
 }
 

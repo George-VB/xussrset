@@ -1,0 +1,84 @@
+﻿// ra3_c
+
+#define PROP_ra3_c_CF  3
+#define PROP_ra3_c_RC  23
+#define PROP_ra3_c_SD  120
+#define PROP_ra3_c_WT  39
+#define PROP_ra3_c_TE  0
+#define PROP_ra3_c_PR  0
+#define PROP_ra3_c_CC  96
+
+#define IMAGEFILE  "src/dmu/ra3_c.png"
+purchase_sprites(ra3_c, 0, 0)
+MU_car_sprites(13, ra3_c_v1_mu, 32, 40)
+MU_car_sprites(13, ra3_c_v2_mu, 32, 308)
+#undef IMAGEFILE
+MU_car_direction_template(ra3_c_v1)
+MU_car_direction_template(ra3_c_v2)
+
+switch (FEAT_TRAINS, SELF, ra3_c_sprites_start,
+  cargo_subtype)
+{
+           0: ra3_c_v1_sprites_start;
+  LV_RZD_PID: ra3_c_v2_sprites_start;
+  align_13_sprites;
+}
+
+MU_attach_wagon_icon_template_only2(ra3_c, ra3_h, type_car, type_head_motor_add_mandatory, dummy_sprites_big)
+long_vehicle_sp(ra3_c)
+
+engine_capacity_MU(ra3_c, PROP_ra3_c_CC, ra3_h)
+
+RC_head_check(ra3_c, ra3_h)
+switch (FEAT_TRAINS, SELF, ra3_c_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(2, 1),   // Бригада
+   STORE_TEMP(18, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(3, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_ra3_c_SD, 6),                               // Скорость
+   STORE_TEMP(round(PROP_ra3_c_WT), 7),                        // Тара
+   STORE_TEMP(round(PROP_ra3_c_WT + PROP_ra3_c_CC / 16), 8)])  // Максимальная масса
+{ ra3_c_check_running_cost_factor; }                           // 23
+
+name_in_group(ra3_c, string(STR_NAME_IN_GROUP, string(STR_NAME_RA3_SERIES), string(STR_NAME_RA3)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_RA3_SERIES), string(STR_LONGNAME_RA3_C)))
+
+hint_MU_noto(ra3_c,
+     calc_loading(PROP_ra3_c_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_C,
+     STR_SECTIONS_DMU_RA3,
+     2019,
+     fact_mytishchi())
+
+item (FEAT_TRAINS, ra3_c, 995) {
+  property {
+    name: string(STR_NAME_RA3);
+    vehicle_dates(2019, 2050, 40, 10, 8, PROP_ra3_c_CF)
+    vehicle_dmu_wagon(PROP_ra3_c_WT, PROP_ra3_c_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group_mu(ra3_group)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_ra3_c_CF, PROP_ra3_c_RC, PROP_ra3_c_SD, PROP_ra3_c_WT, PROP_ra3_c_TE, PROP_ra3_c_PR, PROP_ra3_c_CC)
+        additional_text: ra3_c_additional_text;
+       articulated_part: articulated_part_dummy5;
+       can_attach_wagon: ra3_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: ra3_c_cargo_capacity;
+     cargo_subtype_text: ra3_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: ra3_c_sprites;
+                   name: ra3_c_name;
+                  power: return 0;
+               purchase: ra3_c_purchase_sprites;
+    running_cost_factor: ra3_c_running_cost_factor;
+                  speed: return PROP_ra3_c_SD;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(ra3_c, STR_LONGNAME_RA3_C)
+allow_dmu(ra3_c)

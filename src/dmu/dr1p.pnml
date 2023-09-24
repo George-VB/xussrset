@@ -53,94 +53,14 @@ MU_attach_wagon_icon_template_only2(dr1p_h, dr1p_h, type_head_motor, type_car_ad
 long_vehicle_sp(dr1p_h)
 
 MU_car_direction_template(dr1p_c)
-MU_attach_wagon_icon_template_row5(dr1p_c, _head_motor)
-MU_attach_wagon_icon_template_only(dr1p_c, dr1p_h, type_car, dr1p_c_prev)
+MU_attach_wagon_icon_template_row5(dr1p_c, _head_motor_car, _head_motor)
+MU_attach_wagon_icon_template_only2(dr1p_c, dr1p_h, type_car, dr1p_c_prev, dummy_sprites_big)
 long_vehicle_sp(dr1p_c)
 
-switch (FEAT_TRAINS, PARENT, dr1p_can_attach_wagon_length,
-  count_veh_id(dr1p_h) > 3)
-{
-  0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_h_can_attach_wagon_3_7,
-[ set_offset_to(num_vehs_in_consist-2),
-  STORE_TEMP(prev_vehicle_type_id() == dr1p_c, 0),
-  set_offset_to(num_vehs_in_consist-4),
-  LOAD_TEMP(0) || (prev_vehicle_type_id() == dr1p_c) ])
-{
-  1: dr1p_can_attach_wagon_length;
-     return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7D);
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon4,
-[
-  set_offset_to(num_vehs_in_consist-10),
-  prev_vehicle_type_id() ])
-{
-  dr1p_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7D);
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon3,
-[
-  set_offset_to(num_vehs_in_consist-8),
-  prev_vehicle_type_id() ])
-{
-  dr1p_c: dr1p_c_can_attach_wagon4;
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon2,
-[
-  set_offset_to(num_vehs_in_consist-6),
-  prev_vehicle_type_id() ])
-{
-  dr1p_c: dr1p_c_can_attach_wagon3;
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon1,
-[
-  set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id() ])
-{
-  dr1p_c: dr1p_c_can_attach_wagon2;
-          return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon_h,
-  count_veh_id(dr1p_h) % 2)
-{
-  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     dr1p_c_can_attach_wagon1;
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_c_can_attach_wagon,
-[
-  set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-  dr1p_c: dr1p_c_can_attach_wagon1;
-  dr1p_h: dr1p_c_can_attach_wagon_h;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, dr1p_can_attach_wagon,
-  vehicle_type_id)
-{
-  dr1p_h: dr1p_h_can_attach_wagon_3_7;
-  dr1p_c: dr1p_c_can_attach_wagon;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, dr1p_h_start_stop,
-  count_veh_id(dr1p_h) % 2)
-{
-  0: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
+MU_can_attach_wagon_h15ch_template2m(dr1p,
+                                     dr1p_h, dr1p_c,
+                                     3, return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_7D))
+MU_start_stop_template_even(dr1p, dr1p_h)
 
 engine_diesel_1r_effect(dr1p_h_create_effect_sprites, -2, 7, 12)
 engine_direction_template2m(dr1p_h, dr1p_c, _create_effect)
@@ -221,7 +141,7 @@ item (FEAT_TRAINS, dr1p_h, 210) {
                purchase: dr1p_h_purchase_sprites;
     running_cost_factor: dr1p_h_running_cost_factor;
                   speed: speed_after25_120to110;
-             start_stop: dr1p_h_start_stop;
+             start_stop: dr1p_start_stop;
   }
 }
 

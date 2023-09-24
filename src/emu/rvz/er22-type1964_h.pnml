@@ -71,58 +71,11 @@ engine_direction_template3m(er22_type1964_h, er22_type1967_h, er22_type1964_c, )
 MU_attach_wagon_icon_template2_only2(er22_type1964_h, er22_type1964_h, er22_type1967_h, type_head_motor_pant, type_head_motor_pant_car_add_mandatory, type_head_motor_pant_add_optional, )
 long_vehicle_sp(er22_type1964_h)
 
-switch (FEAT_TRAINS, PARENT, er22_can_attach_wagon_length,
-  count_veh_id(er22_type1964_h) + count_veh_id(er22_type1967_h) > 3)
-{
-  0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, er22_c_can_attach_wagon_h,
-  (count_veh_id(er22_type1964_h) + count_veh_id(er22_type1967_h)) % 2)
-{
-  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, er22_c_can_attach_wagon2,
-[
-  set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id() ])
-{
-  er22_type1964_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_4E);
-                   return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, er22_c_can_attach_wagon,
-[
-  set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-  er22_type1964_c: er22_c_can_attach_wagon2;
-  er22_type1964_h: er22_c_can_attach_wagon_h;
-  er22_type1967_h: er22_c_can_attach_wagon_h;
-                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, er22_can_attach_wagon,
-  vehicle_type_id)
-{
-  er22_type1964_h: er22_can_attach_wagon_length;
-  er22_type1967_h: er22_can_attach_wagon_length;
-  er22_type1964_c: er22_c_can_attach_wagon;
-                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, er22_h_start_stop,
-  (count_veh_id(er22_type1964_h) + count_veh_id(er22_type1967_h)) % 2)
-{
-  0: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
-
 livery_template_base_list(er22, LV_RAL6002)
-
+MU_can_attach_wagon_h02ch_template3m(er22,
+                                     er22_type1964_h, er22_type1967_h, er22_type1964_c,
+                                     2, return string(STR_WRONG_STRUCTURE_OF_TRAIN_4E))
+MU_start_stop_template2_even(er22, er22_type1964_h, er22_type1967_h)
 engine_electric1r_1_effect(er22_type1964_h_create_effect_sprites, 9, -2)
 engine_direction_template3m(er22_type1964_h, er22_type1967_h, er22_type1964_c, _create_effect)
 engine_effects_MU2(er22_type1964_h, _create_effect_sprites_start, er22_type1964_h, er22_type1967_h)
@@ -175,7 +128,7 @@ item (FEAT_TRAINS, er22_type1964_h, 426) {
                purchase: er22_type1964_h_purchase_sprites;
     running_cost_factor: er22_type1964_h_running_cost_factor;
                   speed: speed_after30_130to110;
-             start_stop: er22_h_start_stop;
+             start_stop: er22_start_stop;
   }
 }
 

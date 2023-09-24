@@ -63,59 +63,6 @@ engine_direction_template4m2(ra2_type2005_h, ra2_type2008_h, ra2_type2005_c, ra2
 MU_attach_wagon_icon_template2_only2(ra2_type2005_h, ra2_type2005_h, ra2_type2008_h, type_head_motor, type_head_motor_car_add_mandatory, type_head_motor_add_optional, )
 long_vehicle_sp(ra2_type2005_h)
 
-switch (FEAT_TRAINS, PARENT, ra2_can_attach_wagon_length,
-  count_veh_id(ra2_type2005_h) + count_veh_id(ra2_type2008_h) > 3)
-{
-  0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, ra2_c_can_attach_wagon_h,
-  (count_veh_id(ra2_type2005_h) + count_veh_id(ra2_type2008_h)) % 2)
-{
-  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, ra2_c_can_attach_wagon2,
-[
-  set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id() ])
-{
-  ra2_type2005_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_4D);
-  ra2_type2008_c: return string(STR_WRONG_STRUCTURE_OF_TRAIN_4D);
-                  return CB_RESULT_ATTACH_ALLOW;
-}
-
-switch (FEAT_TRAINS, PARENT, ra2_c_can_attach_wagon,
-[
-  set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-  ra2_type2005_c: ra2_c_can_attach_wagon2;
-  ra2_type2008_c: ra2_c_can_attach_wagon2;
-  ra2_type2005_h: ra2_c_can_attach_wagon_h;
-  ra2_type2008_h: ra2_c_can_attach_wagon_h;
-                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, SELF, ra2_can_attach_wagon,
-  vehicle_type_id)
-{
-  ra2_type2005_h: ra2_can_attach_wagon_length;
-  ra2_type2008_h: ra2_can_attach_wagon_length;
-  ra2_type2005_c: ra2_c_can_attach_wagon;
-  ra2_type2008_c: ra2_c_can_attach_wagon;
-                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
-switch (FEAT_TRAINS, PARENT, ra2_h_start_stop,
-  (count_veh_id(ra2_type2005_h) + count_veh_id(ra2_type2008_h)) % 2)
-{
-  0: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
-
 switch (FEAT_TRAINS, SELF, ra2_type2005_h_create_effect_sprites_left,
   [diesel_create_effect_dy(3, 1, 10)]) { return 1; }
 
@@ -126,6 +73,10 @@ engine_direction_template4m2(ra2_type2005_h, ra2_type2008_h, ra2_type2005_c, ra2
 engine_effects_MU2(ra2_type2005_h, _create_effect_sprites_start, ra2_type2005_h, ra2_type2008_h)
 engine_capacity_MU2(ra2_type2005_h, PROP_ra2_type2005_h_CC, ra2_type2005_h, ra2_type2008_h)
 engine_power_MU2(ra2_type2005_h, PROP_ra2_type2005_h_PR, ra2_type2005_h, ra2_type2008_h)
+MU_can_attach_wagon_h02ch_template4m2(ra2,
+                                      ra2_type2005_h, ra2_type2008_h, ra2_type2005_c, ra2_type2008_c,
+                                      2, return string(STR_WRONG_STRUCTURE_OF_TRAIN_4D))
+MU_start_stop_template2_even(ra2, ra2_type2005_h, ra2_type2008_h)
 
 RC_head_check2(ra2_type2005_h, ra2_type2005_h, ra2_type2008_h)
 switch (FEAT_TRAINS, SELF, ra2_type2005_h_running_cost_factor,
@@ -146,10 +97,10 @@ livery_template_base_list2(ra2_type2005, LV_RZD_PID, LV_LG)
 name_in_group(ra2_type2005_h, string(STR_NAME_IN_GROUP, string(STR_NAME_RA2_SERIES), string(STR_NAME_RA2_TYPE2005)),
                               string(STR_NAME_IN_GROUP, string(STR_NAME_RA2_SERIES), string(STR_LONGNAME_RA2_TYPE2005_H)))
 
-hint_MU_with_subtype(ra2_type2005_h,
+hint_MU(ra2_type2005_h,
      calc_loading(PROP_ra2_type2005_h_CC / DOUBLE_DOOR),
      STR_PURCHASE_HINT_AGING_PERIOD_1_1,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC_WITH_SUBTYPE, STR_PURCHASE_HINT_750_05,
+     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC,
      STR_SECTIONS_DMU_2_4_M2,
      2005, 2008,
      fact_mytishchi())
@@ -178,7 +129,7 @@ item (FEAT_TRAINS, ra2_type2005_h, 643) {
                purchase: ra2_type2005_h_purchase_sprites;
     running_cost_factor: ra2_type2005_h_running_cost_factor;
                   speed: return PROP_ra2_type2005_h_SD;
-             start_stop: ra2_h_start_stop;
+             start_stop: ra2_start_stop;
   }
 }
 
