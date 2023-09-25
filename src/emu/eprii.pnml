@@ -1,0 +1,265 @@
+﻿// eprii
+
+#define PROP_eprii_h_num  0
+#define PROP_eprii_n_num  1
+#define PROP_eprii_m_num  0
+#define PROP_eprii_c_num  0
+
+#define PROP_eprii_h_CF  56
+#define PROP_eprii_h_RC  439
+#define PROP_eprii_h_SD  160
+#define PROP_eprii_h_WT  40.0
+#define PROP_eprii_h_TE  100
+#define PROP_eprii_h_PR  1359.5
+#define PROP_eprii_h_CC  60
+
+#define PROP_eprii_m_CF  24
+#define PROP_eprii_m_RC  187
+#define PROP_eprii_m_SD  PROP_eprii_h_SD
+#define PROP_eprii_m_WT  26.0
+#define PROP_eprii_m_TE  0
+#define PROP_eprii_m_PR  0
+#define PROP_eprii_m_CC  65
+
+#define PROP_eprii_m2_CF  24
+#define PROP_eprii_m2_RC  187
+#define PROP_eprii_m2_SD  PROP_eprii_h_SD
+#define PROP_eprii_m2_WT  26.0
+#define PROP_eprii_m2_TE  0
+#define PROP_eprii_m2_PR  0
+#define PROP_eprii_m2_CC  58
+
+#define PROP_eprii_c_CF  24
+#define PROP_eprii_c_RC  187
+#define PROP_eprii_c_SD  PROP_eprii_h_SD
+#define PROP_eprii_c_WT  26.0
+#define PROP_eprii_c_TE  0
+#define PROP_eprii_c_PR  0
+#define PROP_eprii_c_CC  59
+
+#define PROP_eprii_n_CF  (PROP_eprii_h_CF * 2 + PROP_eprii_m_CF + PROP_eprii_m2_CF + PROP_eprii_c_CF) / 5
+#define PROP_eprii_n_RC  (PROP_eprii_h_RC * 2 + PROP_eprii_m_RC + PROP_eprii_m2_RC + PROP_eprii_c_RC) / 5
+#define PROP_eprii_n_SD  (PROP_eprii_h_SD * 2 + PROP_eprii_m_SD + PROP_eprii_m2_SD + PROP_eprii_c_SD) / 5
+#define PROP_eprii_n_WT  (PROP_eprii_h_WT * 2 + PROP_eprii_m_WT + PROP_eprii_m2_WT + PROP_eprii_c_WT) / 5
+#define PROP_eprii_n_TE  (PROP_eprii_h_TE * 2 + PROP_eprii_m_TE + PROP_eprii_m2_TE + PROP_eprii_c_TE) / 5
+#define PROP_eprii_n_PR  (PROP_eprii_h_PR * 2 + PROP_eprii_m_PR + PROP_eprii_m2_PR + PROP_eprii_c_PR) / 5
+#define PROP_eprii_n_CC  (PROP_eprii_h_CC * 2 + PROP_eprii_m_CC + PROP_eprii_m2_CC + PROP_eprii_c_CC) / 5
+
+#define IMAGEFILE  "src/emu/eprii_h.png"
+purchase_sprites(eprii, 0, 0)
+MU_head_middle_sprites(11, eprii_h, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/eprii_m1.png"
+EMU_motor1_middle_sprites(10, eprii_m1, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/eprii_m2.png"
+EMU_motor1_middle_sprites(10, eprii_m2, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/emu/eprii_c.png"
+MU_car_sprites(10, eprii_c, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, eprii_h_sprites_left_check,
+  position_in_consist == 0)
+{
+  1: eprii_h_sprites_left;
+     eprii_h_notpowered_normal_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, eprii_h_sprites_right_check,
+  position_in_consist_from_end == 1)
+{
+  1: eprii_h_sprites_right;
+     eprii_h_notpowered_normal_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, eprii_never_train, position_in_articulated_veh)
+{
+   1: eprii_m2_sprites_left;
+   2: eprii_m1_sprites_left;
+      align_10_sprites;
+}
+
+// H-M2-M1-C-H
+switch (FEAT_TRAINS, SELF, eprii_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   (((LOAD_TEMP(4) != eprii) && (LOAD_TEMP(4) != epr) && (LOAD_TEMP(4) != epg)) * 200) +
+   (prev_vehicle_randombits() & 0x01) * 100 +
+   position_in_articulated_veh])
+{
+   0: eprii_h_sprites_left_check;
+   2: eprii_m2_notpowered_normal_sprites_left;
+   4: eprii_m1_sprites_right;
+   6: eprii_c_sprites_right;
+   8: eprii_h_sprites_right_check;
+
+ 100: eprii_h_sprites_left_check;
+ 102: eprii_c_sprites_left;
+ 104: eprii_m1_notpowered_normal_sprites_left;
+ 106: eprii_m2_sprites_right;
+ 108: eprii_h_sprites_right_check;
+
+ 200: eprii_h_notpowered_sprites_left;
+ 202: eprii_m2_notpowered_sprites_left;
+ 204: eprii_m1_notpowered_sprites_right;
+ 206: eprii_c_notpowered_sprites_right;
+ 208: eprii_h_notpowered_sprites_right;
+
+ 300: eprii_h_notpowered_sprites_left;
+ 302: eprii_c_notpowered_sprites_left;
+ 304: eprii_m1_notpowered_sprites_left;
+ 306: eprii_m2_notpowered_sprites_right;
+ 308: eprii_h_notpowered_sprites_right;
+
+ 777: eprii_never_train;
+
+      align_10_sprites;
+}
+
+long_vehicle(eprii)
+
+switch (FEAT_TRAINS, SELF, eprii_can_attach_wagon2,
+  LOAD_TEMP(0) < 3)
+{
+  1: return CB_RESULT_ATTACH_ALLOW;
+     return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, PARENT, eprii_can_attach_wagon1,
+  STORE_TEMP(count_veh_id(eprii) + count_veh_id(epg), 0))
+{
+  eprii_can_attach_wagon2;
+}
+
+switch (FEAT_TRAINS, SELF, eprii_can_attach_wagon,
+  (vehicle_type_id == eprii) || (vehicle_type_id == epg))
+{
+  1: eprii_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, eprii_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy3;
+  2: return eprii_part2;
+  3: return dummy2;
+  4: return eprii_part2;
+  5: return dummy2;
+  6: return eprii_part2;
+  7: return dummy2;
+  8: return eprii_part2;
+  9: return dummy3;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, eprii_create_effect0,
+  electric_create_effect(4)) { return 1; }
+
+switch (FEAT_TRAINS, SELF, eprii_4_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  1: return disable_create_effect();
+     eprii_create_effect0;
+}
+
+switch (FEAT_TRAINS, SELF, eprii_6_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: return disable_create_effect();
+     eprii_create_effect0;
+}
+
+switch (FEAT_TRAINS, SELF, eprii_create_effect1,
+  position_in_articulated_veh)
+{
+  4: eprii_4_create_effect;
+  6: eprii_6_create_effect;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, PARENT, eprii_create_effect,
+  (vehicle_type_id == eprii) || (vehicle_type_id == epr) || (vehicle_type_id == epg))
+{
+  1: eprii_create_effect1;
+     return disable_create_effect();
+}
+
+engine_power_MU3(eprii, kw2hp(2600), epr, eprii, epg)
+engine_capacity_MU3(eprii, 217, epr, eprii, epg)
+
+RC_head_check3(eprii, epr, eprii, epg)
+switch (FEAT_TRAINS, SELF, eprii_running_cost_factor,
+[  STORE_TEMP(709, 0),  // Моторы
+   STORE_TEMP(35, 1),   // Бригада
+   STORE_TEMP(249, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(174, 4),  // ТО
+   STORE_TEMP(12, 5),   // Сертификация
+
+   STORE_TEMP(160, 6),                                                                                                                                                                     // Скорость
+   STORE_TEMP(round(PROP_eprii_h_WT * 2 + PROP_eprii_m_WT + PROP_eprii_m2_WT + PROP_eprii_c_WT), 7),                                                                                       // Тара
+   STORE_TEMP(round(PROP_eprii_h_WT * 2 + PROP_eprii_m_WT + PROP_eprii_m2_WT + PROP_eprii_c_WT + (PROP_eprii_h_CC * 2 + PROP_eprii_m_CC + PROP_eprii_m2_CC + PROP_eprii_c_CC) / 16), 8)])  // Максимальная масса
+{ eprii_check_running_cost_factor; }                                                                                                                                                       // 436 * 2 + 187 * 3
+
+name_in_group(eprii, string(STR_NAME_IN_GROUP, string(STR_NAME_EP_SERIES), string(STR_NAME_EPRII)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_EP_SERIES), string(STR_LONGNAME_EPRII)))
+
+hint_MU_with_subtype_sme(eprii,
+     calc_loading((PROP_eprii_h_CC * 2 + PROP_eprii_m_CC + PROP_eprii_m2_CC + PROP_eprii_c_CC) / (6 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_2_2,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SR_AC_WITH_SUBTYPE, STR_PURCHASE_HINT_FLIRT,
+     STR_SECTIONS_MU_S1_3of4_WITH_ATTACH, STR_NAME_EPG,
+     2013, 2014,
+     string(STR_PURCHASE_HINT_FACTORY_BUSSNANG))
+
+item (FEAT_TRAINS, eprii, 996) {
+  property {
+    name: string(STR_NAME_EPRII);
+    vehicle_dates(2013, 2014, 30, 10, 8, (PROP_eprii_h_CF * 2 + PROP_eprii_m_CF + PROP_eprii_m2_CF + PROP_eprii_c_CF))
+    vehicle_emu(ac, (PROP_eprii_h_PR * 2 + PROP_eprii_m_PR + PROP_eprii_m2_PR + PROP_eprii_c_PR),
+                    (PROP_eprii_h_WT * 2 + PROP_eprii_m_WT + PROP_eprii_m2_WT + PROP_eprii_c_WT),
+                    (PROP_eprii_h_TE * 2 + PROP_eprii_m_TE + PROP_eprii_m2_TE + PROP_eprii_c_TE),
+                    (PROP_eprii_h_CC * 2 + PROP_eprii_m_CC + PROP_eprii_m2_CC + PROP_eprii_c_CC), 6 * WIDERST_D_DOOR, )
+    vehicle_group(ep_group)
+  }
+  graphics {
+    purchase_menu((PROP_eprii_h_CF * 2 + PROP_eprii_m_CF + PROP_eprii_m2_CF + PROP_eprii_c_CF),
+                  (PROP_eprii_h_RC * 2 + PROP_eprii_m_RC + PROP_eprii_m2_RC + PROP_eprii_c_RC),
+                  (PROP_eprii_h_SD * 2 + PROP_eprii_m_SD + PROP_eprii_m2_SD + PROP_eprii_c_SD),
+                  (PROP_eprii_h_WT * 2 + PROP_eprii_m_WT + PROP_eprii_m2_WT + PROP_eprii_c_WT),
+                  (PROP_eprii_h_TE * 2 + PROP_eprii_m_TE + PROP_eprii_m2_TE + PROP_eprii_c_TE),
+                  (PROP_eprii_h_PR * 2 + PROP_eprii_m_PR + PROP_eprii_m2_PR + PROP_eprii_c_PR),
+                  (PROP_eprii_h_CC * 2 + PROP_eprii_m_CC + PROP_eprii_m2_CC + PROP_eprii_c_CC))
+        additional_text: eprii_additional_text;
+       articulated_part: eprii_articulated_part;
+       can_attach_wagon: eprii_can_attach_wagon;
+       cargo_age_period: return 90;
+         cargo_capacity: eprii_cargo_capacity;
+         colour_mapping: any_cc_colour;
+          create_effect: eprii_create_effect;
+                default: eprii_sprites;
+                   name: eprii_name;
+                  power: eprii_power;
+               purchase: eprii_purchase_sprites;
+    running_cost_factor: eprii_running_cost_factor;
+                  speed: PROP_eprii_h_SD;
+  }
+}
+
+long_name_template(eprii, STR_LONGNAME_EPRII)
+allow_acemu(eprii)
+
+item (FEAT_TRAINS, eprii_part2, 997) {
+  property {
+    vehicle_no_dates(2013, 2014, 30, 10, 8, 0)
+    vehicle_emu_empty(ac, )
+  }
+  graphics {
+    colour_mapping: any_cc_colour;
+     create_effect: eprii_create_effect;
+           default: eprii_sprites;
+  }
+}
