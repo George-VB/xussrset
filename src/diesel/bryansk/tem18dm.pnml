@@ -1,0 +1,85 @@
+﻿// tem18dm
+
+#define IMAGEFILE  "src/diesel/bryansk/tem18dm.png"
+purchase_sprites(tem18dm, 0, 0)
+diesel1r_sprites(10, tem18dm_v1, 32,  40)
+diesel1r_sprites(10, tem18dm_v2, 32, 241)
+diesel1r_sprites(10, tem18dm_v3, 32, 442)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tem18dm_sprites_left,
+  cargo_subtype)
+{
+           0: tem18dm_v1_sprites_left;
+           1: tem18dm_v3_sprites_left;
+  LV_RAL6002: tem18dm_v2_sprites_left;
+     align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, tem18dm_sprites_right,
+  cargo_subtype)
+{
+           0: tem18dm_v1_sprites_right;
+           1: tem18dm_v3_sprites_right;
+  LV_RAL6002: tem18dm_v2_sprites_right;
+     align_10_sprites;
+}
+
+engine_direction_template(tem18dm, )
+engine_RND_direction_template(tem18dm, 1, 1)
+long_vehicle_sp(tem18dm)
+
+livery_template_base_list(tem18dm_alt, LV_RAL6002)
+livery_template_alt(tem18dm, STR_REFIT_TTD_93)
+engine_diesel_1r_effect(tem18dm_create_effect_sprites, 0, 2, 11)
+engine_direction_template(tem18dm, _create_effect)
+engine_RND_effect_direction_template(tem18dm, 1, 1)
+engine_speed(tem18dm, 100)
+engine_penalise_speed(tem18dm, 2)
+switch (FEAT_TRAINS, SELF, tem18dm_running_cost_factor,
+[  STORE_TEMP(113, 0),  // Моторы
+   STORE_TEMP(16, 1),   // Бригада
+   STORE_TEMP(40, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(28, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(100, 6),            // Скорость
+   STORE_TEMP(126, 7),            // Тара
+   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
+{ all_running_cost_factor; }      // 198
+hint_engine_noto(tem18dm,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     2008,
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK))
+
+item (FEAT_TRAINS, tem18dm, 517) {
+  property {
+    name: string(STR_NAME_TEM18DM);
+    vehicle_dates(2008, 2050, 25, 10, 8, 26)
+    vehicle_cargo()
+    vehicle_diesel(820, 126, 319.0, )
+    vehicle_group(tem18)
+  }
+  graphics {
+         additional_text: tem18dm_additional_text;
+        articulated_part: articulated_part_dummy2;
+    bitmask_vehicle_info: tem18dm_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: tem18dm_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: tem18dm_create_effect;
+                 default: tem18dm_sprites;
+                purchase: tem18dm_purchase_sprites;
+          purchase_speed: return 100;
+     running_cost_factor: tem18dm_running_cost_factor;
+                   speed: tem18dm_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(tem18dm, STR_LONGNAME_TEM18DM)
+models_default_cargo_template(tem18dm)
+allow_diesel(tem18dm)
