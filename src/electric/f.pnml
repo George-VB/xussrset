@@ -1,5 +1,13 @@
 // electric_f
 
+#define PROP_electric_f_CF  110
+#define PROP_electric_f_RC  100
+#define PROP_electric_f_SD  100
+#define PROP_electric_f_WT  138
+#define PROP_electric_f_TE  487.1
+#define PROP_electric_f_PR  6080
+#define PROP_electric_f_CC  0
+
 #define IMAGEFILE  "src/electric/f.png"
 purchase_sprites(electric_f,    0, 0)
 electric1r_2_sprites(14, electric_f_v1, 32,  40)
@@ -27,7 +35,7 @@ long_vehicle_sp(electric_f)
 
 livery_template_alt0(electric_f, STR_REFIT_TTD_84, STR_REFIT_TTD_5B)
 engine_electric1_2_effect(electric_f_create_effect, -1, 7)
-engine_speed(electric_f, 100)
+engine_speed(electric_f, PROP_electric_f_SD)
 engine_penalise_speed(electric_f, 2)
 
 switch (FEAT_TRAINS, SELF, electric_f_running_cost_factor,
@@ -38,10 +46,13 @@ switch (FEAT_TRAINS, SELF, electric_f_running_cost_factor,
    STORE_TEMP(108, 4),  // ТО
    STORE_TEMP(8, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(138, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 771
+   STORE_TEMP(PROP_electric_f_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_electric_f_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_electric_f_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                   // 771
+
+name_in_group(electric_f, string(STR_NAME_IN_GROUP, string(STR_NAME_F_SERIES), string(STR_NAME_F)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_F_SERIES), string(STR_LONGNAME_F)))
 
 hint_engine(electric_f,
      STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_AC,
@@ -52,11 +63,13 @@ hint_engine(electric_f,
 item (FEAT_TRAINS, electric_f, 191) {
   property {
     name: string(STR_NAME_F);
-    vehicle_dates(1959, 1960, 15, 10, 8, 110)
+    vehicle_dates(1959, 1960, 15, 10, 8, PROP_electric_f_CF)
     vehicle_passcargo()
-    vehicle_acelectric(6080, 138, 487.1, )
+    vehicle_acelectric(PROP_electric_f_PR, PROP_electric_f_WT, PROP_electric_f_TE, )
+    vehicle_group_pre(f_group)
   }
   graphics {
+    purchase_menu(PROP_electric_f_CF, PROP_electric_f_RC, PROP_electric_f_SD, PROP_electric_f_WT, PROP_electric_f_TE, PROP_electric_f_PR, PROP_electric_f_CC)
          additional_text: electric_f_additional_text;
         articulated_part: articulated_part_dummy6;
     bitmask_vehicle_info: electric_f_bitmask_vehicle_info;
@@ -66,8 +79,8 @@ item (FEAT_TRAINS, electric_f, 191) {
           colour_mapping: any_cc_colour;
            create_effect: electric_f_create_effect;
                  default: electric_f_sprites;
+                    name: electric_f_name;
                 purchase: electric_f_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: electric_f_running_cost_factor;
                    speed: electric_f_speed;
               start_stop: any_start_stop;
