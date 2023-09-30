@@ -1,0 +1,82 @@
+﻿// te2_pre
+
+#define PROP_te2_pre_CF  2 * 15
+#define PROP_te2_pre_RC  2 * 149
+#define PROP_te2_pre_SD  93
+#define PROP_te2_pre_WT  2 * 85
+#define PROP_te2_pre_TE  2 * 245.6
+#define PROP_te2_pre_PR  2 * 754
+#define PROP_te2_pre_CC  0
+
+#define IMAGEFILE  "src/diesel/kharkiv/te2-pre.png"
+purchase_sprites(te2_pre, 0, 0)
+diesel2_sprites(7, te2_pre, 32,   40)
+#undef IMAGEFILE
+
+engine_direction_template_only2(te2_pre, )
+long_vehicle(te2_pre)
+
+engine_diesel_1r_effect(te2_pre_create_effect_sprites, -1, 0, 12)
+engine_direction_template_only2(te2_pre, _create_effect)
+engine_speed_change_after(te2_pre, PROP_te2_pre_SD, 95, 1956)
+engine_penalise_speed0(te2_pre)
+engine_ARVs(te2_pre, 1)
+
+switch (FEAT_TRAINS, SELF, te2_pre_running_cost_factor,
+[  STORE_TEMP(2 * 85, 0),  // Моторы
+   STORE_TEMP(12, 1),      // Бригада
+   STORE_TEMP(2 * 30, 2),  // Износ
+   STORE_TEMP(0, 3),       // Сопровождение
+   STORE_TEMP(2 * 21, 4),  // ТО
+   STORE_TEMP(2 * 1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_te2_pre_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_te2_pre_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_te2_pre_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                // 2 * 149
+
+name_in_group(te2_pre, string(STR_NAME_IN_GROUP, string(STR_NAME_TE2_SERIES), string(STR_NAME_TE2_PRE)),
+                       string(STR_NAME_IN_GROUP, string(STR_NAME_TE2_SERIES), string(STR_LONGNAME_TE2_PRE)))
+
+hint_engine(te2_pre_b1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1948, 1949,
+     fact_kharkiv())
+hint_engine_chande_speed_on_date(te2_pre_a1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1948, 1949,
+     fact_kharkiv(),
+     95, 1956)
+hint_change_pre_after(te2_pre, 1956)
+
+item (FEAT_TRAINS, te2_pre, 1009) {
+  property {
+    name: string(STR_NAME_TE2_PRE);
+    vehicle_dates(1948, 1949, 30, 10, 6, PROP_te2_pre_CF)
+    vehicle_passcargo()
+    vehicle_diesel(PROP_te2_pre_PR, PROP_te2_pre_WT, PROP_te2_pre_TE, _lowspeed)
+    vehicle_group_pre(te2_group)
+  }
+  graphics {
+    purchase_menu(PROP_te2_pre_CF, PROP_te2_pre_RC, PROP_te2_pre_SD, PROP_te2_pre_WT, PROP_te2_pre_TE, PROP_te2_pre_PR, PROP_te2_pre_CC)
+         additional_text: te2_pre_additional_text;
+        articulated_part: te2_pre_articulated_part;
+    bitmask_vehicle_info: te2_pre_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+          colour_mapping: any_cc_colour;
+           create_effect: te2_pre_create_effect_sprites_start;
+                 default: te2_pre_sprites;
+                    name: te2_pre_name;
+                purchase: te2_pre_purchase_sprites;
+     running_cost_factor: te2_pre_running_cost_factor;
+                   speed: te2_pre_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(te2_pre, STR_LONGNAME_TE2_PRE)
+models_default_cargo_template(te2_pre)
+allow_diesel(te2_pre)

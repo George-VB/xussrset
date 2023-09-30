@@ -1,0 +1,140 @@
+﻿// te2_type1950
+
+#define PROP_te2_type1950_CF  2 * 15
+#define PROP_te2_type1950_RC  2 * 149
+#define PROP_te2_type1950_SD  93
+#define PROP_te2_type1950_WT  2 * 85
+#define PROP_te2_type1950_TE  2 * 245.6
+#define PROP_te2_type1950_PR  2 * 754
+#define PROP_te2_type1950_CC  0
+
+#define IMAGEFILE  "src/diesel/kharkiv/te2-type1950.png"
+purchase_sprites(te2_type1950, 0, 0)
+diesel2_sprites(7, te2_type1950_v2, 32,  40)
+diesel2_sprites(7, te2_type1950_v3, 32, 241)
+diesel2_sprites(7, te2_type1950_v4, 32, 442)
+diesel2_sprites(7, te2_type1950_v5, 32, 643)
+diesel2_sprites(7, te2_type1950_v6, 32, 844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, te2_type1950_sprites_left_factory,
+  (check_year(1960)) +
+  (check_year(GREAT_CHANGE_YEAR)))
+{
+  0: te2_type1950_v2_sprites_left;
+  1: te2_type1950_v3_sprites_left;
+     te2_type1950_v5_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, te2_type1950_sprites_left_alt,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: te2_type1950_v4_sprites_left;
+     te2_type1950_v6_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, te2_type1950_sprites_left,
+  cargo_subtype)
+{
+  0: te2_type1950_sprites_left_factory;
+  1: te2_type1950_sprites_left_alt;
+     align_7_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, te2_type1950_sprites_right_factory,
+  (check_year(1960)) +
+  (check_year(GREAT_CHANGE_YEAR)))
+{
+  0: te2_type1950_v2_sprites_right;
+  1: te2_type1950_v3_sprites_right;
+     te2_type1950_v5_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, te2_type1950_sprites_right_alt,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: te2_type1950_v4_sprites_right;
+     te2_type1950_v6_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, te2_type1950_sprites_right,
+  cargo_subtype)
+{
+  0: te2_type1950_sprites_right_factory;
+  1: te2_type1950_sprites_right_alt;
+     align_7_sprites;
+}
+
+engine_direction_template_only2(te2_type1950, )
+long_vehicle(te2_type1950)
+
+  livery_template_alt0(te2_type1950_a1960, STR_REFIT_TTD_63, STR_REFIT_TTD_64)
+
+  livery_template_alt0(te2_type1950_aGREAT_CHANGE_YEAR, STR_REFIT_TTD_5B, STR_REFIT_TTD_93)
+livery_template_service_year2_ao(te2_type1950, 1960, GREAT_CHANGE_YEAR)
+
+engine_diesel_1r_effect(te2_type1950_create_effect_sprites, -1, 0, 12)
+engine_direction_template_only2(te2_type1950, _create_effect)
+engine_speed_change_after(te2_type1950, PROP_te2_type1950_SD, 95, 1956)
+engine_penalise_speed0(te2_type1950)
+engine_ARVs(te2_type1950, 1)
+
+switch (FEAT_TRAINS, SELF, te2_type1950_running_cost_factor,
+[  STORE_TEMP(2 * 85, 0),  // Моторы
+   STORE_TEMP(12, 1),      // Бригада
+   STORE_TEMP(2 * 30, 2),  // Износ
+   STORE_TEMP(0, 3),       // Сопровождение
+   STORE_TEMP(2 * 21, 4),  // ТО
+   STORE_TEMP(2 * 1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_te2_type1950_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_te2_type1950_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_te2_type1950_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                     // 2 * 149
+
+name_in_group(te2_type1950, string(STR_NAME_IN_GROUP, string(STR_NAME_TE2_SERIES), string(STR_NAME_TE2_TYPE1950)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_TE2_SERIES), string(STR_LONGNAME_TE2_TYPE1950)))
+
+hint_engine(te2_type1950_b1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1950, 1955,
+     fact_kharkiv())
+hint_engine_chande_speed_on_date(te2_type1950_a1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_2,
+     1950, 1955,
+     fact_kharkiv(),
+     95, 1956)
+hint_change_pre_after(te2_type1950, 1956)
+
+item (FEAT_TRAINS, te2_type1950, 146) {
+  property {
+    name: string(STR_NAME_TE2_TYPE1950);
+    vehicle_dates(1950, 1955, 30, 10, 6, PROP_te2_type1950_CF)
+    vehicle_passcargo()
+    vehicle_diesel(PROP_te2_type1950_PR, PROP_te2_type1950_WT, PROP_te2_type1950_TE, _lowspeed)
+    vehicle_group(te2_group)
+  }
+  graphics {
+    purchase_menu(PROP_te2_type1950_CF, PROP_te2_type1950_RC, PROP_te2_type1950_SD, PROP_te2_type1950_WT, PROP_te2_type1950_TE, PROP_te2_type1950_PR, PROP_te2_type1950_CC)
+         additional_text: te2_type1950_additional_text;
+        articulated_part: te2_type1950_articulated_part;
+    bitmask_vehicle_info: te2_type1950_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: te2_type1950_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: te2_type1950_create_effect_sprites_start;
+                 default: te2_type1950_sprites;
+                    name: te2_type1950_name;
+                purchase: te2_type1950_purchase_sprites;
+     running_cost_factor: te2_type1950_running_cost_factor;
+                   speed: te2_type1950_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(te2_type1950, STR_LONGNAME_TE2_TYPE1950)
+models_default_cargo_template(te2_type1950)
+allow_diesel(te2_type1950)
