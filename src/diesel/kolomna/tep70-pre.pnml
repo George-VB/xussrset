@@ -1,0 +1,78 @@
+// tep70_pre
+
+#define PROP_tep70_pre_CF  64
+#define PROP_tep70_pre_RC  630
+#define PROP_tep70_pre_SD  160
+#define PROP_tep70_pre_WT  129
+#define PROP_tep70_pre_TE  282.4
+#define PROP_tep70_pre_PR  3142
+#define PROP_tep70_pre_CC  0
+
+#define IMAGEFILE  "src/diesel/kolomna/tep70-pre.png"
+purchase_sprites(tep70_pre, 0, 0)
+diesel1r_sprites(12, tep70_pre, 32, 40)
+#undef IMAGEFILE
+
+engine_direction_template3(tep70_pre, tep70_type1978, tep70_type1989, )
+engine_RND_direction_template3(tep70_pre, tep70_pre, tep70_type1978, tep70_type1989, 5, 3)
+long_vehicle_sp(tep70_pre)
+
+engine_penalise_speed3(tep70_pre, tep70_type1978, tep70_type1989, 2)
+engine_speed_with_reduce(tep70_pre, PROP_tep70_pre_SD, 140, 25)
+
+engine_diesel_1r_effect(tep70_pre_create_effect_sprites, 3, 2, 13)
+engine_direction_template3(tep70_pre, tep70_type1978, tep70_type1989, _create_effect)
+engine_RND_effect_direction_template3(tep70_pre, tep70_pre, tep70_type1978, tep70_type1989, 5, 3)
+
+switch (FEAT_TRAINS, SELF, tep70_pre_running_cost_factor,
+[  STORE_TEMP(359, 0),  // Моторы
+   STORE_TEMP(50, 1),   // Бригада
+   STORE_TEMP(126, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(88, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP_tep70_pre_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tep70_pre_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tep70_pre_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                  // 630
+
+name_in_group(tep70_pre, string(STR_NAME_IN_GROUP, string(STR_NAME_TEP70_SERIES), string(STR_NAME_TEP70_PRE)),
+                         string(STR_NAME_IN_GROUP, string(STR_NAME_TEP70_SERIES), string(STR_LONGNAME_TEP70_PRE)))
+
+hint_engine(tep70_pre,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL_PROTOTYPE,
+     STR_PURCHASE_HINT_SECTIONS_1_2,
+     1973, 1977,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, tep70_pre, 1033) {
+  property {
+    name: string(STR_NAME_TEP70_PRE);
+    vehicle_dates(1973, 1977, 7, 10, 8, PROP_tep70_pre_CF)
+    vehicle_pass()
+    vehicle_diesel(3142, 129, 282.4, )
+    vehicle_diesel(PROP_tep70_pre_PR, PROP_tep70_pre_WT, PROP_tep70_pre_TE, _highspeed)
+    vehicle_group_pre(tep70_group)
+  }
+  graphics {
+    purchase_menu(PROP_tep70_pre_CF, PROP_tep70_pre_RC, PROP_tep70_pre_SD, PROP_tep70_pre_WT, PROP_tep70_pre_TE, PROP_tep70_pre_PR, PROP_tep70_pre_CC)
+         additional_text: tep70_pre_additional_text;
+        articulated_part: articulated_part_dummy4;
+    bitmask_vehicle_info: tep70_pre_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+          colour_mapping: any_cc_colour;
+           create_effect: tep70_pre_create_effect;
+                 default: tep70_pre_sprites;
+                    name: tep70_pre_name;
+                purchase: tep70_pre_purchase_sprites;
+     running_cost_factor: tep70_pre_running_cost_factor;
+                   speed: tep70_pre_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(tep70_pre, STR_LONGNAME_TEP70_PRE)
+models_default_cargo_template(tep70_pre)
+allow_diesel(tep70_pre)
