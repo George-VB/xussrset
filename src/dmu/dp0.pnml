@@ -14,15 +14,15 @@ MU_car_sprites(15, dp0_cb_v1, 32, 40)
 MU_car_sprites(15, dp0_cb_v2, 32, 308)
 #undef IMAGEFILE
 
-#define dp0_graphics_template(name, suffix)               \
-switch (FEAT_TRAINS, SELF, name##suffix##_sprites_left,   \
-  check_year(1955))                                       \
-{ 0: name##_v1##suffix##_sprites_left;                    \
-     name##_v2##suffix##_sprites_left; }                  \
-switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,  \
-  check_year(1955))                                       \
-{ 0: name##_v1##suffix##_sprites_right;                   \
-     name##_v2##suffix##_sprites_right; }                 \
+#define dp0_graphics_template(name, suffix)                                    \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_left,                        \
+[ set_offset_to(-position_in_articulated_veh), prev_vehicle_cargo_subtype()])  \
+{ 0: name##_v1##suffix##_sprites_left;                                         \
+     name##_v2##suffix##_sprites_left; }                                       \
+switch (FEAT_TRAINS, SELF, name##suffix##_sprites_right,                       \
+[ set_offset_to(-position_in_articulated_veh), prev_vehicle_cargo_subtype()])  \
+{ 0: name##_v1##suffix##_sprites_right;                                        \
+     name##_v2##suffix##_sprites_right; }                                      \
 
 dp0_graphics_template(dp0_h, )
 dp0_graphics_template(dp0_h, _notpowered)
@@ -101,7 +101,8 @@ switch (FEAT_TRAINS, SELF, dp0_articulated_part,
      return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
 }
 
-engine_diesel_1r_effect(dp0_h_create_effect, -2, 10, 12)
+livery_template_base_list(dp0, LV_SZD)
+engine_diesel_1r_effect(dp0_h_create_effect, -2, 10, 11)
 
 switch (FEAT_TRAINS, SELF, dp0_create_effect0,
   position_in_articulated_veh)
@@ -157,6 +158,7 @@ item (FEAT_TRAINS, dp0, 709) {
        cargo_age_period: return 370;
          cargo_capacity: dp0_cargo_capacity;
          colour_mapping: any_cc_colour;
+     cargo_subtype_text: dp0_cargo_subtype_text;
           create_effect: dp0_create_effect;
                 default: dp0_sprites;
                   power: dp0_power;

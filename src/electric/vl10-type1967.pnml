@@ -1,46 +1,83 @@
-﻿// vl10_type1967
+// vl10_type1967
 
 #define PROP_vl10_type1967_CF  2 * 33
-#define PROP_vl10_type1967_RC  2 * 256
+#define PROP_vl10_type1967_RC  2 * (256 + 5)  // Bad pantograf position penalty
 #define PROP_vl10_type1967_SD  100
 #define PROP_vl10_type1967_WT  2 * 92
 #define PROP_vl10_type1967_TE  2 * 303.0
 #define PROP_vl10_type1967_PR  2 * 2960
 #define PROP_vl10_type1967_CC  0
 
+#define PROP_vl10_type1967m_RC  2 * 256
+
 #define IMAGEFILE  "src/electric/vl10-type1967.png"
 purchase_sprites(vl10_type1967, 0, 0)
 electric2_1_sprites(9, vl10_type1967_v1, 32,  40)
 electric2_1_sprites(9, vl10_type1967_v2, 32, 241)
+electric2_1_sprites(9, vl10_type1967_v3, 32, 442)
+electric2_1_sprites(9, vl10_type1967_v4, 32, 643)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, vl10_type1967_sprites_left,
+switch (FEAT_TRAINS, SELF, vl10_type1967o_sprites_left,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl10_type1967_v1_sprites_left;
      vl10_type1967_v2_sprites_left;
 }
 
-switch (FEAT_TRAINS, SELF, vl10_type1967_sprites_right,
+switch (FEAT_TRAINS, SELF, vl10_type1967o_sprites_right,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl10_type1967_v1_sprites_right;
      vl10_type1967_v2_sprites_right;
 }
 
+switch (FEAT_TRAINS, SELF, vl10_type1967m_sprites_left,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl10_type1967_v3_sprites_left;
+     vl10_type1967_v4_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, vl10_type1967m_sprites_right,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: vl10_type1967_v3_sprites_right;
+     vl10_type1967_v4_sprites_right;
+}
+
+engine_change_refit(vl10_type1967_sprites_left, vl10_type1967o_sprites_left, vl10_type1967m_sprites_left)
+engine_change_refit(vl10_type1967_sprites_right, vl10_type1967o_sprites_right, vl10_type1967m_sprites_right)
 engine_direction_template_only2(vl10_type1967, )
 long_vehicle(vl10_type1967)
 
-  livery_template_all(vl10_type1967_aGREAT_CHANGE_YEAR, vl_type)
+    livery_template_all(vl10_type1967_aGREAT_CHANGE_YEAR_refit, vl_type)
+  livery_template_refit6(vl10_type1967_aGREAT_CHANGE_YEAR, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_MOVED_PANTOGRAPH, STR_REFIT_FACTORY, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, STR_REFIT_TTD_93, STR_REFIT_TTD_53, STR_REFIT_TTD_59, vl10_type1967_aGREAT_CHANGE_YEAR_refit)
 livery_template_service_year_ao(vl10_type1967, GREAT_CHANGE_YEAR)
 
-engine_electric2_1_effect(vl10_type1967_create_effect_sprites, 2, -3)
+engine_electric2_1_effect(vl10_type1967o_create_effect_sprites, 2, -3)
+engine_electric2_1_effect(vl10_type1967m_create_effect_sprites, -2, 3)
+engine_change_refit(vl10_type1967_create_effect_sprites_left, vl10_type1967o_create_effect_sprites_left, vl10_type1967m_create_effect_sprites_left)
+engine_change_refit(vl10_type1967_create_effect_sprites_right, vl10_type1967o_create_effect_sprites_right, vl10_type1967m_create_effect_sprites_right)
 engine_direction_template_only2(vl10_type1967, _create_effect)
 engine_speed(vl10_type1967, PROP_vl10_type1967_SD)
 engine_penalise_speed0(vl10_type1967)
+engine_refit_cost_for_a2_livery_change(vl10_type1967, 0xE0, 1, 2)
 engine_ARVs(vl10_type1967, 1)
 
-switch (FEAT_TRAINS, SELF, vl10_type1967_running_cost_factor,
+switch (FEAT_TRAINS, SELF, vl10_type1967o_running_cost_factor,
+[  STORE_TEMP(292, 0),      // Моторы
+   STORE_TEMP(41, 1),       // Бригада
+   STORE_TEMP(102 + 8, 2),  // Износ
+   STORE_TEMP(0, 3),        // Сопровождение
+   STORE_TEMP(72 + 2, 4),   // ТО
+   STORE_TEMP(5, 5),        // Сертификация
+
+   STORE_TEMP(PROP_vl10_type1967_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vl10_type1967_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vl10_type1967_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                      // 2 * (256 + 5)
+switch (FEAT_TRAINS, SELF, vl10_type1967m_running_cost_factor,
 [  STORE_TEMP(292, 0),  // Моторы
    STORE_TEMP(41, 1),   // Бригада
    STORE_TEMP(102, 2),  // Износ
@@ -52,6 +89,7 @@ switch (FEAT_TRAINS, SELF, vl10_type1967_running_cost_factor,
    STORE_TEMP(round(PROP_vl10_type1967_WT), 7),   // Тара
    STORE_TEMP(round(PROP_vl10_type1967_WT), 8)])  // Максимальная масса
 { all_running_cost_factor; }                      // 2 * 256
+engine_change_refit(vl10_type1967_running_cost_factor, vl10_type1967o_running_cost_factor, vl10_type1967m_running_cost_factor)
 
 name_in_group_varsubgroup(vl10_type1967, string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_NAME_VL10_TYPE1967)),
                                          string(STR_NAME_IN_GROUP, string(STR_NAME_VL10_SERIES), string(STR_LONGNAME_VL10_TYPE1967)),
@@ -84,6 +122,7 @@ item (FEAT_TRAINS, vl10_type1967, 899) {
                  default: vl10_type1967_sprites;
                     name: vl10_type1967_name;
                 purchase: vl10_type1967_purchase_sprites;
+              refit_cost: vl10_type1967_refit_cost;
      running_cost_factor: vl10_type1967_running_cost_factor;
                    speed: vl10_type1967_speed;
               start_stop: any_start_stop;
