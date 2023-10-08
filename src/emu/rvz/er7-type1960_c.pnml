@@ -1,0 +1,79 @@
+﻿// er7_type1960
+
+#define PROP_er7_type1960_c_CF  7
+#define PROP_er7_type1960_c_RC  49
+#define PROP_er7_type1960_c_SD  130
+#define PROP_er7_type1960_c_WT  36.5
+#define PROP_er7_type1960_c_TE  0
+#define PROP_er7_type1960_c_PR  0
+#define PROP_er7_type1960_c_CC  110
+
+#define IMAGEFILE  "src/emu/rvz/er7-type1960_c.png"
+purchase_sprites(er7_type1960_c, 100, 0)
+MU_car_sprites(12, er7_type1960_c_mu, 32, 40)
+#undef IMAGEFILE
+
+EMU_motor_direction_template2(er7_type1960_c, er7_type1960_h, er7_pre_h)
+EMU_4_12_c_template(er7_type1960)
+EMU_direction_calculation_template2setdiff(er7_type1960, _c, er7_pre_h, er7_pre_m, er7_type1960_c, er7_type1960_h, er7_type1960_m, er7_type1960_c)
+EMU_46810_attach_wagon_icon_template(er7_type1960_c)
+EMU_attach_calculation_template2setdiff(er7_type1960, _c_next, er7_pre_h, er7_pre_m, er7_type1960_c, er7_type1960_h, er7_type1960_m, er7_type1960_c)
+MU_attach_wagon_icon_template2(er7_type1960_c, er7_type1960_h, er7_pre_h, type_car)
+long_vehicle_sp(er7_type1960_c)
+
+engine_capacity_MU2(er7_type1960_c, PROP_er7_type1960_c_CC, er7_type1960_h, er7_pre_h)
+
+RC_head_check2(er7_type1960_c, er7_type1960_h, er7_pre_h)
+switch (FEAT_TRAINS, SELF, er7_type1960_c_running_cost_factor,
+[  STORE_TEMP(28, 0),  // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(10, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(7, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_er7_type1960_c_SD, 6),                                        // Скорость
+   STORE_TEMP(round(PROP_er7_type1960_c_WT), 7),                                 // Тара
+   STORE_TEMP(round(PROP_er7_type1960_c_WT + PROP_er7_type1960_c_CC / 16), 8)])  // Максимальная масса
+{ er7_type1960_c_check_running_cost_factor; }                                    // 49
+
+name_in_group_subgroup(er7_type1960_c, string(STR_NAME_IN_GROUP, string(STR_NAME_ER9_SERIES), string(STR_NAME_ER7_TYPE1960)),
+                                       string(STR_NAME_IN_GROUP, string(STR_NAME_ER9_SERIES), string(STR_LONGNAME_ER7_TYPE1960_C)),
+                                       string(STR_NAME_ER7))
+
+hint_MU_with_model2_2fact(er7_type1960_c,
+     calc_loading(PROP_er7_type1960_c_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC_WITH_SUBTYPE, 62, 34,
+     STR_SECTIONS_EMU_4_6_8_10,
+     1960, 1961,
+     fact_rigacw(),
+     fact_tver())
+
+item (FEAT_TRAINS, er7_type1960_c, 516) {
+  property {
+    name: string(STR_NAME_ER7_TYPE1960);
+    vehicle_dates(1960, 1961, 15, 10, 8, PROP_er7_type1960_c_CF)
+    vehicle_emu_wagon(ac, PROP_er7_type1960_c_WT, PROP_er7_type1960_c_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group_mu(er7_pre_h)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_er7_type1960_c_CF, PROP_er7_type1960_c_RC, PROP_er7_type1960_c_SD, PROP_er7_type1960_c_WT, PROP_er7_type1960_c_TE, PROP_er7_type1960_c_PR, PROP_er7_type1960_c_CC)
+        additional_text: er7_type1960_c_additional_text;
+       articulated_part: articulated_part_dummy4;
+       can_attach_wagon: er7_can_attach_wagon;
+       cargo_age_period: return 60;
+         cargo_capacity: er7_type1960_c_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: er7_type1960_c_sprites;
+                   name: er7_type1960_c_name;
+                  power: return 0;
+               purchase: er7_type1960_c_purchase_sprites;
+    running_cost_factor: er7_type1960_c_running_cost_factor;
+                  speed: speed_after30_130to100;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(er7_type1960_c, STR_LONGNAME_ER7_TYPE1960_C)
+allow_acemu(er7_type1960_c)
