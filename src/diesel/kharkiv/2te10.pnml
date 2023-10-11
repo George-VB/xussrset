@@ -1,6 +1,16 @@
 ﻿// 2te10
 
-#define IMAGEFILE  "src/diesel/lugansk/2te10.png"
+// TODO remove autorecolour in 1972
+
+#define PROP__2te10_CF  2 * 50
+#define PROP__2te10_RC  2 * 488
+#define PROP__2te10_SD      100
+#define PROP__2te10_WT  2 * 129
+#define PROP__2te10_TE  2 * 375.1
+#define PROP__2te10_PR  2 * 2300
+#define PROP__2te10_CC  0
+
+#define IMAGEFILE  "src/diesel/kharkiv/2te10.png"
 purchase_sprites(_2te10,   0, 0)
 diesel2_sprites(11, _2te10_v1, 32,   40)
 diesel2_sprites(11, _2te10_v2, 32,  241)
@@ -48,7 +58,7 @@ livery_template_service_year_bo(_2te10, GREAT_CHANGE_YEAR)
 
 engine_diesel_1r_effect(_2te10_create_effect_sprites, 2, 0, 12)
 engine_direction_template_only2(_2te10, _create_effect)
-engine_speed(_2te10, 100)
+engine_speed(_2te10, PROP__2te10_SD)
 engine_penalise_speed0(_2te10)
 engine_ARVs(_2te10, 3)
 
@@ -60,26 +70,31 @@ switch (FEAT_TRAINS, SELF, _2te10_running_cost_factor,
    STORE_TEMP(2 * 68, 4),   // ТО
    STORE_TEMP(2 * 5, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(2 * 129, 7),        // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 2 * 488
+   STORE_TEMP(PROP__2te10_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP__2te10_WT), 7),   // Тара
+   STORE_TEMP(round(PROP__2te10_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }               // 2 * 488
+
+name_in_group_varsubgroup(_2te10, string(STR_NAME_IN_GROUP, string(STR_NAME_TE10_SERIES), string(STR_NAME_2TE10)),
+                                  string(STR_NAME_IN_GROUP, string(STR_NAME_TE10_SERIES), string(STR_LONGNAME_2TE10)),
+                                  fact_kharkiv())
 
 hint_engine(_2te10,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_2,
      1960, 1963,
-     fact_lugansk())
+     fact_kharkiv())
 
 item (FEAT_TRAINS, _2te10, 149) {
   property {
     name: string(STR_NAME_2TE10);
-    vehicle_dates(1960, 1963, 25, 10, 8, 2 * 50)
+    vehicle_dates(1960, 1963, 25, 10, 8, PROP__2te10_PR)
     vehicle_cargo()
-    vehicle_diesel(2 * 2300, 2 * 129, 2 * 375.1, )
-    vehicle_group(te10)
+    vehicle_diesel(PROP__2te10_PR, PROP__2te10_WT, PROP__2te10_TE, )
+    vehicle_group(te10_subgroup_khz)
   }
   graphics {
+    purchase_menu(PROP__2te10_CF, PROP__2te10_RC, PROP__2te10_SD, PROP__2te10_WT, PROP__2te10_TE, PROP__2te10_PR, PROP__2te10_CC)
          additional_text: _2te10_additional_text;
         articulated_part: _2te10_articulated_part;
     bitmask_vehicle_info: _2te10_bitmask_vehicle_info;
@@ -89,8 +104,8 @@ item (FEAT_TRAINS, _2te10, 149) {
           colour_mapping: any_cc_colour;
            create_effect: _2te10_create_effect_sprites_start;
                  default: _2te10_sprites;
+                    name: _2te10_name;
                 purchase: _2te10_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: _2te10_running_cost_factor;
                    speed: _2te10_speed;
               start_stop: any_start_stop;
