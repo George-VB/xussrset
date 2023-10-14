@@ -1,0 +1,75 @@
+﻿// tep33a
+
+#define PROP_tep33a_CF  165
+#define PROP_tep33a_RC  1613
+#define PROP_tep33a_SD  160
+#define PROP_tep33a_WT  138
+#define PROP_tep33a_TE  534.0  // уменьшить
+#define PROP_tep33a_PR  3951
+#define PROP_tep33a_CC  0
+
+#define IMAGEFILE  "src/diesel/tep33a.png"
+purchase_sprites(tep33a,   0, 0)
+diesel1r_sprites(12, tep33a, 32,  40)
+#undef IMAGEFILE
+
+engine_direction_template(tep33a, )
+engine_RND_direction_template(tep33a, 3, 1, )
+long_vehicle_sp(tep33a)
+
+engine_diesel_1r_effect(tep33a_create_effect_sprites, 1, 3, 12)
+engine_direction_template(tep33a, _create_effect)
+engine_RND_direction_template(tep33a, 3, 1, _create_effect)
+engine_speed(tep33a, PROP_tep33a_SD)
+engine_penalise_speed(tep33a, 3)
+switch (FEAT_TRAINS, SELF, tep33a_running_cost_factor,
+[  STORE_TEMP(919, 0),  // Моторы
+   STORE_TEMP(129, 1),  // Бригада
+   STORE_TEMP(323, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(226, 4),  // ТО
+   STORE_TEMP(16, 5),   // Сертификация
+
+   STORE_TEMP(PROP_tep33a_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tep33a_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tep33a_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }               // 1613
+
+name_in_group(tep33a, string(STR_NAME_IN_GROUP, string(STR_NAME_TE33A_SERIES), string(STR_NAME_TEP33A)),
+                      string(STR_NAME_IN_GROUP, string(STR_NAME_TE33A_SERIES), string(STR_LONGNAME_TEP33A)))
+
+hint_engine_noto(tep33a,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1_3,
+     2014,
+     string(STR_PURCHASE_HINT_FACTORY_ASTANA))
+
+item (FEAT_TRAINS, tep33a, 1075) {
+  property {
+    name: string(STR_NAME_TEP33A);
+    vehicle_dates(2014, 2050, 30, 10, 8, PROP_tep33a_PR)
+    vehicle_pass()
+    vehicle_diesel(PROP_tep33a_PR, PROP_tep33a_WT, PROP_tep33a_TE, )
+    vehicle_group(te33a_group)
+  }
+  graphics {
+    purchase_menu(PROP_tep33a_CF, PROP_tep33a_RC, PROP_tep33a_SD, PROP_tep33a_WT, PROP_tep33a_TE, PROP_tep33a_PR, PROP_tep33a_CC)
+         additional_text: tep33a_additional_text;
+        articulated_part: articulated_part_dummy4;
+    bitmask_vehicle_info: tep33a_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+          colour_mapping: any_cc_colour;
+           create_effect: tep33a_create_effect_sprites_start_sp;
+                 default: tep33a_sprites;
+                    name: tep33a_name;
+                purchase: tep33a_purchase_sprites;
+     running_cost_factor: tep33a_running_cost_factor;
+                   speed: tep33a_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(tep33a, STR_LONGNAME_TEP33A)
+models_default_cargo_template(tep33a)
+allow_diesel(tep33a)
