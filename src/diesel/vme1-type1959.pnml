@@ -1,0 +1,87 @@
+﻿// vme1_type1959
+
+#define PROP_vme1_type1959_CF  9
+#define PROP_vme1_type1959_RC  68
+#define PROP_vme1_type1959_SD  80
+#define PROP_vme1_type1959_WT  80
+#define PROP_vme1_type1959_TE  181.4
+#define PROP_vme1_type1959_PR  390
+#define PROP_vme1_type1959_CC  0
+
+#define IMAGEFILE  "src/diesel/vme1-type1959.png"
+purchase_sprites(vme1_type1959, 0, 0)
+diesel1r_sprites(8, vme1_type1959, 32, 40)
+#undef IMAGEFILE
+
+engine_direction_template2(vme1_type1959, vme1_type1958, )
+engine_RND_direction_template2(vme1_type1959, vme1_type1958, vme1_type1959, 1, 3, )
+long_vehicle_sp(vme1_type1959)
+
+switch (FEAT_TRAINS, SELF, vme1_type1959_colour_mapping,
+  cargo_subtype)
+{
+  0: return ttdall_cc + 0x53;
+  1: return ttdall_cc + 0x59;
+  2: return ttdall_cc + 0xB3;
+     return CB_FAILED;
+}
+
+livery_template_alt20(vme1_type1959, STR_REFIT_TTD_53, STR_REFIT_TTD_59, STR_REFIT_TTD_B3)
+engine_diesel_1r_effect(vme1_type1959_create_effect_sprites, -1, 0, 10)
+engine_direction_template2(vme1_type1959, vme1_type1958, _create_effect)
+engine_RND_direction_template2(vme1_type1959, vme1_type1958, vme1_type1959, 1, 3, _create_effect)
+engine_speed(vme1_type1959, PROP_vme1_type1959_SD)
+engine_penalise_speed2(vme1_type1959, vme1_type1958, 3)
+
+switch (FEAT_TRAINS, SELF, vme1_type1959_running_cost_factor,
+[  STORE_TEMP(39, 0),  // Моторы
+   STORE_TEMP(5, 1),   // Бригада
+   STORE_TEMP(14, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(10, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_vme1_type1959_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_vme1_type1959_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_vme1_type1959_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                      // 68
+
+name_in_group(vme1_type1959, string(STR_NAME_IN_GROUP, string(STR_NAME_VME1_SERIES), string(STR_NAME_VME1_TYPE1959)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_VME1_SERIES), string(STR_LONGNAME_VME1_TYPE1959)))
+
+hint_engine(vme1_type1959,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_1_3,
+     1959, 1960,
+     fact_mavag())
+
+item (FEAT_TRAINS, vme1_type1959, 1077) {
+  property {
+    name: string(STR_NAME_VME1_TYPE1959);
+    vehicle_dates(1959, 1960, 20, 10, 7, PROP_vme1_type1959_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_vme1_type1959_PR, PROP_vme1_type1959_WT, PROP_vme1_type1959_TE, _lowspeed)
+    vehicle_group(vme1_group)
+  }
+  graphics {
+    purchase_menu(PROP_vme1_type1959_CF, PROP_vme1_type1959_RC, PROP_vme1_type1959_SD, PROP_vme1_type1959_WT, PROP_vme1_type1959_TE, PROP_vme1_type1959_PR, PROP_vme1_type1959_CC)
+         additional_text: vme1_type1959_additional_text;
+        articulated_part: articulated_part_dummy1;
+    bitmask_vehicle_info: vme1_type1959_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return 0;
+      cargo_subtype_text: vme1_type1959_cargo_subtype_text;
+          colour_mapping: vme1_type1959_colour_mapping;
+           create_effect: vme1_type1959_create_effect_sprites_start_sp;
+                 default: vme1_type1959_sprites;
+                    name: vme1_type1959_name;
+                purchase: vme1_type1959_purchase_sprites;
+     running_cost_factor: vme1_type1959_running_cost_factor;
+                   speed: vme1_type1959_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(vme1_type1959, STR_LONGNAME_VME1_TYPE1959)
+models_default_cargo_template(vme1_type1959)
+allow_diesel(vme1_type1959)
