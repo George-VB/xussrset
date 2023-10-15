@@ -1,5 +1,13 @@
 ﻿// 2te25km
 
+#define PROP__2te25km_CF  84
+#define PROP__2te25km_RC  791
+#define PROP__2te25km_SD  120
+#define PROP__2te25km_WT  144
+#define PROP__2te25km_TE  419.4
+#define PROP__2te25km_PR  2986
+#define PROP__2te25km_CC  0
+
 #define IMAGEFILE  "src/diesel/bryansk/2te25km.png"
 purchase_sprites(_2te25km, 0, 0)
 diesel2_sprites(12, _2te25km_v1, 32, 40)
@@ -41,8 +49,10 @@ long_vehicle(_2te25km)
 
 engine_diesel_1r_effect(_2te25km_create_effect_sprites, 4, 0, 12)
 engine_direction_template(_2te25km, _create_effect)
-engine_speed(_2te25km, 120)
+engine_speed(_2te25km, PROP__2te25km_SD)
 engine_penalise_speed(_2te25km, 4)
+livery_template_base_list4(_2te25km, LV_RZD_PID, LV_SUEK, LV_BALTTRANSSERVICE, LV_NORNIKEL)
+
 switch (FEAT_TRAINS, SELF, _2te25km_running_cost_factor,
 [  STORE_TEMP(451, 0),  // Моторы
    STORE_TEMP(63, 1),   // Бригада
@@ -51,12 +61,14 @@ switch (FEAT_TRAINS, SELF, _2te25km_running_cost_factor,
    STORE_TEMP(111, 4),  // ТО
    STORE_TEMP(8, 5),    // Сертификация
 
-   STORE_TEMP(120, 6),            // Скорость
-   STORE_TEMP(144, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 791
+   STORE_TEMP(PROP__2te25km_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP__2te25km_WT), 7),   // Тара
+   STORE_TEMP(round(PROP__2te25km_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                 // 791
 
-livery_template_base_list4(_2te25km, LV_RZD_PID, LV_SUEK, LV_BALTTRANSSERVICE, LV_NORNIKEL)
+name_in_group(_2te25km, string(STR_NAME_IN_GROUP, string(STR_NAME_TE25_SERIES), string(STR_NAME_2TE25KM)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_TE25_SERIES), string(STR_LONGNAME_2TE25KM)))
+
 hint_engine_noto(_2te25km,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_4,
@@ -66,12 +78,14 @@ hint_engine_noto(_2te25km,
 item (FEAT_TRAINS, _2te25km, 484) {
   property {
     name: string(STR_NAME_2TE25KM);
-    vehicle_dates(2014, 2050, 30, 10, 8, 84)
+    vehicle_dates(2014, 2050, 30, 10, 8, PROP__2te25km_CF)
     vehicle_cargo()
-    vehicle_diesel(2986, 144, 419.4, )
-    vehicle_group(_2te25a)
+    vehicle_group(te25_group)
+    vehicle_diesel(PROP__2te25km_PR, PROP__2te25km_WT, PROP__2te25km_TE, )
+    vehicle_group(te25_group)
   }
   graphics {
+    purchase_menu(PROP__2te25km_CF, PROP__2te25km_RC, PROP__2te25km_SD, PROP__2te25km_WT, PROP__2te25km_TE, PROP__2te25km_PR, PROP__2te25km_CC)
          additional_text: _2te25km_additional_text;
         articulated_part: articulated_part_dummy4;
     bitmask_vehicle_info: _2te25km_bitmask_vehicle_info;
@@ -81,8 +95,8 @@ item (FEAT_TRAINS, _2te25km, 484) {
           colour_mapping: any_cc_colour;
            create_effect: _2te25km_create_effect_sprites_start;
                  default: _2te25km_sprites;
+                    name: _2te25km_name;
                 purchase: _2te25km_purchase_sprites;
-          purchase_speed: return 120;
      running_cost_factor: _2te25km_running_cost_factor;
                    speed: _2te25km_speed;
               start_stop: any_start_stop;
