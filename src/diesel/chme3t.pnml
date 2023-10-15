@@ -1,5 +1,13 @@
 // chme3t
 
+#define PROP_chme3t_CF  33
+#define PROP_chme3t_RC  252
+#define PROP_chme3t_SD  95
+#define PROP_chme3t_WT  123
+#define PROP_chme3t_TE  356.0
+#define PROP_chme3t_PR  1150
+#define PROP_chme3t_CC  0
+
 #define IMAGEFILE  "src/diesel/chme3t.png"
 purchase_sprites(chme3t, 0, 0)
 diesel1r_sprites(10, chme3t_v1, 32,  40)
@@ -52,7 +60,7 @@ long_vehicle_sp(chme3t)
 engine_diesel_1r_effect(chme3t_create_effect_sprites, 0, 2, 12)
 engine_direction_template(chme3t, _create_effect)
 engine_RND_direction_template(chme3t, 1, 1, _create_effect)
-engine_speed(chme3t, 95)
+engine_speed(chme3t, PROP_chme3t_SD)
 engine_penalise_speed(chme3t, 2)
 switch (FEAT_TRAINS, SELF, chme3t_running_cost_factor,
 [  STORE_TEMP(144, 0),  // Моторы
@@ -62,10 +70,14 @@ switch (FEAT_TRAINS, SELF, chme3t_running_cost_factor,
    STORE_TEMP(35, 4),   // ТО
    STORE_TEMP(3, 5),    // Сертификация
 
-   STORE_TEMP(95, 6),             // Скорость
-   STORE_TEMP(123, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 252
+   STORE_TEMP(PROP_chme3t_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chme3t_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chme3t_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }               // 252
+
+name_in_group(chme3t, string(STR_NAME_IN_GROUP, string(STR_NAME_CHME3_SERIES), string(STR_NAME_CHME3T)),
+                      string(STR_NAME_IN_GROUP, string(STR_NAME_CHME3_SERIES), string(STR_LONGNAME_CHME3T)))
+
 hint_engine(chme3t,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -75,23 +87,24 @@ hint_engine(chme3t,
 item (FEAT_TRAINS, chme3t, 624) {
   property {
     name: string(STR_NAME_CHME3T);
-    vehicle_dates(1984, 1994, 25, 10, 8, 33)
+    vehicle_dates(1984, 1994, 25, 10, 8, PROP_chme3t_CF)
     vehicle_cargo()
-    vehicle_diesel(1150, 123, 356.0, _lowspeed)
-    vehicle_group(chme3)
+    vehicle_diesel(PROP_chme3t_PR, PROP_chme3t_WT, PROP_chme3t_TE, _lowspeed)
+    vehicle_group_pre(chme3_group)
   }
   graphics {
+    purchase_menu(PROP_chme3t_CF, PROP_chme3t_RC, PROP_chme3t_SD, PROP_chme3t_WT, PROP_chme3t_TE, PROP_chme3t_PR, PROP_chme3t_CC)
          additional_text: chme3t_additional_text;
         articulated_part: articulated_part_dummy2;
     bitmask_vehicle_info: chme3t_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_chme3t_CC;
       cargo_subtype_text: chme3_cargo_subtype_text;
           colour_mapping: chme3_colour_mapping;
            create_effect: chme3t_create_effect_sprites_start_sp;
                  default: chme3t_sprites;
+                    name: chme3t_name;
                 purchase: chme3t_purchase_sprites;
-          purchase_speed: return 95;
      running_cost_factor: chme3t_running_cost_factor;
                    speed: chme3t_speed;
               start_stop: any_start_stop;
