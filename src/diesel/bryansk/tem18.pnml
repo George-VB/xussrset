@@ -1,5 +1,13 @@
 ﻿// tem18
 
+#define PROP_tem18_CF  26
+#define PROP_tem18_RC  198
+#define PROP_tem18_SD  100
+#define PROP_tem18_WT  126
+#define PROP_tem18_TE  319.0
+#define PROP_tem18_PR  820
+#define PROP_tem18_CC  0
+
 #define IMAGEFILE  "src/diesel/bryansk/tem18.png"
 purchase_sprites(tem18, 0, 0)
 diesel1r_sprites(10, tem18_v1, 32,  40)
@@ -34,7 +42,7 @@ livery_template_alt(tem18, STR_REFIT_TTD_93)
 engine_diesel_1r_effect(tem18_create_effect_sprites, 0, 2, 11)
 engine_direction_template(tem18, _create_effect)
 engine_RND_direction_template(tem18, 1, 1, _create_effect)
-engine_speed(tem18, 100)
+engine_speed(tem18, PROP_tem18_SD)
 engine_penalise_speed(tem18, 2)
 switch (FEAT_TRAINS, SELF, tem18_running_cost_factor,
 [  STORE_TEMP(113, 0),  // Моторы
@@ -44,10 +52,14 @@ switch (FEAT_TRAINS, SELF, tem18_running_cost_factor,
    STORE_TEMP(28, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(126, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 198
+   STORE_TEMP(PROP_tem18_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tem18_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tem18_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 198
+
+name_in_group(tem18, string(STR_NAME_IN_GROUP, string(STR_NAME_TEM18_SERIES), string(STR_NAME_TEM18)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_TEM18_SERIES), string(STR_LONGNAME_TEM18)))
+
 hint_engine(tem18,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -57,22 +69,24 @@ hint_engine(tem18,
 item (FEAT_TRAINS, tem18, 348) {
   property {
     name: string(STR_NAME_TEM18);
-    vehicle_dates(1992, 2012, 25, 10, 8, 26)
+    vehicle_dates(1992, 2012, 25, 10, 8, PROP_tem18_CC)
     vehicle_cargo()
-    vehicle_diesel(820, 126, 319.0, )
+    vehicle_diesel(PROP_tem18_PR, PROP_tem18_WT, PROP_tem18_TE, )
+    vehicle_group(tem18_group)
   }
   graphics {
+    purchase_menu(PROP_tem18_CF, PROP_tem18_RC, PROP_tem18_SD, PROP_tem18_WT, PROP_tem18_TE, PROP_tem18_PR, PROP_tem18_CC)
          additional_text: tem18_additional_text;
         articulated_part: articulated_part_dummy2;
     bitmask_vehicle_info: tem18_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_tem18_CC;
       cargo_subtype_text: tem18_cargo_subtype_text;
           colour_mapping: any_cc_colour;
            create_effect: tem18_create_effect_sprites_start_sp;
                  default: tem18_sprites;
+                    name: tem18_name;
                 purchase: tem18_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: tem18_running_cost_factor;
                    speed: tem18_speed;
               start_stop: any_start_stop;

@@ -1,31 +1,22 @@
 ﻿// tem2um uses tem2u
 
-switch (FEAT_TRAINS, SELF, tem2um_sprites_left,
-  cargo_subtype)
-{
-           0: tem2u_v1_sprites_left;
-           1: tem2u_v2_sprites_left;
-  LV_RAL6002: tem2u_v1_sprites_left;
-              align_10_sprites;
-}
+#define PROP_tem2um_CF  28
+#define PROP_tem2um_RC  212
+#define PROP_tem2um_SD  100
+#define PROP_tem2um_WT  126
+#define PROP_tem2um_TE  382.0
+#define PROP_tem2um_PR  840
+#define PROP_tem2um_CC  0
 
-switch (FEAT_TRAINS, SELF, tem2um_sprites_right,
-  cargo_subtype)
-{
-           0: tem2u_v1_sprites_right;
-           1: tem2u_v2_sprites_right;
-  LV_RAL6002: tem2u_v1_sprites_right;
-              align_10_sprites;
-}
+map_sprites(tem2um_purchase_sprites, tem2u_purchase_sprites)
+map_sprites(tem2um_sprites_left, tem2u_sprites_left)
+map_sprites(tem2um_sprites_right, tem2u_sprites_right)
 
 engine_direction_template(tem2um, )
 engine_RND_direction_template(tem2um, 1, 1, )
 long_vehicle_sp(tem2um)
 
-engine_diesel_1r_effect(tem2um_create_effect_sprites, 0, 2, 11)
-engine_direction_template(tem2um, _create_effect)
-engine_RND_direction_template(tem2um, 1, 1, _create_effect)
-engine_speed(tem2um, 100)
+engine_speed(tem2um, PROP_tem2um_SD)
 engine_penalise_speed(tem2um, 2)
 switch (FEAT_TRAINS, SELF, tem2um_running_cost_factor,
 [  STORE_TEMP(121, 0),  // Моторы
@@ -35,10 +26,14 @@ switch (FEAT_TRAINS, SELF, tem2um_running_cost_factor,
    STORE_TEMP(30, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(126, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 212
+   STORE_TEMP(PROP_tem2um_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tem2um_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tem2um_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }               // 212
+
+name_in_group(tem2um, string(STR_NAME_IN_GROUP, string(STR_NAME_TEM2_SERIES), string(STR_NAME_TEM2UM)),
+                      string(STR_NAME_IN_GROUP, string(STR_NAME_TEM2_SERIES), string(STR_LONGNAME_TEM2UM)))
+
 hint_engine(tem2um,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -48,23 +43,24 @@ hint_engine(tem2um,
 item (FEAT_TRAINS, tem2um, 343) {
   property {
     name: string(STR_NAME_TEM2UM);
-    vehicle_dates(1989, 1995, 25, 10, 8, 28)
+    vehicle_dates(1989, 1995, 25, 10, 8, PROP_tem2um_CF)
     vehicle_cargo()
-    vehicle_diesel(840, 126, 382.0, )
-    vehicle_group(tem2)
+    vehicle_diesel(PROP_tem2um_PR, PROP_tem2um_WT, PROP_tem2um_TE, )
+    vehicle_group(tem2_group)
   }
   graphics {
+    purchase_menu(PROP_tem2um_CF, PROP_tem2um_RC, PROP_tem2um_SD, PROP_tem2um_WT, PROP_tem2um_TE, PROP_tem2um_PR, PROP_tem2um_CC)
          additional_text: tem2um_additional_text;
         articulated_part: articulated_part_dummy2;
     bitmask_vehicle_info: tem2um_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_tem2um_CC;
       cargo_subtype_text: tem2u_cargo_subtype_text;
           colour_mapping: any_cc_colour;
-           create_effect: tem2um_create_effect_sprites_start_sp;
+           create_effect: tem2u_create_effect_sprites_start_sp;
                  default: tem2um_sprites;
+                    name: tem2um_name;
                 purchase: tem2u_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: tem2um_running_cost_factor;
                    speed: tem2um_speed;
               start_stop: any_start_stop;

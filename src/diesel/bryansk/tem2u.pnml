@@ -1,5 +1,13 @@
 ﻿// tem2u
 
+#define PROP_tem2u_CF  26
+#define PROP_tem2u_RC  201
+#define PROP_tem2u_SD  100
+#define PROP_tem2u_WT  124
+#define PROP_tem2u_TE  380.0
+#define PROP_tem2u_PR  840
+#define PROP_tem2u_CC  0
+
 #define IMAGEFILE  "src/diesel/bryansk/tem2u.png"
 purchase_sprites(tem2u, 0, 0)
 diesel1r_sprites(10, tem2u_v1, 32,  40)
@@ -32,7 +40,7 @@ livery_template_alt0(tem2u, STR_REFIT_TTD_53, STR_REFIT_TTD_93)
 engine_diesel_1r_effect(tem2u_create_effect_sprites, 0, 2, 11)
 engine_direction_template(tem2u, _create_effect)
 engine_RND_direction_template(tem2u, 1, 1, _create_effect)
-engine_speed(tem2u, 100)
+engine_speed(tem2u, PROP_tem2u_SD)
 engine_penalise_speed(tem2u, 2)
 switch (FEAT_TRAINS, SELF, tem2u_running_cost_factor,
 [  STORE_TEMP(115, 0),  // Моторы
@@ -42,10 +50,14 @@ switch (FEAT_TRAINS, SELF, tem2u_running_cost_factor,
    STORE_TEMP(28, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(124, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 201
+   STORE_TEMP(PROP_tem2u_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tem2u_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tem2u_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 201
+
+name_in_group(tem2u, string(STR_NAME_IN_GROUP, string(STR_NAME_TEM2_SERIES), string(STR_NAME_TEM2U)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_TEM2_SERIES), string(STR_LONGNAME_TEM2U)))
+
 hint_engine(tem2u,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -55,23 +67,24 @@ hint_engine(tem2u,
 item (FEAT_TRAINS, tem2u, 342) {
   property {
     name: string(STR_NAME_TEM2U);
-    vehicle_dates(1984, 1989, 25, 10, 8, 26)
+    vehicle_dates(1984, 1989, 25, 10, 8, PROP_tem2u_CF)
     vehicle_cargo()
-    vehicle_diesel(840, 124, 380.0, )
-    vehicle_group(tem2)
+    vehicle_diesel(PROP_tem2u_PR, PROP_tem2u_WT, PROP_tem2u_TE, )
+    vehicle_group(tem2_group)
   }
   graphics {
+    purchase_menu(PROP_tem2u_CF, PROP_tem2u_RC, PROP_tem2u_SD, PROP_tem2u_WT, PROP_tem2u_TE, PROP_tem2u_PR, PROP_tem2u_CC)
          additional_text: tem2u_additional_text;
         articulated_part: articulated_part_dummy2;
     bitmask_vehicle_info: tem2u_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_tem2u_CC;
       cargo_subtype_text: tem2u_cargo_subtype_text;
           colour_mapping: any_cc_colour;
            create_effect: tem2u_create_effect_sprites_start_sp;
                  default: tem2u_sprites;
+                    name: tem2u_name;
                 purchase: tem2u_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: tem2u_running_cost_factor;
                    speed: tem2u_speed;
               start_stop: any_start_stop;
