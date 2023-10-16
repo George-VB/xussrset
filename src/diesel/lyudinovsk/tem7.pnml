@@ -1,5 +1,13 @@
 ﻿// tem7
 
+#define PROP_tem7_CF  54
+#define PROP_tem7_RC  411
+#define PROP_tem7_SD  100
+#define PROP_tem7_WT  180
+#define PROP_tem7_TE  580.0
+#define PROP_tem7_PR  1330
+#define PROP_tem7_CC  0
+
 #define IMAGEFILE  "src/diesel/lyudinovsk/tem7.png"
 purchase_sprites(tem7, 0, 0)
 diesel1r_sprites(12, tem7, 32, 40)
@@ -12,7 +20,7 @@ long_vehicle_sp(tem7)
 engine_diesel_1r_effect(tem7_create_effect_sprites, -1, 5, 12)
 engine_direction_template(tem7, _create_effect)
 engine_RND_direction_template(tem7, 3, 1, _create_effect)
-engine_speed(tem7, 100)
+engine_speed(tem7, PROP_tem7_SD)
 engine_penalise_speed(tem7, 2)
 switch (FEAT_TRAINS, SELF, tem7_running_cost_factor,
 [  STORE_TEMP(234, 0),  // Моторы
@@ -22,10 +30,14 @@ switch (FEAT_TRAINS, SELF, tem7_running_cost_factor,
    STORE_TEMP(58, 4),   // ТО
    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(100, 6),            // Скорость
-   STORE_TEMP(180, 7),            // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 411
+   STORE_TEMP(PROP_tem7_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tem7_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tem7_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 411
+
+name_in_group(tem7, string(STR_NAME_IN_GROUP, string(STR_NAME_TEM7_SERIES), string(STR_NAME_TEM7)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_TEM7_SERIES), string(STR_LONGNAME_TEM7)))
+
 hint_engine(tem7,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -35,11 +47,13 @@ hint_engine(tem7,
 item (FEAT_TRAINS, tem7, 404) {
   property {
     name: string(STR_NAME_TEM7);
-    vehicle_dates(1975, 1989, 25, 10, 8, 54)
+    vehicle_dates(1975, 1989, 25, 10, 8, PROP_tem7_CF)
     vehicle_cargo()
-    vehicle_diesel(1330, 180, 580.0, )
+    vehicle_diesel(PROP_tem7_PR, PROP_tem7_WT, PROP_tem7_TE, )
+    vehicle_group(tem7_group)
   }
   graphics {
+    purchase_menu(PROP_tem7_CF, PROP_tem7_RC, PROP_tem7_SD, PROP_tem7_WT, PROP_tem7_TE, PROP_tem7_PR, PROP_tem7_CC)
          additional_text: tem7_additional_text;
         articulated_part: articulated_part_dummy4;
     bitmask_vehicle_info: tem7_bitmask_vehicle_info;
@@ -48,8 +62,8 @@ item (FEAT_TRAINS, tem7, 404) {
           colour_mapping: any_cc_colour;
            create_effect: tem7_create_effect_sprites_start_sp;
                  default: tem7_sprites;
+                    name: tem7_name;
                 purchase: tem7_purchase_sprites;
-          purchase_speed: return 100;
      running_cost_factor: tem7_running_cost_factor;
                    speed: tem7_speed;
               start_stop: any_start_stop;
