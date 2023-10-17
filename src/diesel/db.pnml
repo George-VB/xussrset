@@ -2,11 +2,29 @@
 
 #define IMAGEFILE  "src/diesel/db.png"
 purchase_sprites(diesel_db, 0, 0)
-diesel2nol_sprites(10, diesel_db, 32, 40)
+diesel2nol_sprites(10, diesel_db_v1, 32, 40)
+diesel2nol_sprites(10, diesel_db_v2, 32, 234)
 #undef IMAGEFILE
-switch (FEAT_TRAINS, SELF, diesel_db_sprites_start, 0)
-{  diesel_db_sprites_left;  }
 
+switch (FEAT_TRAINS, SELF, diesel_db_sprites_left,
+  cargo_subtype)
+{
+  0: diesel_db_v1_sprites_left;
+  1: diesel_db_v1_sprites_left;
+  2: diesel_db_v2_sprites_left;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, diesel_db_sprites_right,
+  cargo_subtype)
+{
+  0: diesel_db_v1_sprites_right;
+  1: diesel_db_v1_sprites_right;
+  2: diesel_db_v2_sprites_right;
+  align_10_sprites;
+}
+
+engine_direction_template(diesel_db, )
 long_vehicle(diesel_db)
 
 switch (FEAT_TRAINS, SELF, diesel_db_colour_mapping,
@@ -19,7 +37,13 @@ switch (FEAT_TRAINS, SELF, diesel_db_colour_mapping,
 }
 
 livery_template_alt20(diesel_db, STR_REFIT_TTD_63, STR_REFIT_TTD_54, STR_REFIT_TTD_B3)
-engine_diesel_1_effect(diesel_db_create_effect, 1, 10)
+
+switch (FEAT_TRAINS, SELF, diesel_db_create_effect_sprites_left,
+  [diesel_create_effect_dy(1, -1, 11), diesel_create_effect_dy2(2, -1, 11)]) { return 2; }
+switch (FEAT_TRAINS, SELF, diesel_db_create_effect_sprites_right,
+  [diesel_create_effect_dy(0, 1, 11), diesel_create_effect_dy2(1, 1, 11)]) { return 2; }
+
+engine_direction_template(diesel_db, _create_effect)
 engine_speed(diesel_db, 96)
 engine_penalise_speed(diesel_db, 2)
 switch (FEAT_TRAINS, SELF, diesel_db_running_cost_factor,
@@ -56,7 +80,7 @@ item (FEAT_TRAINS, diesel_db, 722) {
           cargo_capacity: return 0;
       cargo_subtype_text: diesel_db_cargo_subtype_text;
           colour_mapping: diesel_db_colour_mapping;
-           create_effect: diesel_db_create_effect;
+           create_effect: diesel_db_create_effect_sprites_start;
                  default: diesel_db_sprites;
                 purchase: diesel_db_purchase_sprites;
           purchase_speed: return 96;
