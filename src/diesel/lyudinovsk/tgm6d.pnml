@@ -1,5 +1,13 @@
 ﻿// tgm6d
 
+#define PROP_tgm6d_CF  21
+#define PROP_tgm6d_RC  158
+#define PROP_tgm6d_SD  80
+#define PROP_tgm6d_WT  90
+#define PROP_tgm6d_TE  352.8
+#define PROP_tgm6d_PR  790
+#define PROP_tgm6d_CC  0
+
 #define IMAGEFILE  "src/diesel/lyudinovsk/tgm6d.png"
 purchase_sprites(tgm6d, 0, 0)
 diesel1r_sprites(8, tgm6d, 32, 40)
@@ -13,6 +21,7 @@ engine_diesel_1r_effect(tgm6d_create_effect_sprites, -1, 0, 10)
 engine_direction_template(tgm6d, _create_effect)
 engine_RND_direction_template(tgm6d, 1, 3, _create_effect)
 engine_penalise_speed(tgm6d, 2)
+engine_speed(tgm6d, PROP_tgm6d_SD)
 switch (FEAT_TRAINS, SELF, tgm6d_running_cost_factor,
 [  STORE_TEMP(90, 0),  // Моторы
    STORE_TEMP(13, 1),  // Бригада
@@ -21,11 +30,14 @@ switch (FEAT_TRAINS, SELF, tgm6d_running_cost_factor,
    STORE_TEMP(22, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(74, 6),             // Скорость
-   STORE_TEMP(90, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 158
-engine_speed(tgm6d, 80)
+   STORE_TEMP(PROP_tgm6d_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tgm6d_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tgm6d_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 158
+
+name_in_group(tgm6d, string(STR_NAME_IN_GROUP, string(STR_NAME_TGM6_SERIES), string(STR_NAME_TGM6D)),
+                     string(STR_NAME_IN_GROUP, string(STR_NAME_TGM6_SERIES), string(STR_LONGNAME_TGM6D)))
+
 hint_engine(tgm6d,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -35,12 +47,13 @@ hint_engine(tgm6d,
 item (FEAT_TRAINS, tgm6d, 732) {
   property {
     name: string(STR_NAME_TGM6D);
-    vehicle_dates(1991, 2015, 20, 10, 7, 21)
+    vehicle_dates(1991, 2015, 20, 10, 7, PROP_tgm6d_CF)
     vehicle_cargo()
-    vehicle_diesel(790, 90, 352.8, _lowspeed)
-    vehicle_group(tgm6a)
+    vehicle_diesel(PROP_tgm6d_PR, PROP_tgm6d_WT, PROP_tgm6d_TE, _lowspeed)
+    vehicle_group(tgm6_group)
   }
   graphics {
+    purchase_menu(PROP_tgm6d_CF, PROP_tgm6d_RC, PROP_tgm6d_SD, PROP_tgm6d_WT, PROP_tgm6d_TE, PROP_tgm6d_PR, PROP_tgm6d_CC)
          additional_text: tgm6d_additional_text;
         articulated_part: articulated_part_dummy1;
     bitmask_vehicle_info: tgm6d_bitmask_vehicle_info;
@@ -50,8 +63,8 @@ item (FEAT_TRAINS, tgm6d, 732) {
           colour_mapping: tgm23_colour_mapping;
            create_effect: tgm6d_create_effect_sprites_start_sp;
                  default: tgm6d_sprites;
+                    name: tgm6d_name;
                 purchase: tgm6d_purchase_sprites;
-          purchase_speed: return 74;
      running_cost_factor: tgm6d_running_cost_factor;
                    speed: tgm6d_speed;
               start_stop: any_start_stop;
