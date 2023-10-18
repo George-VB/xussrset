@@ -1,0 +1,79 @@
+// tk030_type1870 uses steam_a
+
+#define PROP_tk030_type1870_CF  2
+#define PROP_tk030_type1870_RC  44
+#define PROP_tk030_type1870_SD  56
+#define PROP_tk030_type1870_WT  33+20
+#define PROP_tk030_type1870_TE  53.0
+#define PROP_tk030_type1870_PR  370
+#define PROP_tk030_type1870_CC  0
+
+#define IMAGEFILE  "src/steam/tk030-type1870.png"
+purchase_sprites(tk030_type1870, 0, 0)
+steam_sprites0(5, tk030_type1870_engine, 32,  40)
+#undef IMAGEFILE
+
+map_sprites(tk030_type1870_tender_sprites_start, steam_a_tender_sprites_start)
+steamer_direction_template(tk030_type1870, _sprites_start)
+long_vehicle(tk030_type1870)
+
+livery_template_base_list2(tk030_type1870, LV_RAL6020, LV_RAL6002)
+engine_steam_1_effect(tk030_type1870_create_effect, -3, 12)
+engine_penalise_speed0(tk030_type1870)
+engine_speed(tk030_type1870, PROP_tk030_type1870_SD)
+engine_tender(tk030_type1870)
+engine_tender_length(tk030_type1870, 4, 1, 2, 1)
+
+switch (FEAT_TRAINS, SELF, tk030_type1870_running_cost_factor,
+[  STORE_TEMP(25, 0),  // Моторы
+   STORE_TEMP(4 , 1),  // Бригада
+   STORE_TEMP(9 , 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(6 , 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_tk030_type1870_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tk030_type1870_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tk030_type1870_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                       // 44
+
+name_in_group(tk030_type1870, string(STR_NAME_IN_GROUP, string(STR_NAME_TK030_SERIES), string(STR_NAME_TK030_TYPE1870)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_TK030_SERIES), string(STR_LONGNAME_TK030_TYPE1870)))
+
+hint_engine(tk030_type1870,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1870, 1873,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, tk030_type1870, 513) {
+  property {
+    name: string(STR_NAME_TK030_TYPE1870);
+    vehicle_dates(1870, 1873, 40, 10, 4, PROP_tk030_type1870_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_tk030_type1870_PR, PROP_tk030_type1870_WT, PROP_tk030_type1870_TE, _lowspeed)
+    vehicle_group(tk030_group)
+  }
+  graphics {
+    purchase_menu(PROP_tk030_type1870_CF, PROP_tk030_type1870_RC, PROP_tk030_type1870_SD, PROP_tk030_type1870_WT, PROP_tk030_type1870_TE, PROP_tk030_type1870_PR, PROP_tk030_type1870_CC)
+         additional_text: tk030_type1870_additional_text;
+        articulated_part: tk030_type1870_articulated_part;
+    bitmask_vehicle_info: tk030_type1870_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_tk030_type1870_CC;
+      cargo_subtype_text: tk030_type1870_cargo_subtype_text;
+          colour_mapping: steam_freight_colour_mapping;
+           create_effect: tk030_type1870_create_effect;
+                 default: tk030_type1870_sprites;
+                  length: tk030_type1870_length;
+                    name: tk030_type1870_name;
+                purchase: tk030_type1870_purchase_sprites;
+     running_cost_factor: tk030_type1870_running_cost_factor;
+                   speed: tk030_type1870_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(tk030_type1870, STR_LONGNAME_TK030_TYPE1870)
+models_default_cargo_template(tk030_type1870)
+allow_steamer(tk030_type1870)

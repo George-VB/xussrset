@@ -1,0 +1,82 @@
+// chk_type1891
+
+#define PROP_chk_type1891_CF  4
+#define PROP_chk_type1891_RC  82
+#define PROP_chk_type1891_SD  47
+#define PROP_chk_type1891_WT  50+30
+#define PROP_chk_type1891_TE  85.0
+#define PROP_chk_type1891_PR  530
+#define PROP_chk_type1891_CC  0
+
+#define IMAGEFILE  "src/steam/chk-type1891.png"
+purchase_sprites(chk_type1891, 0, 0)
+steam_sprites1(6, chk_type1891_engine, 32,  40)
+tender_sprites(5, chk_type1891_tender, 447,  40)
+#undef IMAGEFILE
+steamer_direction_template(chk_type1891, _sprites_start)
+long_vehicle(chk_type1891)
+
+engine_tender(chk_type1891)
+engine_tender_length(chk_type1891, 5, 1, 4, 1)
+engine_steam_1_effect(chk_type1891_create_effect, -3, 11)
+engine_speed(chk_type1891, PROP_chk_type1891_SD)
+engine_penalise_speed0(chk_type1891)
+
+switch (FEAT_TRAINS, SELF, chk_type1891_running_cost_factor,
+[  STORE_TEMP(47, 0),  // Моторы
+   STORE_TEMP(7, 1),   // Бригада
+   STORE_TEMP(16, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(11, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_chk_type1891_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chk_type1891_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chk_type1891_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                     // 82
+
+name_in_group_subgroup(chk_type1891, string(STR_NAME_IN_GROUP, string(STR_NAME_CH_SERIES), string(STR_NAME_CHK_TYPE1891)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_CH_SERIES), string(STR_LONGNAME_CHK_TYPE1891)),
+                                     string(STR_NAME_CHK))
+
+hint_engine_5fact(chk_type1891,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1891, 1901,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     fact_putilovsky(),
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     string(STR_PURCHASE_HINT_FACTORY_NEVSKY),
+     fact_kharkiv())
+
+item (FEAT_TRAINS, chk_type1891, 1112) {
+  property {
+    name: string(STR_NAME_CHK_TYPE1891);
+    vehicle_dates(1891, 1901, 40, 10, 5, PROP_chk_type1891_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_chk_type1891_PR, PROP_chk_type1891_WT, PROP_chk_type1891_TE, _lowspeed)
+    vehicle_group(chk_type1879)
+  }
+  graphics {
+    purchase_menu(PROP_chk_type1891_CF, PROP_chk_type1891_RC, PROP_chk_type1891_SD, PROP_chk_type1891_WT, PROP_chk_type1891_TE, PROP_chk_type1891_PR, PROP_chk_type1891_CC)
+         additional_text: chk_type1891_additional_text;
+        articulated_part: chk_type1891_articulated_part;
+    bitmask_vehicle_info: chk_type1891_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_chk_type1891_CC;
+      cargo_subtype_text: steam_freight_cargo_subtype_text;
+          colour_mapping: steam_freight_colour_mapping;
+           create_effect: chk_type1891_create_effect;
+                 default: chk_type1891_sprites;
+                  length: chk_type1891_length;
+                    name: chk_type1891_name;
+                purchase: chk_type1891_purchase_sprites;
+     running_cost_factor: chk_type1891_running_cost_factor;
+                   speed: chk_type1891_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(chk_type1891, STR_LONGNAME_CHK_TYPE1891)
+models_default_cargo_template(chk_type1891)
+allow_steamer(chk_type1891)
