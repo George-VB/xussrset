@@ -1,5 +1,13 @@
 ﻿// tgk2
 
+#define PROP_tgk2_CF  2
+#define PROP_tgk2_RC  17
+#define PROP_tgk2_SD  65
+#define PROP_tgk2_WT  28
+#define PROP_tgk2_TE  98.0
+#define PROP_tgk2_PR  130
+#define PROP_tgk2_CC  0
+
 #define IMAGEFILE  "src/diesel/tgk2.png"
 purchase_sprites(tgk2, 0, 0)
 diesel1r_sprites(5, tgk2, 32, 40)
@@ -44,7 +52,7 @@ livery_template_alt7(tgk2, STR_REFIT_TTD_54, STR_REFIT_TTD_1B, STR_REFIT_TTD_62,
 engine_diesel_1r_effect(tgk2_create_effect_sprites, -1, 0, 11)
 engine_direction_template(tgk2, _create_effect)
 engine_RND_direction_template(tgk2, 1, 3, _create_effect)
-engine_speed(tgk2, 65)
+engine_speed(tgk2, PROP_tgk2_SD)
 engine_penalise_speed(tgk2, 2)
 switch (FEAT_TRAINS, SELF, tgk2_running_cost_factor,
 [  STORE_TEMP(10, 0),  // Моторы
@@ -54,10 +62,14 @@ switch (FEAT_TRAINS, SELF, tgk2_running_cost_factor,
    STORE_TEMP(2, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(65, 6),             // Скорость
-   STORE_TEMP(28, 7),             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])  // Максимальная масса
-{ all_running_cost_factor; }      // 17
+   STORE_TEMP(PROP_tgk2_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_tgk2_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_tgk2_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }             // 17
+
+name_in_group(tgk2, string(STR_NAME_IN_GROUP, string(STR_NAME_TGK_SERIES), string(STR_NAME_TGK2)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_TGK_SERIES), string(STR_LONGNAME_TGK2)))
+
 hint_engine(tgk2,
      STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_DIESEL,
      STR_PURCHASE_HINT_SECTIONS_1_2,
@@ -67,23 +79,24 @@ hint_engine(tgk2,
 item (FEAT_TRAINS, tgk2, 511) {
   property {
     name: string(STR_NAME_TGK2);
-    vehicle_dates(1960, 1996, 20, 10, 4, 2)
+    vehicle_dates(1960, 1996, 20, 10, 4, PROP_tgk2_CF)
     vehicle_cargo()
-    vehicle_diesel(130, 28, 98.0, _lowspeed)
-    vehicle_group(tgk)
+    vehicle_diesel(PROP_tgk2_PR, PROP_tgk2_WT, PROP_tgk2_TE, _lowspeed)
+    vehicle_group_pre(tgk_group)
   }
   graphics {
+    purchase_menu(PROP_tgk2_CF, PROP_tgk2_RC, PROP_tgk2_SD, PROP_tgk2_WT, PROP_tgk2_TE, PROP_tgk2_PR, PROP_tgk2_CC)
          additional_text: tgk2_additional_text;
         articulated_part: articulated_part_dummy1;
     bitmask_vehicle_info: tgk2_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_tgk2_CC;
       cargo_subtype_text: tgk2_cargo_subtype_text;
           colour_mapping: tgk2_colour_mapping;
            create_effect: tgk2_create_effect_sprites_start_sp;
                  default: tgk2_sprites;
+                    name: tgk2_name;
                 purchase: tgk2_purchase_sprites;
-          purchase_speed: return 65;
      running_cost_factor: tgk2_running_cost_factor;
                    speed: tgk2_speed;
               start_stop: any_start_stop;
