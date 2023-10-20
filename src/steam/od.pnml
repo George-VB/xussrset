@@ -1,5 +1,13 @@
 // steam_od
 
+#define PROP_steam_od_CF  5
+#define PROP_steam_od_RC  117
+#define PROP_steam_od_SD  48
+#define PROP_steam_od_WT  52+47
+#define PROP_steam_od_TE  86.0
+#define PROP_steam_od_PR  704
+#define PROP_steam_od_CC  0
+
 #define IMAGEFILE  "src/steam/od.png"
 purchase_sprites(steam_od, 0, 0)
 steam_sprites(6, steam_od_engine, 32,  40)
@@ -8,6 +16,13 @@ tender_sprites(4, steam_od_tender, 447,  40)
 steamer_direction_template(steam_od, _sprites_start)
 long_vehicle(steam_od)
 
+engine_tender(steam_od)
+engine_tender_length(steam_od, 5, 1, 3, 1)
+engine_steam_1_effect(steam_od_create_effect, -3, 11)
+engine_speed_change_after2(steam_od, PROP_steam_od_SD,
+                                     45, 1928,
+                                     55, 1956)
+engine_penalise_speed0(steam_od)
 switch (FEAT_TRAINS, SELF, steam_od_running_cost_factor,
 [  STORE_TEMP(67, 0),  // Моторы
    STORE_TEMP(9, 1),   // Бригада
@@ -16,18 +31,14 @@ switch (FEAT_TRAINS, SELF, steam_od_running_cost_factor,
    STORE_TEMP(16, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(48 - 3 * (current_year >= 1928) + 10 * (current_year >= 1956), 6),  // Скорость
-   STORE_TEMP(99, 7),                                                             // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                                  // Максимальная масса
-{ all_running_cost_factor; }                                                      // 117
+   STORE_TEMP(PROP_steam_od_SD - 3 * (current_year >= 1928)
+                               + 10 * (current_year >= 1956), 6),  // Скорость
+   STORE_TEMP(round(PROP_steam_od_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_steam_od_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                       // 117
 
-engine_tender(steam_od)
-engine_tender_length(steam_od, 5, 1, 3, 1)
-engine_steam_1_effect(steam_od_create_effect, -3, 11)
-engine_speed_change_after2(steam_od, 48,
-                                     45, 1928,
-                                     55, 1956)
-engine_penalise_speed0(steam_od)
+name_in_group(steam_od, string(STR_NAME_IN_GROUP, string(STR_NAME_O_SERIES), string(STR_NAME_OD)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_O_SERIES), string(STR_LONGNAME_OD)))
 
 hint_engine_5fact(steam_od_b1928,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
@@ -63,22 +74,24 @@ hint_change_after2(steam_od, 1928, 1956)
 item (FEAT_TRAINS, steam_od, 725) {
   property {
     name: string(STR_NAME_OD);
-    vehicle_dates(1893, 1899, 40, 10, 5, 5)
+    vehicle_dates(1893, 1899, 40, 10, 5, PROP_steam_od_CF)
     vehicle_cargo()
-    vehicle_steam(704, 52+47, 86.0, _lowspeed)
+    vehicle_diesel(PROP_steam_od_PR, PROP_steam_od_WT, PROP_steam_od_TE, _lowspeed)
+    vehicle_group(steam_o_group)
   }
   graphics {
+    purchase_menu(PROP_steam_od_CF, PROP_steam_od_RC, PROP_steam_od_SD, PROP_steam_od_WT, PROP_steam_od_TE, PROP_steam_od_PR, PROP_steam_od_CC)
          additional_text: steam_od_additional_text;
         articulated_part: steam_od_articulated_part;
     bitmask_vehicle_info: steam_od_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_steam_od_CC;
           colour_mapping: any_cc_colour;
            create_effect: steam_od_create_effect;
                  default: steam_od_sprites;
                   length: steam_od_length;
+                    name: steam_od_name;
                 purchase: steam_od_purchase_sprites;
-          purchase_speed: return 48;
      running_cost_factor: steam_od_running_cost_factor;
                    speed: steam_od_speed;
               start_stop: any_start_stop;

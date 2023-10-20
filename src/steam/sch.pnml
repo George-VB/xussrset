@@ -1,14 +1,27 @@
 // sch
 
+#define PROP_sch_CF  8
+#define PROP_sch_RC  177
+#define PROP_sch_SD  65
+#define PROP_sch_WT  77+64
+#define PROP_sch_TE  117.0
+#define PROP_sch_PR  1055
+#define PROP_sch_CC  0
+
 #define IMAGEFILE  "src/steam/sch.png"
 purchase_sprites(sch, 0, 0)
 steam_sprites(7, sch_engine, 32,  40)
 tender_sprites(5, sch_tender, 447,  40)
 #undef IMAGEFILE
-
 steamer_direction_template(sch, _sprites_start)
 long_vehicle(sch)
 
+engine_steam_1_effect(sch_create_effect, -3, 11)
+engine_speed_change_after(sch, PROP_sch_SD,
+                               75, 1936)
+engine_penalise_speed0(sch)
+engine_tender(sch)
+engine_tender_length(sch, 6, 1, 4, 1)
 switch (FEAT_TRAINS, SELF, sch_running_cost_factor,
 [  STORE_TEMP(101, 0),  // Моторы
    STORE_TEMP(14, 1),   // Бригада
@@ -17,17 +30,14 @@ switch (FEAT_TRAINS, SELF, sch_running_cost_factor,
    STORE_TEMP(25, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(65 + 10 * (current_year >= 1936), 6),  // Скорость
-   STORE_TEMP(77 + 64, 7),                           // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                     // Максимальная масса
-{ all_running_cost_factor; }                         // 177
+   STORE_TEMP(PROP_sch_SD + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(round(PROP_sch_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_sch_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                  // 177
 
-engine_steam_1_effect(sch_create_effect, -3, 11)
-engine_speed_change_after(sch, 65,
-                               75, 1936)
-engine_penalise_speed0(sch)
-engine_tender(sch)
-engine_tender_length(sch, 6, 1, 4, 1)
+name_in_group(sch, string(STR_NAME_IN_GROUP, string(STR_NAME_SCH_SERIES), string(STR_NAME_SCH)),
+                   string(STR_NAME_IN_GROUP, string(STR_NAME_SCH_SERIES), string(STR_LONGNAME_SCH)))
+
 hint_engine_5fact(sch_b1936,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
@@ -52,22 +62,24 @@ hint_change_after(sch, 1936)
 item (FEAT_TRAINS, sch, 627) {
   property {
     name: string(STR_NAME_SCH);
-    vehicle_dates(1906, 1918, 50, 10, 6, 8)
+    vehicle_dates(1906, 1918, 50, 10, 6, PROP_sch_CF)
     vehicle_cargo()
-    vehicle_steam(1055, 77+64, 117.0, _lowspeed)
+    vehicle_diesel(PROP_sch_PR, PROP_sch_WT, PROP_sch_TE, _lowspeed)
+    vehicle_group(steam_sch_group)
   }
   graphics {
+    purchase_menu(PROP_sch_CF, PROP_sch_RC, PROP_sch_SD, PROP_sch_WT, PROP_sch_TE, PROP_sch_PR, PROP_sch_CC)
          additional_text: sch_additional_text;
         articulated_part: sch_articulated_part;
     bitmask_vehicle_info: sch_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_sch_CC;
           colour_mapping: return ttdall_cc + 0x02;
            create_effect: sch_create_effect;
                  default: sch_sprites;
                   length: sch_length;
+                    name: sch_name;
                 purchase: sch_purchase_sprites;
-          purchase_speed: return 65;
      running_cost_factor: sch_running_cost_factor;
                    speed: sch_speed;
               start_stop: any_start_stop;

@@ -1,13 +1,26 @@
 // schp
 
+#define PROP_schp_CF  8
+#define PROP_schp_RC  177
+#define PROP_schp_SD  65
+#define PROP_schp_WT  77+47
+#define PROP_schp_TE  120.0
+#define PROP_schp_PR  1087
+#define PROP_schp_CC  0
+
 #define IMAGEFILE  "src/steam/schp.png"
 purchase_sprites(schp, 0, 0)
 steam_sprites(7, schp_engine, 32,  40)
 tender_sprites(4, schp_tender, 447,  40)
 #undef IMAGEFILE
-
 steamer_direction_template(schp, _sprites_start)
 long_vehicle(schp)
+
+engine_steam_1_effect(schp_create_effect, -3, 11)
+engine_speed_change_after(schp, PROP_schp_SD, 75, 1936)
+engine_penalise_speed0(schp)
+engine_tender(schp)
+engine_tender_length(schp, 6, 1, 3, 1)
 
 switch (FEAT_TRAINS, SELF, schp_running_cost_factor,
 [  STORE_TEMP(101, 0),  // Моторы
@@ -17,17 +30,14 @@ switch (FEAT_TRAINS, SELF, schp_running_cost_factor,
    STORE_TEMP(25, 4),   // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(65 + 10 * (current_year >= 1936), 6),  // Скорость
-   STORE_TEMP(77 + 47, 7),                           // Тара
-   STORE_TEMP(LOAD_TEMP(7), 8)])                     // Максимальная масса
-{ all_running_cost_factor; }                         // 177
+   STORE_TEMP(PROP_schp_SD + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(round(PROP_schp_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_schp_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                   // 177
 
-engine_steam_1_effect(schp_create_effect, -3, 11)
-engine_speed_change_after(schp, 65,
-                                75, 1936)
-engine_penalise_speed0(schp)
-engine_tender(schp)
-engine_tender_length(schp, 6, 1, 3, 1)
+name_in_group(schp, string(STR_NAME_IN_GROUP, string(STR_NAME_SCH_SERIES), string(STR_NAME_SCHP)),
+                    string(STR_NAME_IN_GROUP, string(STR_NAME_SCH_SERIES), string(STR_LONGNAME_SCHP)))
+
 hint_engine_2fact(schp_b1936,
      STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
      STR_PURCHASE_HINT_SECTIONS_1,
@@ -45,23 +55,24 @@ hint_change_after(schp, 1936)
 item (FEAT_TRAINS, schp, 535) {
   property {
     name: string(STR_NAME_SCHP);
-    vehicle_dates(1910, 1915, 50, 10, 6, 8)
+    vehicle_dates(1910, 1915, 50, 10, 6, PROP_schp_CF)
     vehicle_cargo()
-    vehicle_steam(1087, 77+47, 120.0, _lowspeed)
-    vehicle_group(sch)
+    vehicle_diesel(PROP_schp_PR, PROP_schp_WT, PROP_schp_TE, _lowspeed)
+    vehicle_group(steam_sch_group)
   }
   graphics {
+    purchase_menu(PROP_schp_CF, PROP_schp_RC, PROP_schp_SD, PROP_schp_WT, PROP_schp_TE, PROP_schp_PR, PROP_schp_CC)
          additional_text: schp_additional_text;
         articulated_part: schp_articulated_part;
     bitmask_vehicle_info: schp_bitmask_vehicle_info;
         can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
+          cargo_capacity: return PROP_schp_CC;
           colour_mapping: any_cc_colour;
            create_effect: schp_create_effect;
                  default: schp_sprites;
                   length: schp_length;
+                    name: schp_name;
                 purchase: schp_purchase_sprites;
-          purchase_speed: return 65;
      running_cost_factor: schp_running_cost_factor;
                    speed: schp_speed;
               start_stop: any_start_stop;
