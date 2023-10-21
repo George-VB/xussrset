@@ -1,0 +1,101 @@
+// p36_type1954
+
+#define PROP_p36_type1954_CF  34
+#define PROP_p36_type1954_RC  770
+#define PROP_p36_type1954_SD  125
+#define PROP_p36_type1954_WT  133+123
+#define PROP_p36_type1954_TE  173.0
+#define PROP_p36_type1954_PR  3077
+#define PROP_p36_type1954_CC  0
+
+#define IMAGEFILE  "src/steam/p36-type1954.png"
+purchase_sprites(p36_type1954, 0, 0)
+steam_sprites(10, p36_type1954_engine, 32,  40)
+tender_sprites(7, p36_type1954_tender, 447,  40)
+#undef IMAGEFILE
+
+steamer_direction_template(p36_type1954, _sprites_start)
+long_vehicle(p36_type1954)
+
+switch (FEAT_TRAINS, SELF, p36_type1954_engine_colour_mapping,
+  cargo_subtype)
+{
+                 0: return ttd_cc2 + 0x38;
+        LV_RAL6020: return ttd_cc2 + 0x39;
+        LV_RAL6002: return ttd_cc2 + 0x38;
+  LV_RED_ARROW_OLD: return ttd_cc2 + 0x3A;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, p36_type1954_tender_colour_mapping,
+[ set_offset_to(-2),
+  prev_vehicle_cargo_subtype()])
+{
+                 0: return ttd_cc2 + 0x38;
+        LV_RAL6020: return ttd_cc2 + 0x39;
+        LV_RAL6002: return ttd_cc2 + 0x38;
+  LV_RED_ARROW_OLD: return ttd_cc2 + 0x3A;
+     return CB_FAILED;
+}
+
+steamer_direction_template(p36_type1954, _colour_mapping)
+
+engine_steam_1_effect(p36_type1954_create_effect, -3, 13)
+engine_speed(p36_type1954, PROP_p36_type1954_SD)
+engine_penalise_speed0(p36_type1954)
+engine_tender_length(p36_type1954, 8, 2, 6, 1)
+engine_tender(p36_type1954)
+
+switch (FEAT_TRAINS, SELF, p36_type1954_running_cost_factor,
+[  STORE_TEMP(441, 0),  // Моторы
+   STORE_TEMP(62, 1),   // Бригада
+   STORE_TEMP(155, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(108, 4),  // ТО
+   STORE_TEMP(8, 5),    // Сертификация
+
+   STORE_TEMP(PROP_p36_type1954_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_p36_type1954_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_p36_type1954_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                     // 773
+
+name_in_group(p36_type1954, string(STR_NAME_IN_GROUP, string(STR_NAME_P36_SERIES), string(STR_NAME_P36_TYPE1954)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_P36_SERIES), string(STR_LONGNAME_P36_TYPE1954)))
+
+hint_engine(p36_type1954,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1954, 1956,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, p36_type1954, 583) {
+  property {
+    name: string(STR_NAME_P36_TYPE1954);
+    vehicle_dates(1954, 1956, 20, 10, 8, PROP_p36_type1954_CF)
+    vehicle_pass()
+    vehicle_diesel(PROP_p36_type1954_PR, PROP_p36_type1954_WT, PROP_p36_type1954_TE, )
+    vehicle_group(steam_p36_group)
+  }
+  graphics {
+    purchase_menu(PROP_p36_type1954_CF, PROP_p36_type1954_RC, PROP_p36_type1954_SD, PROP_p36_type1954_WT, PROP_p36_type1954_TE, PROP_p36_type1954_PR, PROP_p36_type1954_CC)
+         additional_text: p36_type1954_additional_text;
+        articulated_part: p36_type1954_articulated_part;
+    bitmask_vehicle_info: p36_type1954_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_p36_type1954_CC;
+      cargo_subtype_text: steam_pass_red_arrow_cargo_subtype_text;
+          colour_mapping: p36_type1954_colour_mapping;
+           create_effect: p36_type1954_create_effect;
+                 default: p36_type1954_sprites;
+                  length: p36_type1954_length;
+                    name: p36_type1954_name;
+                purchase: p36_type1954_purchase_sprites;
+     running_cost_factor: p36_type1954_running_cost_factor;
+                   speed: p36_type1954_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(p36_type1954, STR_LONGNAME_P36_TYPE1954)
+models_default_cargo_template(p36_type1954)
+allow_steamer(p36_type1954)
