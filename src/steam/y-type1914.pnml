@@ -1,0 +1,75 @@
+// y_type1914
+
+#define PROP_y_type1914_CF  8
+#define PROP_y_type1914_RC  189
+#define PROP_y_type1914_SD  60
+#define PROP_y_type1914_WT  60+47
+#define PROP_y_type1914_TE  112.0
+#define PROP_y_type1914_PR  1012
+#define PROP_y_type1914_CC  0
+
+#define IMAGEFILE  "src/steam/y-type1914.png"
+purchase_sprites(y_type1914, 0, 0)
+steam_sprites(6y, y_type1914_engine, 32,  40)
+tender_sprites(4, y_type1914_tender, 447,  40)
+#undef IMAGEFILE
+steamer_direction_template(y_type1914, _sprites_start)
+long_vehicle(y_type1914)
+
+engine_tender(y_type1914)
+engine_tender_length(y_type1914, 5, 1, 3, 1)
+engine_steam_1_effect(y_type1914_create_effect, -3, 13)
+engine_speed(y_type1914, PROP_y_type1914_SD)
+engine_penalise_speed0(y_type1914)
+switch (FEAT_TRAINS, SELF, y_type1914_running_cost_factor,
+[  STORE_TEMP(108, 0),  // Моторы
+   STORE_TEMP(15, 1),   // Бригада
+   STORE_TEMP(38, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(26, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_y_type1914_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_y_type1914_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_y_type1914_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                   // 189
+
+name_in_group(y_type1914, string(STR_NAME_IN_GROUP, string(STR_NAME_Y_SERIES), string(STR_NAME_Y_TYPE1914)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_Y_SERIES), string(STR_LONGNAME_Y_TYPE1914)))
+
+hint_engine(y_type1914,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1914, 1920,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, y_type1914, 1125) {
+  property {
+    name: string(STR_NAME_Y_TYPE1914);
+    vehicle_dates(1914, 1920, 40, 10, 5, PROP_y_type1914_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_y_type1914_PR, PROP_y_type1914_WT, PROP_y_type1914_TE, _lowspeed)
+    vehicle_group(steam_y_group)
+  }
+  graphics {
+    purchase_menu(PROP_y_type1914_CF, PROP_y_type1914_RC, PROP_y_type1914_SD, PROP_y_type1914_WT, PROP_y_type1914_TE, PROP_y_type1914_PR, PROP_y_type1914_CC)
+         additional_text: y_type1914_additional_text;
+        articulated_part: y_type1914_articulated_part;
+    bitmask_vehicle_info: y_type1914_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_y_type1914_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: y_type1914_create_effect;
+                 default: y_type1914_sprites;
+                  length: y_type1914_length;
+                    name: y_type1914_name;
+                purchase: y_type1914_purchase_sprites;
+     running_cost_factor: y_type1914_running_cost_factor;
+                   speed: y_type1914_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(y_type1914, STR_LONGNAME_Y_TYPE1914)
+models_default_cargo_template(y_type1914)
+allow_steamer(y_type1914)

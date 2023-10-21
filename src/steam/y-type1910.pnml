@@ -1,0 +1,75 @@
+// y_type1910
+
+#define PROP_y_type1910_CF  8
+#define PROP_y_type1910_RC  189
+#define PROP_y_type1910_SD  60
+#define PROP_y_type1910_WT  60+47
+#define PROP_y_type1910_TE  112.0
+#define PROP_y_type1910_PR  1012
+#define PROP_y_type1910_CC  0
+
+#define IMAGEFILE  "src/steam/y-type1910.png"
+purchase_sprites(y_type1910, 0, 0)
+steam_sprites(6y, y_type1910_engine, 32,  40)
+tender_sprites(4, y_type1910_tender, 447,  40)
+#undef IMAGEFILE
+steamer_direction_template(y_type1910, _sprites_start)
+long_vehicle(y_type1910)
+
+engine_tender(y_type1910)
+engine_tender_length(y_type1910, 5, 1, 3, 1)
+engine_steam_1_effect(y_type1910_create_effect, -3, 13)
+engine_speed(y_type1910, PROP_y_type1910_SD)
+engine_penalise_speed0(y_type1910)
+switch (FEAT_TRAINS, SELF, y_type1910_running_cost_factor,
+[  STORE_TEMP(108, 0),  // Моторы
+   STORE_TEMP(15, 1),   // Бригада
+   STORE_TEMP(38, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(26, 4),   // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_y_type1910_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_y_type1910_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_y_type1910_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                   // 189
+
+name_in_group(y_type1910, string(STR_NAME_IN_GROUP, string(STR_NAME_Y_SERIES), string(STR_NAME_Y_TYPE1910)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_Y_SERIES), string(STR_LONGNAME_Y_TYPE1910)))
+
+hint_engine(y_type1910,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1910, 1914,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, y_type1910, 419) {
+  property {
+    name: string(STR_NAME_Y_TYPE1910);
+    vehicle_dates(1910, 1914, 40, 10, 5, PROP_y_type1910_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_y_type1910_PR, PROP_y_type1910_WT, PROP_y_type1910_TE, _lowspeed)
+    vehicle_group(steam_y_group)
+  }
+  graphics {
+    purchase_menu(PROP_y_type1910_CF, PROP_y_type1910_RC, PROP_y_type1910_SD, PROP_y_type1910_WT, PROP_y_type1910_TE, PROP_y_type1910_PR, PROP_y_type1910_CC)
+         additional_text: y_type1910_additional_text;
+        articulated_part: y_type1910_articulated_part;
+    bitmask_vehicle_info: y_type1910_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_y_type1910_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: y_type1910_create_effect;
+                 default: y_type1910_sprites;
+                  length: y_type1910_length;
+                    name: y_type1910_name;
+                purchase: y_type1910_purchase_sprites;
+     running_cost_factor: y_type1910_running_cost_factor;
+                   speed: y_type1910_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(y_type1910, STR_LONGNAME_Y_TYPE1910)
+models_default_cargo_template(y_type1910)
+allow_steamer(y_type1910)
