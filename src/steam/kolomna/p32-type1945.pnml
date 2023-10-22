@@ -1,0 +1,86 @@
+// p32_type1945
+
+#define PROP_p32_type1945_CF  22
+#define PROP_p32_type1945_RC  514
+#define PROP_p32_type1945_SD  80
+#define PROP_p32_type1945_WT  102.1+82
+#define PROP_p32_type1945_TE  235.0
+#define PROP_p32_type1945_PR  2236
+#define PROP_p32_type1945_CC  0
+
+#define IMAGEFILE  "src/steam/kolomna/p32-type1945.png"
+purchase_sprites(p32_type1945, 0, 0)
+steam_sprites(8, p32_type1945_engine, 32,  40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/steam/kolomna/p32-type1945_t.png"
+tender_sprites(5, p32_type1945_tender, 32,  40)
+#undef IMAGEFILE
+steamer_direction_template(p32_type1945, _sprites_start)
+long_vehicle(p32_type1945)
+
+engine_tender(p32_type1945)
+engine_tender_length(p32_type1945, 7, 1, 4, 1)
+engine_steam_1_effect(p32_type1945_create_effect, -3, 13)
+engine_speed_change_after(p32_type1945, PROP_p32_type1945_SD, 90, 1956)
+engine_penalise_speed0(p32_type1945)
+
+switch (FEAT_TRAINS, SELF, p32_type1945_running_cost_factor,
+[  STORE_TEMP(293, 0),  // Моторы
+   STORE_TEMP(41, 1),   // Бригада
+   STORE_TEMP(103, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(72, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(PROP_p32_type1945_SD + 10 * (current_year >= 1956), 6),  // Скорость
+   STORE_TEMP(round(PROP_p32_type1945_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_p32_type1945_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                           // 514
+
+name_in_group_varsubgroup(p32_type1945, string(STR_NAME_IN_GROUP, string(STR_NAME_L_SERIES), string(STR_NAME_P32_TYPE1945)),
+                                        string(STR_NAME_IN_GROUP, string(STR_NAME_L_SERIES), string(STR_LONGNAME_P32_TYPE1945)),
+                                        string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+hint_engine_in(p32_type1945_b1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1945,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+hint_engine_in_chande_speed_on_date(p32_type1945_a1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1945,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     90, 1956)
+hint_change_after(p32_type1945, 1956)
+
+item (FEAT_TRAINS, p32_type1945, 408) {
+  property {
+    name: string(STR_NAME_P32_TYPE1945);
+    vehicle_dates(1945, 1945, 30, 10, 7, PROP_p32_type1945_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_p32_type1945_PR, PROP_p32_type1945_WT, PROP_p32_type1945_TE, _lowspeed)
+    vehicle_group_pre(p32_subgroup_kz)
+  }
+  graphics {
+    purchase_menu(PROP_p32_type1945_CF, PROP_p32_type1945_RC, PROP_p32_type1945_SD, PROP_p32_type1945_WT, PROP_p32_type1945_TE, PROP_p32_type1945_PR, PROP_p32_type1945_CC)
+         additional_text: p32_type1945_additional_text;
+        articulated_part: p32_type1945_articulated_part;
+    bitmask_vehicle_info: p32_type1945_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_p32_type1945_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: p32_type1945_create_effect;
+                 default: p32_type1945_sprites;
+                  length: p32_type1945_length;
+                    name: p32_type1945_name;
+                purchase: p32_type1945_purchase_sprites;
+     running_cost_factor: p32_type1945_running_cost_factor;
+                   speed: p32_type1945_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(p32_type1945, STR_LONGNAME_P32_TYPE1945)
+models_default_cargo_template(p32_type1945)
+allow_steamer(p32_type1945)

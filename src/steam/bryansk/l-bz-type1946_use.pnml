@@ -1,0 +1,82 @@
+// l_bz_type1946 uses p32_type1946, e_6606
+
+#define PROP_l_bz_type1946_CF  22
+#define PROP_l_bz_type1946_RC  514
+#define PROP_l_bz_type1946_SD  80
+#define PROP_l_bz_type1946_WT  103+82+9
+#define PROP_l_bz_type1946_TE  235.0
+#define PROP_l_bz_type1946_PR  2236
+#define PROP_l_bz_type1946_CC  0
+
+map_sprites(l_bz_type1946_purchase_sprites, p32_type1946_purchase_sprites)
+map_sprites(l_bz_type1946_engine_sprites_start, p32_type1946_engine_sprites_start)
+map_sprites(l_bz_type1946_tender_sprites_start, steam_e_6606_tender_sprites_start)
+steamer_direction_template(l_bz_type1946, _sprites_start)
+long_vehicle(l_bz_type1946)
+
+engine_tender(l_bz_type1946)
+engine_tender_length(l_bz_type1946, 7, 1, 5, 1)
+engine_steam_1_effect(l_bz_type1946_create_effect, -3, 13)
+engine_speed_change_after(l_bz_type1946, PROP_l_bz_type1946_SD, 90, 1956)
+engine_penalise_speed0(l_bz_type1946)
+
+switch (FEAT_TRAINS, SELF, l_bz_type1946_running_cost_factor,
+[  STORE_TEMP(293, 0),  // Моторы
+   STORE_TEMP(41, 1),   // Бригада
+   STORE_TEMP(103, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(72, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(PROP_l_bz_type1946_SD + 10 * (current_year >= 1956), 6),  // Скорость
+   STORE_TEMP(round(PROP_l_bz_type1946_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_l_bz_type1946_WT), 8)])                        // Максимальная масса
+{ all_running_cost_factor; }                                            // 514
+
+name_in_group_varsubgroup(l_bz_type1946, string(STR_NAME_IN_GROUP, string(STR_NAME_L_SERIES), string(STR_NAME_L_BZ_TYPE1946)),
+                                         string(STR_NAME_IN_GROUP, string(STR_NAME_L_SERIES), string(STR_LONGNAME_L_BZ_TYPE1946)),
+                                         string(STR_PURCHASE_HINT_FACTORY_BRYANSK))
+
+hint_engine_in(l_bz_type1946_b1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1946,
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK))
+hint_engine_in_chande_speed_on_date(l_bz_type1946_a1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1946,
+     string(STR_PURCHASE_HINT_FACTORY_BRYANSK),
+     90, 1956)
+hint_change_after(l_bz_type1946, 1956)
+
+item (FEAT_TRAINS, l_bz_type1946, 1137) {
+  property {
+    name: string(STR_NAME_L_BZ_TYPE1946);
+    vehicle_dates(1946, 1946, 30, 10, 7, PROP_l_bz_type1946_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_l_bz_type1946_PR, PROP_l_bz_type1946_WT, PROP_l_bz_type1946_TE, _lowspeed)
+    vehicle_group_pre(l_subgroup_bz)
+  }
+  graphics {
+    purchase_menu(PROP_l_bz_type1946_CF, PROP_l_bz_type1946_RC, PROP_l_bz_type1946_SD, PROP_l_bz_type1946_WT, PROP_l_bz_type1946_TE, PROP_l_bz_type1946_PR, PROP_l_bz_type1946_CC)
+         additional_text: l_bz_type1946_additional_text;
+        articulated_part: l_bz_type1946_articulated_part;
+    bitmask_vehicle_info: l_bz_type1946_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_l_bz_type1946_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: l_bz_type1946_create_effect;
+                 default: l_bz_type1946_sprites;
+                  length: l_bz_type1946_length;
+                    name: l_bz_type1946_name;
+                purchase: l_bz_type1946_purchase_sprites;
+     running_cost_factor: l_bz_type1946_running_cost_factor;
+                   speed: l_bz_type1946_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(l_bz_type1946, STR_LONGNAME_L_BZ_TYPE1946)
+models_default_cargo_template(l_bz_type1946)
+allow_steamer(l_bz_type1946)

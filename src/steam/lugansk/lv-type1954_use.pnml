@@ -1,0 +1,84 @@
+// lv_type1954 uses lv_type1951
+
+#define PROP_lv_type1954_CF  31
+#define PROP_lv_type1954_RC  651
+#define PROP_lv_type1954_SD  80
+#define PROP_lv_type1954_WT  122+123
+#define PROP_lv_type1954_TE  259.0
+#define PROP_lv_type1954_PR  3084
+#define PROP_lv_type1954_CC  0
+
+#define IMAGEFILE  "src/steam/lugansk/lv-type1951.png"
+purchase_sprites(lv_type1954, 101, 0)
+tender_sprites(7, lv_type1954_tender, 447,  40)
+#undef IMAGEFILE
+map_sprites(lv_type1954_engine_sprites_start, lv_type1951_engine_sprites_start)
+steamer_direction_template(lv_type1954, _sprites_start)
+long_vehicle(lv_type1954)
+
+engine_tender(lv_type1954)
+engine_tender_length(lv_type1954, 8, 1, 6, 1)
+engine_steam_1_effect(lv_type1954_create_effect, -3, 13)
+engine_speed_change_after(lv_type1954, PROP_lv_type1954_SD, 90, 1956)
+engine_penalise_speed0(lv_type1954)
+
+switch (FEAT_TRAINS, SELF, lv_type1954_running_cost_factor,
+[  STORE_TEMP(400, 0),  // Моторы
+   STORE_TEMP(56, 1),   // Бригада
+   STORE_TEMP(140, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(98, 4),   // ТО
+   STORE_TEMP(7, 5),    // Сертификация
+
+   STORE_TEMP(PROP_lv_type1954_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_lv_type1954_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_lv_type1954_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                    // 702
+
+name_in_group_varsub_subgroup(lv_type1954, string(STR_NAME_IN_GROUP, string(STR_NAME_L_SERIES), string(STR_NAME_LV_TYPE1954)),
+                                           string(STR_NAME_IN_GROUP, string(STR_NAME_L_SERIES), string(STR_LONGNAME_LV_TYPE1954)),
+                                           fact_lugansk(), string(STR_NAME_LV))
+
+hint_engine(lv_type1954_b1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1954, 1956,
+     fact_lugansk())
+hint_engine_chande_speed_on_date(lv_type1954_a1956,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1954, 1956,
+     fact_lugansk(),
+     90, 1956)
+hint_change_after(lv_type1954, 1956)
+
+item (FEAT_TRAINS, lv_type1954, 1130) {
+  property {
+    name: string(STR_NAME_LV_TYPE1954);
+    vehicle_dates(1954, 1956, 20, 10, 8, PROP_lv_type1954_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_lv_type1954_PR, PROP_lv_type1954_WT, PROP_lv_type1954_TE, _lowspeed)
+    vehicle_group(lv_type1951)
+  }
+  graphics {
+    purchase_menu(PROP_lv_type1954_CF, PROP_lv_type1954_RC, PROP_lv_type1954_SD, PROP_lv_type1954_WT, PROP_lv_type1954_TE, PROP_lv_type1954_PR, PROP_lv_type1954_CC)
+         additional_text: lv_type1954_additional_text;
+        articulated_part: lv_type1954_articulated_part;
+    bitmask_vehicle_info: lv_type1954_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_lv_type1954_CC;
+          colour_mapping: return ttdall_cc + 0x03;
+           create_effect: lv_type1954_create_effect;
+                 default: lv_type1954_sprites;
+                  length: lv_type1954_length;
+                    name: lv_type1954_name;
+                purchase: lv_type1954_purchase_sprites;
+     running_cost_factor: lv_type1954_running_cost_factor;
+                   speed: lv_type1954_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(lv_type1954, STR_LONGNAME_LV_TYPE1954)
+models_default_cargo_template(lv_type1954)
+allow_steamer(lv_type1954)
