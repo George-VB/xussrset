@@ -971,6 +971,23 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                          \
      name##_additional_text_shown; }                                                                         \
 
+#define hint_engine_in_4fact(name, strengtype, strengsmetype, in, factory, factory2, factory3, factory4)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                  \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, in) | (string(STR_PURCHASE_HINT_LIST4) << 16), 0x101),          \
+  STORE_TEMP(factory | (factory2 << 16), 0x102),                                                          \
+  STORE_TEMP(factory3 | (factory4 << 16), 0x103) ])                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE); }                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                 \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST4) | (factory << 16), 0x101),                                   \
+  STORE_TEMP(factory2 | (factory3 << 16), 0x102),                                                         \
+  STORE_TEMP(factory4, 0x103) ])                                                                          \
+{ return string(STR_PURCHASE_HINT_ENGINE_NODATES); }                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                    \
+{ 1: name##_additional_text_hidden;                                                                       \
+     name##_additional_text_shown; }                                                                      \
+
 // Описание локомотива с 5 производителями
 #define hint_engine_5fact(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, factory4, factory5)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                               \

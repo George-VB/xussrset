@@ -1,0 +1,81 @@
+// izhitsa_type1914 uses izhitsa_type1908
+
+#define PROP_izhitsa_type1914_CF  7
+#define PROP_izhitsa_type1914_RC  134
+#define PROP_izhitsa_type1914_SD  50
+#define PROP_izhitsa_type1914_WT  64+47
+#define PROP_izhitsa_type1914_TE  121.0
+#define PROP_izhitsa_type1914_PR  870
+#define PROP_izhitsa_type1914_CC  0
+
+map_sprites(izhitsa_type1914_purchase_sprites, izhitsa_type1908_purchase_sprites)
+map_sprites(izhitsa_type1914_engine_sprites_start, izhitsa_type1908_engine_sprites_start)
+map_sprites(izhitsa_type1914_tender_sprites_start, izhitsa_type1908_tender_sprites_start)
+steamer_direction_template(izhitsa_type1914, _sprites_start)
+long_vehicle(izhitsa_type1914)
+
+engine_tender(izhitsa_type1914)
+engine_tender_length(izhitsa_type1914, 5, 1, 3, 1)
+engine_steam_1_effect(izhitsa_type1914_create_effect, -3, 11)
+engine_speed_change_after(izhitsa_type1914, PROP_izhitsa_type1914_SD, 55, 1920)
+engine_penalise_speed0(izhitsa_type1914)
+
+switch (FEAT_TRAINS, SELF, izhitsa_type1914_running_cost_factor,
+[  STORE_TEMP(93, 0),  // Моторы
+   STORE_TEMP(13, 1),  // Бригада
+   STORE_TEMP(33, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(24, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_izhitsa_type1914_SD + 5 * (current_year >= 1920), 6),  // Скорость
+   STORE_TEMP(round(PROP_izhitsa_type1914_WT), 7),                        // Тара
+   STORE_TEMP(round(PROP_izhitsa_type1914_WT), 8)])                       // Максимальная масса
+{ all_running_cost_factor; }                                              // 164
+
+name_in_group(izhitsa_type1914, string(STR_NAME_IN_GROUP, string(STR_NAME_IZHITSA_SERIES), string(STR_NAME_IZHITSA_TYPE1914)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_IZHITSA_SERIES), string(STR_LONGNAME_IZHITSA_TYPE1914)))
+
+hint_engine_in(izhitsa_type1914_b1920,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1914,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+hint_engine_chande_speed_on_date_in(izhitsa_type1914_a1920,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1914,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+     55, 1920)
+hint_change_after(izhitsa_type1914, 1920)
+
+item (FEAT_TRAINS, izhitsa_type1914, 504) {
+  property {
+    name: string(STR_NAME_IZHITSA_TYPE1914);
+    vehicle_dates(1914, 1914, 40, 10, 5, PROP_izhitsa_type1914_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_izhitsa_type1914_PR, PROP_izhitsa_type1914_WT, PROP_izhitsa_type1914_TE, _lowspeed)
+    vehicle_group(steam_izhitsa_group)
+  }
+  graphics {
+    purchase_menu(PROP_izhitsa_type1914_CF, PROP_izhitsa_type1914_RC, PROP_izhitsa_type1914_SD, PROP_izhitsa_type1914_WT, PROP_izhitsa_type1914_TE, PROP_izhitsa_type1914_PR, PROP_izhitsa_type1914_CC)
+         additional_text: izhitsa_type1914_additional_text;
+        articulated_part: izhitsa_type1914_articulated_part;
+    bitmask_vehicle_info: izhitsa_type1914_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_izhitsa_type1914_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: izhitsa_type1914_create_effect;
+                 default: izhitsa_type1914_sprites;
+                  length: izhitsa_type1914_length;
+                    name: izhitsa_type1914_name;
+                purchase: izhitsa_type1914_purchase_sprites;
+     running_cost_factor: izhitsa_type1914_running_cost_factor;
+                   speed: izhitsa_type1914_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(izhitsa_type1914, STR_LONGNAME_IZHITSA_TYPE1914)
+models_default_cargo_template(izhitsa_type1914)
+allow_steamer(izhitsa_type1914)
