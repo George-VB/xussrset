@@ -1,0 +1,69 @@
+// f_type1879 uses f_type1871
+
+#define PROP_f_type1879_CF  8
+#define PROP_f_type1879_RC  179
+#define PROP_f_type1879_SD  45
+#define PROP_f_type1879_WT  81
+#define PROP_f_type1879_TE  90.0
+#define PROP_f_type1879_PR  950
+#define PROP_f_type1879_CC  0
+
+map_sprites(f_type1879_purchase_sprites, f_type1871_purchase_sprites)
+map_sprites(f_type1879_sprites_start, f_type1871_sprites_start)
+long_vehicle(f_type1879)
+
+engine_speed(f_type1879, PROP_f_type1879_SD)
+engine_penalise_speed0(f_type1879)
+
+switch (FEAT_TRAINS, SELF, f_type1879_running_cost_factor,
+[  STORE_TEMP(103, 0),  // Моторы
+   STORE_TEMP(14, 1),   // Бригада
+   STORE_TEMP(36, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(25, 4),   // ТО
+   STORE_TEMP(1, 5),    // Сертификация
+
+   STORE_TEMP(PROP_f_type1879_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_f_type1879_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_f_type1879_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                   // 145 + 34 - 1
+
+name_in_group(f_type1879, string(STR_NAME_IN_GROUP, string(STR_NAME_F_STEAM_SERIES), string(STR_NAME_F_TYPE1879)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_F_STEAM_SERIES), string(STR_LONGNAME_F_TYPE1879)))
+
+hint_engine_in(f_type1879,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SHUNTING_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1879,
+     string(STR_PURCHASE_HINT_FACTORY_SIGL))
+
+item (FEAT_TRAINS, f_type1879, 1143) {
+  property {
+    name: string(STR_NAME_F_TYPE1879);
+    vehicle_dates(1879, 1879, 60, 10, 7, PROP_f_type1879_CF)
+    vehicle_cargo()
+    vehicle_diesel(PROP_f_type1879_PR, PROP_f_type1879_WT, PROP_f_type1879_TE, _lowspeed)
+    vehicle_group(steam_f_group)
+  }
+  graphics {
+    purchase_menu(PROP_f_type1879_CF, PROP_f_type1879_RC, PROP_f_type1879_SD, PROP_f_type1879_WT, PROP_f_type1879_TE, PROP_f_type1879_PR, PROP_f_type1879_CC)
+         additional_text: f_type1879_additional_text;
+        articulated_part: articulated_part_dummy1;
+    bitmask_vehicle_info: f_type1879_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_f_type1879_CC;
+      cargo_subtype_text: steam_freight_cargo_subtype_text;
+          colour_mapping: steam_freight_colour_mapping;
+           create_effect: f_type1871_create_effect;
+                 default: f_type1879_sprites;
+                    name: f_type1879_name;
+                purchase: f_type1879_purchase_sprites;
+     running_cost_factor: f_type1879_running_cost_factor;
+                   speed: f_type1879_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(f_type1879, STR_LONGNAME_F_TYPE1879)
+models_default_cargo_template(f_type1879)
+allow_steamer(f_type1879)
