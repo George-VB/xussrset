@@ -1,0 +1,77 @@
+// e_type1920 uses steam_e_9555a (engine) steam_e_6606 (tender)
+
+#define PROP_e_type1920_CF  11
+#define PROP_e_type1920_RC  263
+#define PROP_e_type1920_SD  55
+#define PROP_e_type1920_WT  82+72
+#define PROP_e_type1920_TE  216.0
+#define PROP_e_type1920_PR  1306
+#define PROP_e_type1920_CC  0
+
+map_sprites(e_type1920_purchase_sprites, steam_e_9555a_purchase_sprites)
+
+engine_tender(e_type1920)
+engine_tender_length(e_type1920, 6, 1, 4, 1)
+engine_steam_1_effect(e_type1920_create_effect, -3, 12)
+engine_speed_change_after(e_type1920, PROP_e_type1920_SD, 65, 1936)
+engine_penalise_speed0(e_type1920)
+
+switch (FEAT_TRAINS, SELF, e_type1920_running_cost_factor,
+[  STORE_TEMP(150, 0),  // Моторы
+   STORE_TEMP(21, 1),   // Бригада
+   STORE_TEMP(53, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(37, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_e_type1920_SD  + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_e_type1920_WT, 7),                                 // Тара
+   STORE_TEMP(PROP_e_type1920_WT, 8)])                                // Максимальная масса
+{ all_running_cost_factor; }                                          // 263
+
+name_in_group(e_type1920, string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_NAME_E_TYPE1920)),
+                          string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_LONGNAME_E_TYPE1920)))
+
+hint_engine(e_type1920_b1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1920, 1926,
+     fact_lugansk())
+hint_engine_chande_speed_on_date(e_type1920_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1920, 1926,
+     fact_lugansk(),
+     65, 1936)
+hint_change_after(e_type1920, 1936)
+
+item (FEAT_TRAINS, e_type1920, 1150) {
+  property {
+    name: string(STR_NAME_E_TYPE1920);
+    vehicle_dates(1920, 1926, 40, 10, 6, PROP_e_type1920_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_e_type1920_PR, PROP_e_type1920_WT, PROP_e_type1920_TE, _lowspeed)
+    vehicle_group(steam_e_group)
+  }
+  graphics {
+    purchase_menu(PROP_e_type1920_CF, PROP_e_type1920_RC, PROP_e_type1920_SD, PROP_e_type1920_WT, PROP_e_type1920_TE, PROP_e_type1920_PR, PROP_e_type1920_CC)
+         additional_text: e_type1920_additional_text;
+        articulated_part: e_type1920_articulated_part;
+    bitmask_vehicle_info: e_type1920_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_e_type1920_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: e_type1920_create_effect;
+                 default: steam_e_6606_sprites;
+                  length: e_type1920_length;
+                    name: e_type1920_name;
+                purchase: e_type1920_purchase_sprites;
+     running_cost_factor: e_type1920_running_cost_factor;
+                   speed: e_type1920_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(e_type1920, STR_LONGNAME_E_TYPE1920)
+models_default_cargo_template(e_type1920)
+allow_steamer(e_type1920)

@@ -1,0 +1,87 @@
+// em_type1933 uses em_type1933 (engine) steam_e_6606 (tender)
+
+#define PROP_em_type1933_CF  12
+#define PROP_em_type1933_RC  269
+#define PROP_em_type1933_SD  55
+#define PROP_em_type1933_WT  86+72
+#define PROP_em_type1933_TE  218.0
+#define PROP_em_type1933_PR  1460
+#define PROP_em_type1933_CC  0
+
+map_sprites(em_type1933_purchase_sprites, em_type1931_purchase_sprites)
+map_sprites(em_type1933_tender_sprites_start, steam_e_6606_tender_sprites_start)
+map_sprites(em_type1933_engine_sprites_start, em_type1931_engine_sprites_start)
+steamer_direction_template(em_type1933, _sprites_start)
+long_vehicle(em_type1933)
+
+engine_tender(em_type1933)
+engine_tender_length(em_type1933, 6, 1, 4, 1)
+engine_speed_change_after(em_type1933, PROP_em_type1933_SD, 65, 1936)
+engine_penalise_speed0(em_type1933)
+
+switch (FEAT_TRAINS, SELF, em_type1933_running_cost_factor,
+[  STORE_TEMP(153, 0),  // Моторы
+   STORE_TEMP(22, 1),   // Бригада
+   STORE_TEMP(54, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(38, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_em_type1933_SD + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_em_type1933_WT, 7),                                // Тара
+   STORE_TEMP(PROP_em_type1933_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                          // 269
+
+name_in_group_subgroup(em_type1933, string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_NAME_EM_TYPE1933)),
+                                    string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_LONGNAME_EM_TYPE1933)),
+                                    string(STR_NAME_EM))
+
+hint_engine_4fact(em_type1933_b1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1933, 1934,
+     fact_lugansk(),
+     fact_kharkiv(),
+     fact_bryansk(),
+     fact_sormovo())
+hint_engine_4fact_chande_speed_on_date(em_type1933_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1933, 1934,
+     fact_lugansk(),
+     fact_kharkiv(),
+     fact_bryansk(),
+     fact_sormovo(),
+     65, 1936)
+hint_change_after(em_type1933, 1936)
+
+item (FEAT_TRAINS, em_type1933, 1148) {
+  property {
+    name: string(STR_NAME_EM_TYPE1933);
+    vehicle_dates(1933, 1934, 30, 10, 6, PROP_em_type1933_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_em_type1933_PR, PROP_em_type1933_WT, PROP_em_type1933_TE, _lowspeed)
+    vehicle_group(em_type1931)
+  }
+  graphics {
+    purchase_menu(PROP_em_type1933_CF, PROP_em_type1933_RC, PROP_em_type1933_SD, PROP_em_type1933_WT, PROP_em_type1933_TE, PROP_em_type1933_PR, PROP_em_type1933_CC)
+         additional_text: em_type1933_additional_text;
+        articulated_part: em_type1933_articulated_part;
+    bitmask_vehicle_info: em_type1933_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_em_type1933_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: steam_e_6606_create_effect;
+                 default: em_type1933_sprites;
+                  length: em_type1933_length;
+                    name: em_type1933_name;
+                purchase: em_type1933_purchase_sprites;
+     running_cost_factor: em_type1933_running_cost_factor;
+                   speed: em_type1933_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(em_type1933, STR_LONGNAME_EM_TYPE1933)
+models_default_cargo_template(em_type1933)
+allow_steamer(em_type1933)

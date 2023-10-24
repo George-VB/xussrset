@@ -1,0 +1,74 @@
+// p28_type1943 uses er_type1933 (engine) steam_e_6606 (tender)
+
+#define PROP_p28_type1943_CF  14
+#define PROP_p28_type1943_RC  314
+#define PROP_p28_type1943_SD  65
+#define PROP_p28_type1943_WT  84+68
+#define PROP_p28_type1943_TE  229.0
+#define PROP_p28_type1943_PR  1500
+#define PROP_p28_type1943_CC  0
+
+map_sprites(p28_type1943_purchase_sprites, er_type1933_purchase_sprites)
+map_sprites(p28_type1943_engine_sprites_start, er_type1933_engine_sprites_start)
+map_sprites(p28_type1943_tender_sprites_start, steam_e_6606_tender_sprites_start)
+steamer_direction_template(p28_type1943, _sprites_start)
+long_vehicle(p28_type1943)
+
+engine_tender(p28_type1943)
+engine_tender_length(p28_type1943, 6, 1, 4, 1)
+engine_speed(p28_type1943, PROP_p28_type1943_SD)
+engine_penalise_speed0(p28_type1943)
+
+switch (FEAT_TRAINS, SELF, p28_type1943_running_cost_factor,
+[  STORE_TEMP(179, 0),  // Моторы
+   STORE_TEMP(25, 1),   // Бригада
+   STORE_TEMP(63, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(44, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_p28_type1943_SD, 6),   // Скорость
+   STORE_TEMP(PROP_p28_type1943_WT, 7),   // Тара
+   STORE_TEMP(PROP_p28_type1943_WT, 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 314
+
+name_in_group_subgroup(p28_type1943, string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_NAME_P28_TYPE1943)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_LONGNAME_P28_TYPE1943)),
+                                     string(STR_NAME_ER))
+
+hint_engine(p28_type1943,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1943, 1944,
+     string(STR_PURCHASE_HINT_FACTORY_KOLOMNA))
+
+item (FEAT_TRAINS, p28_type1943, 1145) {
+  property {
+    name: string(STR_NAME_P28_TYPE1943);
+    vehicle_dates(1943, 1944, 40, 10, 6, PROP_p28_type1943_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_p28_type1943_PR, PROP_p28_type1943_WT, PROP_p28_type1943_TE, _lowspeed)
+    vehicle_group(er_type1933)
+  }
+  graphics {
+    purchase_menu(PROP_p28_type1943_CF, PROP_p28_type1943_RC, PROP_p28_type1943_SD, PROP_p28_type1943_WT, PROP_p28_type1943_TE, PROP_p28_type1943_PR, PROP_p28_type1943_CC)
+         additional_text: p28_type1943_additional_text;
+        articulated_part: p28_type1943_articulated_part;
+    bitmask_vehicle_info: p28_type1943_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_p28_type1943_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: steam_e_6606_create_effect;
+                 default: p28_type1943_sprites;
+                  length: p28_type1943_length;
+                    name: p28_type1943_name;
+                purchase: p28_type1943_purchase_sprites;
+     running_cost_factor: p28_type1943_running_cost_factor;
+                   speed: p28_type1943_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(p28_type1943, STR_LONGNAME_P28_TYPE1943)
+models_default_cargo_template(p28_type1943)
+allow_steamer(p28_type1943)

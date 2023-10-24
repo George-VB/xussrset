@@ -1680,6 +1680,24 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)          
 { 1: name##_additional_text_hidden;                                                                    \
      name##_additional_text_shown; }                                                                   \
 
+#define hint_engine_2fact_chande_speed_on_date(name, strengtype, strengsmetype, from, to, factory, factory2, speed, date)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                   \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x101),                 \
+  STORE_TEMP(factory | (factory2 << 16), 0x102),                                                                           \
+  STORE_TEMP(string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) | (speed << 16), 0x103),                                       \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, date), 0x104) ])                                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                                       \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                  \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x101),                                                    \
+  STORE_TEMP(factory2 | (string(STR_PURCHASE_HINT_SPEED_CHANGE_ON_DATE) << 16), 0x102),                                    \
+  STORE_TEMP(speed | (string(STR_PURCHASE_HINT_IN, date) << 16), 0x103) ])                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                                               \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                     \
+{ 1: name##_additional_text_hidden;                                                                                        \
+     name##_additional_text_shown; }                                                                                       \
+
 // Описание локомотива с 3 производителями с примичанием
 #define hint_engine_3fact_comment(name, strengtype, strengsmetype, from, to, factory, factory2, factory3, comment)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                            \
@@ -2583,6 +2601,11 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 #define fact_baltiskysp() (current_year < 1991 ? string(STR_PURCHASE_HINT_FACTORY_BALTISKY_PLANT)  :       \
                                                   string(STR_PURCHASE_HINT_FACTORY_BALTISKY_PLANT_AUSSR))  \
 
+#define fact_bryansk() (current_year < 1923 ? string(STR_PURCHASE_HINT_FACTORY_BRYANSK_A1873)  :  \
+                       (current_year < 1942 ? string(STR_PURCHASE_HINT_FACTORY_BRYANSK_A1923)  :  \
+                       (current_year < 1956 ? string(STR_PURCHASE_HINT_FACTORY_BRYANSK_A1943)  :  \
+                                              string(STR_PURCHASE_HINT_FACTORY_BRYANSK_A1956))))  \
+
 #define fact_cail() (current_year < 1883 ? string(STR_PURCHASE_HINT_FACTORY_CAIL)        :    \
                     (current_year < 1898 ? string(STR_PURCHASE_HINT_FACTORY_CAIL_A1883)  :    \
                     (current_year < 1958 ? string(STR_PURCHASE_HINT_FACTORY_CAIL_A1898)  :    \
@@ -2665,6 +2688,11 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
                      (current_year < 1965 ? string(STR_PURCHASE_HINT_FACTORY_SKODA_A1953)  :  \
                      (current_year < 1993 ? string(STR_PURCHASE_HINT_FACTORY_SKODA)        :  \
                                             string(STR_PURCHASE_HINT_FACTORY_SKODA_A1993))))  \
+
+#define fact_sormovo() (current_year < 1922 ? string(STR_PURCHASE_HINT_FACTORY_SORMOVO_B1922)  :  \
+                       (current_year < 1932 ? string(STR_PURCHASE_HINT_FACTORY_SORMOVO_A1922)  :  \
+                       (current_year < 1991 ? string(STR_PURCHASE_HINT_FACTORY_SORMOVO_A1932)  :  \
+                                            string(STR_PURCHASE_HINT_FACTORY_SORMOVO_A1922))))    \
 
 #define fact_stakhanovcw() (current_year < USSREND ? string(STR_PURCHASE_HINT_FACTORY_STAKHANOV_CBW)  :      \
                                                      string(STR_PURCHASE_HINT_FACTORY_STAKHANOV_CBW_AUSSR))  \

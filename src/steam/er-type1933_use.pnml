@@ -1,0 +1,84 @@
+// er_type1933 uses steam_e_6606
+
+#define PROP_er_type1933_CF  14
+#define PROP_er_type1933_RC  314
+#define PROP_er_type1933_SD  55
+#define PROP_er_type1933_WT  84+68
+#define PROP_er_type1933_TE  229.0
+#define PROP_er_type1933_PR  1500
+#define PROP_er_type1933_CC  0
+
+#define IMAGEFILE  "src/steam/er-type1933.png"
+purchase_sprites(er_type1933, 0, 0)
+steam_sprites(7, er_type1933_engine, 32, 40)
+#undef IMAGEFILE
+map_sprites(er_type1933_tender_sprites_start, steam_e_6606_tender_sprites_start)
+steamer_direction_template(er_type1933, _sprites_start)
+long_vehicle(er_type1933)
+
+engine_tender(er_type1933)
+engine_tender_length(er_type1933, 6, 1, 4, 1)
+engine_speed_change_after(er_type1933, PROP_er_type1933_SD, 65, 1936)
+engine_penalise_speed0(er_type1933)
+switch (FEAT_TRAINS, SELF, er_type1933_running_cost_factor,
+[  STORE_TEMP(179, 0),  // Моторы
+   STORE_TEMP(25, 1),   // Бригада
+   STORE_TEMP(63, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(44, 4),   // ТО
+   STORE_TEMP(3, 5),    // Сертификация
+
+   STORE_TEMP(PROP_er_type1933_SD + 10 * (current_year >= 1936), 6),  // Скорость
+   STORE_TEMP(PROP_er_type1933_WT, 7),                                // Тара
+   STORE_TEMP(PROP_er_type1933_WT, 8)])                               // Максимальная масса
+{ all_running_cost_factor; }                                          // 314
+
+name_in_group_subgroup(er_type1933, string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_NAME_ER_TYPE1933)),
+                                    string(STR_NAME_IN_GROUP, string(STR_NAME_E_SERIES), string(STR_LONGNAME_ER_TYPE1933)),
+                                    string(STR_NAME_ER))
+
+hint_engine_2fact(er_type1933_b1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1933, 1936,
+     fact_bryansk(),
+     fact_lugansk())
+hint_engine_2fact_chande_speed_on_date(er_type1933_a1936,
+     STR_PURCHASE_HINT_ENGINE_TYPE_FREIGHT_STEAM,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1933, 1936,
+     fact_bryansk(),
+     fact_lugansk(),
+     65, 1936)
+hint_change_after(er_type1933, 1936)
+
+item (FEAT_TRAINS, er_type1933, 333) {
+  property {
+    name: string(STR_NAME_ER_TYPE1933);
+    vehicle_dates(1933, 1936, 40, 10, 6, PROP_er_type1933_CF)
+    vehicle_cargo()
+    vehicle_steam(PROP_er_type1933_PR, PROP_er_type1933_WT, PROP_er_type1933_TE, _lowspeed)
+    vehicle_group(steam_e_group)
+  }
+  graphics {
+    purchase_menu(PROP_er_type1933_CF, PROP_er_type1933_RC, PROP_er_type1933_SD, PROP_er_type1933_WT, PROP_er_type1933_TE, PROP_er_type1933_PR, PROP_er_type1933_CC)
+         additional_text: er_type1933_additional_text;
+        articulated_part: er_type1933_articulated_part;
+    bitmask_vehicle_info: er_type1933_bitmask_vehicle_info;
+        can_attach_wagon: any_can_attach_wagon;
+          cargo_capacity: return PROP_er_type1933_CC;
+          colour_mapping: any_cc_colour;
+           create_effect: steam_e_6606_create_effect;
+                 default: er_type1933_sprites;
+                  length: er_type1933_length;
+                    name: er_type1933_name;
+                purchase: er_type1933_purchase_sprites;
+     running_cost_factor: er_type1933_running_cost_factor;
+                   speed: er_type1933_speed;
+              start_stop: any_start_stop;
+  }
+}
+
+long_name_template(er_type1933, STR_LONGNAME_ER_TYPE1933)
+models_default_cargo_template(er_type1933)
+allow_steamer(er_type1933)
