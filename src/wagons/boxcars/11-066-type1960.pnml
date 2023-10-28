@@ -1,0 +1,148 @@
+// boxcar_11_066_type1960
+
+#define PROP_boxcar_11_066_type1960_CF  42
+#define PROP_boxcar_11_066_type1960_RC  16
+#define PROP_boxcar_11_066_type1960_SD  120
+#define PROP_boxcar_11_066_type1960_WT  22
+#define PROP_boxcar_11_066_type1960_TE  0
+#define PROP_boxcar_11_066_type1960_PR  0
+#define PROP_boxcar_11_066_type1960_CC  113
+#define PROP_boxcar_11_066_type1960_LC  64
+
+#define IMAGEFILE  "src/wagons/boxcars/11-066-type1960.png"
+purchase_sprites(boxcar_11_066_type1960, 0, 0)
+combo_layout_boxcartop_template(boxcar_11_066_type1960, 9, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_sprites_top1_cc1,
+  STORE_TEMP(ttdall_cc + 0x71, 0x100))
+{ boxcar_11_066_type1960_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_sprites_top1_cc2,
+  STORE_TEMP(ttdall_cc + 0x72, 0x100))
+{ boxcar_11_066_type1960_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_sprites_top1_cc3,
+  STORE_TEMP(ttdall_cc + 0x73, 0x100))
+{ boxcar_11_066_type1960_sprites_top; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_sprites_top_cc,
+[  set_offset_to(1),
+   prev_vehicle_randombits() >> 4 & 0x03])
+{
+  0: boxcar_11_066_type1960_sprites_top1_cc1;
+  1: boxcar_11_066_type1960_sprites_top1_cc3;
+     boxcar_11_066_type1960_sprites_top1_cc2;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: boxcar_11_066_type1960_sprites_back;
+  1: cargo9_good_bc_sprites;
+  2: boxcar_11_066_type1960_sprites_front;
+  3: boxcar_11_066_type1960_sprites_top_cc;
+     return CB_FAILED;
+}
+
+long_vehicle(boxcar_11_066_type1960)
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+   0..3: return ttdall_cc + 0x71;
+   4..6: return ttdall_cc + 0x7B;
+      7: return ttdall_cc + 0x1A;
+      8: return ttdall_cc + 0x19;
+  9..12: return ttdall_cc + 0x6B;
+         return ttdall_cc + 0x6C;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_colour_mapping,
+  cargo_subtype)
+{
+  0: boxcar_11_066_type1960_random;
+  1: return ttdall_cc + 0x71;
+  2: return ttdall_cc + 0x7B;
+  3: return ttdall_cc + 0x1A;
+  4: return ttdall_cc + 0x19;
+  5: return ttdall_cc + 0x6B;
+  6: return ttdall_cc + 0x6C;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_71);
+  2: return string(STR_REFIT_TTD_7B);
+  3: return string(STR_REFIT_TTD_1A);
+  4: return string(STR_REFIT_TTD_19);
+  5: return string(STR_REFIT_TTD_6B);
+  6: return string(STR_REFIT_TTD_6C);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_cargo_capacity,
+[  STORE_TEMP(PROP_boxcar_11_066_type1960_LC, 0),  // т
+   STORE_TEMP(120, 1),                             // м³
+   STORE_TEMP(38, 2),                              // м²
+   STORE_TEMP(0, 3),                               // палетомест
+   STORE_TEMP(9, 4)])                              // шаблон
+{ box_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(11, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(5, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_boxcar_11_066_type1960_SD, 6),                                    // Скорость
+   STORE_TEMP(PROP_boxcar_11_066_type1960_WT, 7),                                    // Тара
+   STORE_TEMP(PROP_boxcar_11_066_type1960_WT + PROP_boxcar_11_066_type1960_LC, 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                         // 16
+
+switch (FEAT_TRAINS, SELF, boxcar_11_066_type1960_loading_speed,
+  STORE_TEMP(10, 2))
+{ all_wagons_box_loading_speed; }
+
+name_in_group(boxcar_11_066_type1960, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_SERIES), string(STR_NAME_BOXCAR_11_066_TYPE1960)),
+                                      string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_SERIES), string(STR_LONGNAME_BOXCAR_11_066_TYPE1960)))
+
+hint_wagon(boxcar_11_066_type1960,
+           PROP_boxcar_11_066_type1960_LC, 120,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
+           1960, 1979,
+           string(STR_PURCHASE_HINT_FACTORY_ALTAI_CW))
+
+item (FEAT_TRAINS, boxcar_11_066_type1960, 256) {
+  property {
+    name: string(STR_NAME_BOXCAR_11_066_TYPE1960);
+    vehicle_dates(1960, 1979, 32, 10, 8, PROP_boxcar_11_066_type1960_CF)
+    vehicle_wagon(PROP_boxcar_11_066_type1960_WT, PROP_boxcar_11_066_type1960_SD)
+    vehicle_group(boxcars_group)
+    cargo_allow_refit: [cargo_all_boxcarlist()];
+  }
+  graphics {
+    purchase_menu_wagon(PROP_boxcar_11_066_type1960_CF, PROP_boxcar_11_066_type1960_RC, PROP_boxcar_11_066_type1960_SD, PROP_boxcar_11_066_type1960_WT, PROP_boxcar_11_066_type1960_TE, PROP_boxcar_11_066_type1960_PR, PROP_boxcar_11_066_type1960_LC)
+        additional_text: boxcar_11_066_type1960_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: boxcar_11_066_type1960_cargo_capacity;
+     cargo_subtype_text: boxcar_11_066_type1960_cargo_subtype_text;
+         colour_mapping: boxcar_11_066_type1960_colour_mapping;
+                default: boxcar_11_066_type1960_sprites;
+          loading_speed: boxcar_11_066_type1960_loading_speed;
+                   name: boxcar_11_066_type1960_name;
+               purchase: boxcar_11_066_type1960_purchase_sprites;
+             refit_cost: boxcar_refit_cost;
+    running_cost_factor: boxcar_11_066_type1960_running_cost_factor;
+  }
+}
+
+long_name_template(boxcar_11_066_type1960, STR_LONGNAME_BOXCAR_11_066_TYPE1960)

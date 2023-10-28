@@ -173,7 +173,7 @@ delta_age = 1;
 #define advanced_check_year(year) ((current_year >= year) || (build_year >= year) || (date_of_last_service >= date(year,1,1)))
 
 // вместимость по плотности  = 16 / вес единицы груза * объём в м3 * Плотность кг / м3 / 1000 (приведение к тоннам)
-#define calculate_capacity(carrying_capacity_t, volume_m3, density_kg_m3, unit_weigth) min (carrying_capacity_t * 16 / unit_weigth, 2 * volume_m3 * density_kg_m3 / unit_weigth / 125)
+#define calculate_capacity(carrying_capacity_t, volume_m3, density_kg_m3, unit_weigth) min ((carrying_capacity_t) * 16 / unit_weigth, 2 * volume_m3 * density_kg_m3 / unit_weigth / 125)
 
 #define calculate_loading_speed(speed_b1910, speed_a1910, speed_a1930, speed_a1950, speed_a1990) current_year >= 1990 ? speed_a1990  :  \
                                                                                                  current_year >= 1950 ? speed_a1950  :  \
@@ -539,21 +539,35 @@ delta_age = 1;
    running_cost_base: RUNNING_COST_DIESEL;             \
         engine_class: ENGINE_CLASS_DIESEL;             \
 
-#define group_electric(current, start, rd)               \
-          track_type: get_##current##_track_type_emu();  \
-  climates_available: NO_CLIMATE;                        \
-          model_life: 255;                               \
-        vehicle_life: 255;                               \
-               power: 1;                                 \
-      cargo_capacity: 1;                                 \
-   reliability_decay: rd;                                \
-         cost_factor: 1;                                 \
- running_cost_factor: 1;                                 \
-   introduction_date: date(start, 1, 1);                 \
-   cargo_allow_refit: [PASS, YETI, YETY, MAIL, GOOD];    \
-           sprite_id: SPRITE_ID_NEW_TRAIN;               \
-        engine_class: ENGINE_CLASS_ELECTRIC;             \
-   running_cost_base: RUNNING_COST_ELECTRIC;             \
+#define group_electric(current, start, rd)             \
+          track_type: get_##current##_track_type();    \
+  climates_available: NO_CLIMATE;                      \
+          model_life: 255;                             \
+        vehicle_life: 255;                             \
+               power: 1;                               \
+      cargo_capacity: 1;                               \
+   reliability_decay: rd;                              \
+         cost_factor: 1;                               \
+ running_cost_factor: 1;                               \
+   introduction_date: date(start, 1, 1);               \
+   cargo_allow_refit: [PASS, YETI, YETY, MAIL, GOOD];  \
+           sprite_id: SPRITE_ID_NEW_TRAIN;             \
+        engine_class: ENGINE_CLASS_ELECTRIC;           \
+   running_cost_base: RUNNING_COST_ELECTRIC;           \
+
+#define group_wagon(start, rd)                        \
+          track_type: get_normal_track_type_steam();  \
+  climates_available: NO_CLIMATE;                     \
+          model_life: 255;                            \
+        vehicle_life: 255;                            \
+               power: 0;                              \
+      cargo_capacity: 1;                              \
+   reliability_decay: rd;                             \
+         cost_factor: 1;                              \
+ running_cost_factor: 1;                              \
+   introduction_date: date(start, 1, 1);              \
+           sprite_id: SPRITE_ID_NEW_TRAIN;            \
+   running_cost_base: RUNNING_COST_ROADVEH;           \
 
 #define vehicle_group(group_id)                                                                           \
   variant_group: group_id;                                                                                \
@@ -583,7 +597,7 @@ delta_age = 1;
                        purchase_weight: return round(WT);                    \
   purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);          \
                         purchase_power: return get_power_in_cb(PR);          \
-               purchase_cargo_capacity: return CC;                           \
+               /*purchase_cargo_capacity: return CC;*/                       \
 
 #define purchase_menu_calc(CF, RC, SD, WT, TE, PR, CC)  \
                            cost_factor: CF;             \

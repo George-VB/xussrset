@@ -1,29 +1,30 @@
 ﻿// boxcar_type1891
 
+#define PROP_boxcar_type1891_CF  3
+#define PROP_boxcar_type1891_RC  1
+#define PROP_boxcar_type1891_SD  60
+#define PROP_boxcar_type1891_WT  7
+#define PROP_boxcar_type1891_TE  0
+#define PROP_boxcar_type1891_PR  0
+#define PROP_boxcar_type1891_CC  38
+#define PROP_boxcar_type1891_LC  12
+
 #define IMAGEFILE  "src/wagons/boxcars/type1891.png"
-purchase_sprites(boxcar_type1891_v1, 0, 0)
-purchase_sprites(boxcar_type1891_v2, 103, 0)
+purchase_sprites(boxcar_type1891, 0, 0)
 combo_layout_boxcartop_template(boxcar_type1891_v1, 5, 32, 40)
 combo_layout_boxcar_template(boxcar_type1891_v1_grain, 5, 32, 40 + 67 * 4)
-combo_layout_boxcartop_template(boxcar_type1891_v2, 5, 32, 40 + 67 * 7)
-combo_layout_boxcar_template(boxcar_type1891_v2_grain, 5, 32, 40 + 67 * 11)
 #undef IMAGEFILE
-purchase_sprites_select(boxcar_type1891, USSRSTART)
 
 switch (FEAT_TRAINS, SELF, boxcar_type1891_sprites_top1,
   STORE_TEMP(PALETTE_USE_DEFAULT, 0x100))
 { boxcar_type1891_v1_sprites_top; }
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_sprites_top2,
-  STORE_TEMP(PALETTE_USE_DEFAULT, 0x100))
-{ boxcar_type1891_v2_sprites_top; }
 
 switch (FEAT_TRAINS, SELF, boxcar_type1891_sprites_top,
 [  set_offset_to(1),
    prev_vehicle_randombits() & 0x01])
 {
   0: boxcar_type1891_sprites_top1;
-     boxcar_type1891_sprites_top2;
+     dummy_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_type1891_v1_base_sprites_start,
@@ -46,100 +47,23 @@ switch (FEAT_TRAINS, SELF, boxcar_type1891_v1_grain_sprites_start,
      return CB_FAILED;
 }
 
-switch (FEAT_TRAINS, SELF, boxcar_type1891_v1_sprites_start,
+switch (FEAT_TRAINS, SELF, boxcar_type1891_sprites_start,
   cargo_type_in_veh)
 {
   cargo_check_grain_hopperlist(boxcar_type1891_v1_grain_sprites_start)
   boxcar_type1891_v1_base_sprites_start;
 }
 
-switch (FEAT_TRAINS, SELF, boxcar_type1891_v2_base_sprites_start,
-  getbits(extra_callback_info1, 8, 8))
-{
-  0: boxcar_type1891_v2_sprites_back;
-  1: cargo5all_sprites;
-  2: boxcar_type1891_v2_sprites_front;
-  3: boxcar_type1891_sprites_top;
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_v2_grain_sprites_start,
-  getbits(extra_callback_info1, 8, 8))
-{
-  0: boxcar_type1891_v2_grain_sprites_back;
-  1: cargo5all_sprites;
-  2: boxcar_type1891_v2_grain_sprites_front;
-  3: boxcar_type1891_sprites_top;
-     return CB_FAILED;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_v2_sprites_start,
-  cargo_type_in_veh)
-{
-  cargo_check_grain_hopperlist(boxcar_type1891_v2_grain_sprites_start)
-  boxcar_type1891_v2_base_sprites_start;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_sprites_start,
-  check_year(USSRSTART))
-{
-  0: boxcar_type1891_v1_sprites_start;
-     boxcar_type1891_v2_sprites_start;
-}
-
 long_vehicle(boxcar_type1891)
 
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_capacity_1891,
-[  STORE_TEMP(12, 0),  // т
-   STORE_TEMP(39, 1),  // м³
-   STORE_TEMP(22, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(5, 4)])  // шаблон
-{ box_cargo_capacity; }
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_capacity_1905,
-[  STORE_TEMP(15, 0),  // т
-   STORE_TEMP(39, 1),  // м³
-   STORE_TEMP(22, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(5, 4)])  // шаблон
-{ box_cargo_capacity; }
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_capacity_1911,
-[  STORE_TEMP(16, 0),  // т
-   STORE_TEMP(39, 1),  // м³
-   STORE_TEMP(22, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(5, 4)])  // шаблон
-{ box_cargo_capacity; }
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_capacity_1933,
-[  STORE_TEMP(18, 0),  // т
-   STORE_TEMP(39, 1),  // м³
-   STORE_TEMP(22, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(5, 4)])  // шаблон
-{ box_cargo_capacity; }
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_capacity1,
-  (build_year >= 1905) +
-  (build_year >= 1911) +
-  (build_year >= 1933))
-{
-  0: boxcar_type1891_cargo_capacity_1891;
-  1: boxcar_type1891_cargo_capacity_1905;
-  2: boxcar_type1891_cargo_capacity_1911;
-     boxcar_type1891_cargo_capacity_1933;
-}
-
 switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_capacity,
-  cargo_subtype)
-{
-  0: boxcar_type1891_cargo_capacity1;
-  1: boxcar_type1891_cargo_capacity_1905;
-  2: boxcar_type1891_cargo_capacity_1911;
-     boxcar_type1891_cargo_capacity_1933;
-}
+[  STORE_TEMP(PROP_boxcar_type1891_LC, 0),  // т
+   STORE_TEMP(39, 1),                       // м³
+   STORE_TEMP(22, 2),                       // м²
+   STORE_TEMP(0, 3),                        // палетомест
+   STORE_TEMP(5, 4)])                       // шаблон
+{ box_cargo_capacity; }
+
 
 switch (FEAT_TRAINS, SELF, boxcar_type1891_running_cost_factor,
 [  STORE_TEMP(0, 0),  // Моторы
@@ -149,122 +73,43 @@ switch (FEAT_TRAINS, SELF, boxcar_type1891_running_cost_factor,
    STORE_TEMP(1, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(60, 6),                  // Скорость
-   STORE_TEMP(7, 7),                   // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 18, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 1
+   STORE_TEMP(PROP_boxcar_type1891_SD, 6),                             // Скорость
+   STORE_TEMP(PROP_boxcar_type1891_WT, 7),                             // Тара
+   STORE_TEMP(PROP_boxcar_type1891_WT + PROP_boxcar_type1891_LC, 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                           // 1
 
 switch (FEAT_TRAINS, SELF, boxcar_type1891_loading_speed,
   STORE_TEMP(9, 2))
 { all_wagons_box_loading_speed; }
 
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text_up1905,
-  cargo_subtype)
-{
-  0: return string(STR_REFIT_FACTORY);
-  1: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
-     return CB_RESULT_NO_TEXT;
-}
+name_in_group(boxcar_type1891, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_SERIES), string(STR_NAME_BOXCAR_TYPE1891)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_SERIES), string(STR_NAME_BOXCAR_TYPE1891)))
 
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text_up1911,
-  cargo_subtype)
-{
-  0..1: return string(STR_REFIT_FACTORY);
-     2: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text_up1933,
-  cargo_subtype)
-{
-  0..2: return string(STR_REFIT_FACTORY);
-     3: return string(STR_REFIT_WITH_INCREASED_CAPACITY);
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text_1891,
-  (current_year >= 1905) +
-  (current_year >= 1911) +
-  (current_year >= 1933))
-{
-  1: boxcar_type1891_cargo_subtype_text_up1905;
-  2: boxcar_type1891_cargo_subtype_text_up1911;
-  3: boxcar_type1891_cargo_subtype_text_up1933;
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text_1905,
-  (current_year >= 1911) +
-  (current_year >= 1933))
-{
-  1: boxcar_type1891_cargo_subtype_text_up1911;
-  2: boxcar_type1891_cargo_subtype_text_up1933;
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text_1911,
-  current_year >= 1933)
-{
-  1: boxcar_type1891_cargo_subtype_text_up1933;
-     return CB_RESULT_NO_TEXT;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_type1891_cargo_subtype_text,
-  (build_year >= 1905) +
-  (build_year >= 1911) +
-  (build_year >= 1933))
-{
-  0: boxcar_type1891_cargo_subtype_text_1891;
-  1: boxcar_type1891_cargo_subtype_text_1905;
-  2: boxcar_type1891_cargo_subtype_text_1911;
-     return CB_RESULT_NO_TEXT;
-}
-
-hint_wagon(boxcar_type1891_b1905,
-           12, 39,
+hint_wagon(boxcar_type1891,
+           PROP_boxcar_type1891_LC, 39,
            string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
            STR_PURCHASE_HINT_AGING_PERIOD_3_1,
            STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
-           1891, 1925,
+           1891, 1905,
            string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
-hint_wagon(boxcar_type1891_a1905,
-           15, 39,
-           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
-           1891, 1925,
-           string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
-hint_wagon(boxcar_type1891_a1911,
-           16, 39,
-           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
-           1891, 1925,
-           string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
-hint_wagon(boxcar_type1891_a1933,
-           18, 39,
-           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-           STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
-           1891, 1925,
-           string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
-hint_change_after3(boxcar_type1891, 1905, 1911, 1933)
 
 item (FEAT_TRAINS, boxcar_type1891, 303) {
   property {
-    name: string(STR_NAME_BOXCAR_ISSUE_OF_1891);
-    vehicle_dates(1891, 1925, 30, 10, 4, 3)
-    vehicle_wagon(7, 60)
+    name: string(STR_NAME_BOXCAR_TYPE1891);
+    vehicle_dates(1891, 1905, 30, 10, 4, PROP_boxcar_type1891_CF)
+    vehicle_wagon(PROP_boxcar_type1891_WT, PROP_boxcar_type1891_SD)
+    vehicle_group(boxcars_group)
     cargo_allow_refit: [cargo_all_old_boxcarlist()];
   }
   graphics {
+    purchase_menu_wagon(PROP_boxcar_type1891_CF, PROP_boxcar_type1891_RC, PROP_boxcar_type1891_SD, PROP_boxcar_type1891_WT, PROP_boxcar_type1891_TE, PROP_boxcar_type1891_PR, PROP_boxcar_type1891_LC)
         additional_text: boxcar_type1891_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: boxcar_type1891_cargo_capacity;
-     cargo_subtype_text: boxcar_type1891_cargo_subtype_text;
          colour_mapping: any_cc_colour;
                 default: boxcar_type1891_sprites;
           loading_speed: boxcar_type1891_loading_speed;
+                   name: boxcar_type1891_name;
                purchase: boxcar_type1891_purchase_sprites;
              refit_cost: boxcar_refit_cost;
     running_cost_factor: boxcar_type1891_running_cost_factor;

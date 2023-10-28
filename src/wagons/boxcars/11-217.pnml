@@ -1,5 +1,14 @@
 ﻿// boxcar_11_217
 
+#define PROP_boxcar_11_217_CF  44
+#define PROP_boxcar_11_217_RC  17
+#define PROP_boxcar_11_217_SD  120
+#define PROP_boxcar_11_217_WT  25
+#define PROP_boxcar_11_217_TE  0
+#define PROP_boxcar_11_217_PR  0
+#define PROP_boxcar_11_217_CC  120
+#define PROP_boxcar_11_217_LC  68
+
 #define IMAGEFILE  "src/wagons/boxcars/11-217.png"
 purchase_sprites(boxcar_11_217, 0, 0)
 combo_layout_boxcar_template(boxcar_11_217, 9, 32, 40)
@@ -37,11 +46,11 @@ switch (FEAT_TRAINS, SELF, boxcar_11_217_colour_mapping,
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_217_cargo_capacity,
-[  STORE_TEMP(68, 0),   // т
-   STORE_TEMP(120, 1),  // м³
-   STORE_TEMP(38, 2),   // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(9, 4)])   // шаблон
+[  STORE_TEMP(PROP_boxcar_11_217_LC, 0),  // т
+   STORE_TEMP(120, 1),                    // м³
+   STORE_TEMP(38, 2),                     // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(9, 4)])                     // шаблон
 { box_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_217_running_cost_factor,
@@ -52,18 +61,21 @@ switch (FEAT_TRAINS, SELF, boxcar_11_217_running_cost_factor,
    STORE_TEMP(6, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(25, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 68, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 17
+   STORE_TEMP(PROP_boxcar_11_217_SD, 6),                           // Скорость
+   STORE_TEMP(PROP_boxcar_11_217_WT, 7),                           // Тара
+   STORE_TEMP(PROP_boxcar_11_217_WT + PROP_boxcar_11_217_LC, 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                       // 17
 
 switch (FEAT_TRAINS, SELF, boxcar_11_217_loading_speed,
   STORE_TEMP(19, 2))
 { all_wagons_box_loading_speed; }
 
 livery_template_alt4f(boxcar_11_217, STR_REFIT_TTD_4A, STR_REFIT_TTD_62, STR_REFIT_TTD_7B, STR_REFIT_TTD_9C)
+name_in_group(boxcar_11_217, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_SERIES), string(STR_MODEL_NUMBER2, 11, 217)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_SERIES), string(STR_LONGNAME_BOXCAR_11_217)))
+
 hint_wagon(boxcar_11_217,
-           68, 120,
+           PROP_boxcar_11_217_LC, 120,
            string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
            STR_PURCHASE_HINT_AGING_PERIOD_3_1,
            STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
@@ -73,11 +85,13 @@ hint_wagon(boxcar_11_217,
 item (FEAT_TRAINS, boxcar_11_217, 323) {
   property {
     name: string(STR_MODEL_NUMBER2, 11, 217);
-    vehicle_dates(1976, 1991, 32, 10, 8, 44)
-    vehicle_wagon(25, 120)
+    vehicle_dates(1976, 1991, 32, 10, 8, PROP_boxcar_11_217_CF)
+    vehicle_wagon(PROP_boxcar_11_217_WT, PROP_boxcar_11_217_SD)
+    vehicle_group(boxcars_group)
     cargo_allow_refit: [cargo_all_boxcarlist()];
   }
   graphics {
+    purchase_menu_wagon(PROP_boxcar_11_217_CF, PROP_boxcar_11_217_RC, PROP_boxcar_11_217_SD, PROP_boxcar_11_217_WT, PROP_boxcar_11_217_TE, PROP_boxcar_11_217_PR, PROP_boxcar_11_217_LC)
         additional_text: boxcar_11_217_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: boxcar_11_217_cargo_capacity;
@@ -85,8 +99,9 @@ item (FEAT_TRAINS, boxcar_11_217, 323) {
          colour_mapping: boxcar_11_217_colour_mapping;
                 default: boxcar_11_217_sprites;
           loading_speed: boxcar_11_217_loading_speed;
+                   name: boxcar_11_217_name;
                purchase: boxcar_11_217_purchase_sprites;
-             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+             refit_cost: boxcar_refit_cost;
     running_cost_factor: boxcar_11_217_running_cost_factor;
   }
 }

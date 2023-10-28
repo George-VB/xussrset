@@ -1,6 +1,15 @@
 ﻿// boxcar_11_c001
 
-#define IMAGEFILE  "src/wagons/boxcars/11-c001.png"
+#define PROP_boxcar_11_c001_CF  20
+#define PROP_boxcar_11_c001_RC  8
+#define PROP_boxcar_11_c001_SD  100
+#define PROP_boxcar_11_c001_WT  25
+#define PROP_boxcar_11_c001_TE  0
+#define PROP_boxcar_11_c001_PR  0
+#define PROP_boxcar_11_c001_CC  53
+#define PROP_boxcar_11_c001_LC  30
+
+#define IMAGEFILE  "src/wagons/boxcars/livestock/11-c001.png"
 purchase_sprites(boxcar_11_c001, 0, 0)
 combo_layout_boxcar_template(boxcar_11_c001, 9, 32, 40)
 #undef IMAGEFILE
@@ -53,13 +62,16 @@ switch (FEAT_TRAINS, SELF, boxcar_11_c001_running_cost_factor,
    STORE_TEMP(3, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(100, 6),                 // Скорость
-   STORE_TEMP(25, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 13, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 8
+   STORE_TEMP(PROP_boxcar_11_c001_SD, 6),                            // Скорость
+   STORE_TEMP(PROP_boxcar_11_c001_WT, 7),                            // Тара
+   STORE_TEMP(PROP_boxcar_11_c001_WT + PROP_boxcar_11_c001_LC, 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                         // 8
+
+name_in_group(boxcar_11_c001, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_LVST_SERIES), string(STR_NAME_BOXCAR_11_C001)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_LVST_SERIES), string(STR_LONGNAME_BOXCAR_11_C001)))
 
 hint_wagon(boxcar_11_c001,
-           30, 91,
+           PROP_boxcar_11_c001_LC, 91,
            string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
            STR_PURCHASE_HINT_AGING_PERIOD_5_2,
            STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
@@ -69,20 +81,22 @@ hint_wagon(boxcar_11_c001,
 item (FEAT_TRAINS, boxcar_11_c001, 338) {
   property {
     name: string(STR_NAME_BOXCAR_11_C001);
-    vehicle_dates(1948, 1960, 30, 10, 8, 20)
-    vehicle_wagon(25, 100)
+    vehicle_dates(1948, 1960, 30, 10, 8, PROP_boxcar_11_c001_CF)
+    vehicle_wagon(PROP_boxcar_11_c001_WT, PROP_boxcar_11_c001_SD)
+    vehicle_group(boxcars_lvst_group)
     vehicle_wagon_cargo(17, 6)
     cargo_allow_refit: [LVST];
   }
   graphics {
+    purchase_menu_wagon(PROP_boxcar_11_c001_CF, PROP_boxcar_11_c001_RC, PROP_boxcar_11_c001_SD, PROP_boxcar_11_c001_WT, PROP_boxcar_11_c001_TE, PROP_boxcar_11_c001_PR, PROP_boxcar_11_c001_LC)
         additional_text: boxcar_11_c001_additional_text;
        articulated_part: articulated_part_dummy1;
        cargo_age_period: return 500;
      cargo_subtype_text: boxcar_11_c001_cargo_subtype_text;
          colour_mapping: boxcar_11_c001_colour_mapping;
                 default: boxcar_11_c001_sprites;
+                   name: boxcar_11_c001_name;
                purchase: boxcar_11_c001_purchase_sprites;
-             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: boxcar_11_c001_running_cost_factor;
   }
 }
