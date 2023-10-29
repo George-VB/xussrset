@@ -1,5 +1,14 @@
 ﻿// flatbed_13_470
 
+#define PROP_flatbed_13_470_CF  59
+#define PROP_flatbed_13_470_RC  23
+#define PROP_flatbed_13_470_SD  120
+#define PROP_flatbed_13_470_WT  22
+#define PROP_flatbed_13_470_TE  0
+#define PROP_flatbed_13_470_PR  0
+#define PROP_flatbed_13_470_CC  80
+#define PROP_flatbed_13_470_LC  60
+
 #define IMAGEFILE  "src/wagons/flatbeds/container/13-470.png"
 purchase_sprites(flatbed_13_470, 0, 0)
 container_platform_layout_template(flatbed_13_470_back, 12, 32, 40)
@@ -23,16 +32,14 @@ switch (FEAT_TRAINS, SELF, flatbed_13_470_running_cost_factor,
    STORE_TEMP(7, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(22, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 60, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 23
+   STORE_TEMP(PROP_flatbed_13_470_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_flatbed_13_470_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_flatbed_13_470_WT + PROP_flatbed_13_470_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                // 23
 
 switch (FEAT_TRAINS, SELF, flatbed_13_470_weight,
-  STORE_TEMP(22, 7))
-{
-  container_20and40_weight;
-}
+  STORE_TEMP(round(PROP_flatbed_13_470_WT), 7))
+{ container_20and40_weight; }
 
 switch (FEAT_TRAINS, SELF, flatbed_13_470_random,
 [  set_offset_to(1),
@@ -60,8 +67,11 @@ switch (FEAT_TRAINS, SELF, flatbed_13_470_cargo_subtype_text,
      return CB_RESULT_NO_TEXT;
 }
 
+name_in_group(flatbed_13_470, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_CONTAINER_SERIES), string(STR_MODEL_NUMBER2, 13, 470)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_CONTAINER_SERIES), string(STR_LONGNAME_FLATBED_13_470)))
+
 hint_wagon_flat(flatbed_13_470,
-                60, 53,
+                PROP_flatbed_13_470_LC, 53,
                 string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                 STR_PURCHASE_HINT_AGING_PERIOD_3_1,
                 STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
@@ -71,11 +81,13 @@ hint_wagon_flat(flatbed_13_470,
 item (FEAT_TRAINS, flatbed_13_470, 596) {
   property {
     name: string(STR_MODEL_NUMBER2, 13, 470);
-    vehicle_dates(1976, 1987, 32, 10, 8, 59)
-    vehicle_wagon(22, 120)
+    vehicle_dates(1976, 1987, 32, 10, 8, PROP_flatbed_13_470_CF)
+    vehicle_wagon(PROP_flatbed_13_470_WT, PROP_flatbed_13_470_SD)
+    vehicle_group(flatbeds_container_group)
     cargo_allow_refit: [cargo_all_containerlist()];
   }
   graphics {
+    purchase_menu_wagon(PROP_flatbed_13_470_CF, PROP_flatbed_13_470_RC, PROP_flatbed_13_470_SD, PROP_flatbed_13_470_WT, PROP_flatbed_13_470_TE, PROP_flatbed_13_470_PR, PROP_flatbed_13_470_LC)
          additional_text: flatbed_13_470_additional_text;
         articulated_part: articulated_part_dummy4;
     bitmask_vehicle_info: container_bitmask_vehicle_info;
@@ -84,8 +96,8 @@ item (FEAT_TRAINS, flatbed_13_470, 596) {
           colour_mapping: flatbed_13_470_colour_mapping;
                  default: flatbed_13_470_sprites;
            loading_speed: container_loading_speed;
+                    name: flatbed_13_470_name;
                 purchase: flatbed_13_470_purchase_sprites;
-         purchase_weight: return 22;
               refit_cost: container_20and40_refit_cost;
      running_cost_factor: flatbed_13_470_running_cost_factor;
                   weight: flatbed_13_470_weight;

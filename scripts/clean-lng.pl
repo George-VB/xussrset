@@ -123,6 +123,7 @@ sub wdirectory($)
 				$nameallids{$2} = "$1 ($tt/$t)";
 			}
 		} 	
+# Добавление записи об использовании строк		
 		while($buff =~ /((?:TTD_|)STR_[_a-z0-9]*)/ig) {
 			$nameallstrings{$1}{$dir."/".$t}=1 if (!($1=~/^TTD_/));
 		}
@@ -184,11 +185,16 @@ sub main() {
 	$t4="";
 	unlink($name."lang/_Missing.txt");
 	foreach $t1 (sort {uc($a) cmp uc($b)} (keys(%nameallstrings))) {
-	        $t3=0;
+	        $t3 = 0;
+	        $t5 = "";
 		foreach $t2 (sort {uc($a) cmp uc($b)} (keys(%{$nameallstrings{$t1}}))) {
-		        $t3++ if ($t2=~/lng$/i);
+		        if ($t2=~/lng$/i) {
+		        	$t3++ 
+		        } else {
+		    		$t5 .= $t2 . ", ";
+		        }
 	 	}
-	        $t4.="$t1\r\n" if ($t3 == 0);	        	
+	        $t4 .= "$t1                                                      $t5\r\n" if ($t3 == 0);	        	
 	}
 	if ($t4 ne "") {
 		open(FFILE, ">:encoding(UTF-8)", $name."lang/_Missing.txt") || die "Can\'t write to _Missing.txt\n";

@@ -1,5 +1,14 @@
 ﻿// flatbed_type1930
 
+#define PROP_flatbed_type1930_CF  45
+#define PROP_flatbed_type1930_RC  18
+#define PROP_flatbed_type1930_SD  100
+#define PROP_flatbed_type1930_WT  18
+#define PROP_flatbed_type1930_TE  0
+#define PROP_flatbed_type1930_PR  0
+#define PROP_flatbed_type1930_CC  100
+#define PROP_flatbed_type1930_LC  50
+
 #define IMAGEFILE  "src/wagons/flatbeds/type1930.png"
 purchase_sprites(flatbed_type1930, 0, 0)
 combo_layout_template(flatbed_type1930, 8, 32, 40)
@@ -52,11 +61,11 @@ switch (FEAT_TRAINS, SELF, flatbed_type1930_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_type1930_cargo_capacity,
-[  STORE_TEMP(50, 0),  // т
-   STORE_TEMP(30, 1),  // м³
-   STORE_TEMP(37, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(8, 4),   // шаблон
+[  STORE_TEMP(PROP_flatbed_type1930_LC, 0),  // т
+   STORE_TEMP(30, 1),                        // м³
+   STORE_TEMP(37, 2),                        // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(8, 4),                         // шаблон
    cargo_type_in_veh])
 {
 flatbed_capacity()
@@ -81,12 +90,15 @@ switch (FEAT_TRAINS, SELF, flatbed_type1930_running_cost_factor,
    STORE_TEMP(6, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(100, 6),                 // Скорость
-   STORE_TEMP(18, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 50, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 18
+   STORE_TEMP(PROP_flatbed_type1930_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_flatbed_type1930_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_flatbed_type1930_WT + PROP_flatbed_type1930_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 18
+name_in_group(flatbed_type1930, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_NAME_FLATBED_TYPE1930)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_NAME_FLATBED_TYPE1930)))
+
 hint_wagon_flat(flatbed_type1930,
-                50, 37,
+                PROP_flatbed_type1930_LC, 37,
                 string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                 STR_PURCHASE_HINT_AGING_PERIOD_3_1,
                 STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
@@ -96,11 +108,14 @@ hint_wagon_flat(flatbed_type1930,
 item (FEAT_TRAINS, flatbed_type1930, 270) {
   property {
     name: string(STR_NAME_FLATBED_TYPE1930);
-    vehicle_dates(1930, 1938, 32, 10, 7, 45)
-    vehicle_wagon(18, 100)
+    vehicle_dates(1930, 1938, 32, 10, 7, PROP_flatbed_type1930_CF)
+    vehicle_wagon(PROP_flatbed_type1930_WT, PROP_flatbed_type1930_SD)
+    vehicle_group(flatbeds_group)
     cargo_allow_refit: [cargo_all_flatbedlist()];
   }
   graphics {
+    purchase_menu_wagon(PROP_flatbed_type1930_CF, PROP_flatbed_type1930_RC, PROP_flatbed_type1930_SD, PROP_flatbed_type1930_WT, PROP_flatbed_type1930_TE, PROP_flatbed_type1930_PR, PROP_flatbed_type1930_LC)
+                   name: flatbed_type1930_name;
         additional_text: flatbed_type1930_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: flatbed_type1930_cargo_capacity;

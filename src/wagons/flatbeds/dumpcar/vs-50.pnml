@@ -1,5 +1,14 @@
 ﻿// dumpcar_vs_50
 
+#define PROP_dumpcar_vs_50_CF  44
+#define PROP_dumpcar_vs_50_RC  17
+#define PROP_dumpcar_vs_50_SD  80
+#define PROP_dumpcar_vs_50_WT  32
+#define PROP_dumpcar_vs_50_TE  0
+#define PROP_dumpcar_vs_50_PR  0
+#define PROP_dumpcar_vs_50_CC  114
+#define PROP_dumpcar_vs_50_LC  50
+
 #define IMAGEFILE  "src/wagons/flatbeds/dumpcar/vs-50.png"
 purchase_sprites(dumpcar_vs_50, 0, 0)
 combo_layout_template(dumpcar_vs_50, 7, 32, 40)
@@ -17,11 +26,11 @@ switch (FEAT_TRAINS, SELF, dumpcar_vs_50_sprites_start,
 long_vehicle(dumpcar_vs_50)
 
 switch (FEAT_TRAINS, SELF, dumpcar_vs_50_cargo_capacity,
-[  STORE_TEMP(50, 0),  // т
-   STORE_TEMP(23, 1),  // м³
-   STORE_TEMP(30, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(7, 4),   // шаблон
+[  STORE_TEMP(PROP_dumpcar_vs_50_LC, 0),  // т
+   STORE_TEMP(23, 1),                     // м³
+   STORE_TEMP(30, 2),                     // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(7, 4),                      // шаблон
    cargo_type_in_veh])
 {
   dumpcar_capacity()
@@ -36,10 +45,10 @@ switch (FEAT_TRAINS, SELF, dumpcar_vs_50_running_cost_factor,
    STORE_TEMP(5, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(80, 6),                  // Скорость
-   STORE_TEMP(32, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 50, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 17
+   STORE_TEMP(PROP_dumpcar_vs_50_SD, 6),                                  // Скорость
+   STORE_TEMP(round(PROP_dumpcar_vs_50_WT), 7),                           // Тара
+   STORE_TEMP(round(PROP_dumpcar_vs_50_WT + PROP_dumpcar_vs_50_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                              // 17
 
 switch (FEAT_TRAINS, SELF, dumpcar_vs_50_loading_speed,
 [  STORE_TEMP(0, 0),
@@ -50,8 +59,11 @@ switch (FEAT_TRAINS, SELF, dumpcar_vs_50_loading_speed,
   all_wagons_bulk_loading_speed;
 }
 
+name_in_group(dumpcar_vs_50, string(STR_NAME_IN_GROUP, string(STR_NAME_DUMPCARS_SERIES), string(STR_NAME_DUMPCAR_VS_50)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_DUMPCARS_SERIES), string(STR_LONGNAME_DUMPCAR_VS_50)))
+
 hint_wagon_with_uspeed_2fact(dumpcar_vs_50,
-     50, 23,
+     PROP_dumpcar_vs_50_LC, 23,
      string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
      string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
@@ -63,11 +75,14 @@ hint_wagon_with_uspeed_2fact(dumpcar_vs_50,
 item (FEAT_TRAINS, dumpcar_vs_50, 747) {
   property {
     name: string(STR_NAME_DUMPCAR_VS_50);
-    vehicle_dates(1943, 1959, 22, 10, 6, 44)
-    vehicle_wagon(32, 80)
+    vehicle_dates(1943, 1959, 22, 10, 6, PROP_dumpcar_vs_50_CF)
+    vehicle_wagon(PROP_dumpcar_vs_50_WT, PROP_dumpcar_vs_50_SD)
+    vehicle_group(dumpcars_group)
     cargo_allow_refit: [cargo_all_bulklist()];
   }
   graphics {
+    purchase_menu_wagon(PROP_dumpcar_vs_50_CF, PROP_dumpcar_vs_50_RC, PROP_dumpcar_vs_50_SD, PROP_dumpcar_vs_50_WT, PROP_dumpcar_vs_50_TE, PROP_dumpcar_vs_50_PR, PROP_dumpcar_vs_50_LC)
+                   name: dumpcar_vs_50_name;
         additional_text: dumpcar_vs_50_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: dumpcar_vs_50_cargo_capacity;

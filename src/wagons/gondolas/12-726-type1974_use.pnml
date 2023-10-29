@@ -1,0 +1,83 @@
+﻿// gondola_12_726_type1974 uses gondola_12_726_type1968
+
+#define PROP_gondola_12_726_type1974_CF  32
+#define PROP_gondola_12_726_type1974_RC  12
+#define PROP_gondola_12_726_type1974_SD  120
+#define PROP_gondola_12_726_type1974_WT  22
+#define PROP_gondola_12_726_type1974_TE  0
+#define PROP_gondola_12_726_type1974_PR  0
+#define PROP_gondola_12_726_type1974_CC  130
+#define PROP_gondola_12_726_type1974_LC  69
+
+map_sprites(gondola_12_726_type1974_purchase_sprites, gondola_12_726_type1968_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_type1974_cargo_capacity,
+[  STORE_TEMP(PROP_gondola_12_726_type1974_LC, 0),  // т
+   STORE_TEMP(73, 1),                               // м³
+   STORE_TEMP(35, 2),                               // м²
+   STORE_TEMP(0, 3),                                // палетомест
+   STORE_TEMP(8, 4),                                // шаблон
+   cargo_type_in_veh])
+{
+gondola_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_type1974_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(2, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{ cargo8_piece_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, gondola_12_726_type1974_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(8, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(4, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(PROP_gondola_12_726_type1974_SD, 6),                                            // Скорость
+   STORE_TEMP(round(PROP_gondola_12_726_type1974_WT), 7),                                     // Тара
+   STORE_TEMP(round(PROP_gondola_12_726_type1974_WT + PROP_gondola_12_726_type1974_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                                  // 12
+
+name_in_group(gondola_12_726_type1974, string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_NAME_GONDOLA_12_726_TYPE1974)),
+                                       string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_LONGNAME_GONDOLA_12_726_TYPE1974)))
+
+hint_wagon_with_uspeed(gondola_12_726_type1974,
+                       PROP_gondola_12_726_type1974_LC, 73,
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+                       string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                       STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                       STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA,
+                       1974, 1977,
+                       string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW))
+
+item (FEAT_TRAINS, gondola_12_726_type1974, 1179) {
+  property {
+    name: string(STR_NAME_GONDOLA_12_726_TYPE1974);
+    vehicle_dates(1974, 1977, 22, 10, 7, PROP_gondola_12_726_type1974_CF)
+    vehicle_wagon(PROP_gondola_12_726_type1974_WT, PROP_gondola_12_726_type1974_SD)
+    vehicle_group(gondolas_group)
+    cargo_allow_refit: [cargo_all_gondolalist()];
+  }
+  graphics {
+    purchase_menu_wagon(PROP_gondola_12_726_type1974_CF, PROP_gondola_12_726_type1974_RC, PROP_gondola_12_726_type1974_SD, PROP_gondola_12_726_type1974_WT, PROP_gondola_12_726_type1974_TE, PROP_gondola_12_726_type1974_PR, PROP_gondola_12_726_type1974_LC)
+                   name: gondola_12_726_type1974_name;
+        additional_text: gondola_12_726_type1974_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: gondola_12_726_type1974_cargo_capacity;
+     cargo_subtype_text: gondola_12_726_type1968_cargo_subtype_text;
+         colour_mapping: gondola_12_726_type1968_colour_mapping;
+                default: gondola_12_726_type1968_sprites;
+          loading_speed: gondola_12_726_type1974_loading_speed;
+               purchase: gondola_12_726_type1974_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: gondola_12_726_type1974_running_cost_factor;
+  }
+}
+
+long_name_template(gondola_12_726_type1974, STR_LONGNAME_GONDOLA_12_726_TYPE1974)
+use_yeti(gondola_12_726_type1974, cargo_all_gondolalist_uran())

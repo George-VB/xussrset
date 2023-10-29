@@ -1,0 +1,111 @@
+﻿// flatbed_23_4000_type1979
+
+#define PROP_flatbed_23_4000_type1979_CF  55
+#define PROP_flatbed_23_4000_type1979_RC  22
+#define PROP_flatbed_23_4000_type1979_SD  120
+#define PROP_flatbed_23_4000_type1979_WT  34
+#define PROP_flatbed_23_4000_type1979_TE  0
+#define PROP_flatbed_23_4000_type1979_PR  0
+#define PROP_flatbed_23_4000_type1979_CC  64
+#define PROP_flatbed_23_4000_type1979_LC  55
+
+#define IMAGEFILE  "src/wagons/flatbeds/wood/23-4000-type1979.png"
+purchase_sprites(flatbed_23_4000_type1979, 0, 0)
+combo_layout_template(flatbed_23_4000_type1979, 14, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1979_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_23_4000_type1979_sprites_back;
+  1: cargo14all_sprites;
+  2: flatbed_23_4000_type1979_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle(flatbed_23_4000_type1979)
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1979_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+   0..5: return ttdall_cc + 0x5C;
+  6..10: return ttdall_cc + 0x63;
+         return ttdall_cc + 0x53;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1979_colour_mapping,
+  cargo_subtype)
+{
+  0: flatbed_23_4000_type1979_random;
+  1: return ttdall_cc + 0x5C;
+  2: return ttdall_cc + 0x63;
+  3: return ttdall_cc + 0x53;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1979_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_5C);
+  2: return string(STR_REFIT_TTD_63);
+  3: return string(STR_REFIT_TTD_53);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1979_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(15, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(7, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_flatbed_23_4000_type1979_SD, 6),                                             // Скорость
+   STORE_TEMP(round(PROP_flatbed_23_4000_type1979_WT), 7),                                      // Тара
+   STORE_TEMP(round(PROP_flatbed_23_4000_type1979_WT + PROP_flatbed_23_4000_type1979_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                                    // 22
+
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1979_loading_speed,
+[  STORE_TEMP(2, 0),
+   STORE_TEMP(2, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{ all_wagons_bulk_loading_speed; }
+
+name_in_group(flatbed_23_4000_type1979, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_WOOD_SERIES), string(STR_NAME_FLATBED_23_4000_TYPE1979)),
+                                        string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_WOOD_SERIES), string(STR_LONGNAME_FLATBED_23_4000_TYPE1979)))
+
+hint_wagon_flat(flatbed_23_4000_type1979,
+           PROP_flatbed_23_4000_type1979_LC, 60,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+           1979, 1984,
+           fact_dneprodzerzhinskycw())
+
+item (FEAT_TRAINS, flatbed_23_4000_type1979, 260) {
+  property {
+    name: string(STR_NAME_FLATBED_23_4000_TYPE1979);
+    vehicle_dates(1979, 1984, 32, 10, 8, PROP_flatbed_23_4000_type1979_CF)
+    vehicle_wagon(PROP_flatbed_23_4000_type1979_WT, PROP_flatbed_23_4000_type1979_SD)
+    vehicle_group(flatbeds_wood_group)
+    vehicle_wagon_cargo(PROP_flatbed_23_4000_type1979_LC, 14)
+    cargo_allow_refit: [WOOD];
+  }
+  graphics {
+    purchase_menu_wagon(PROP_flatbed_23_4000_type1979_CF, PROP_flatbed_23_4000_type1979_RC, PROP_flatbed_23_4000_type1979_SD, PROP_flatbed_23_4000_type1979_WT, PROP_flatbed_23_4000_type1979_TE, PROP_flatbed_23_4000_type1979_PR, PROP_flatbed_23_4000_type1979_LC)
+        additional_text: flatbed_23_4000_type1979_additional_text;
+       articulated_part: articulated_part_dummy6;
+     cargo_subtype_text: flatbed_23_4000_type1979_cargo_subtype_text;
+         colour_mapping: flatbed_23_4000_type1979_colour_mapping;
+                default: flatbed_23_4000_type1979_sprites;
+          loading_speed: flatbed_23_4000_type1979_loading_speed;
+                   name: flatbed_23_4000_type1979_name;
+               purchase: flatbed_23_4000_type1979_purchase_sprites;
+    running_cost_factor: flatbed_23_4000_type1979_running_cost_factor;
+  }
+}
+
+long_name_template(flatbed_23_4000_type1979, STR_LONGNAME_FLATBED_23_4000_TYPE1979)

@@ -1,0 +1,98 @@
+﻿// dumpcar_31_634_type1967
+
+#define PROP_dumpcar_31_634_type1967_CF  133
+#define PROP_dumpcar_31_634_type1967_RC  52
+#define PROP_dumpcar_31_634_type1967_SD  120
+#define PROP_dumpcar_31_634_type1967_WT  49
+#define PROP_dumpcar_31_634_type1967_TE  0
+#define PROP_dumpcar_31_634_type1967_PR  0
+#define PROP_dumpcar_31_634_type1967_CC  160
+#define PROP_dumpcar_31_634_type1967_LC  90
+
+#define IMAGEFILE  "src/wagons/flatbeds/dumpcar/31-634-type1967.png"
+purchase_sprites(dumpcar_31_634_type1967, 0, 0)
+combo_layout_template(dumpcar_31_634_type1967, 9, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, dumpcar_31_634_type1967_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: dumpcar_31_634_type1967_sprites_back;
+  1: cargo9gondola_sprites;
+  2: dumpcar_31_634_type1967_sprites_front;
+     return CB_FAILED;
+}
+
+long_vehicle(dumpcar_31_634_type1967)
+
+switch (FEAT_TRAINS, SELF, dumpcar_31_634_type1967_cargo_capacity,
+[  STORE_TEMP(PROP_dumpcar_31_634_type1967_LC, 0),  // т
+   STORE_TEMP(50, 1),                               // м³
+   STORE_TEMP(42, 2),                               // м²
+   STORE_TEMP(0, 3),                                // палетомест
+   STORE_TEMP(9, 4),                                // шаблон
+   cargo_type_in_veh])
+{
+  dumpcar_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, dumpcar_31_634_type1967_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(35, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(17, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_dumpcar_31_634_type1967_SD, 6),                                            // Скорость
+   STORE_TEMP(round(PROP_dumpcar_31_634_type1967_WT), 7),                                     // Тара
+   STORE_TEMP(round(PROP_dumpcar_31_634_type1967_WT + PROP_dumpcar_31_634_type1967_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                                  // 52
+
+switch (FEAT_TRAINS, SELF, dumpcar_31_634_type1967_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(1, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{ all_wagons_bulk_loading_speed; }
+
+name_in_group(dumpcar_31_634_type1967, string(STR_NAME_IN_GROUP, string(STR_NAME_DUMPCARS_SERIES), string(STR_NAME_DUMPCAR_31_634_TYPE1967)),
+                                       string(STR_NAME_IN_GROUP, string(STR_NAME_DUMPCARS_SERIES), string(STR_LONGNAME_DUMPCAR_31_634_TYPE1967)))
+
+hint_wagon_with_uspeed_chande_speed_on_load(dumpcar_31_634_type1967,
+     PROP_dumpcar_31_634_type1967_LC, 50,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_WAGON_TYPE_DUMPCAR,
+     1967, 1974,
+     string(STR_PURCHASE_HINT_FACTORY_KALININGRAD_CW),
+     70, 0)
+
+item (FEAT_TRAINS, dumpcar_31_634_type1967, 263) {
+  property {
+    name: string(STR_NAME_DUMPCAR_31_634_TYPE1967);
+    vehicle_dates(1967, 1974, 22, 10, 8, PROP_dumpcar_31_634_type1967_CF)
+    vehicle_wagon(PROP_dumpcar_31_634_type1967_WT, PROP_dumpcar_31_634_type1967_SD)
+    vehicle_group(dumpcars_group)
+    cargo_allow_refit: [cargo_all_bulklist()];
+  }
+  graphics {
+    purchase_menu_wagon(PROP_dumpcar_31_634_type1967_CF, PROP_dumpcar_31_634_type1967_RC, PROP_dumpcar_31_634_type1967_SD, PROP_dumpcar_31_634_type1967_WT, PROP_dumpcar_31_634_type1967_TE, PROP_dumpcar_31_634_type1967_PR, PROP_dumpcar_31_634_type1967_LC)
+                   name: dumpcar_31_634_type1967_name;
+        additional_text: dumpcar_31_634_type1967_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: dumpcar_31_634_type1967_cargo_capacity;
+     cargo_subtype_text: dumpcar_cargo_subtype_text;
+         colour_mapping: dumpcar_colour_mapping;
+                default: dumpcar_31_634_type1967_sprites;
+          loading_speed: dumpcar_31_634_type1967_loading_speed;
+               purchase: dumpcar_31_634_type1967_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: dumpcar_31_634_type1967_running_cost_factor;
+  }
+}
+
+long_name_template(dumpcar_31_634_type1967, STR_LONGNAME_DUMPCAR_31_634_TYPE1967)
+use_yeti(dumpcar_31_634_type1967, cargo_all_bulklist_uran())

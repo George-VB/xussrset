@@ -1,5 +1,14 @@
 ﻿// gondola_type1935
 
+#define PROP_gondola_type1935_CF  26
+#define PROP_gondola_type1935_RC  10
+#define PROP_gondola_type1935_SD  100
+#define PROP_gondola_type1935_WT  23
+#define PROP_gondola_type1935_TE  0
+#define PROP_gondola_type1935_PR  0
+#define PROP_gondola_type1935_CC  120
+#define PROP_gondola_type1935_LC  60
+
 #define IMAGEFILE  "src/wagons/gondolas/type1935.png"
 purchase_sprites(gondola_type1935, 0, 0)
 combo_layout_template(gondola_type1935, 8, 32, 40)
@@ -49,11 +58,11 @@ switch (FEAT_TRAINS, SELF, gondola_type1935_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, gondola_type1935_cargo_capacity,
-[  STORE_TEMP(60, 0),  // т
-   STORE_TEMP(67, 1),  // м³
-   STORE_TEMP(35, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(8, 4),   // шаблон
+[  STORE_TEMP(PROP_gondola_type1935_LC, 0),  // т
+   STORE_TEMP(67, 1),                        // м³
+   STORE_TEMP(35, 2),                        // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(8, 4),                         // шаблон
    cargo_type_in_veh])
 {
   gondola_capacity()
@@ -75,13 +84,16 @@ switch (FEAT_TRAINS, SELF, gondola_type1935_running_cost_factor,
    STORE_TEMP(3, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(100, 6),                 // Скорость
-   STORE_TEMP(23, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 60, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 10
+   STORE_TEMP(PROP_gondola_type1935_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_gondola_type1935_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_gondola_type1935_WT + PROP_gondola_type1935_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 10
+
+name_in_group(gondola_type1935, string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_NAME_GONDOLA_TYPE1935)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_LONGNAME_GONDOLA_TYPE1935)))
 
 hint_wagon_with_uspeed(gondola_type1935,
-                       60, 67,
+                       PROP_gondola_type1935_LC, 67,
                        string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                        string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                        STR_PURCHASE_HINT_AGING_PERIOD_3_1,
@@ -92,11 +104,14 @@ hint_wagon_with_uspeed(gondola_type1935,
 item (FEAT_TRAINS, gondola_type1935, 295) {
   property {
     name: string(STR_NAME_GONDOLA_TYPE1935);
-    vehicle_dates(1935, 1941, 22, 10, 7, 26)
-    vehicle_wagon(23, 100)
+    vehicle_dates(1935, 1941, 22, 10, 7, PROP_gondola_type1935_CF)
+    vehicle_wagon(PROP_gondola_type1935_WT, PROP_gondola_type1935_SD)
+    vehicle_group(gondolas_group)
     cargo_allow_refit: [cargo_all_gondolalist()];
   }
   graphics {
+    purchase_menu_wagon(PROP_gondola_type1935_CF, PROP_gondola_type1935_RC, PROP_gondola_type1935_SD, PROP_gondola_type1935_WT, PROP_gondola_type1935_TE, PROP_gondola_type1935_PR, PROP_gondola_type1935_LC)
+                   name: gondola_type1935_name;
         additional_text: gondola_type1935_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: gondola_type1935_cargo_capacity;

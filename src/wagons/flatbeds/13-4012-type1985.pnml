@@ -1,0 +1,183 @@
+﻿// flatbed_13_4012_type1985
+
+#define PROP_flatbed_13_4012_type1985_CF  71
+#define PROP_flatbed_13_4012_type1985_RC  28
+#define PROP_flatbed_13_4012_type1985_SD  120
+#define PROP_flatbed_13_4012_type1985_WT  21
+#define PROP_flatbed_13_4012_type1985_TE  0
+#define PROP_flatbed_13_4012_type1985_PR  0
+#define PROP_flatbed_13_4012_type1985_CC  126
+#define PROP_flatbed_13_4012_type1985_LC  71
+
+#define IMAGEFILE  "src/wagons/flatbeds/13-4012-type1985.png"
+purchase_sprites(flatbed_13_4012_type1985, 0, 0)
+combo_layout_template(flatbed_13_4012_type1985, 9, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_all_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_4012_type1985_sprites_back;
+  1: cargo9flatbed_sprites;
+  2: flatbed_13_4012_type1985_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_container_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_13_4012_type1985_sprites_back;
+  1: cargo9_container_2_20or40_sprites;
+  2: flatbed_13_4012_type1985_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_sprites_start,
+   cargo_type_in_veh)
+{
+  cargo_check_flatbedlist(flatbed_13_4012_type1985_all_sprites_start)
+  flatbed_13_4012_type1985_container_sprites_start;
+}
+
+long_vehicle(flatbed_13_4012_type1985)
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+  0: return ttdall_cc + 0x49;
+  1: return ttdall_cc + 0x4A;
+  2: return ttdall_cc + 0x4B;
+  3: return ttdall_cc + 0x53;
+  4: return ttdall_cc + 0x5A;
+  5: return ttdall_cc + 0x71;
+  6: return ttdall_cc + 0x72;
+     return ttdall_cc + 0x73;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_colour_mapping,
+  cargo_subtype)
+{
+  0: flatbed_13_4012_type1985_random;
+  1: return ttdall_cc + 0x49;
+  2: return ttdall_cc + 0x4A;
+  3: return ttdall_cc + 0x4B;
+  4: return ttdall_cc + 0x53;
+  5: return ttdall_cc + 0x5A;
+  6: return ttdall_cc + 0x71;
+  7: return ttdall_cc + 0x72;
+  8: return ttdall_cc + 0x73;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_cargo_subtype_text,
+  cargo_subtype)
+{
+  0: return string(STR_REFIT_FACTORY);
+  1: return string(STR_REFIT_TTD_49);
+  2: return string(STR_REFIT_TTD_4A);
+  3: return string(STR_REFIT_TTD_4B);
+  4: return string(STR_REFIT_TTD_53);
+  5: return string(STR_REFIT_TTD_59);
+  6: return string(STR_REFIT_TTD_71);
+  7: return string(STR_REFIT_TTD_72);
+  8: return string(STR_REFIT_TTD_73);
+     return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_cargo_capacity,
+[  STORE_TEMP(71 + (build_year >= 1992), 0),  // т
+   STORE_TEMP(30, 1),                         // м³
+   STORE_TEMP(37, 2),                         // м²
+   STORE_TEMP(0, 3),                          // палетомест
+   STORE_TEMP(9, 4),                          // шаблон
+   cargo_type_in_veh])
+{
+flatbed_capacity()
+  container_2_20or40_cargo_capacity;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(19, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(9, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_flatbed_13_4012_type1985_SD, 6),                                             // Скорость
+   STORE_TEMP(round(PROP_flatbed_13_4012_type1985_WT), 7),                                      // Тара
+   STORE_TEMP(round(PROP_flatbed_13_4012_type1985_WT + PROP_flatbed_13_4012_type1985_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                                    // 28
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_weight,
+[  STORE_TEMP(round(PROP_flatbed_13_4012_type1985_WT), 7),
+   cargo_type_in_veh])
+{
+  cargo_check_flatbedlist(return LOAD_TEMP(7))
+  container_2_20or40_weight;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3),
+   cargo_type_in_veh])
+{
+  cargo_check_flatbedlist(cargo9_piece_loading_speed)
+   container_loading_speed;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_refit_cost,
+  getbits(extra_callback_info1, 0, 8))
+{
+  cargo_check_flatbedlist(return 0 | CB_RESULT_AUTOREFIT)
+  container_2_20or40_refit_cost;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_13_4012_type1985_bitmask_vehicle_info,
+  cargo_type_in_veh)
+{
+  cargo_check_flatbedlist(return 0)
+  container_bitmask_vehicle_info;
+}
+
+name_in_group(flatbed_13_4012_type1985, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_NAME_FLATBED_13_4012_TYPE1985)),
+                                        string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_LONGNAME_FLATBED_13_4012_TYPE1985)))
+
+hint_wagon_flat(flatbed_13_4012_type1985,
+           PROP_flatbed_13_4012_type1985_LC, 37,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+           1985, 1992,
+           fact_dneprodzerzhinskycw())
+
+item (FEAT_TRAINS, flatbed_13_4012_type1985, 378) {
+  property {
+    name: string(STR_NAME_FLATBED_13_4012_TYPE1985);
+    vehicle_dates(1985, 1992, 32, 10, 8, PROP_flatbed_13_4012_type1985_CF)
+    vehicle_wagon(PROP_flatbed_13_4012_type1985_WT, PROP_flatbed_13_4012_type1985_SD)
+    vehicle_group(flatbeds_group)
+    cargo_allow_refit: [cargo_all_flatbedlist(), cargo_all_containerlist()];
+  }
+  graphics {
+    purchase_menu_wagon(PROP_flatbed_13_4012_type1985_CF, PROP_flatbed_13_4012_type1985_RC, PROP_flatbed_13_4012_type1985_SD, PROP_flatbed_13_4012_type1985_WT, PROP_flatbed_13_4012_type1985_TE, PROP_flatbed_13_4012_type1985_PR, PROP_flatbed_13_4012_type1985_LC)
+         additional_text: flatbed_13_4012_type1985_additional_text;
+        articulated_part: articulated_part_dummy1;
+    bitmask_vehicle_info: flatbed_13_4012_type1985_bitmask_vehicle_info;
+          cargo_capacity: flatbed_13_4012_type1985_cargo_capacity;
+      cargo_subtype_text: flatbed_13_4012_type1985_cargo_subtype_text;
+          colour_mapping: flatbed_13_4012_type1985_colour_mapping;
+                 default: flatbed_13_4012_type1985_sprites;
+           loading_speed: flatbed_13_4012_type1985_loading_speed;
+                    name: flatbed_13_4012_type1985_name;
+                purchase: flatbed_13_4012_type1985_purchase_sprites;
+              refit_cost: flatbed_13_4012_type1985_refit_cost;
+     running_cost_factor: flatbed_13_4012_type1985_running_cost_factor;
+                  weight: flatbed_13_4012_type1985_weight;
+  }
+}
+
+long_name_template(flatbed_13_4012_type1985, STR_LONGNAME_FLATBED_13_4012_TYPE1985)

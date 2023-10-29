@@ -1,0 +1,98 @@
+﻿// flatbed_type1902
+
+#define PROP_flatbed_type1902_CF  7
+#define PROP_flatbed_type1902_RC  2
+#define PROP_flatbed_type1902_SD  60
+#define PROP_flatbed_type1902_WT  6.8
+#define PROP_flatbed_type1902_TE  0
+#define PROP_flatbed_type1902_PR  0
+#define PROP_flatbed_type1902_CC  32
+#define PROP_flatbed_type1902_LC  12
+
+#define IMAGEFILE  "src/wagons/flatbeds/type1902.png"
+purchase_sprites(flatbed_type1902, 0, 0)
+combo_layout_template(flatbed_type1902, 6, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, flatbed_type1902_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_type1902_sprites_back;
+  1: cargo6flatbed_sprites;
+  2: flatbed_type1902_sprites_front;
+     return CB_FAILED;
+}
+long_vehicle(flatbed_type1902)
+
+switch (FEAT_TRAINS, SELF, flatbed_type1902_cargo_capacity,
+[  STORE_TEMP(PROP_flatbed_type1902_LC, 0),  // т
+   STORE_TEMP(20, 1),                        // м³
+   STORE_TEMP(25, 2),                        // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(6, 4),                         // шаблон
+   cargo_type_in_veh])
+{
+flatbed_capacity()
+  return 0;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1902_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(1, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(PROP_flatbed_type1902_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_flatbed_type1902_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_flatbed_type1902_WT + PROP_flatbed_type1902_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 2
+
+switch (FEAT_TRAINS, SELF, flatbed_type1902_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(0, 2),
+   STORE_TEMP(0, 3)])
+{
+  cargo6_piece_loading_speed;
+}
+
+// чтобы обеспечить 12 параметров исключены из производителей Мытищи, Русо-балт, Ленинградский завод
+name_in_group(flatbed_type1902, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_NAME_FLATBED_TYPE1902)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_NAME_FLATBED_TYPE1902)))
+
+hint_wagon_flat_3fact(flatbed_type1902,
+           PROP_flatbed_type1902_LC, 25,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
+           1902, 1909,
+           string(STR_PURCHASE_HINT_FACTORY_UST_KATAEV),
+           string(STR_PURCHASE_HINT_FACTORY_KOLOMNA),
+           fact_putilovsky())
+
+item (FEAT_TRAINS, flatbed_type1902, 1159) {
+  property {
+    name: string(STR_NAME_FLATBED_TYPE1902);
+    vehicle_dates(1902, 1916, 30, 10, 5, PROP_flatbed_type1902_CF)
+    vehicle_wagon(PROP_flatbed_type1902_WT, PROP_flatbed_type1902_SD)
+    vehicle_group(flatbeds_group)
+    cargo_allow_refit: [cargo_all_flatbedlist()];
+  }
+  graphics {
+    purchase_menu_wagon(PROP_flatbed_type1902_CF, PROP_flatbed_type1902_RC, PROP_flatbed_type1902_SD, PROP_flatbed_type1902_WT, PROP_flatbed_type1902_TE, PROP_flatbed_type1902_PR, PROP_flatbed_type1902_LC)
+                   name: flatbed_type1902_name;
+        additional_text: flatbed_type1902_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: flatbed_type1902_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: flatbed_type1902_sprites;
+          loading_speed: flatbed_type1902_loading_speed;
+               purchase: flatbed_type1902_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: flatbed_type1902_running_cost_factor;
+  }
+}
+
+use_yeti(flatbed_type1902, cargo_all_flatbedlist_uran())
