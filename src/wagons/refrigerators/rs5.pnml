@@ -1,5 +1,14 @@
 ﻿// rs5
 
+#define PROP_rs5_CF  405 * 4 + 341
+#define PROP_rs5_RC  741
+#define PROP_rs5_SD  140
+#define PROP_rs5_WT  233
+#define PROP_rs5_TE  0
+#define PROP_rs5_PR  0
+#define PROP_rs5_CC  48
+#define PROP_rs5_LC  47 * 4
+
 #define IMAGEFILE  "src/wagons/refrigerators/rs5.png"
 purchase_sprites(rs5, 0, 0)
 combo_layout_refsection_template(rs5, 13, 32, 40)
@@ -82,11 +91,11 @@ switch (FEAT_TRAINS, SELF, rs5int_create_effect,
 }
 
 switch (FEAT_TRAINS, SELF, rs5_cargo_capacity,
-[  STORE_TEMP(47 * 4, 0),   // т
-   STORE_TEMP(112 * 4, 1),  // м³
-   STORE_TEMP(0, 2),        // м²
-   STORE_TEMP(0, 3),        // палетомест
-   STORE_TEMP(13 * 4, 4)])  // шаблон
+[  STORE_TEMP(PROP_rs5_LC, 0),  // т
+   STORE_TEMP(112 * 4, 1),      // м³
+   STORE_TEMP(0, 2),            // м²
+   STORE_TEMP(0, 3),            // палетомест
+   STORE_TEMP(13 * 4, 4)])      // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, rs5_running_cost_factor,
@@ -97,10 +106,10 @@ switch (FEAT_TRAINS, SELF, rs5_running_cost_factor,
    STORE_TEMP(246, 4),  // ТО
    STORE_TEMP(2, 5),    // Сертификация
 
-   STORE_TEMP(140, 6),                   // Скорость
-   STORE_TEMP(233, 7),                   // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 47*4, 8)])  // Максимальная масса
-{ all_running_cost_factor; }             // 739
+   STORE_TEMP(PROP_rs5_SD, 6),                        // Скорость
+   STORE_TEMP(round(PROP_rs5_WT), 7),                 // Тара
+   STORE_TEMP(round(PROP_rs5_WT + PROP_rs5_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                          // 739
 
 switch (FEAT_TRAINS, SELF, rs5_loading_speed,
   STORE_TEMP(12 * 4, 2))
@@ -123,8 +132,11 @@ switch (FEAT_TRAINS, SELF, rs5_articulated_part,
 
 wagon_speed_change_on_load(rs5, 140, 120, 145)
 
+name_in_group(rs5, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_MODEL_NUMBER2, 16, 3000)),
+                   string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_RS5)))
+
 hint_wagon_with_spectype_chande_speed_on_load(rs5,
-     47*4, 112*4,
+     PROP_rs5_LC, 112*4,
      string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
      STR_PURCHASE_HINT_AGING_PERIOD_8_1,
      string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 3000), string(STR_MODEL_NUMBER2, 16, 3001)),
@@ -135,21 +147,22 @@ hint_wagon_with_spectype_chande_speed_on_load(rs5,
 item (FEAT_TRAINS, rs5, 266) {
   property {
     name: string(STR_NAME_RS5);
-    vehicle_dates(1986, 2000, 25, 10, 8, 405*4+341)
-    vehicle_wagon(233, 140)
+    vehicle_dates(1986, 2000, 25, 10, 8, PROP_rs5_CF)
+    vehicle_wagon(PROP_rs5_WT, PROP_rs5_SD)
+    vehicle_group(refrigerators_group)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu(PROP_rs5_CF, PROP_rs5_RC, PROP_rs5_SD, PROP_rs5_WT, PROP_rs5_TE, PROP_rs5_PR, PROP_rs5_LC)
+                   name: rs5_name;
         additional_text: rs5_additional_text;
        articulated_part: rs5_articulated_part;
        cargo_age_period: return 9000;
          cargo_capacity: rs5_cargo_capacity;
          colour_mapping: any_cc_colour;
-            cost_factor: return 405*4+341;
                 default: rs5_sprites;
           loading_speed: rs5_loading_speed;
                purchase: rs5_purchase_sprites;
-         purchase_speed: return 140;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: rs5_running_cost_factor;
                   speed: rs5_speed;

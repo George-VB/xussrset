@@ -1,0 +1,186 @@
+// rs4_type1979
+
+#define PROP_rs4_type1979_CF  4*360+315
+#define PROP_rs4_type1979_RC  686
+#define PROP_rs4_type1979_SD  140
+#define PROP_rs4_type1979_WT  222
+#define PROP_rs4_type1979_TE  0
+#define PROP_rs4_type1979_PR  0
+#define PROP_rs4_type1979_CC  44
+#define PROP_rs4_type1979_LC  43 * 4
+
+#define IMAGEFILE  "src/wagons/refrigerators/rs4-type1979.png"
+purchase_sprites(rs4_type1979, 0, 0)
+combo_layout_refsection_template(rs4_type1979, 13, 32, 40)
+ref_diesel_layout_template(rs4_type1979_diesel, 10, 32, 40 + 67*3)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_sprites_left,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: rs4_type1979_sprites_left_back;
+  1: cargo13_frut_bc_sprites_5_wagons;
+  2: rs4_type1979_sprites_left_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_sprites_right,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: rs4_type1979_sprites_right_back;
+  1: cargo13_frut_bc_sprites_5_wagons;
+  2: rs4_type1979_sprites_right_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_sprites_left_all,
+  position_in_articulated_veh)
+{
+    0: rs4_type1979_sprites_left;
+    2: rs4_type1979_sprites_left;
+    4: rs4_type1979_diesel_sprites_left;
+    6: rs4_type1979_sprites_left;
+    8: rs4_type1979_sprites_left;
+  align_8_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_sprites_right_all,
+  position_in_articulated_veh)
+{
+    0: rs4_type1979_sprites_right;
+    2: rs4_type1979_sprites_right;
+    4: rs4_type1979_diesel_sprites_right;
+    6: rs4_type1979_sprites_right;
+    8: rs4_type1979_sprites_right;
+  align_8_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: rs4_type1979_sprites_left_all;
+     rs4_type1979_sprites_right_all;
+}
+
+long_vehicle(rs4_type1979)
+
+engine_diesel_1r_effect(rs4_int_create_effect_sprites, -2, 4, 11)
+
+switch (FEAT_TRAINS, SELF, rs4_int_create_effect2,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: rs4_int_create_effect_sprites_left;
+     rs4_int_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_int_create_effect1,
+  position_in_articulated_veh)
+{
+  4: rs4_int_create_effect2;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, rs4_int_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_load() > 0])
+{
+  1: rs4_int_create_effect1;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;
+  2: return rs4_int;
+  3: return dummy5;
+  4: return rs4_int;
+  5: return dummy2;
+  6: return rs4_int;
+  7: return dummy5;
+  8: return rs4_int;
+  9: return dummy5;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_cargo_capacity,
+[  STORE_TEMP(PROP_rs4_type1979_LC, 0),  // т
+   STORE_TEMP(112 * 4, 1),               // м³
+   STORE_TEMP(0, 2),                     // м²
+   STORE_TEMP(0, 3),                     // палетомест
+   STORE_TEMP(13 * 4, 4)])               // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(342, 2),  // Износ
+   STORE_TEMP(114, 3),  // Сопровождение
+   STORE_TEMP(228, 4),  // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_rs4_type1979_SD, 6),                                 // Скорость
+   STORE_TEMP(round(PROP_rs4_type1979_WT), 7),                          // Тара
+   STORE_TEMP(round(PROP_rs4_type1979_WT + PROP_rs4_type1979_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                            // 684
+
+switch (FEAT_TRAINS, SELF, rs4_type1979_loading_speed,
+  STORE_TEMP(12 * 4, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(rs4_type1979, 140, 120, 148)
+
+name_in_group(rs4_type1979, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_RS4_TYPE1979)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_RS4_TYPE1979)))
+
+hint_wagon_with_spectype_chande_speed_on_load(rs4_type1979,
+     PROP_rs4_type1979_LC, 112*4,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 380), string(STR_MODEL_NUMBER2, 16, 381)),
+     1979, 1983,
+     fact_bryansk(),
+     120, 148)
+
+item (FEAT_TRAINS, rs4_type1979, 396) {
+  property {
+    name: string(STR_NAME_RS4_TYPE1979);
+    vehicle_dates(1979, 1983, 25, 10, 8, 4*360+315)
+    vehicle_wagon(PROP_rs4_type1979_WT, PROP_rs4_type1979_SD)
+    vehicle_group(refrigerators_group)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    purchase_menu(PROP_rs4_type1979_CF, PROP_rs4_type1979_RC, PROP_rs4_type1979_SD, PROP_rs4_type1979_WT, PROP_rs4_type1979_TE, PROP_rs4_type1979_PR, PROP_rs4_type1979_LC)
+                   name: rs4_type1979_name;
+        additional_text: rs4_type1979_additional_text;
+       articulated_part: rs4_type1979_articulated_part;
+       cargo_age_period: return 9000;
+         cargo_capacity: rs4_type1979_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: rs4_type1979_sprites;
+          loading_speed: rs4_type1979_loading_speed;
+               purchase: rs4_type1979_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: rs4_type1979_running_cost_factor;
+                  speed: rs4_type1979_speed;
+  }
+}
+
+long_name_template(rs4_type1979, STR_LONGNAME_RS4_TYPE1979)
+
+item (FEAT_TRAINS, rs4_int, 395) {
+  property {
+    vehicle_no_dates(1979, 2050, 25, 10, 8, 0)
+    vehicle_wagon(0, 140)
+    vehicle_wagon_cargo(0, 0)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    colour_mapping: any_cc_colour;
+     create_effect: rs4_int_create_effect;
+           default: rs4_type1979_sprites;
+  }
+}

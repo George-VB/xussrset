@@ -1,0 +1,186 @@
+﻿// rs1_type1965
+
+#define PROP_rs1_type1965_CF  4 * 339 + 281
+#define PROP_rs1_type1965_RC  517
+#define PROP_rs1_type1965_SD  140
+#define PROP_rs1_type1965_WT  226
+#define PROP_rs1_type1965_TE  0
+#define PROP_rs1_type1965_PR  0
+#define PROP_rs1_type1965_CC  43
+#define PROP_rs1_type1965_LC  42 * 4
+
+#define IMAGEFILE  "src/wagons/refrigerators/rs1-type1965.png"
+purchase_sprites(rs1_type1965, 0, 0)
+combo_layout_refsection_template(rs1_type1965, 13, 32, 40)
+ref_diesel_layout_template(rs1_type1965_diesel, 10, 32, 40 + 67*3)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_sprites_left,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: rs1_type1965_sprites_left_back;
+  1: cargo13_frut_bc_sprites_5_wagons;
+  2: rs1_type1965_sprites_left_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_sprites_right,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: rs1_type1965_sprites_right_back;
+  1: cargo13_frut_bc_sprites_5_wagons;
+  2: rs1_type1965_sprites_right_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_sprites_left_all,
+  position_in_articulated_veh)
+{
+    0: rs1_type1965_sprites_left;
+    2: rs1_type1965_sprites_left;
+    4: rs1_type1965_diesel_sprites_left;
+    6: rs1_type1965_sprites_left;
+    8: rs1_type1965_sprites_left;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_sprites_right_all,
+  position_in_articulated_veh)
+{
+    0: rs1_type1965_sprites_right;
+    2: rs1_type1965_sprites_right;
+    4: rs1_type1965_diesel_sprites_right;
+    6: rs1_type1965_sprites_right;
+    8: rs1_type1965_sprites_right;
+  align_10_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: rs1_type1965_sprites_left_all;
+     rs1_type1965_sprites_right_all;
+}
+
+long_vehicle(rs1_type1965)
+
+engine_diesel_1r_effect(rs1_int_create_effect_sprites, -2, 4, 11)
+
+switch (FEAT_TRAINS, SELF, rs1_int_create_effect2,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: rs1_int_create_effect_sprites_left;
+     rs1_int_create_effect_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_int_create_effect1,
+  position_in_articulated_veh)
+{
+  4: rs1_int_create_effect2;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, rs1_int_create_effect,
+[  set_offset_to(-position_in_articulated_veh),
+   prev_vehicle_cargo_load() > 0])
+{
+  1: rs1_int_create_effect1;
+     return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;
+  2: return rs1_int;
+  3: return dummy5;
+  4: return rs1_int;
+  5: return dummy2;
+  6: return rs1_int;
+  7: return dummy5;
+  8: return rs1_int;
+  9: return dummy5;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_cargo_capacity,
+[  STORE_TEMP(PROP_rs1_type1965_LC, 0),  // т
+   STORE_TEMP(108 * 4, 1),               // м³
+   STORE_TEMP(0, 2),                     // м²
+   STORE_TEMP(0, 3),                     // палетомест
+   STORE_TEMP(13 * 4, 4)])               // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(258, 2),  // Износ
+   STORE_TEMP(86, 3),   // Сопровождение (охлаждение)
+   STORE_TEMP(172, 4),  // ТО
+   STORE_TEMP(1, 5),    // Сертификация
+
+   STORE_TEMP(PROP_rs1_type1965_SD, 6),                                 // Скорость
+   STORE_TEMP(round(PROP_rs1_type1965_WT), 7),                          // Тара
+   STORE_TEMP(round(PROP_rs1_type1965_WT + PROP_rs1_type1965_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                            // 516
+
+switch (FEAT_TRAINS, SELF, rs1_type1965_loading_speed,
+  STORE_TEMP(10 * 4, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(rs1_type1965, 140, 120, 144)
+
+name_in_group(rs1_type1965, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_RS1_TYPE1965)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_RS1_TYPE1965)))
+
+hint_wagon_with_spectype_chande_speed_on_load(rs1_type1965,
+     42*4, 108*4,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 340), string(STR_MODEL_NUMBER2, 16, 341)),
+     1965, 1972,
+     fact_bryansk(),
+     120, 144)
+
+item (FEAT_TRAINS, rs1_type1965, 394) {
+  property {
+    name: string(STR_NAME_RS1_TYPE1965);
+    vehicle_dates(1965, 1972, 25, 10, 8, 4 * 339 + 281)
+    vehicle_wagon(PROP_rs1_type1965_WT, PROP_rs1_type1965_SD)
+    vehicle_group(refrigerators_group)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    purchase_menu(PROP_rs1_type1965_CF, PROP_rs1_type1965_RC, PROP_rs1_type1965_SD, PROP_rs1_type1965_WT, PROP_rs1_type1965_TE, PROP_rs1_type1965_PR, PROP_rs1_type1965_LC)
+                   name: rs1_type1965_name;
+        additional_text: rs1_type1965_additional_text;
+       articulated_part: rs1_type1965_articulated_part;
+       cargo_age_period: return 9000;
+         cargo_capacity: rs1_type1965_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: rs1_type1965_sprites;
+          loading_speed: rs1_type1965_loading_speed;
+               purchase: rs1_type1965_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: rs1_type1965_running_cost_factor;
+                  speed: rs1_type1965_speed;
+  }
+}
+
+long_name_template(rs1_type1965, STR_LONGNAME_RS1_TYPE1965)
+
+item (FEAT_TRAINS, rs1_int, 393) {
+  property {
+    vehicle_no_dates(1965, 2050, 25, 10, 8, 0)
+    vehicle_wagon(0, 140)
+    vehicle_wagon_cargo(0, 0)
+    effect_spawn_model_and_powered: EFFECT_SPAWN_MODEL_ELECTRIC;
+  }
+  graphics {
+    colour_mapping: any_cc_colour;
+     create_effect: rs1_int_create_effect;
+           default: rs1_type1965_sprites;
+  }
+}

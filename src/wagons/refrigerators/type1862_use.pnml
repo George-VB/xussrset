@@ -1,5 +1,16 @@
 ﻿// refrigerator_type1862 uses refrigerator_type1895
 
+#define PROP_refrigerator_type1862_CF  20
+#define PROP_refrigerator_type1862_RC  7
+#define PROP_refrigerator_type1862_SD  60
+#define PROP_refrigerator_type1862_WT  7
+#define PROP_refrigerator_type1862_TE  0
+#define PROP_refrigerator_type1862_PR  0
+#define PROP_refrigerator_type1862_CC  32
+#define PROP_refrigerator_type1862_LC  8
+
+map_sprites(refrigerator_type1862_purchase_sprites, refrigerator_type1895_purchase_sprites)
+
 switch (FEAT_TRAINS, SELF, refrigerator_type1862_weight,
   cargo_count > 0)
 {
@@ -8,11 +19,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1862_weight,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1862_cargo_capacity,
-[  STORE_TEMP(8, 0),   // т
-   STORE_TEMP(36, 1),  // м³
-   STORE_TEMP(0, 2),   // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(4, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_type1862_LC, 0),  // т
+   STORE_TEMP(36, 1),                             // м³
+   STORE_TEMP(0, 2),                              // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(4, 4)])                             // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1862_running_cost_factor,
@@ -23,14 +34,17 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1862_running_cost_factor,
    STORE_TEMP(1, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(60, 6),                  // Скорость
-   STORE_TEMP(7, 7),                   // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 10, 8)])  // Максимальная масса
+   STORE_TEMP(PROP_refrigerator_type1862_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_refrigerator_type1862_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_refrigerator_type1862_WT + PROP_refrigerator_type1862_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1862_loading_speed,
   STORE_TEMP(6, 2))
 { all_wagons_box_loading_speed; }
+
+name_in_group(refrigerator_type1862, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1862)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1862)))
 
 hint_wagon(refrigerator_type1862,
            8, 36,
@@ -43,11 +57,14 @@ hint_wagon(refrigerator_type1862,
 item (FEAT_TRAINS, refrigerator_type1862, 690) {
   property {
     name: string(STR_NAME_REFRIGERATOR_TYPE1862);
-    vehicle_dates(1862, 1905, 25, 10, 3, 20)
-    vehicle_wagon(7, 60)
+    vehicle_dates(1862, 1905, 25, 10, 3, PROP_refrigerator_type1862_CF)
+    vehicle_wagon(PROP_refrigerator_type1862_WT, PROP_refrigerator_type1862_SD)
+    vehicle_group(refrigerators_group)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu(PROP_refrigerator_type1862_CF, PROP_refrigerator_type1862_RC, PROP_refrigerator_type1862_SD, PROP_refrigerator_type1862_WT, PROP_refrigerator_type1862_TE, PROP_refrigerator_type1862_PR, PROP_refrigerator_type1862_LC)
+                   name: refrigerator_type1862_name;
         additional_text: refrigerator_type1862_additional_text;
        articulated_part: articulated_part_dummy1;
        cargo_age_period: return 300;
@@ -55,7 +72,7 @@ item (FEAT_TRAINS, refrigerator_type1862, 690) {
          colour_mapping: any_cc_colour;
                 default: refrigerator_type1895_sprites;
           loading_speed: refrigerator_type1862_loading_speed;
-               purchase: refrigerator_type1895_purchase_sprites;
+               purchase: refrigerator_type1862_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_type1862_running_cost_factor;
                  weight: refrigerator_type1862_weight;

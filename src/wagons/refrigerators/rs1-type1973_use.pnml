@@ -1,0 +1,93 @@
+﻿// rs1_type1973 uses rs1_type1965
+
+#define PROP_rs1_type1973_CF  4 * 355 + 281
+#define PROP_rs1_type1973_RC  517
+#define PROP_rs1_type1973_SD  140
+#define PROP_rs1_type1973_WT  226
+#define PROP_rs1_type1973_TE  0
+#define PROP_rs1_type1973_PR  0
+#define PROP_rs1_type1973_CC  44
+#define PROP_rs1_type1973_LC  43 * 4
+
+map_sprites(rs1_type1973_purchase_sprites, rs1_type1965_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, rs1_type1973_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;
+  2: return rs1_int;
+  3: return dummy5;
+  4: return rs1_int;
+  5: return dummy2;
+  6: return rs1_int;
+  7: return dummy5;
+  8: return rs1_int;
+  9: return dummy5;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs1_type1973_cargo_capacity,
+[  STORE_TEMP(PROP_rs1_type1973_LC, 0),  // т
+   STORE_TEMP(108 * 4, 1),               // м³
+   STORE_TEMP(0, 2),                     // м²
+   STORE_TEMP(0, 3),                     // палетомест
+   STORE_TEMP(13 * 4, 4)])               // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, rs1_type1973_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(258, 2),  // Износ
+   STORE_TEMP(86, 3),   // Сопровождение (охлаждение)
+   STORE_TEMP(172, 4),  // ТО
+   STORE_TEMP(1, 5),    // Сертификация
+
+   STORE_TEMP(PROP_rs1_type1973_SD, 6),                                 // Скорость
+   STORE_TEMP(round(PROP_rs1_type1973_WT), 7),                          // Тара
+   STORE_TEMP(round(PROP_rs1_type1973_WT + PROP_rs1_type1973_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                            // 516
+
+switch (FEAT_TRAINS, SELF, rs1_type1973_loading_speed,
+  STORE_TEMP(10 * 4, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(rs1_type1973, 140, 120, 144)
+
+name_in_group(rs1_type1973, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_RS1_TYPE1973)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_RS1_TYPE1973)))
+
+hint_wagon_with_spectype_chande_speed_on_load(rs1_type1973,
+     PROP_rs1_type1973_LC, 108*4,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 340), string(STR_MODEL_NUMBER2, 16, 341)),
+     1973, 1978,
+     fact_bryansk(),
+     120, 144)
+
+item (FEAT_TRAINS, rs1_type1973, 1217) {
+  property {
+    name: string(STR_NAME_RS1_TYPE1973);
+    vehicle_dates(1965, 1978, 25, 10, 8, 4 * 355 + 281)
+    vehicle_wagon(PROP_rs1_type1973_WT, PROP_rs1_type1973_SD)
+    vehicle_group(refrigerators_group)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    purchase_menu(PROP_rs1_type1973_CF, PROP_rs1_type1973_RC, PROP_rs1_type1973_SD, PROP_rs1_type1973_WT, PROP_rs1_type1973_TE, PROP_rs1_type1973_PR, PROP_rs1_type1973_LC)
+                   name: rs1_type1973_name;
+        additional_text: rs1_type1973_additional_text;
+       articulated_part: rs1_type1973_articulated_part;
+       cargo_age_period: return 9000;
+         cargo_capacity: rs1_type1973_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: rs1_type1965_sprites;
+          loading_speed: rs1_type1973_loading_speed;
+               purchase: rs1_type1973_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: rs1_type1973_running_cost_factor;
+                  speed: rs1_type1973_speed;
+  }
+}
+
+long_name_template(rs1_type1973, STR_LONGNAME_RS1_TYPE1973)
