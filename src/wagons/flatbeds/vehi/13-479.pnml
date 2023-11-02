@@ -1,5 +1,14 @@
 ﻿// flatbed_13_479
 
+#define PROP_flatbed_13_479_CF  222
+#define PROP_flatbed_13_479_RC  87
+#define PROP_flatbed_13_479_SD  120
+#define PROP_flatbed_13_479_WT  26
+#define PROP_flatbed_13_479_TE  0
+#define PROP_flatbed_13_479_PR  0
+#define PROP_flatbed_13_479_CC  24
+#define PROP_flatbed_13_479_LC  20
+
 #define IMAGEFILE  "src/wagons/flatbeds/vehi/13-479-part1.png"
 purchase_sprites(flatbed_13_479, 0, 0)
 spriteset (flatbed_13_479_empty_sprites, IMAGEFILE)   { s13_template(2,   42, 0) }
@@ -204,10 +213,10 @@ switch (FEAT_TRAINS, SELF, flatbed_13_479_running_cost_factor,
    STORE_TEMP(19, 4),  // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(26, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 43, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 87
+   STORE_TEMP(PROP_flatbed_13_479_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_flatbed_13_479_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_flatbed_13_479_WT + PROP_flatbed_13_479_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                // 87
 
 random_switch (FEAT_TRAINS, SELF, flatbed_13_479_colour_mapping,
   bitmask(TRIGGER_VEHICLE_NEW_LOAD))
@@ -220,8 +229,11 @@ random_switch (FEAT_TRAINS, SELF, flatbed_13_479_colour_mapping,
   2: return palette_1cc(COLOUR_WHITE);
 }
 
+name_in_group(flatbed_13_479, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_MODEL_NUMBER2, 13, 479)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_LONGNAME_FLATBED_13_479)))
+
 hint_wagon(flatbed_13_479,
-           20, 195,
+           PROP_flatbed_13_479_LC, 195,
            string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
            STR_PURCHASE_HINT_AGING_PERIOD_3_1,
            STR_PURCHASE_HINT_WAGON_TYPE_FLATBED_CARS,
@@ -231,16 +243,19 @@ hint_wagon(flatbed_13_479,
 item (FEAT_TRAINS, flatbed_13_479, 306) {
   property {
     name: string(STR_MODEL_NUMBER2, 13, 479);
-    vehicle_dates(1970, 1981, 30, 10, 8, 222)
-    vehicle_wagon(26, 120)
+    vehicle_dates(1970, 1981, 30, 10, 8, PROP_flatbed_13_479_CF)
+    vehicle_wagon(PROP_flatbed_13_479_WT, PROP_flatbed_13_479_SD)
+    vehicle_group(flatbeds_group)
     vehicle_wagon_cargo(17, 3)
     cargo_allow_refit: [VEHI];
   }
   graphics {
+    purchase_menu(PROP_flatbed_13_479_CF, PROP_flatbed_13_479_RC, PROP_flatbed_13_479_SD, PROP_flatbed_13_479_WT, PROP_flatbed_13_479_TE, PROP_flatbed_13_479_PR, PROP_flatbed_13_479_LC)
         additional_text: flatbed_13_479_additional_text;
        articulated_part: articulated_part_dummy5;
          colour_mapping: flatbed_13_479_colour_mapping;
                 default: flatbed_13_479_sprites;
+                   name: flatbed_13_479_name;
                purchase: flatbed_13_479_purchase_sprites;
     running_cost_factor: flatbed_13_479_running_cost_factor;
   }
