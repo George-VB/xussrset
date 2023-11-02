@@ -1,5 +1,16 @@
 ﻿// 19_6978_01_hopper uses 19_6978
 
+#define PROP_hopper_19_6978_01_CF  150
+#define PROP_hopper_19_6978_01_RC  100
+#define PROP_hopper_19_6978_01_SD  120
+#define PROP_hopper_19_6978_01_WT  36
+#define PROP_hopper_19_6978_01_TE  0
+#define PROP_hopper_19_6978_01_PR  0
+#define PROP_hopper_19_6978_01_CC  152
+#define PROP_hopper_19_6978_01_LC  114
+
+map_sprites(hopper_19_6978_01_purchase_sprites, hopper_19_6978_purchase_sprites)
+
 switch (FEAT_TRAINS, SELF, hopper_19_6978_01_articulated_part,
   extra_callback_info1)
 {
@@ -8,11 +19,11 @@ switch (FEAT_TRAINS, SELF, hopper_19_6978_01_articulated_part,
 }
 
 switch (FEAT_TRAINS, SELF, hopper_19_6978_01_cargo_capacity,
-[  STORE_TEMP(114, 0),  // т
-   STORE_TEMP(160, 1),  // м³
-   STORE_TEMP(0, 2),    // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(12, 4)])  // шаблон
+[  STORE_TEMP(PROP_hopper_19_6978_01_LC, 0),  // т
+   STORE_TEMP(160, 1),                        // м³
+   STORE_TEMP(0, 2),                          // м²
+   STORE_TEMP(0, 3),                          // палетомест
+   STORE_TEMP(12, 4)])                        // шаблон
 { hopper_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, hopper_19_6978_01_running_cost_factor,
@@ -23,9 +34,9 @@ switch (FEAT_TRAINS, SELF, hopper_19_6978_01_running_cost_factor,
    STORE_TEMP(40, 4),  // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                  // Скорость
-   STORE_TEMP(36, 7),                   // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 114, 8)])  // Максимальная масса
+   STORE_TEMP(PROP_hopper_19_6978_01_SD, 6),                                      // Скорость
+   STORE_TEMP(round(PROP_hopper_19_6978_01_WT), 7),                               // Тара
+   STORE_TEMP(round(PROP_hopper_19_6978_01_WT + PROP_hopper_19_6978_01_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, hopper_19_6978_01_loading_speed,
@@ -35,10 +46,13 @@ switch (FEAT_TRAINS, SELF, hopper_19_6978_01_loading_speed,
    STORE_TEMP(8 * NORMAL_HATCH + 4 * SMALL_HATCH, 3)])  // 8 и 4 малых разгрузочных люка
 { all_wagons_hopper_loading_speed; }
 
+name_in_group(hopper_19_6978_01, string(STR_NAME_IN_GROUP, string(STR_NAME_FERT_HOPPERS_SERIES), string(STR_MODEL_NUMBER3, 19, 6978, 01)),
+                                 string(STR_NAME_IN_GROUP, string(STR_NAME_FERT_HOPPERS_SERIES), string(STR_LONGNAME_HOPPER_19_6978_01)))
+
 hint_wagon_with_uspeed_noto(hopper_19_6978_01,
-     114, 160,
-     calc_loading(114 / (8 * LARGE_HATCH)),
-     calc_loading(114 / (8 * NORMAL_HATCH + 4 * SMALL_HATCH)),
+     PROP_hopper_19_6978_01_LC, 160,
+     calc_loading(PROP_hopper_19_6978_01_LC / (8 * LARGE_HATCH)),
+     calc_loading(PROP_hopper_19_6978_01_LC / (8 * NORMAL_HATCH + 4 * SMALL_HATCH)),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
      STR_PURCHASE_HINT_WAGON_TYPE_2HOPPER,
      2019,
@@ -47,11 +61,14 @@ hint_wagon_with_uspeed_noto(hopper_19_6978_01,
 item (FEAT_TRAINS, hopper_19_6978_01, 695) {
   property {
     name: string(STR_MODEL_NUMBER3, 19, 6978, 01);
-    vehicle_dates(2019, 2050, 40, 15, 6, 150)
-    vehicle_wagon(36, 120)
+    vehicle_dates(2019, 2050, 40, 15, 6, PROP_hopper_19_6978_01_CF)
+    vehicle_wagon(PROP_hopper_19_6978_01_WT, PROP_hopper_19_6978_01_SD)
+    vehicle_group(fert_hoppers_group)
     cargo_allow_refit: [cargo_all_fert_hopperlist()];
   }
   graphics {
+    purchase_menu(PROP_hopper_19_6978_01_CF, PROP_hopper_19_6978_01_RC, PROP_hopper_19_6978_01_SD, PROP_hopper_19_6978_01_WT, PROP_hopper_19_6978_01_TE, PROP_hopper_19_6978_01_PR, PROP_hopper_19_6978_01_LC)
+                   name: hopper_19_6978_01_name;
         additional_text: hopper_19_6978_01_additional_text;
        articulated_part: hopper_19_6978_01_articulated_part;
          cargo_capacity: hopper_19_6978_01_cargo_capacity;
@@ -59,7 +76,7 @@ item (FEAT_TRAINS, hopper_19_6978_01, 695) {
          colour_mapping: fert_hopper_colour_mapping;
                 default: hopper_19_6978_sprites;
           loading_speed: hopper_19_6978_01_loading_speed;
-               purchase: hopper_19_6978_purchase_sprites;
+               purchase: hopper_19_6978_01_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: hopper_19_6978_01_running_cost_factor;
   }

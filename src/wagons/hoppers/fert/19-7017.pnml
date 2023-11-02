@@ -1,17 +1,26 @@
 ﻿// 19_7017_hopper
 
-#define IMAGEFILE  "src/wagons/hoppers/19-7017.png"
+#define PROP_hopper_19_7017_CF  100
+#define PROP_hopper_19_7017_RC  43
+#define PROP_hopper_19_7017_SD  120
+#define PROP_hopper_19_7017_WT  23
+#define PROP_hopper_19_7017_TE  0
+#define PROP_hopper_19_7017_PR  0
+#define PROP_hopper_19_7017_CC  142
+#define PROP_hopper_19_7017_LC  71
+
+#define IMAGEFILE  "src/wagons/hoppers/fert/19-7017.png"
 purchase_sprites(hopper_19_7017, 0, 0)
 tanker_layout_template(hopper_19_7017, 8, 32, 40)
 #undef IMAGEFILE
 long_vehicle(hopper_19_7017)
 
 switch (FEAT_TRAINS, SELF, hopper_19_7017_cargo_capacity,
-[  STORE_TEMP(71, 0),  // т
-   STORE_TEMP(91, 1),  // м³
-   STORE_TEMP(0, 2),   // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(8, 4)])  // шаблон
+[  STORE_TEMP(PROP_hopper_19_7017_LC, 0),  // т
+   STORE_TEMP(91, 1),                      // м³
+   STORE_TEMP(0, 2),                       // м²
+   STORE_TEMP(0, 3),                       // палетомест
+   STORE_TEMP(8, 4)])                      // шаблон
 { hopper_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, hopper_19_7017_running_cost_factor,
@@ -22,9 +31,9 @@ switch (FEAT_TRAINS, SELF, hopper_19_7017_running_cost_factor,
    STORE_TEMP(15, 4),  // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(23, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 71, 8)])  // Максимальная масса
+   STORE_TEMP(PROP_hopper_19_7017_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_hopper_19_7017_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_hopper_19_7017_WT + PROP_hopper_19_7017_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, hopper_19_7017_loading_speed,
@@ -34,10 +43,13 @@ switch (FEAT_TRAINS, SELF, hopper_19_7017_loading_speed,
    STORE_TEMP(3 * NORMAL_HATCH, 3)])  // 3 разгрузочных люка
 { all_wagons_hopper_loading_speed; }
 
+name_in_group(hopper_19_7017, string(STR_NAME_IN_GROUP, string(STR_NAME_FERT_HOPPERS_SERIES), string(STR_MODEL_NUMBER2, 19, 7017)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_FERT_HOPPERS_SERIES), string(STR_LONGNAME_HOPPER_19_7017)))
+
 hint_wagon_with_uspeed_noto(hopper_19_7017,
-     71, 91,
-     calc_loading(71 / (4 * LARGE_HATCH)),
-     calc_loading(71 / (3 * NORMAL_HATCH)),
+     PROP_hopper_19_7017_LC, 91,
+     calc_loading(PROP_hopper_19_7017_LC / (4 * LARGE_HATCH)),
+     calc_loading(PROP_hopper_19_7017_LC / (3 * NORMAL_HATCH)),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
      STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
      2005,
@@ -46,11 +58,14 @@ hint_wagon_with_uspeed_noto(hopper_19_7017,
 item (FEAT_TRAINS, hopper_19_7017, 569) {
   property {
     name: string(STR_MODEL_NUMBER2, 19, 7017);
-    vehicle_dates(2005, 2050, 26, 10, 7, 100)
-    vehicle_wagon(23, 120)
+    vehicle_dates(2005, 2050, 26, 10, 7, PROP_hopper_19_7017_CF)
+    vehicle_wagon(PROP_hopper_19_7017_WT, PROP_hopper_19_7017_SD)
+    vehicle_group(fert_hoppers_group)
     cargo_allow_refit: [cargo_all_fert_hopperlist()];
   }
   graphics {
+    purchase_menu(PROP_hopper_19_7017_CF, PROP_hopper_19_7017_RC, PROP_hopper_19_7017_SD, PROP_hopper_19_7017_WT, PROP_hopper_19_7017_TE, PROP_hopper_19_7017_PR, PROP_hopper_19_7017_LC)
+                   name: hopper_19_7017_name;
         additional_text: hopper_19_7017_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: hopper_19_7017_cargo_capacity;
