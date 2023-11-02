@@ -1,0 +1,82 @@
+﻿// tanker_15_1208
+
+#define PROP_tanker_15_1208_CF  190
+#define PROP_tanker_15_1208_RC  51
+#define PROP_tanker_15_1208_SD  120
+#define PROP_tanker_15_1208_WT  27
+#define PROP_tanker_15_1208_TE  0
+#define PROP_tanker_15_1208_PR  0
+#define PROP_tanker_15_1208_CC  97
+#define PROP_tanker_15_1208_LC  55
+
+#define IMAGEFILE  "src/wagons/tankers/gas/15-1208.png"
+purchase_sprites(tanker_15_1208, 0, 0)
+tanker_layout_template(tanker_15_1208, 9, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_15_1208)
+
+switch (FEAT_TRAINS, SELF, tanker_15_1208_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1208_cargo_capacity,
+[  STORE_TEMP(PROP_tanker_15_1208_LC, 0),  // т
+   STORE_TEMP(92, 1),                      // м³
+   STORE_TEMP(0, 2),                       // м²
+   STORE_TEMP(0, 3),                       // палетомест
+   STORE_TEMP(9, 4)])                      // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1208_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(29, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(19, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(PROP_tanker_15_1208_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_tanker_15_1208_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_tanker_15_1208_WT + PROP_tanker_15_1208_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                // 32
+
+name_in_group(tanker_15_1208, string(STR_NAME_IN_GROUP, string(STR_NAME_GAS_TANKERS_SERIES), string(STR_MODEL_NUMBER2, 15, 1208)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_GAS_TANKERS_SERIES), string(STR_LONGNAME_TANKER_15_1208)))
+
+hint_wagon_with_uspeed_noto(tanker_15_1208,
+           55, 92,
+           calc_loading(55 / (15)),
+           calc_loading(55 / (10)),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+           2004,
+           string(STR_PURCHASE_HINT_FACTORY_RUZHIMMASH))
+
+item (FEAT_TRAINS, tanker_15_1208, 752) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 15, 1208);
+    vehicle_dates(2004, 2050, 40, 10, 8, PROP_tanker_15_1208_CF)
+    vehicle_wagon(PROP_tanker_15_1208_WT, PROP_tanker_15_1208_SD)
+    vehicle_group(gas_tankers_group)
+    cargo_allow_refit: [cargo_all_gas_natural_tanker()];
+  }
+  graphics {
+    purchase_menu(PROP_tanker_15_1208_CF, PROP_tanker_15_1208_RC, PROP_tanker_15_1208_SD, PROP_tanker_15_1208_WT, PROP_tanker_15_1208_TE, PROP_tanker_15_1208_PR, PROP_tanker_15_1208_LC)
+        additional_text: tanker_15_1208_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_15_1208_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_15_1208_sprites;
+          loading_speed: tanker_15_1208_loading_speed;
+                   name: tanker_15_1208_name;
+               purchase: tanker_15_1208_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_15_1208_running_cost_factor;
+  }
+}
+
+long_name_template(tanker_15_1208, STR_LONGNAME_TANKER_15_1208)

@@ -1,0 +1,106 @@
+﻿// tanker_type1875p
+
+#define PROP_tanker_type1875p_CF  4
+#define PROP_tanker_type1875p_RC  2
+#define PROP_tanker_type1875p_SD  60
+#define PROP_tanker_type1875p_WT  6.25
+#define PROP_tanker_type1875p_TE  0
+#define PROP_tanker_type1875p_PR  0
+#define PROP_tanker_type1875p_CC  36
+#define PROP_tanker_type1875p_LC  9
+
+#define IMAGEFILE  "src/wagons/tankers/petrol/type1875p.png"
+purchase_sprites(tanker_type1875p, 0, 0)
+tanker_layout_template(tanker_type1875p_tank, 4, 32, 40)
+tanker_layout_template(tanker_type1875p_frame, 4, 32, 107)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_frame_cc1,
+  STORE_TEMP(ttdall_cc + 0x22, 0x100))
+{ tanker_type1875p_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_frame_cc2,
+  STORE_TEMP(ttdall_cc + 0x6B, 0x100))
+{ tanker_type1875p_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_frame,
+[  set_offset_to(1),
+   prev_vehicle_randombits() >> 7 & 0x01])
+{
+  0: tanker_type1875p_frame_cc1;
+     tanker_type1875p_frame_cc2;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: tanker_type1875p_tank_sprites_start;
+  1: tanker_type1875p_frame;
+     return CB_FAILED;
+}
+
+long_vehicle(tanker_type1875p)
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_cargo_capacity,
+[  STORE_TEMP(PROP_tanker_type1875p_LC, 0),  // т
+   STORE_TEMP(10, 1),                        // м³
+   STORE_TEMP(0, 2),                         // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(4, 4)])                        // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1875p_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(1, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(PROP_tanker_type1875p_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_tanker_type1875p_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_tanker_type1875p_WT + PROP_tanker_type1875p_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 1
+
+name_in_group(tanker_type1875p, string(STR_NAME_IN_GROUP, string(STR_NAME_PETROL_TANKERS_SERIES), string(STR_NAME_TANKER_TYPE1875P)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_PETROL_TANKERS_SERIES), string(STR_NAME_TANKER_TYPE1875P)))
+
+hint_wagon_with_uspeed_2fact(tanker_type1875p,
+                 9, 10,
+                 string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
+                 STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                 STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+                 1875, 1885,
+                 string(STR_PURCHASE_HINT_RWFACTORY_DTS_RW),
+                 string(STR_PURCHASE_HINT_RWFACTORY_MNN_RW))
+
+item (FEAT_TRAINS, tanker_type1875p, 521) {
+  property {
+    name: string(STR_NAME_TANKER_TYPE1875P);
+    vehicle_dates(1875, 1885, 32, 10, 3, PROP_tanker_type1875p_CF)
+    vehicle_wagon(PROP_tanker_type1875p_WT, PROP_tanker_type1875p_SD)
+    vehicle_group(petrol_tankers_group)
+    cargo_allow_refit: [cargo_all_petr_tanker()];
+  }
+  graphics {
+    purchase_menu(PROP_tanker_type1875p_CF, PROP_tanker_type1875p_RC, PROP_tanker_type1875p_SD, PROP_tanker_type1875p_WT, PROP_tanker_type1875p_TE, PROP_tanker_type1875p_PR, PROP_tanker_type1875p_LC)
+        additional_text: tanker_type1875p_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_type1875p_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_type1875p_sprites;
+          loading_speed: tanker_type1875p_loading_speed;
+                   name: tanker_type1875p_name;
+               purchase: tanker_type1875p_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_type1875p_running_cost_factor;
+  }
+}
