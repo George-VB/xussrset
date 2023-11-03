@@ -2,17 +2,17 @@
 
 // Group name CB
 
-#define name_in_group(name, name_g, lname_g)   \
-switch(FEAT_TRAINS, SELF, name##_name_tree,    \
-  getbits(extra_callback_info1, 8, 8) * 100 +  \
-  enable_long_names)                           \
-{   0: return name_g;                          \
-    1: return lname_g;                         \
-       return CB_FAILED; }                     \
-switch (FEAT_TRAINS, PARENT, name##_name,      \
-  getbits(extra_callback_info1, 0, 8) )        \
-{ 0x20: name##_name_tree;                      \
-        return CB_FAILED; }                    \
+#define name_in_group(name, name_g, lname_g)                    \
+switch(FEAT_TRAINS, SELF, name##_name_tree,                     \
+  getbits(extra_callback_info1, 8, 8) * 100 +                   \
+  enable_long_names)                                            \
+{   0: return name_g;                                           \
+    1: return lname_g;                                          \
+       return CB_FAILED; }                                      \
+switch (FEAT_TRAINS, PARENT, name##_name,                       \
+  getbits(extra_callback_info1, 0, 8) * (disable_groups == 0))  \
+{ 0x20: name##_name_tree;                                       \
+        return CB_FAILED; }                                     \
 
 #define name_in_group_subgroup(name, name_g, lname_g, name_sg)  \
 switch(FEAT_TRAINS, SELF, name##_name_tree,                     \
@@ -24,7 +24,7 @@ switch(FEAT_TRAINS, SELF, name##_name_tree,                     \
   101: return name_sg;                                          \
        return CB_FAILED; }                                      \
 switch (FEAT_TRAINS, PARENT, name##_name,                       \
-  getbits(extra_callback_info1, 0, 8) )                         \
+  getbits(extra_callback_info1, 0, 8) * (disable_groups == 0))  \
 { 0x20: name##_name_tree;                                       \
         return CB_FAILED; }                                     \
 
@@ -40,7 +40,7 @@ switch(FEAT_TRAINS, SELF, name##_name_tree,                                   \
   201: return name_ssg;                                                       \
        return CB_FAILED; }                                                    \
 switch (FEAT_TRAINS, PARENT, name##_name,                                     \
-  getbits(extra_callback_info1, 0, 8) )                                       \
+  getbits(extra_callback_info1, 0, 8) * (disable_groups == 0))                \
 { 0x20: name##_name_tree;                                                     \
         return CB_FAILED; }                                                   \
 
@@ -57,7 +57,7 @@ switch(FEAT_TRAINS, SELF, name##_name_tree,                        \
   101: return string(STR_PURCHASE_HINT_LIST1);                     \
        return CB_FAILED; }                                         \
 switch (FEAT_TRAINS, PARENT, name##_name,                          \
-  getbits(extra_callback_info1, 0, 8) )                            \
+  getbits(extra_callback_info1, 0, 8) * (disable_groups == 0))     \
 { 0x20: name##_name_tree;                                          \
         return CB_FAILED; }                                        \
 
@@ -74,13 +74,14 @@ switch(FEAT_TRAINS, SELF, name##_name_tree,                                     
   201: return name_ssg;                                                          \
        return CB_FAILED; }                                                       \
 switch (FEAT_TRAINS, PARENT, name##_name,                                        \
-  getbits(extra_callback_info1, 0, 8) )                                          \
+  getbits(extra_callback_info1, 0, 8) * (disable_groups == 0))                   \
 { 0x20: name##_name_tree;                                                        \
         return CB_FAILED; }                                                      \
 
 // Full template also changes name outside buy menu tree.
 // Currently not used. Requires a decision for renaming vehicles over time, like NO -> VL61. Names stays unchanged now, but IRL they were changed
-
+// Should be changed to use with disable_groups == 0 (and fail on disable_groups == 1)
+/*
 #define name_in_group_full(name, name_template, name_group, name_short, name_long)  \
 switch(FEAT_TRAINS, SELF, name##_name_all, enable_long_names)                       \
 {   0: return string(name_short);                                                   \
@@ -95,7 +96,7 @@ switch (FEAT_TRAINS, PARENT, name##_name,                                       
   getbits(extra_callback_info1, 0, 8) )                                             \
 { 0x20: name##_name_tree;                                                           \
         name##_name_all; }                                                          \
-
+*/
 // A group CBs
 
 #define group_CBs(name_g)                                             \

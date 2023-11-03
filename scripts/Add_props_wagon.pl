@@ -79,22 +79,28 @@ sub PatchFile($) {
 	$vehs{$vehName} = "";
 	$vehLongestName = length($vehName) if(length($vehName) > $vehLongestName);
 # find CF
-	$vehCF = $1 if ($str =~ /vehicle_dates\([0-9, ]+,\s*([0-9]+)\)/i);
+	$vehCF = $1 if ($str =~ /vehicle_dates\([0-9, ]+,\s*([0-9\+\* ]+)\)/i);
 	$vehStartDate = $1 if ($str =~ /vehicle_dates\(([0-9]+),/i);
 	$vehs{$vehName} = $vehStartDate;
 # find RC
-	$vehRC = $1 if ($str =~ /\{\s*all\_running\_cost\_factor\;\s*\}\s*\/\/\s*([0-9+* ]+)/i);
+	$vehRC += $1 if ($str =~ /STORE_TEMP\(([0-9]+).*?\,\s*0\)\,\s*\/\/\s*Моторы/i);
+	$vehRC += $1 if ($str =~ /STORE_TEMP\(([0-9]+).*?\,\s*1\)\,\s*\/\/\s*Бригада/i);
+	$vehRC += $1 if ($str =~ /STORE_TEMP\(([0-9]+).*?\,\s*2\)\,\s*\/\/\s*Износ/i);
+	$vehRC += $1 if ($str =~ /STORE_TEMP\(([0-9]+).*?\,\s*3\)\,\s*\/\/\s*Сопровождение/i);
+	$vehRC += $1 if ($str =~ /STORE_TEMP\(([0-9]+).*?\,\s*4\)\,\s*\/\/\s*ТО/i);
+	$vehRC += $1 if ($str =~ /STORE_TEMP\(([0-9]+).*?\,\s*5\)\,\s*\/\/\s*Сертификация/i);
 # find SD and WT
         ($vehSD, $vehWT) = ($2, $1) if ($str =~ /vehicle_wagon\(([0-9\.]+)\,\s*([0-9]+)\)/i);
 # find TE
 # find PR
 # find CC
 	my($cc, $tn);
-	$vehLC = $1 if ($str =~ /STORE\_TEMP\(([0-9]+)\,\s*0\)\,\s*\/\/\s*т/i); #      
+	$vehLC = $1 if ($str =~ /STORE\_TEMP\(([0-9\+\* ]+)\,\s*0\)\,\s*\/\/\s*т/i); #      
 	$tn = $1 if ($str =~ /STORE\_TEMP\(([0-9]+)\,\s*4\)\]\)\s*\/\/\s*шаблон/i); # 
 	$tn = $1 if ($str =~ /STORE\_TEMP\(([0-9]+)\,\s*4\)\,\s*\/\/\s*шаблон/i); # 
 	$tn = 16 if (not defined($tn));
 	$tn = 16 if ($tn == 0);
+# TODO if $vehLC is expreassion, like 43 * 4 + 12 , it should be calculated first
 	$vehCC = ($vehLC * 16 / $tn);
 	$vehCC =~ s/\..*$//;
 # add PROP block
@@ -111,18 +117,20 @@ sub PatchFile($) {
 	$model = $1 if ($str =~ /(string\(STR_MODEL_NUMBER3\,\s*[0-9]+\,\s*[0-9]+,\s*[0-9]+\))/i);
         $str =~ s/hint_wagon/name_in_group(${vehName}, string(STR_NAME_IN_GROUP, string(STR_NAME_${serNameUC}_SERIES), $model),\n                ${tmp}string(STR_NAME_IN_GROUP, string(STR_NAME_${serNameUC}_SERIES), string(STR_${lang}NAME_${vehNameUC})))\n\nhint_wagon/i;
 # add name CB
-        $str =~ s/graphics \{/graphics \{\n    purchase_menu_wagon\(PROP_${vehName}_CF, PROP_${vehName}_RC, PROP_${vehName}_SD, PROP_${vehName}_WT, PROP_${vehName}_TE, PROP_${vehName}_PR, PROP_${vehName}_LC\)\n    name\: ${vehName}_name;/i;
+        $str =~ s/graphics \{/graphics \{\n    purchase_menu\(PROP_${vehName}_CF, PROP_${vehName}_RC, PROP_${vehName}_SD, PROP_${vehName}_WT, PROP_${vehName}_TE, PROP_${vehName}_PR, PROP_${vehName}_LC\)\n    name\: ${vehName}_name;/i;
 # replace rc
         $str =~ s/STORE_TEMP\([0-9]+\,\s*6\)\,\s*\/\/\s*Скорость/STORE_TEMP\(PROP_${vehName}_SD\, 6\)\, \/\/ Скорость/;
         $str =~ s/STORE_TEMP\([0-9]+\,\s*7\)\,\s*\/\/\s*Тара/STORE_TEMP\(round\(PROP_${vehName}_WT\)\, 7\)\, \/\/ Тара/;
         $str =~ s/STORE_TEMP\(.*?\,\s*8\)\]\)\s*\/\/\s*Максимальная масса/STORE_TEMP\(round\(PROP_${vehName}_WT + PROP_${vehName}_LC\)\, 8\)\]\) \/\/ Максимальная масса/;
-# replace rc
+        $str =~ s/(\{\s*all_running_cost_factor\;\s*\}\s*)/$1\/\/ $vehRC /i;                        
+# replace cf
         $str =~ s/vehicle_dates\(([0-9, ]+)\,\s*[0-9]+\)/vehicle_dates\($1, PROP_${vehName}_CF\)/i;
 # replace wt sd
         $str =~ s/vehicle_wagon\([0-9\.]+\,\s*[0-9]+\)/vehicle_wagon\(PROP_${vehName}_WT\, PROP_${vehName}_SD\)\n    vehicle_group\(${serName}_group\)/i;
 # replace lc
-        $str =~ s/\[\s*STORE_TEMP\([0-9]+\, 0\)\,\s*\/\/\s*т/\[  STORE_TEMP\(PROP_${vehName}_LC\, 0\)\,  \/\/ т/i;
-
+        $str =~ s/\[\s*STORE_TEMP\([0-9\*\+ ]+\, 0\)\,\s*\/\/\s*т/\[  STORE_TEMP\(PROP_${vehName}_LC\, 0\)\,  \/\/ т/i;
+        $str =~ s/(hint_wagon_with_uspeed\([0-9a-z_]+\,\s+[0-9\*\+ ]+\,\s*[0-9]+\s+calc_loading\()[0-9]+(.*?calc_loading\()[0-9]+/${1}PROP_${vehName}_LC{$2}PROP_${vehName}_LC/i;
+        $str =~ s/(hint_wagon_with_uspeed\([0-9a-z_]+\,\s+)[0-9\*\+ ]+(\,\s*[0-9]+\s+)/${1}PROP_${vehName}_LC{$2}/i;
 	return($str);
 }
 
