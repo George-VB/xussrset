@@ -1,0 +1,74 @@
+﻿// coach_type1918 uses coach_type1910
+
+#define PROP_coach_type1918_CF  169
+#define PROP_coach_type1918_RC  105
+#define PROP_coach_type1918_SD  140
+#define PROP_coach_type1918_WT  40
+#define PROP_coach_type1918_TE  0
+#define PROP_coach_type1918_PR  0
+#define PROP_coach_type1918_CC  0
+#define PROP_coach_type1918_LC  0
+
+#define IMAGEFILE  "src/cars/class1/type1910.png"
+purchase_sprites(coach_type1918, 102, 0)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, coach_type1918_sprites_start,
+  cargo_subtype)
+{
+                 0: coach_type1910_v2_sprites_start;
+  LV_RED_ARROW_OLD: coach_type1910_v3_sprites_start;
+     align_12_sprites;
+}
+
+long_vehicle(coach_type1918)
+
+livery_template_base_list(coach_type1918, LV_RED_ARROW_OLD)
+
+switch (FEAT_TRAINS, SELF, coach_type1918_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(22, 1),  // Бригада
+   STORE_TEMP(60, 2),  // Износ
+   STORE_TEMP(5, 3),   // Сопровождение
+   STORE_TEMP(16, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_coach_type1918_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_coach_type1918_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_coach_type1918_WT + PROP_coach_type1918_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                // 105 // 105
+name_in_group(coach_type1918, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS1_SERIES), string(STR_NAME_COACH_TYPE1918)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS1_SERIES), string(STR_LONGNAME_COACH_TYPE1918)))
+
+hint_wagon_coach(coach_type1918,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     STR_PURCHASE_HINT_COACH_TYPE_SL,
+     1918, 1920,
+     fact_tver())
+
+item (FEAT_TRAINS, coach_type1918, 1228) {
+  property {
+    name: string(STR_NAME_COACH_TYPE1918);
+    vehicle_dates(1918, 1920, 28, 10, 8, PROP_coach_type1918_CF)
+    vehicle_wagon(PROP_coach_type1918_WT, PROP_coach_type1918_SD)
+    vehicle_group(class1_group)
+    vehicle_wagon_pass(18, 15)
+    vehicle_allow_tourists()
+  }
+  graphics {
+    purchase_menu(PROP_coach_type1918_CF, PROP_coach_type1918_RC, PROP_coach_type1918_SD, PROP_coach_type1918_WT, PROP_coach_type1918_TE, PROP_coach_type1918_PR, PROP_coach_type1918_LC)
+                   name: coach_type1918_name;
+        additional_text: coach_type1918_additional_text;
+       articulated_part: articulated_part_dummy4;
+       cargo_age_period: return 10000;
+     cargo_subtype_text: coach_type1918_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: coach_type1918_sprites;
+               purchase: coach_type1918_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: coach_type1918_running_cost_factor;
+  }
+}
+
+long_name_template(coach_type1918, STR_LONGNAME_COACH_TYPE1918)

@@ -1,0 +1,84 @@
+﻿// 61_4458
+
+#define PROP__61_4458_CF  349
+#define PROP__61_4458_RC  218
+#define PROP__61_4458_SD  160
+#define PROP__61_4458_WT  56.8
+#define PROP__61_4458_TE  0
+#define PROP__61_4458_PR  0
+#define PROP__61_4458_CC  0
+#define PROP__61_4458_LC  0
+
+#define IMAGEFILE  "src/cars/class4/61-4458.png"
+purchase_sprites(_61_4458, 0, 0)
+pass_wagon_sprites(15, _61_4458_v1, 32, 40)
+pass_wagon_sprites(15, _61_4458_v2, 32, 308)
+pass_wagon_sprites(15, _61_4458_v3, 32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _61_4458_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _61_4458_v1_sprites_start;
+     _61_4458_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _61_4458_sprites_start,
+  cargo_subtype)
+{
+           0: _61_4458_sprites_start_random;
+  LV_RAL6002: _61_4458_v1_sprites_start;
+  LV_RAL6020: _61_4458_v2_sprites_start;
+  LV_RZD_PID: _61_4458_v3_sprites_start;
+     align_15_sprites;
+}
+
+long_vehicle(_61_4458)
+
+livery_template_base_list3(_61_4458, LV_RAL6002, LV_RAL6020, LV_RZD_PID)
+switch (FEAT_TRAINS, SELF, _61_4458_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(46, 1),   // Бригада
+   STORE_TEMP(124, 2),  // Износ
+   STORE_TEMP(11, 3),   // Сопровождение
+   STORE_TEMP(33, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP__61_4458_SD, 6),                             // Скорость
+   STORE_TEMP(round(PROP__61_4458_WT), 7),                      // Тара
+   STORE_TEMP(round(PROP__61_4458_WT + PROP__61_4458_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                    // 218 // 218
+name_in_group(_61_4458, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS4_SERIES), string(STR_MODEL_NUMBER2, 61, 4458)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS4_SERIES), string(STR_LONGNAME_61_4458)))
+
+hint_wagon_coach_noto(_61_4458,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_2_3,
+     STR_PURCHASE_HINT_COACH_TYPE_S_WITH_COND,
+     2009,
+     fact_tver())
+
+item (FEAT_TRAINS, _61_4458, 248) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 61, 4458);
+    vehicle_dates(2009, 2050, 40, 10, 8, PROP__61_4458_CF)
+    vehicle_wagon(PROP__61_4458_WT, PROP__61_4458_SD)
+    vehicle_group(class4_group)
+    vehicle_wagon_pass(60, 15)
+  }
+  graphics {
+    purchase_menu(PROP__61_4458_CF, PROP__61_4458_RC, PROP__61_4458_SD, PROP__61_4458_WT, PROP__61_4458_TE, PROP__61_4458_PR, PROP__61_4458_LC)
+        additional_text: _61_4458_additional_text;
+       articulated_part: articulated_part_dummy7;
+       cargo_age_period: return 95;
+     cargo_subtype_text: _61_4458_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: _61_4458_sprites;
+                   name: _61_4458_name;
+               purchase: _61_4458_purchase_sprites;
+    running_cost_factor: _61_4458_running_cost_factor;
+  }
+}
+
+long_name_template(_61_4458, STR_LONGNAME_61_4458)

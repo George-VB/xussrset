@@ -1,0 +1,65 @@
+// WLABmee
+
+#define IMAGEFILE  "src/cars/class2/WLABmee.png"
+purchase_sprites(WLABmee, 0, 0)
+
+pass_wagon_sprites(16, WLABmee, 32, 40)
+#undef IMAGEFILE
+
+long_vehicle(WLABmee)
+
+switch (FEAT_TRAINS, SELF, WLABmee_cargo_capacity,
+  cargo_type_in_veh)
+{
+  TOUR: return 22;
+        return 33;
+}
+
+engine_cost_change_build_after(WLABmee, 1364,
+                                        1423, 1995)
+// Цена изменилась из-за изменения типа отопления с электрического на комбинированное
+
+switch (FEAT_TRAINS, SELF, WLABmee_running_cost_factor,
+[  STORE_TEMP(0, 0),                                // Моторы
+   STORE_TEMP(180 + 8 * (build_year >= 1995), 1),   // Бригада
+   STORE_TEMP(487 + 21 * (build_year >= 1995), 2),  // Износ
+   STORE_TEMP(43 + 2 * (build_year >= 1995), 3),    // Сопровождение
+   STORE_TEMP(128 + 6 * (build_year >= 1995), 4),   // ТО
+   STORE_TEMP(17 + 1 * (build_year >= 1995), 5),    // Сертификация
+
+   STORE_TEMP(160, 6),                // Скорость
+   STORE_TEMP(59, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
+{ all_running_cost_factor; }          // 855 - 892
+
+hint_wagon_coach_comment(WLABmee,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_7_2,
+     STR_PURCHASE_HINT_COACH_TYPE_SL_WITH_COND,
+     1992, 1996,
+     string(STR_PURCHASE_HINT_FACTORY_GORLITZ),
+     string(STR_PURCHASE_HINT_WLABMEE_CLASS))
+
+item (FEAT_TRAINS, WLABmee, 439) {
+  property {
+    name: string(STR_NAME_WLABMEE);
+    vehicle_dates(1992, 1996, 28, 10, 8, 1364)
+    vehicle_wagon(59, 160)
+    vehicle_wagon_pass(33, 15)
+    vehicle_allow_tourists()
+  }
+  graphics {
+        additional_text: WLABmee_additional_text;
+       articulated_part: articulated_part_dummy8;
+       cargo_age_period: return 3000;
+         cargo_capacity: WLABmee_cargo_capacity;
+         colour_mapping: any_cc_colour;
+            cost_factor: WLABmee_cost_factor;
+                default: WLABmee_sprites;
+               purchase: WLABmee_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: WLABmee_running_cost_factor;
+  }
+}
+
+long_name_template(WLABmee, STR_LONGNAME_WLABMEE)

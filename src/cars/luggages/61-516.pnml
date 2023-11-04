@@ -1,0 +1,117 @@
+﻿// mail_61_516
+
+#define PROP_mail_61_516_CF  268
+#define PROP_mail_61_516_RC  170
+#define PROP_mail_61_516_SD  160
+#define PROP_mail_61_516_WT  48
+#define PROP_mail_61_516_TE  0
+#define PROP_mail_61_516_PR  0
+#define PROP_mail_61_516_CC  25
+#define PROP_mail_61_516_LC  22
+#define PROP_mail_61_516_FC  88
+
+#define IMAGEFILE  "src/cars/luggages/61-516-part1.png"
+purchase_sprites(mail_61_516, 0, 0)
+pass_wagon_sprites(14, mail_61_516_v1, 32, 40)
+pass_wagon_sprites(14, mail_61_516_v2, 32, 308)
+pass_wagon_sprites(14, mail_61_516_v3, 32, 576)
+pass_wagon_sprites(14, mail_61_516_v4, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/luggages/61-516-part2.png"
+pass_wagon_sprites(14, mail_61_516_v5, 32, 40)
+pass_wagon_sprites(14, mail_61_516_v6, 32, 308)
+pass_wagon_sprites(14, mail_61_516_v7, 32, 576)
+pass_wagon_sprites(14, mail_61_516_v8, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/luggages/61-516-part3.png"
+pass_wagon_sprites(14, mail_61_516_v9,  32, 40)
+pass_wagon_sprites(14, mail_61_516_v10, 32, 308)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, mail_61_516_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: mail_61_516_v1_sprites_start;
+     mail_61_516_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, mail_61_516_sprites_start_lg,
+  check_year(LG_CHANGE_YEAR))
+{
+  0: mail_61_516_v8_sprites_start;
+     mail_61_516_v9_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, mail_61_516_sprites_start,
+  cargo_subtype)
+{
+                            0: mail_61_516_sprites_start_random;
+                   LV_RAL6002: mail_61_516_v1_sprites_start;
+                   LV_RAL6020: mail_61_516_v2_sprites_start;
+          LV_NORTHERN_RAILWAY: mail_61_516_v3_sprites_start;
+       LV_KALININGRAD_RAILWAY: mail_61_516_v4_sprites_start;
+       LV_BELARUSSIAN_RAILWAY: mail_61_516_v5_sprites_start;
+         LV_UKRAINIAN_RAILWAY: mail_61_516_v6_sprites_start;
+        LV_LATVIJAS_EKSPRESIS: mail_61_516_v7_sprites_start;
+                        LV_LG: mail_61_516_sprites_start_lg;
+  LV_UZBEKISTAN_TEMIR_YOLLARI: mail_61_516_v10_sprites_start;
+  align_14_sprites;
+}
+
+long_vehicle(mail_61_516)
+
+switch (FEAT_TRAINS, SELF, mail_61_516_loading_speed,
+  STORE_TEMP(7 * 2, 2))
+{ all_wagons_box_loading_speed; }
+
+livery_template_base_list9(mail_61_516, LV_RAL6002, LV_RAL6020, LV_NORTHERN_RAILWAY, LV_KALININGRAD_RAILWAY, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LATVIJAS_EKSPRESIS, LV_LG, LV_UZBEKISTAN_TEMIR_YOLLARI)
+
+switch (FEAT_TRAINS, SELF, mail_61_516_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(98, 2),  // Износ
+   STORE_TEMP(14, 3),  // Сопровождение (сотрудник почты)
+   STORE_TEMP(56, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_mail_61_516_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_mail_61_516_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_mail_61_516_WT + PROP_mail_61_516_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                          // 168
+
+name_in_group(mail_61_516, string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_MODEL_NUMBER2, 61, 516)),
+                           string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_LONGNAME_MAIL_61_516)))
+
+hint_wagon_mail(mail_61_516,
+           22,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_WAGON_TYPE_MAIL,
+           1981, 1992,
+           fact_leningradcw())
+
+item (FEAT_TRAINS, mail_61_516, 302) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 61, 516);
+    vehicle_dates(1981, 1992, 28, 10, 8, PROP_mail_61_516_CF)
+    vehicle_wagon(PROP_mail_61_516_WT, PROP_mail_61_516_SD)
+    vehicle_group(mail_group)
+    vehicle_wagon_cargo(PROP_mail_61_516_FC, 10)
+    cargo_allow_refit: [MAIL];
+  }
+  graphics {
+    purchase_menu(PROP_mail_61_516_CF, PROP_mail_61_516_RC, PROP_mail_61_516_SD, PROP_mail_61_516_WT, PROP_mail_61_516_TE, PROP_mail_61_516_PR, PROP_mail_61_516_FC)
+        additional_text: mail_61_516_additional_text;
+       articulated_part: articulated_part_dummy6;
+     cargo_subtype_text: mail_61_516_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: mail_61_516_sprites;
+          loading_speed: mail_61_516_loading_speed;
+                   name: mail_61_516_name;
+               purchase: mail_61_516_purchase_sprites;
+    running_cost_factor: mail_61_516_running_cost_factor;
+  }
+}
+
+long_name_template(mail_61_516, STR_LONGNAME_MAIL_61_516)

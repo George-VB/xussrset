@@ -1,0 +1,82 @@
+﻿// coach_type1910
+
+#define PROP_coach_type1910_CF  169
+#define PROP_coach_type1910_RC  105
+#define PROP_coach_type1910_SD  140
+#define PROP_coach_type1910_WT  40
+#define PROP_coach_type1910_TE  0
+#define PROP_coach_type1910_PR  0
+#define PROP_coach_type1910_CC  0
+#define PROP_coach_type1910_LC  0
+
+#define IMAGEFILE  "src/cars/class1/type1910.png"
+purchase_sprites(coach_type1910, 0, 0)
+
+pass_wagon_sprites(12, coach_type1910_v1, 32, 40)
+pass_wagon_sprites(12, coach_type1910_v2, 32, 308)
+pass_wagon_sprites(12, coach_type1910_v3, 32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, coach_type1910_sprites_start,
+  cargo_subtype)
+{
+                 0: coach_type1910_v1_sprites_start;
+        LV_RAL6020: coach_type1910_v2_sprites_start;
+  LV_RED_ARROW_OLD: coach_type1910_v3_sprites_start;
+     align_12_sprites;
+}
+
+long_vehicle(coach_type1910)
+
+  livery_template_base_list(coach_type1910_b1920, LV_RED_ARROW_OLD)
+
+  livery_template_base_list2(coach_type1910_a1920, LV_RAL6020, LV_RED_ARROW_OLD)
+livery_template_service_year(coach_type1910, 1920)
+
+switch (FEAT_TRAINS, SELF, coach_type1910_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(22, 1),  // Бригада
+   STORE_TEMP(60, 2),  // Износ
+   STORE_TEMP(5, 3),   // Сопровождение
+   STORE_TEMP(16, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_coach_type1910_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_coach_type1910_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_coach_type1910_WT + PROP_coach_type1910_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                // 105 // 105
+name_in_group(coach_type1910, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS1_SERIES), string(STR_NAME_COACH_TYPE1910)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS1_SERIES), string(STR_LONGNAME_COACH_TYPE1910)))
+
+hint_wagon_coach(coach_type1910,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     STR_PURCHASE_HINT_COACH_TYPE_SL,
+     1910, 1917,
+     fact_tver())
+
+item (FEAT_TRAINS, coach_type1910, 360) {
+  property {
+    name: string(STR_NAME_COACH_TYPE1910);
+    vehicle_dates(1910, 1917, 28, 10, 8, PROP_coach_type1910_CF)
+    vehicle_wagon(PROP_coach_type1910_WT, PROP_coach_type1910_SD)
+    vehicle_group(class1_group)
+    vehicle_wagon_pass(18, 15)
+    vehicle_allow_tourists()
+  }
+  graphics {
+    purchase_menu(PROP_coach_type1910_CF, PROP_coach_type1910_RC, PROP_coach_type1910_SD, PROP_coach_type1910_WT, PROP_coach_type1910_TE, PROP_coach_type1910_PR, PROP_coach_type1910_LC)
+                   name: coach_type1910_name;
+        additional_text: coach_type1910_additional_text;
+       articulated_part: articulated_part_dummy4;
+       cargo_age_period: return 10000;
+     cargo_subtype_text: coach_type1910_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: coach_type1910_sprites;
+               purchase: coach_type1910_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: coach_type1910_running_cost_factor;
+  }
+}
+
+long_name_template(coach_type1910, STR_LONGNAME_COACH_TYPE1910)

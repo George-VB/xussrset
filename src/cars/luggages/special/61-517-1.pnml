@@ -1,0 +1,111 @@
+﻿// luggage_61_517_1
+
+#define PROP_luggage_61_517_1_CF  179
+#define PROP_luggage_61_517_1_RC  114
+#define PROP_luggage_61_517_1_SD  160
+#define PROP_luggage_61_517_1_WT  45
+#define PROP_luggage_61_517_1_TE  0
+#define PROP_luggage_61_517_1_PR  0
+#define PROP_luggage_61_517_1_CC  30
+#define PROP_luggage_61_517_1_LC  27
+
+#define IMAGEFILE  "src/cars/luggages/special/61-517-1-part1.png"
+purchase_sprites(luggage_61_517_1, 0, 0)
+pass_wagon_sprites(14, luggage_61_517_1_v1, 32, 308)
+pass_wagon_sprites(14, luggage_61_517_1_v2, 32, 576)
+pass_wagon_sprites(14, luggage_61_517_1_v3, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/luggages/special/61-517-1-part2.png"
+pass_wagon_sprites(14, luggage_61_517_1_v4, 32, 40)
+pass_wagon_sprites(14, luggage_61_517_1_v5, 32, 308)
+pass_wagon_sprites(14, luggage_61_517_1_v6, 32, 576)
+pass_wagon_sprites(14, luggage_61_517_1_v7, 32, 844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, luggage_61_517_1_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: luggage_61_517_1_v1_sprites_start;
+     luggage_61_517_1_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, luggage_61_517_1_sprites_start,
+  cargo_subtype )
+{
+                       0: luggage_61_517_1_sprites_start_random;
+              LV_RAL6020: luggage_61_517_1_v1_sprites_start;
+              LV_RAL6002: luggage_61_517_1_v2_sprites_start;
+  LV_BELARUSSIAN_RAILWAY: luggage_61_517_1_v3_sprites_start;
+    LV_UKRAINIAN_RAILWAY: luggage_61_517_1_v4_sprites_start;
+     LV_NORTHERN_RAILWAY: luggage_61_517_1_v5_sprites_start;
+  LV_KALININGRAD_RAILWAY: luggage_61_517_1_v6_sprites_start;
+               LV_ARCTIC: luggage_61_517_1_v7_sprites_start;
+                          align_14_sprites;
+}
+
+long_vehicle(luggage_61_517_1)
+
+switch (FEAT_TRAINS, SELF, luggage_61_517_1_cargo_capacity,
+[  STORE_TEMP(PROP_luggage_61_517_1_LC, 0),  // т
+   STORE_TEMP(53, 1),                        // м³
+   STORE_TEMP(25, 2),                        // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(14, 4)])                       // шаблон
+{ box_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, luggage_61_517_1_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(9, 1),   // Бригада
+   STORE_TEMP(65, 2),  // Износ
+   STORE_TEMP(1, 3),   // Сопровождение
+   STORE_TEMP(37, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_luggage_61_517_1_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_luggage_61_517_1_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_luggage_61_517_1_WT + PROP_luggage_61_517_1_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 114 // 112
+
+switch (FEAT_TRAINS, SELF, luggage_61_517_1_loading_speed,
+  STORE_TEMP(7, 2))
+{ all_wagons_box_loading_speed; }
+
+livery_template_base_list7(luggage_61_517_1, LV_RAL6002, LV_RAL6020, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_NORTHERN_RAILWAY, LV_KALININGRAD_RAILWAY, LV_ARCTIC)
+
+name_in_group(luggage_61_517_1, string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_MODEL_NUMBER3, 61, 517, 1)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_LONGNAME_LUGGAGE_61_517_1)))
+
+hint_wagon_mail(luggage_61_517_1,
+                26,
+                string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+                STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+                STR_PURCHASE_HINT_WAGON_TYPE_LUGGAGE,
+                1989, 1992,
+                fact_leningradcw())
+
+item (FEAT_TRAINS, luggage_61_517_1, 1226) {
+  property {
+    name: string(STR_MODEL_NUMBER3, 61, 517, 1);
+    vehicle_dates(1989, 1992, 28, 10, 8, PROP_luggage_61_517_1_CF)
+    vehicle_wagon(PROP_luggage_61_517_1_WT, PROP_luggage_61_517_1_SD)
+    vehicle_group(luggage_group)
+    cargo_allow_refit: [cargo_all_luggagelist()];
+  }
+  graphics {
+    purchase_menu(PROP_luggage_61_517_1_CF, PROP_luggage_61_517_1_RC, PROP_luggage_61_517_1_SD, PROP_luggage_61_517_1_WT, PROP_luggage_61_517_1_TE, PROP_luggage_61_517_1_PR, PROP_luggage_61_517_1_LC)
+                   name: luggage_61_517_1_name;
+        additional_text: luggage_61_517_1_additional_text;
+       articulated_part: articulated_part_dummy6;
+         cargo_capacity: luggage_61_517_1_cargo_capacity;
+     cargo_subtype_text: luggage_61_517_1_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: luggage_61_517_1_sprites;
+          loading_speed: luggage_61_517_1_loading_speed;
+               purchase: luggage_61_517_1_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: luggage_61_517_1_running_cost_factor;
+  }
+}
+
+long_name_template(luggage_61_517_1, STR_LONGNAME_LUGGAGE_61_517_1)
