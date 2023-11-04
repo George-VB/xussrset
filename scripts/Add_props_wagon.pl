@@ -108,7 +108,9 @@ sub PatchFile($) {
 # add name
 	my($vehNameUC, $serNameUC, $tmp, $lang, $model);
 	$vehNameUC = uc ($vehName);
+	$vehNameUC =~ s /^_//;
 	$serNameUC = uc ($serName);
+	$serNameUC =~ s /^_//;
 	$tmp = PrintNSpaces(length($vehName));
 	$lang = "";
 	$lang = "LONG" if ($str =~ /long_name_template/i);
