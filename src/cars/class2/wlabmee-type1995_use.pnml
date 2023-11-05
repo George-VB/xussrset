@@ -1,0 +1,70 @@
+// WLABmee_type1995 uses WLABmee_type1992
+
+#define PROP_WLABmee_type1995_CF  1423
+#define PROP_WLABmee_type1995_RC  893
+#define PROP_WLABmee_type1995_SD  160
+#define PROP_WLABmee_type1995_WT  59
+#define PROP_WLABmee_type1995_TE  0
+#define PROP_WLABmee_type1995_PR  0
+#define PROP_WLABmee_type1995_CC  33
+#define PROP_WLABmee_type1995_FC  33
+
+// Цена изменилась из-за изменения типа отопления с электрического на комбинированное
+map_sprites(WLABmee_type1995_purchase_sprites, WLABmee_type1992_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, WLABmee_type1995_cargo_capacity,
+  cargo_type_in_veh)
+{
+  TOUR: return 22;
+        return 33;
+}
+
+switch (FEAT_TRAINS, SELF, WLABmee_type1995_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(188, 1),  // Бригада
+   STORE_TEMP(508, 2),  // Износ
+   STORE_TEMP(45, 3),   // Сопровождение
+   STORE_TEMP(134, 4),  // ТО
+   STORE_TEMP(18, 5),   // Сертификация
+
+   STORE_TEMP(PROP_WLABmee_type1995_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_WLABmee_type1995_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_WLABmee_type1995_WT + PROP_WLABmee_type1995_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                         // 893 // 892
+
+name_in_group(WLABmee_type1995, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_NAME_WLABMEE_TYPE1995)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_LONGNAME_WLABMEE_TYPE1995)))
+
+hint_wagon_coach_comment(WLABmee_type1995,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_7_2,
+     STR_PURCHASE_HINT_COACH_TYPE_SL_WITH_COND,
+     1995, 1996,
+     string(STR_PURCHASE_HINT_FACTORY_GORLITZ),
+     string(STR_PURCHASE_HINT_WLABMEE_CLASS))
+
+item (FEAT_TRAINS, WLABmee_type1995, 1238) {
+  property {
+    name: string(STR_NAME_WLABMEE_TYPE1995);
+    vehicle_dates(1995, 1996, 28, 10, 8, PROP_WLABmee_type1995_CF)
+    vehicle_wagon(PROP_WLABmee_type1995_WT, PROP_WLABmee_type1995_SD)
+    vehicle_group(class2_group)
+    vehicle_wagon_pass(PROP_WLABmee_type1995_FC, 15)
+    vehicle_allow_tourists()
+  }
+  graphics {
+    purchase_menu(PROP_WLABmee_type1995_CF, PROP_WLABmee_type1995_RC, PROP_WLABmee_type1995_SD, PROP_WLABmee_type1995_WT, PROP_WLABmee_type1995_TE, PROP_WLABmee_type1995_PR, PROP_WLABmee_type1995_FC)
+                   name: WLABmee_type1995_name;
+        additional_text: WLABmee_type1995_additional_text;
+       articulated_part: articulated_part_dummy8;
+       cargo_age_period: return 3000;
+         cargo_capacity: WLABmee_type1995_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: WLABmee_type1992_sprites;
+               purchase: WLABmee_type1995_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: WLABmee_type1995_running_cost_factor;
+  }
+}
+
+long_name_template(WLABmee_type1995, STR_LONGNAME_WLABMEE_TYPE1995)

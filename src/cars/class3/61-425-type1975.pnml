@@ -1,0 +1,83 @@
+﻿// _61_425_type1975                      `
+
+#define PROP__61_425_type1975_CF  250
+#define PROP__61_425_type1975_RC  156
+#define PROP__61_425_type1975_SD  160
+#define PROP__61_425_type1975_WT  51
+#define PROP__61_425_type1975_TE  0
+#define PROP__61_425_type1975_PR  0
+#define PROP__61_425_type1975_CC  54
+#define PROP__61_425_type1975_FC  54
+
+#define IMAGEFILE  "src/cars/class3/61-425-type1975.png"
+purchase_sprites(_61_425_type1975, 0, 0)
+pass_wagon_sprites(14, _61_425_type1975_v1, 32, 40)
+pass_wagon_sprites(14, _61_425_type1975_v2, 32, 308)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _61_425_type1975_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _61_425_type1975_v1_sprites_start;
+     _61_425_type1975_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _61_425_type1975_sprites_start,
+  cargo_subtype)
+{
+           0: _61_425_type1975_sprites_start_random;
+  LV_RAL6002: _61_425_type1975_v1_sprites_start;
+  LV_RAL6020: _61_425_type1975_v2_sprites_start;
+               align_14_sprites;
+}
+long_vehicle(_61_425_type1975)
+
+livery_template_base_list2(_61_425_type1975, LV_RAL6020, LV_RAL6002)
+
+switch (FEAT_TRAINS, SELF, _61_425_type1975_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(33, 1),  // Бригада
+   STORE_TEMP(89, 2),  // Износ
+   STORE_TEMP(8, 3),   // Сопровождение
+   STORE_TEMP(23, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(PROP__61_425_type1975_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP__61_425_type1975_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP__61_425_type1975_WT + PROP__61_425_type1975_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                         // 156 // 156
+
+name_in_group(_61_425_type1975, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS3_SERIES), string(STR_NAME_61_425_TYPE1975)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS3_SERIES), string(STR_LONGNAME_61_425_TYPE1975)))
+
+hint_wagon_coach(_61_425_type1975,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+     STR_PURCHASE_HINT_COACH_TYPE_NC,
+     1975, 1980,
+     fact_tver())
+
+item (FEAT_TRAINS, _61_425_type1975, 243) {
+  property {
+    name: string(STR_NAME_61_425_TYPE1975);
+    vehicle_dates(1975, 1980, 28, 10, 8, PROP__61_425_type1975_CF)
+    vehicle_wagon(PROP__61_425_type1975_WT, PROP__61_425_type1975_SD)
+    vehicle_group(class3_group)
+    vehicle_wagon_pass(PROP__61_425_type1975_FC, 15)
+  }
+  graphics {
+    purchase_menu(PROP__61_425_type1975_CF, PROP__61_425_type1975_RC, PROP__61_425_type1975_SD, PROP__61_425_type1975_WT, PROP__61_425_type1975_TE, PROP__61_425_type1975_PR, PROP__61_425_type1975_FC)
+        additional_text: _61_425_type1975_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return 110;
+     cargo_subtype_text: _61_425_type1975_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: _61_425_type1975_sprites;
+                   name: _61_425_type1975_name;
+               purchase: _61_425_type1975_purchase_sprites;
+    running_cost_factor: _61_425_type1975_running_cost_factor;
+  }
+}
+
+long_name_template(_61_425_type1975, STR_LONGNAME_61_425_TYPE1975)

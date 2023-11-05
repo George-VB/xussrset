@@ -1,5 +1,14 @@
 ﻿// ammendorf_d
 
+#define PROP_ammendorf_k_CF  354
+#define PROP_ammendorf_k_RC  220
+#define PROP_ammendorf_k_SD  160
+#define PROP_ammendorf_k_WT  55
+#define PROP_ammendorf_k_TE  0
+#define PROP_ammendorf_k_PR  0
+#define PROP_ammendorf_k_CC  38
+#define PROP_ammendorf_k_FC  38
+
 #define IMAGEFILE  "src/cars/class2/ammendorf-k-part1.png"
 purchase_sprites(ammendorf_k, 0, 0)
 
@@ -81,10 +90,13 @@ switch (FEAT_TRAINS, SELF, ammendorf_k_running_cost_factor,
    STORE_TEMP(33, 4),   // ТО
    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(160, 6),                // Скорость
-   STORE_TEMP(55, 7),                 // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 5, 8)])  // Максимальная масса
-{ all_running_cost_factor; }          // 221
+   STORE_TEMP(PROP_ammendorf_k_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_ammendorf_k_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_ammendorf_k_WT + PROP_ammendorf_k_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                               // 220 // 221
+
+name_in_group(ammendorf_k, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_NAME_AMMENDORF_K)),
+                           string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_LONGNAME_AMMENDORF_K)))
 
 hint_wagon_coach(ammendorf_k_short,
      string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
@@ -104,18 +116,20 @@ hint_change_longnames(ammendorf_k)
 item (FEAT_TRAINS, ammendorf_k, 436) {
   property {
     name: string(STR_NAME_AMMENDORF_K);
-    vehicle_dates(1966, 1973, 28, 10, 8, 354)
-    vehicle_wagon(55, 160)
-    vehicle_wagon_pass(38, 15)
+    vehicle_dates(1966, 1973, 28, 10, 8, PROP_ammendorf_k_CF)
+    vehicle_wagon(PROP_ammendorf_k_WT, PROP_ammendorf_k_SD)
+    vehicle_group(class2_group)
+    vehicle_wagon_pass(PROP_ammendorf_k_FC, 15)
     vehicle_allow_tourists()
   }
   graphics {
+    purchase_menu(PROP_ammendorf_k_CF, PROP_ammendorf_k_RC, PROP_ammendorf_k_SD, PROP_ammendorf_k_WT, PROP_ammendorf_k_TE, PROP_ammendorf_k_PR, PROP_ammendorf_k_FC)
+                   name: ammendorf_k_name;
         additional_text: ammendorf_k_additional_text;
        articulated_part: articulated_part_dummy6;
        cargo_age_period: return 1000;
      cargo_subtype_text: ammendorf_k_cargo_subtype_text;
          colour_mapping: any_cc_colour;
-            cost_factor: return 354;
                 default: ammendorf_k_sprites;
                purchase: ammendorf_k_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;

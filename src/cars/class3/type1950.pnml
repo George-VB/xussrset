@@ -1,5 +1,14 @@
 ﻿// coach_type1950
 
+#define PROP_coach_type1950_CF  130
+#define PROP_coach_type1950_RC  81
+#define PROP_coach_type1950_SD  120
+#define PROP_coach_type1950_WT  56
+#define PROP_coach_type1950_TE  0
+#define PROP_coach_type1950_PR  0
+#define PROP_coach_type1950_CC  58
+#define PROP_coach_type1950_FC  58
+
 #define IMAGEFILE  "src/cars/class3/type1950.png"
 purchase_sprites(coach_type1950, 0, 0)
 
@@ -26,57 +35,50 @@ switch (FEAT_TRAINS, SELF, coach_type1950_sprites_start,
 
 long_vehicle(coach_type1950)
 livery_template_base_list2(coach_type1950, LV_RAL6020, LV_RAL6002)
-wagon_speed_change_build_after(coach_type1950, 120,
-                                                140, 1958)
-engine_cost_change_build_after(coach_type1950, 130,
-                                               163, 1958)
 
 switch (FEAT_TRAINS, SELF, coach_type1950_running_cost_factor,
-[  STORE_TEMP(0, 0),                               // Моторы
-   STORE_TEMP(17 + 4 * (build_year >= 1958), 1),   // Бригада
-   STORE_TEMP(46 + 12 * (build_year >= 1958), 2),  // Износ
-   STORE_TEMP(4 + (build_year >= 1958), 3),        // Сопровождение
-   STORE_TEMP(12 + 3 * (build_year >= 1958), 4),   // ТО
-   STORE_TEMP(2, 5),                               // Сертификация
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(17, 1),  // Бригада
+   STORE_TEMP(46, 2),  // Износ
+   STORE_TEMP(4, 3),   // Сопровождение
+   STORE_TEMP(12, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(120 + 20 * (build_year >= 1958), 6),  // Скорость
-   STORE_TEMP(56, 7),                               // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 8, 8)])                // Максимальная масса
-{ all_running_cost_factor; }                        // 81 - 102
+   STORE_TEMP(PROP_coach_type1950_SD, 6),                                        // Скорость
+   STORE_TEMP(round(PROP_coach_type1950_WT), 7),                                 // Тара
+   STORE_TEMP(round(PROP_coach_type1950_WT + PROP_coach_type1950_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                     // 81 // 81
 
-hint_wagon_coach_2fact(coach_type1950_b1953,
+name_in_group(coach_type1950, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS3_SERIES), string(STR_NAME_COACH_TYPE1950)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS3_SERIES), string(STR_LONGNAME_COACH_TYPE1950)))
+
+hint_wagon_coach_2fact(coach_type1950,
      string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
      STR_PURCHASE_HINT_AGING_PERIOD_3_1,
      STR_PURCHASE_HINT_COACH_TYPE_NC,
-     1950, 1965,
+     1950, 1958,
      fact_tver(),
      string(STR_PURCHASE_HINT_FACTORY_LIANOZOVSK))
-hint_wagon_coach(coach_type1950_a1953,
-     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-     STR_PURCHASE_HINT_AGING_PERIOD_3_1,
-     STR_PURCHASE_HINT_COACH_TYPE_NC,
-     1950, 1965,
-     fact_tver())
-hint_change_after(coach_type1950, 1953)
 
 item (FEAT_TRAINS, coach_type1950, 241) {
   property {
     name: string(STR_NAME_COACH_TYPE1950);
-    vehicle_dates(1950, 1965, 28, 10, 8, 130)
-    vehicle_wagon(56, 120)
-    vehicle_wagon_pass(58, 15)
+    vehicle_dates(1950, 1965, 28, 10, 8, PROP_coach_type1950_CF)
+    vehicle_wagon(PROP_coach_type1950_WT, PROP_coach_type1950_SD)
+    vehicle_group(class3_group)
+    vehicle_wagon_pass(PROP_coach_type1950_FC, 15)
   }
   graphics {
+    purchase_menu(PROP_coach_type1950_CF, PROP_coach_type1950_RC, PROP_coach_type1950_SD, PROP_coach_type1950_WT, PROP_coach_type1950_TE, PROP_coach_type1950_PR, PROP_coach_type1950_FC)
         additional_text: coach_type1950_additional_text;
        articulated_part: articulated_part_dummy6;
        cargo_age_period: return 110;
      cargo_subtype_text: coach_type1950_cargo_subtype_text;
          colour_mapping: any_cc_colour;
-            cost_factor: coach_type1950_cost_factor;
                 default: coach_type1950_sprites;
+                   name: coach_type1950_name;
                purchase: coach_type1950_purchase_sprites;
     running_cost_factor: coach_type1950_running_cost_factor;
-                  speed: coach_type1950_speed;
   }
 }
 

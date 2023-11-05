@@ -1,5 +1,14 @@
 ﻿// coach_type1913
 
+#define PROP_coach_type1913_CF  132
+#define PROP_coach_type1913_RC  82
+#define PROP_coach_type1913_SD  140
+#define PROP_coach_type1913_WT  41
+#define PROP_coach_type1913_TE  0
+#define PROP_coach_type1913_PR  0
+#define PROP_coach_type1913_CC  48
+#define PROP_coach_type1913_FC  48
+
 #define IMAGEFILE  "src/cars/class2/type1913.png"
 purchase_sprites(coach_type1913, 0, 0)
 
@@ -8,7 +17,7 @@ pass_wagon_sprites(12, coach_type1913_v2, 32, 308)
 pass_wagon_sprites(12, coach_type1913_v3, 32, 576)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, coach_type1913_bUSSRSTART_sprites_start,
+switch (FEAT_TRAINS, SELF, coach_type1913_sprites_start,
   cargo_subtype)
 {
                  0: coach_type1913_v1_sprites_start;
@@ -17,22 +26,10 @@ switch (FEAT_TRAINS, SELF, coach_type1913_bUSSRSTART_sprites_start,
      align_12_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, coach_type1913_aUSSRSTART_sprites_start,
-  cargo_subtype)
-{
-                 0: coach_type1913_v2_sprites_start;
-        LV_RAL6020: coach_type1913_v2_sprites_start;
-  LV_RED_ARROW_OLD: coach_type1913_v3_sprites_start;
-     align_12_sprites;
-}
-
-engine_build_year_template(coach_type1913, USSRSTART, start, )
 long_vehicle(coach_type1913)
 
-  livery_template_base_list(coach_type1913_bUSSRSTART, LV_RED_ARROW_OLD)
-  livery_template_base_list2(coach_type1913_baUSSRSTART, LV_RAL6020, LV_RED_ARROW_OLD)
-  livery_template_base_list(coach_type1913_aUSSRSTART, LV_RED_ARROW_OLD)
-livery_template_buildservice_year(coach_type1913, USSRSTART)
+  livery_template_base_list2(coach_type1913_aUSSRSTART, LV_RAL6020, LV_RED_ARROW_OLD)
+livery_template_service_year_ao(coach_type1913, USSRSTART)
 
 switch (FEAT_TRAINS, SELF, coach_type1913_running_cost_factor,
 [  STORE_TEMP(0, 0),   // Моторы
@@ -42,27 +39,33 @@ switch (FEAT_TRAINS, SELF, coach_type1913_running_cost_factor,
    STORE_TEMP(12, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(140, 6),                // Скорость
-   STORE_TEMP(41, 7),                 // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 6, 8)])  // Максимальная масса
-{ all_running_cost_factor; }          // 83
+   STORE_TEMP(PROP_coach_type1913_SD, 6),                                        // Скорость
+   STORE_TEMP(round(PROP_coach_type1913_WT), 7),                                 // Тара
+   STORE_TEMP(round(PROP_coach_type1913_WT + PROP_coach_type1913_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                     // 82 // 83
+
+name_in_group(coach_type1913, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_NAME_COACH_TYPE1913)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_LONGNAME_COACH_TYPE1913)))
 
 hint_wagon_coach(coach_type1913,
      string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
      STR_PURCHASE_HINT_AGING_PERIOD_6_1,
      STR_PURCHASE_HINT_COACH_TYPE_SL,
-     1913, 1920,
+     1913, 1918,
      fact_tver())
 
 item (FEAT_TRAINS, coach_type1913, 619) {
   property {
     name: string(STR_NAME_COACH_TYPE1913);
-    vehicle_dates(1913, 1920, 28, 10, 8, 132)
-    vehicle_wagon(41, 140)
-    vehicle_wagon_pass(48, 15)
+    vehicle_dates(1913, 1918, 28, 10, 8, PROP_coach_type1913_CF)
+    vehicle_wagon(PROP_coach_type1913_WT, PROP_coach_type1913_SD)
+    vehicle_group(class2_group)
+    vehicle_wagon_pass(PROP_coach_type1913_FC, 15)
     vehicle_allow_tourists()
   }
   graphics {
+    purchase_menu(PROP_coach_type1913_CF, PROP_coach_type1913_RC, PROP_coach_type1913_SD, PROP_coach_type1913_WT, PROP_coach_type1913_TE, PROP_coach_type1913_PR, PROP_coach_type1913_FC)
+                   name: coach_type1913_name;
         additional_text: coach_type1913_additional_text;
        articulated_part: articulated_part_dummy4;
        cargo_age_period: return 800;

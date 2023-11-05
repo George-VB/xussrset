@@ -93,6 +93,9 @@ sub PatchFile($) {
         ($vehSD, $vehWT) = ($2, $1) if ($str =~ /vehicle_wagon\(([0-9\.]+)\,\s*([0-9]+)\)/i);
 # find TE
 # find PR
+# find FC
+        $vehFC = $1 if ($str =~ /vehicle_wagon_cargo\(([0-9\.\* ]+?)\s*\,/i);
+        $vehFC = $1 if ($str =~ /vehicle_wagon_pass\(([0-9\.\* ]+?)\s*\,/i);
 # find CC
 	my($cc, $tn);
 	$vehLC = $1 if ($str =~ /STORE\_TEMP\(([0-9\+\* ]+)\,\s*0\)\,\s*\/\/\s*т/i); #      
@@ -103,12 +106,10 @@ sub PatchFile($) {
 # TODO if $vehLC is expreassion, like 43 * 4 + 12 , it should be calculated first
 	$vehCC = ($vehLC * 16 / $tn);
 	$vehCC =~ s/\..*$//;
-# find FC
-        $vehFC = $1 if ($str =~ /vehicle_wagon_cargo\(([0-9\.\* ]+?)\s*\,/i);
-        $vehFC = $1 if ($str =~ /vehicle_wagon_pass\(([0-9\.\* ]+?)\s*\,/i);
+	$vehCC = $vehFC if (($vehCC == 0) && ($vehFC > 0));
 # add PROP block
-	$str =~ s/^(.*?)\n/$1\n#define PROP_${vehName}_FC  $vehCF\n/s if ($vehFC ne "");
-	$str =~ s/^(.*?)\n/$1\n#define PROP_${vehName}_LC  $vehLC\n/s if ($vehLC ne "");
+	$str =~ s/^(.*?)\n/$1\n#define PROP_${vehName}_FC  $vehFC\n/s if ($vehFC ne "");
+	$str =~ s/^(.*?)\n/$1\n#define PROP_${vehName}_LC  $vehLC\n/s if (($vehLC ne "") && ($vehLC > 0));
 	$str =~ s/^(.*?)\n/$1\n\n#define PROP_${vehName}_CF  $vehCF\n#define PROP_${vehName}_RC  $vehRC\n#define PROP_${vehName}_SD  $vehSD\n#define PROP_${vehName}_WT  $vehWT\n#define PROP_${vehName}_TE  $vehTE\n#define PROP_${vehName}_PR  $vehPR\n#define PROP_${vehName}_CC  $vehCC\n/s;
 # add name
 	my($vehNameUC, $serNameUC, $tmp, $lang, $model);
@@ -132,7 +133,11 @@ sub PatchFile($) {
 # replace rc
         $str =~ s/STORE_TEMP\([0-9]+\,\s*6\)\,\s*\/\/\s*Скорость/STORE_TEMP\(PROP_${vehName}_SD\, 6\)\, \/\/ Скорость/;
         $str =~ s/STORE_TEMP\([0-9]+\,\s*7\)\,\s*\/\/\s*Тара/STORE_TEMP\(round\(PROP_${vehName}_WT\)\, 7\)\, \/\/ Тара/;
-        $str =~ s/STORE_TEMP\(.*?\,\s*8\)\]\)\s*\/\/\s*Максимальная масса/STORE_TEMP\(round\(PROP_${vehName}_WT + PROP_${vehName}_LC\)\, 8\)\]\) \/\/ Максимальная масса/;
+        if ($vehFC eq "") {
+	        $str =~ s/STORE_TEMP\(.*?\,\s*8\)\]\)\s*\/\/\s*Максимальная масса/STORE_TEMP\(round\(PROP_${vehName}_WT + PROP_${vehName}_LC\)\, 8\)\]\) \/\/ Максимальная масса/;
+        } else {
+	        $str =~ s/STORE_TEMP\(.*?\,\s*8\)\]\)\s*\/\/\s*Максимальная масса/STORE_TEMP\(round\(PROP_${vehName}_WT + PROP_${vehName}_FC \/ 16\)\, 8\)\]\) \/\/ Максимальная масса/;
+        }
         $str =~ s/(\{\s*all_running_cost_factor\;\s*\}\s*)/$1\/\/ $vehRC /i;                        
 # replace cf
         $str =~ s/vehicle_dates\(([0-9, ]+)\,\s*[0-9]+\)/vehicle_dates\($1, PROP_${vehName}_CF\)/i;
