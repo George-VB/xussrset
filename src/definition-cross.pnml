@@ -27,23 +27,6 @@
 #define DR1A_TYPE1985_C_ID 985
 #define DR1A_TYPE1991_N_ID 213
 
-#define drb1_2m62u_dr1a()                                                                                               \
-(((((cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB) && (vehicle_type_id == _2M62U_ID)) ||                                 \
-    ((vehicle_type_id == DR1A_TYPE1991_N_ID) && (cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB))) &&                      \
-    is_drb1sh() &&                                                                                                      \
-    ((count_veh_id(_2M62U_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) == 2) &&                                              \
-    ((count_veh_id(DR1A_TYPE1976_H_ID) + count_veh_id(DR1A_TYPE1978_H_ID) + count_veh_id(DR1A_TYPE1985_H_ID)) == 0) &&  \
-    ((count_veh_id(DR1A_TYPE1976_C_ID) + count_veh_id(DR1A_TYPE1978_C_ID) + count_veh_id(DR1A_TYPE1985_C_ID) +          \
-     (count_veh_id(DR1A_TYPE1991_N_ID))) <= 10)) * 2) +   /* ДРБ1 */                                                    \
-  ((count_veh_id(_2M62U_ID) == 0) &&                                                                                    \
-   ((vehicle_type_id == DR1A_TYPE1976_H_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1978_H_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1985_H_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1991_N_ID) ||            /* Не ДРБ1 */                                                 \
-    (vehicle_type_id == DR1A_TYPE1976_C_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1978_C_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1985_C_ID) ))   /* одинокий вагон */                                                   \
-
 #define drb1_2m62u_dr1a_check()                                                                                                                          \
   ((num_vehs_in_consist - count_veh_id(DR1A_TYPE1976_C_ID) * 2                                                                                           \
                         - count_veh_id(DR1A_TYPE1978_C_ID) * 2                                                                                           \
@@ -53,5 +36,27 @@
   ((count_veh_id(DR1A_TYPE1976_C_ID) + count_veh_id(DR1A_TYPE1978_C_ID) + count_veh_id(DR1A_TYPE1985_C_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) >= 1) &&  \
   ((count_veh_id(_2M62U_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) == 2) &&                                                                                 \
   ((count_veh_id(DR1A_TYPE1976_C_ID) + count_veh_id(DR1A_TYPE1978_C_ID) + count_veh_id(DR1A_TYPE1985_C_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) <= 10)    \
+
+#define dr1a_check()                                                   \
+  ((num_vehs_in_consist - count_veh_id(DR1A_TYPE1976_C_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1978_C_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1985_C_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1976_H_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1978_H_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1985_H_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1991_N_ID) * 2) == 0)  \
+
+// 2 if DRB1, 1 if DR1A
+#define drb1_2m62u_dr1a()                                                                           \
+((( ((cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB) && (vehicle_type_id == _2M62U_ID)) ||            \
+    ((cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB) && (vehicle_type_id == DR1A_TYPE1991_N_ID))) &&  \
+     is_drb1sh() && drb1_2m62u_dr1a_check()) * 2) +   /* ДРБ1 */                                    \
+  (((vehicle_type_id == DR1A_TYPE1976_H_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1978_H_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1985_H_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1991_N_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1976_C_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1978_C_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1985_C_ID) ) && dr1a_check() )   /* ДР1А */                        \
 
 // end

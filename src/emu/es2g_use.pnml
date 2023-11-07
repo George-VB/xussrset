@@ -73,7 +73,15 @@ switch (FEAT_TRAINS, SELF, es2g_hm_sprites_start,
      es2g_hm_sprites_right;
 }
 
-MU_attach_wagon_icon_template2_only2_countonly1(es2g_hm, es2g_hm, TEP70BS_ID, type_head_motor, type_car_pant_add_mandatory, type_head_motor_add_optional, )
+// 8-car can-not be used with sme (max 7 + 5 = 12)
+switch (FEAT_TRAINS, PARENT, es2g_hm_last_head_icon,
+  (num_vehs_in_consist < 16 ) && (vehicle_type_id == es2g_hm))
+{
+  1: type_head_motor_add_optional;
+     dummy_sprites;
+}
+
+MU_attach_wagon_icon_template2_only2_countonly1(es2g_hm, es2g_hm, TEP70BS_ID, type_head_motor, type_car_pant_add_mandatory, es2g_hm_last_head_icon, )
 long_vehicle_sp(es2g_hm)
 
 switch (FEAT_TRAINS, PARENT, es2g_c_direction_left,
@@ -217,13 +225,13 @@ switch (FEAT_TRAINS, SELF, es2g_can_attach_wagon1, vehicle_type_id)
 }
 
 switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon_hm0,
-  (num_vehs_in_consist < 14) && (vehicle_type_id == es2g_hm))
+  (num_vehs_in_consist < 16 ) && (vehicle_type_id == es2g_hm))
 {
   1: es2g_can_attach_wagon_hm;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
-switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon,
+switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon_num,
   count_veh_id(es2g_hm))
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
@@ -231,6 +239,13 @@ switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon,
   2: es2g_can_attach_wagon_hm0;
   3: es2g_can_attach_wagon1;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon,
+  num_vehs_in_consist < 24)
+{
+  1: es2g_can_attach_wagon_num;
+     return string(STR_CAN_ATTACH_TRAIN_TOO_LONG, 12);
 }
 
 switch (FEAT_TRAINS, PARENT, es2g_hm_start_stop,
