@@ -777,12 +777,34 @@ is_ER25AC_ds(name##_power, name##_AC_power, name##_2_power)      \
 
 // Define refit cost depending on livery
 // TODO provide shifted variants with offsett different from 0xE0
+// If range or exact are not specified, intanded allm starting from ... [num ... 255]
 #define engine_refit_cost_for_livery_change(name, cost)                              \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
   ((extra_callback_info1 & 0xFF00) >= (0xE0 << 8)) + ((cargo_subtype >= 0xE0) * 2))  \
 { 1: return cost;                                                                    \
      return 0 | CB_RESULT_AUTOREFIT; }                                               \
 
+#define engine_refit_cost_for_livery_change_shifted(name, num, cost)               \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
+{ 1: return cost;                                                                  \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+
+#define engine_refit_cost_for_livery_change2(name, cost, cost2)                      \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
+  ((extra_callback_info1 & 0xFF00) >= (0xE0 << 8)) + ((cargo_subtype >= 0xE0) * 2))  \
+{ 1: return cost;                                                                    \
+  2: return cost2;                                                                   \
+     return 0 | CB_RESULT_AUTOREFIT; }                                               \
+
+#define engine_refit_cost_for_livery_change2_shifted(name, num, cost, cost2)       \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
+  ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
+{ 1: return cost;                                                                  \
+  2: return cost2;                                                                 \
+     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+
+// TODO replace with engine_refit_cost_for_livery_change2
 #define engine_refit_cost_for_a2_livery_change(name, num, cost, cost2)             \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
@@ -790,19 +812,21 @@ switch (FEAT_TRAINS, SELF, name##_refit_cost,                                   
   2: return cost2;                                                                 \
      return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
-#define engine_refit_cost_for_livery_change1_shifted(name, num, cost)              \
+// exact liveries
+#define engine_refit_cost_for_exact_livery_change_shifted(name, num, cost)         \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
 { 1: return cost;                                                                  \
      return 0 | CB_RESULT_AUTOREFIT; }                                             \
 
-#define engine_refit_cost_for_livery_change2_shifted(name, num, cost, cost2)       \
-switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
-  ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
-{ 1: return cost;                                                                  \
-  2: return cost2;                                                                 \
-     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+#define engine_refit_cost_for_exact_livery_change2_shifted(name, num, cost, cost2)  \
+switch (FEAT_TRAINS, SELF, name##_refit_cost,                                       \
+  ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))   \
+{ 1: return cost;                                                                   \
+  2: return cost2;                                                                  \
+     return 0 | CB_RESULT_AUTOREFIT; }                                              \
 
+// range liveries
 #define engine_refit_cost_for_range_livery_change(name, num, num2, cost, base_name)  \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
   (((extra_callback_info1 & 0xFF00) >= (num << 8)) &&                                \

@@ -53,18 +53,10 @@ switch (FEAT_TRAINS, SELF, pwd_dumpcar_loading_speed,
   all_wagons_bulk_loading_speed;
 }
 
-switch (FEAT_TRAINS, PARENT, pwd_dumpcar_power2,
-  (vehicle_type_id == pwd_dumpcar) ||
-  (vehicle_type_id == pe2) ||
-  (vehicle_type_id == pe2m) ||
-  (vehicle_type_id == pe2u))
-{ 1: return get_power_in_cb(820);
-     return 0; }
-
-switch (FEAT_TRAINS, SELF, pwd_dumpcar_power,
-  (position_in_consist == 0))
-{ 1: return get_power_in_cb(820);
-     return pwd_dumpcar_power2; }
+// because we can't check the sequence in power CB, power is disabled when the head locomotive is not
+engine_power_MU4(pwd_dumpcar_15DC, kw2hp(820), pwd_dumpcar, pe2, pe2m, pe2u)
+engine_power_MU4(pwd_dumpcar_DC, kw2hp(1750.6), pwd_dumpcar, pe2, pe2m, pe2u)
+engine_power_change_DDC(pwd_dumpcar)
 
 switch (FEAT_TRAINS, SELF, pwd_dumpcar_running_cost_factor,
 [  STORE_TEMP(22, 0),  // Моторы
@@ -91,7 +83,7 @@ item (FEAT_TRAINS, pwd_dumpcar, 757) {
   property {
     name: string(STR_NAME_PWD_DUMPCAR);
     vehicle_dates(1967, 2050, 40, 10, 8, 4)
-    vehicle_ddcelectric(820, 79, 227.0, _lowspeed)
+    vehicle_ddcelectric(kw2hp(820), 79, 227.0, _lowspeed)
     vehicle_group_mu(group_pe2)
        cargo_capacity: 45;
     cargo_allow_refit: [cargo_all_bulklist()];
