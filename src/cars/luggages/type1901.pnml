@@ -8,7 +8,6 @@
 #define PROP_mail_type1901_PR  0
 #define PROP_mail_type1901_CC  14
 #define PROP_mail_type1901_LC  10
-#define PROP_mail_type1901_FC  40
 
 #define IMAGEFILE  "src/cars/luggages/type1901.png"
 purchase_sprites(mail_type1901, 0, 0)
@@ -28,7 +27,19 @@ switch (FEAT_TRAINS, SELF, mail_type1901_running_cost_factor,
    STORE_TEMP(PROP_mail_type1901_SD, 6),                                  // Скорость
    STORE_TEMP(round(PROP_mail_type1901_WT), 7),                           // Тара
    STORE_TEMP(round(PROP_mail_type1901_WT + PROP_mail_type1901_LC), 8)])  // Максимальная масса
-{ all_running_cost_factor; }                                              // PROP_mail_type1901_RC // 88
+{ all_running_cost_factor; }                                              // 88
+
+switch (FEAT_TRAINS, SELF, mail_type1901_loading_speed,
+  STORE_TEMP(7, 2))
+{ all_wagons_box_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, mail_type1901_cargo_capacity,
+[  STORE_TEMP(PROP_mail_type1901_LC, 0),  // т
+   STORE_TEMP(60, 1),                     // м³
+   STORE_TEMP(20, 2),                     // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(11, 4)])                    // шаблон
+{ box_cargo_capacity; }
 
 name_in_group(mail_type1901, string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_NAME_MAIL_TYPE1901)),
                              string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_NAME_MAIL_TYPE1901)))
@@ -47,15 +58,16 @@ item (FEAT_TRAINS, mail_type1901, 628) {
     vehicle_dates(1901, 1928, 28, 10, 8, PROP_mail_type1901_CF)
     vehicle_wagon(PROP_mail_type1901_WT, PROP_mail_type1901_SD)
     vehicle_group(group_mail)
-    vehicle_wagon_cargo(PROP_mail_type1901_FC, 8)
     cargo_allow_refit: [MAIL];
   }
   graphics {
-    purchase_menu(PROP_mail_type1901_CF, PROP_mail_type1901_RC, PROP_mail_type1901_SD, PROP_mail_type1901_WT, PROP_mail_type1901_TE, PROP_mail_type1901_PR, PROP_mail_type1901_FC)
+    purchase_menu_nocc(PROP_mail_type1901_CF, PROP_mail_type1901_RC, PROP_mail_type1901_SD, PROP_mail_type1901_WT, PROP_mail_type1901_TE, PROP_mail_type1901_PR)
         additional_text: mail_type1901_additional_text;
        articulated_part: articulated_part_dummy3;
+         cargo_capacity: mail_type1901_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: mail_type1901_sprites;
+          loading_speed: mail_type1901_loading_speed;
                    name: mail_type1901_name;
                purchase: mail_type1901_purchase_sprites;
     running_cost_factor: mail_type1901_running_cost_factor;

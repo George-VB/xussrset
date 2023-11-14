@@ -8,7 +8,6 @@
 #define PROP_boxcar_11_261_PR  0
 #define PROP_boxcar_11_261_CC  46
 #define PROP_boxcar_11_261_LC  26
-#define PROP_boxcar_11_261_FC  21
 
 #define IMAGEFILE  "src/wagons/boxcars/livestock/11-261.png"
 purchase_sprites(boxcar_11_261, 0, 0)
@@ -68,11 +67,23 @@ switch (FEAT_TRAINS, SELF, boxcar_11_261_running_cost_factor,
    STORE_TEMP(round(PROP_boxcar_11_261_WT + PROP_boxcar_11_261_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }                                              // 8
 
+switch (FEAT_TRAINS, SELF, boxcar_11_261_loading_speed,
+  STORE_TEMP(9, 2))
+{ all_wagons_box_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_261_cargo_capacity,
+[  STORE_TEMP(PROP_boxcar_11_261_LC, 0),      // т
+   STORE_TEMP(118, 1),                        // м³
+   STORE_TEMP(round(37.65 * LVST_WASTE), 2),  // м²
+   STORE_TEMP(0, 3),                          // палетомест
+   STORE_TEMP(9, 4)])                         // шаблон
+{ box_cargo_capacity; }
+
 name_in_group(boxcar_11_261, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_LVST_SERIES), string(STR_MODEL_NUMBER2, 11, 261)),
                              string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_LVST_SERIES), string(STR_LONGNAME_BOXCAR_11_261)))
 
-hint_wagon_noto(boxcar_11_261,
-           PROP_boxcar_11_261_LC, 118,
+hint_wagon_flat_noto(boxcar_11_261,
+           PROP_boxcar_11_261_LC, 38,
            string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
            STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
@@ -85,17 +96,18 @@ item (FEAT_TRAINS, boxcar_11_261, 324) {
     vehicle_dates(1984, 2050, 30, 10, 8, PROP_boxcar_11_261_CF)
     vehicle_wagon(PROP_boxcar_11_261_WT, PROP_boxcar_11_261_SD)
     vehicle_group(group_boxcars_lvst)
-    vehicle_wagon_cargo(PROP_boxcar_11_261_FC, 6)
     cargo_allow_refit: [LVST];
   }
   graphics {
-    purchase_menu(PROP_boxcar_11_261_CF, PROP_boxcar_11_261_RC, PROP_boxcar_11_261_SD, PROP_boxcar_11_261_WT, PROP_boxcar_11_261_TE, PROP_boxcar_11_261_PR, PROP_boxcar_11_261_FC)
+    purchase_menu_nocc(PROP_boxcar_11_261_CF, PROP_boxcar_11_261_RC, PROP_boxcar_11_261_SD, PROP_boxcar_11_261_WT, PROP_boxcar_11_261_TE, PROP_boxcar_11_261_PR)
         additional_text: boxcar_11_261_additional_text;
        articulated_part: articulated_part_dummy1;
        cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
+         cargo_capacity: boxcar_11_261_cargo_capacity;
      cargo_subtype_text: boxcar_11_261_cargo_subtype_text;
          colour_mapping: boxcar_11_261_colour_mapping;
                 default: boxcar_11_261_sprites;
+          loading_speed: boxcar_11_261_loading_speed;
                    name: boxcar_11_261_name;
                purchase: boxcar_11_261_purchase_sprites;
     running_cost_factor: boxcar_11_261_running_cost_factor;
