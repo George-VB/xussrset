@@ -8,7 +8,6 @@
 #define PROP_boxcar_11_1291_PR  0
 #define PROP_boxcar_11_1291_CC  25
 #define PROP_boxcar_11_1291_LC  25
-#define PROP_boxcar_11_1291_FC  12
 
 #define IMAGEFILE  "src/wagons/boxcars/vehicles/11-1291.png"
 purchase_sprites(boxcar_11_1291, 0, 0)
@@ -29,11 +28,24 @@ switch (FEAT_TRAINS, SELF, boxcar_11_1291_running_cost_factor,
    STORE_TEMP(round(PROP_boxcar_11_1291_WT + PROP_boxcar_11_1291_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }                                                // 51
 
+switch (FEAT_TRAINS, SELF, boxcar_11_1291_loading_speed,
+  STORE_TEMP(9, 2))
+{ all_wagons_box_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_1291_cargo_capacity,
+[  STORE_TEMP(PROP_boxcar_11_1291_LC, 0),  // т
+   STORE_TEMP(246, 1),                     // м³
+   STORE_TEMP(78 * 2, 2),                  // м²
+   STORE_TEMP(0, 3),                       // палетомест
+   STORE_TEMP(16 * 2, 4)])                 // шаблон
+{ flatbed_capacity()
+  return 0; }
+
 name_in_group(boxcar_11_1291, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_VEHI_SERIES), string(STR_MODEL_NUMBER2, 11, 1291)),
                               string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_VEHI_SERIES), string(STR_LONGNAME_BOXCAR_11_1291)))
 
-hint_wagon_noto(boxcar_11_1291,
-                PROP_boxcar_11_1291_LC, 195,
+hint_wagon_flat_noto(boxcar_11_1291,
+                PROP_boxcar_11_1291_LC, 78 * 2,
                 string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
                 STR_PURCHASE_HINT_CAP_001_NORMAL,
                 STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
@@ -46,15 +58,16 @@ item (FEAT_TRAINS, boxcar_11_1291, 572) {
     vehicle_dates(2008, 2050, 30, 10, 8, PROP_boxcar_11_1291_CF)
     vehicle_wagon(PROP_boxcar_11_1291_WT, PROP_boxcar_11_1291_SD)
     vehicle_group(group_boxcars_vehi)
-    vehicle_wagon_cargo(PROP_boxcar_11_1291_FC, 5)
     cargo_allow_refit: [VEHI];
   }
   graphics {
-    purchase_menu(PROP_boxcar_11_1291_CF, PROP_boxcar_11_1291_RC, PROP_boxcar_11_1291_SD, PROP_boxcar_11_1291_WT, PROP_boxcar_11_1291_TE, PROP_boxcar_11_1291_PR, PROP_boxcar_11_1291_FC)
+    purchase_menu_nocc(PROP_boxcar_11_1291_CF, PROP_boxcar_11_1291_RC, PROP_boxcar_11_1291_SD, PROP_boxcar_11_1291_WT, PROP_boxcar_11_1291_TE, PROP_boxcar_11_1291_PR)
         additional_text: boxcar_11_1291_additional_text;
        articulated_part: articulated_part_dummy8;
+         cargo_capacity: boxcar_11_1291_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: boxcar_11_1291_sprites;
+          loading_speed: boxcar_11_1291_loading_speed;
                    name: boxcar_11_1291_name;
                purchase: boxcar_11_1291_purchase_sprites;
     running_cost_factor: boxcar_11_1291_running_cost_factor;
