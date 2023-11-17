@@ -8,11 +8,10 @@
 #define PROP_boxcar_11_835_PR  0
 #define PROP_boxcar_11_835_CC  17
 #define PROP_boxcar_11_835_LC  15
-#define PROP_boxcar_11_835_FC  10
 
 #define IMAGEFILE  "src/wagons/boxcars/vehicles/11-835.png"
 purchase_sprites(boxcar_11_835, 0, 0)
-combo_layout_boxcar_template(boxcar_11_835, 14, 32, 40)  // TODO draw open doors on the 3-d row
+combo_layout_boxcar_template(boxcar_11_835, 14, 32, 40)
 cargo_layout_template(boxcar_11_835_midfloor, 14, 32, 241)
 cargo_layout_template(boxcar_11_835_vehi11, 14, 32, 308)
 cargo_layout_template(boxcar_11_835_vehi12, 14, 32, 375)
@@ -186,13 +185,26 @@ switch (FEAT_TRAINS, SELF, boxcar_11_835_running_cost_factor,
    STORE_TEMP(round(PROP_boxcar_11_835_WT + PROP_boxcar_11_835_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }                                              // 32
 
+switch (FEAT_TRAINS, SELF, boxcar_11_835_loading_speed,
+  STORE_TEMP(9, 2))
+{ all_wagons_box_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, boxcar_11_835_cargo_capacity,
+[  STORE_TEMP(PROP_boxcar_11_835_LC, 0),  // т
+   STORE_TEMP(247, 1),                    // м³
+   STORE_TEMP(69 * 2, 2),                 // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(14 * 2, 4)])                // шаблон
+{ flatbed_capacity()
+  return 0; }
+
 name_in_group(boxcar_11_835, string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_VEHI_SERIES), string(STR_MODEL_NUMBER2, 11, 835)),
                              string(STR_NAME_IN_GROUP, string(STR_NAME_BOXCARS_VEHI_SERIES), string(STR_LONGNAME_BOXCAR_11_835)))
 
-hint_wagon(boxcar_11_835,
-           PROP_boxcar_11_835_LC, 195,
+hint_wagon_flat(boxcar_11_835,
+           PROP_boxcar_11_835_LC, 69 * 2,
            string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_CAP_001_NORMAL,
+           STR_PURCHASE_HINT_CAP_008_VERY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_BOXCAR,
            1986, 1990,
            string(STR_PURCHASE_HINT_FACTORY_RAUTARUUKKI))
@@ -203,15 +215,17 @@ item (FEAT_TRAINS, boxcar_11_835, 259) {
     vehicle_dates(1986, 1990, 30, 10, 8, PROP_boxcar_11_835_CF)
     vehicle_wagon(PROP_boxcar_11_835_WT, PROP_boxcar_11_835_SD)
     vehicle_group(group_boxcars_vehi)
-    vehicle_wagon_cargo(PROP_boxcar_11_835_FC, 5)
     cargo_allow_refit: [VEHI];
   }
   graphics {
-    purchase_menu(PROP_boxcar_11_835_CF, PROP_boxcar_11_835_RC, PROP_boxcar_11_835_SD, PROP_boxcar_11_835_WT, PROP_boxcar_11_835_TE, PROP_boxcar_11_835_PR, PROP_boxcar_11_835_FC)
+    purchase_menu_nocc(PROP_boxcar_11_835_CF, PROP_boxcar_11_835_RC, PROP_boxcar_11_835_SD, PROP_boxcar_11_835_WT, PROP_boxcar_11_835_TE, PROP_boxcar_11_835_PR)
         additional_text: boxcar_11_835_additional_text;
        articulated_part: articulated_part_dummy6;
+         cargo_capacity: boxcar_11_835_cargo_capacity;
          colour_mapping: any_cc_colour;
+ cargo_age_period: return CAP_008_VERY_SLOW;    
                 default: boxcar_11_835_sprites;
+          loading_speed: boxcar_11_835_loading_speed;
                    name: boxcar_11_835_name;
                purchase: boxcar_11_835_purchase_sprites;
     running_cost_factor: boxcar_11_835_running_cost_factor;
