@@ -126,7 +126,7 @@ sub ChangeFile($) {
 	@strs = split(/graphics\s*\{/is, $s);
 	foreach $str (@strs) {
 # templates should be ignored (Symbol '\')
-		if($str =~ s/^([^\{|\\]+?)\}//is) {
+		if($str =~ s/^([^\{\\]+?)\}//is) {
 			my($grs) = $1;
 # should not be used with a single line strings
 			if($grs =~ /\n/s) {
