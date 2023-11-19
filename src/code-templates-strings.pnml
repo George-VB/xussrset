@@ -385,6 +385,25 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                                                          \
      name##_additional_text_shown; }                                                                                                         \
 
+#define hint_wagon_with_uspeed_chande_power_on_ddc(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory, power)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                             \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                              \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                       \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x103),                                                   \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x104) ])                                                \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                            \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                              \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                       \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x103),                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x104) ])                                                \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                               \
+{ 1: name##_additional_text_hidden;                                                                                                  \
+     name##_additional_text_shown; }                                                                                                 \
+
 // Описание вагона-платформы
 #define hint_wagon_flat(name, cap, vol, lspeed, straging, strwagtype, from, to, factory)       \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                       \
@@ -606,6 +625,21 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                   \
      name##_additional_text_shown; }                                                  \
 
+#define hint_engine_chande_power_on_ddc(name, strengtype, strengsmetype, from, to, factory, power)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                            \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                            \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x101),                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x102) ])               \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                           \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                            \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) << 16), 0x101),               \
+  STORE_TEMP(power, 0x102) ])                                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                        \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                              \
+{ 1: name##_additional_text_hidden;                                                                 \
+     name##_additional_text_shown; }                                                                \
+
 // Описание локомотива с производством в течение года
 #define hint_engine_in(name, strengtype, strengsmetype, in, factory)        \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                    \
@@ -649,6 +683,59 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)  \
 { 1: name##_additional_text_hidden;                                              \
      name##_additional_text_shown; }                                             \
+
+#define hint_engine_noto_chande_power_on_ddc(name, strengtype, strengsmetype, from, factory, power)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                             \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                             \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x101),                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x102) ])                \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT); }                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                            \
+[ STORE_TEMP(string(strengtype) | (string(strengsmetype) << 16), 0x100),                             \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) << 16), 0x101),                \
+  STORE_TEMP(power, 0x102) ])                                                                        \
+{ return string(STR_PURCHASE_HINT_ENGINE_COMMENT_NODATES); }                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                      \
+{ 1: name##_additional_text_hidden;                                                                  \
+     name##_additional_text_shown; }                                                                 \
+
+#define hint_engine_wagon_with_uspeed_chande_power_on_ddc(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, to, factory, power)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                    \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                                     \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                              \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x103),                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x104) ])                                                       \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                   \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                                     \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                              \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x103),                                                                \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x104) ])                                                       \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                                      \
+{ 1: name##_additional_text_hidden;                                                                                                         \
+     name##_additional_text_shown; }                                                                                                        \
+
+#define hint_engine_wagon_noto_with_uspeed_chande_power_on_ddc(name, cap, vol, lspeed, ulspeed, straging, strwagtype, from, factory, power)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                                     \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                                      \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                               \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                          \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROM, from) | (factory << 16), 0x103),                                                                 \
+  STORE_TEMP(string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) | (power << 16), 0x104) ])                                                        \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT); }                                                                              \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                                    \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                                      \
+  STORE_TEMP(lspeed | (ulspeed << 16), 0x101),                                                                                               \
+  STORE_TEMP(string(straging) | (string(strwagtype) << 16), 0x102),                                                                          \
+  STORE_TEMP(factory | (string(STR_PURCHASE_HINT_POWER_CHANGE_ON_DDC) << 16), 0x103),                                                        \
+  STORE_TEMP(power, 0x104) ])                                                                                                                \
+{ return string(STR_PURCHASE_HINT_WAGON_WITH_USPEED_COMMENT_NODATES); }                                                                      \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR)                                                              \
+{ 1: name##_additional_text_hidden;                                                                                                          \
+     name##_additional_text_shown; }                                                                                                         \
 
 // Описание локомотива c подтипом
 #define hint_engine_with_subtype(name, strengtype, strengsubtype, strengsmetype, from, to, factory)  \

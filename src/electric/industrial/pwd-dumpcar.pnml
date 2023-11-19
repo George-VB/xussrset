@@ -1,5 +1,17 @@
 ﻿// pwd_dumpcar
 
+#define PROP_pwd_dumpcar_CF  4
+#define PROP_pwd_dumpcar_RC  34
+#define PROP_pwd_dumpcar_SD  65
+#define PROP_pwd_dumpcar_WT  79
+#define PROP_pwd_dumpcar_TE  227.0
+#define PROP_pwd_dumpcar_PR  kw2hp(1750.6)
+#define PROP_pwd_dumpcar_PR_15KV  kw2hp(820.5)
+#define PROP_pwd_dumpcar_CC  80
+#define PROP_pwd_dumpcar_LC  45
+#define PROP_pwd_dumpcar_VC  30
+#define PROP_pwd_dumpcar_AC  26
+
 #define IMAGEFILE  "src/electric/industrial/pwd-dumpcar.png"
 purchase_sprites(pwd_dumpcar, 0, 0)
 combo_layout_lights_template(pwd_dumpcar, 9, 32, 40)
@@ -33,11 +45,11 @@ switch (FEAT_TRAINS, SELF, pwd_dumpcar_sprites_start,
 long_vehicle(pwd_dumpcar)
 
 switch (FEAT_TRAINS, SELF, pwd_dumpcar_cargo_capacity,
-[  STORE_TEMP(45, 0),  // т
-   STORE_TEMP(30, 1),  // м³
-   STORE_TEMP(26, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(7, 4),   // шаблон
+[  STORE_TEMP(PROP_pwd_dumpcar_LC, 0),  // т
+   STORE_TEMP(PROP_pwd_dumpcar_VC, 1),  // м³
+   STORE_TEMP(PROP_pwd_dumpcar_AC, 2),  // м²
+   STORE_TEMP(0, 3),                    // палетомест
+   STORE_TEMP(7, 4),                    // шаблон (полезная длина 7 из 9)
    cargo_type_in_veh])
 {
   dumpcar_capacity()
@@ -53,9 +65,9 @@ switch (FEAT_TRAINS, SELF, pwd_dumpcar_loading_speed,
   all_wagons_bulk_loading_speed;
 }
 
-// because we can't check the sequence in power CB, power is disabled when the head locomotive is not
-engine_power_MU4(pwd_dumpcar_15DC, kw2hp(820), pwd_dumpcar, pe2, pe2m, pe2u)
-engine_power_MU4(pwd_dumpcar_DC, kw2hp(1750.6), pwd_dumpcar, pe2, pe2m, pe2u)
+// because we can't check the sequence in power CB, power is disabled when the head locomotive is not PE2*
+engine_power_MU4(pwd_dumpcar_15DC, PROP_pwd_dumpcar_PR_15KV, pwd_dumpcar, pe2, pe2m, pe2u)
+engine_power_MU4(pwd_dumpcar_DC, PROP_pwd_dumpcar_PR, pwd_dumpcar, pe2, pe2m, pe2u)
 engine_power_change_DDC(pwd_dumpcar)
 
 switch (FEAT_TRAINS, SELF, pwd_dumpcar_running_cost_factor,
@@ -66,29 +78,35 @@ switch (FEAT_TRAINS, SELF, pwd_dumpcar_running_cost_factor,
    STORE_TEMP(5, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(65, 6),                  // Скорость
-   STORE_TEMP(79, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 45, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 34
-hint_wagon_with_uspeed_noto(pwd_dumpcar,
-                            45, 26,
-                            string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-                            string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
-                            STR_PURCHASE_HINT_CAP_001_NORMAL,
-                            STR_PURCHASE_HINT_WAGON_TYPE_PWD_DUMPCAR,
-                            1967,
-                            fact_dnepropetrovsk())
+   STORE_TEMP(PROP_pwd_dumpcar_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_pwd_dumpcar_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_pwd_dumpcar_WT + PROP_pwd_dumpcar_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                          // 34
+
+name_in_group(pwd_dumpcar, string(STR_NAME_IN_GROUP, string(STR_NAME_PE2_SERIES), string(STR_NAME_PWD_DUMPCAR)),
+                           string(STR_NAME_IN_GROUP, string(STR_NAME_PE2_SERIES), string(STR_NAME_PWD_DUMPCAR)))
+
+hint_engine_wagon_noto_with_uspeed_chande_power_on_ddc(pwd_dumpcar,
+           PROP_pwd_dumpcar_LC, PROP_pwd_dumpcar_VC,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+           string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
+           STR_PURCHASE_HINT_CAP_001_NORMAL,
+           STR_PURCHASE_HINT_WAGON_TYPE_PWD_DUMPCAR,
+           1967,
+           fact_dnepropetrovsk(),
+           get_power_in_cb(PROP_pwd_dumpcar_PR_15KV))
 
 item (FEAT_TRAINS, pwd_dumpcar, 757) {
   property {
     name: string(STR_NAME_PWD_DUMPCAR);
-    vehicle_dates(1967, 2050, 40, 10, 8, 4)
-    vehicle_ddcelectric(kw2hp(820), 79, 227.0, _lowspeed)
+    vehicle_dates(1967, 2050, 40, 10, 8, PROP_pwd_dumpcar_CF)
+    vehicle_ddcelectric(PROP_pwd_dumpcar_PR, PROP_pwd_dumpcar_WT, PROP_pwd_dumpcar_TE, _lowspeed)
     vehicle_group_mu(group_pe2)
-       cargo_capacity: 45;
+       cargo_capacity: PROP_pwd_dumpcar_LC;
     cargo_allow_refit: [cargo_all_bulklist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_pwd_dumpcar_CF, PROP_pwd_dumpcar_RC, PROP_pwd_dumpcar_SD, PROP_pwd_dumpcar_WT, PROP_pwd_dumpcar_TE, PROP_pwd_dumpcar_PR)
         additional_text: pwd_dumpcar_additional_text;
        articulated_part: articulated_part_dummy1;
        can_attach_wagon: any_can_attach_wagon;
@@ -97,11 +115,12 @@ item (FEAT_TRAINS, pwd_dumpcar, 757) {
          colour_mapping: pe_type_colour_mapping;
                 default: pwd_dumpcar_sprites;
           loading_speed: pwd_dumpcar_loading_speed;
+                   name: pwd_dumpcar_name;
                   power: pwd_dumpcar_power;
                purchase: pwd_dumpcar_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: pwd_dumpcar_running_cost_factor;
-                  speed: return 65;  // does not have or provide a speed penalty
+                  speed: return PROP_pwd_dumpcar_SD;  // does not have or provide a speed penalty
              start_stop: any_start_stop;
   }
 }
