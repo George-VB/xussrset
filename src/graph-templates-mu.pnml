@@ -3,6 +3,8 @@
 // Для всех ЭМВПС если голова неверная, то тяги нет по определению - проверка неверной головы не предполагается
 
 // головной односторонний несимметричный
+// #define IMAGEFILE "src/align/templates/mu_head.png" #undef IMAGEFILE
+// #define IMAGEFILE "src/align/templates/mu_head_electric.png" #undef IMAGEFILE
 #define MU_head_sprites(n, name, x, y)                                              \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                               \
 { s##n##_template(x, y, 0) }                                                        \
@@ -47,8 +49,9 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
 { independent: name##_sprites_right1;                                               \
           128: name##_sprites_right1; }                                             \
 
-// головной односторонний несимметричный c различной графикой на постоянном
-// и переменном токе
+// головной односторонний несимметричный c различной графикой на постоянном и переменном токе
+// Применяется только для TGV, на погрузке гасится прожектор
+// шаблон пока не выделен как и для прочих двухсистемных ЭМВПС
 #define MU_head_2d_sprites(n, name, x, y)                                              \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                                  \
 { s##n##_template(x, y, 0) }                                                           \
@@ -118,6 +121,8 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
           128: name##_sprites_right1; }                                                \
 
 // головной односторонний несимметричный с промежуточной головой
+// #define IMAGEFILE "src/align/templates/mu_head_middle.png" #undef IMAGEFILE
+// #define IMAGEFILE "src/align/templates/mu_head_middle_electric.png" #undef IMAGEFILE
 #define MU_head_middle_sprites(n, name, x, y)                                       \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                               \
 { s##n##_template(x, y, 0) }                                                        \
@@ -174,6 +179,8 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
 
 // головной односторонний несимметричный с промежуточной головой
 // (Промежуточные головы в пути отличаются от вида в депо)
+// #define IMAGEFILE "src/align/templates/mu_head_middle_sp.png" #undef IMAGEFILE
+// #define IMAGEFILE "src/align/templates/mu_head_middle_sp_electric.png" #undef IMAGEFILE
 #define MU_head_middle_sp_sprites(n, name, x, y)                                    \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                               \
 { s##n##_template(x, y, 0) }                                                        \
@@ -241,8 +248,80 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
           128: name##_sprites_right1; }                                             \
 
 // головной односторонний несимметричный с промежуточной головой
+// (Промежуточные головы в пути отличаются от вида в депо)
+// Правая и левая промежуточная голова отличаются, например разный пантограф поднят
+// #define IMAGEFILE "src/align/templates/mu_head_middle_sp2.png" #undef IMAGEFILE
+// #define IMAGEFILE "src/align/templates/mu_head_middle_sp2_electric.png" #undef IMAGEFILE
+#define MU_head_middle_sp2_sprites(n, name, x, y)                                   \
+spriteset (name##_notpowered_sprites_left, IMAGEFILE)                               \
+{ s##n##_template(x, y, 0) }                                                        \
+spriteset (name##_loading_sprites, IMAGEFILE)                                       \
+{ s##n##_template(x+447, y+134, 0) }                                                \
+spriteset (name##_traveling_sprites, IMAGEFILE)                                     \
+{ s##n##_template(x+447, y, 0) }                                                    \
+spriteset (name##_notpowered_loading_sprites, IMAGEFILE)                            \
+{ s##n##_template(x+447*2, y+134, 0) }                                              \
+spriteset (name##_middle_notpowered_sprites_left, IMAGEFILE)                        \
+{ s##n##_template(x+447*2, y, 0) }                                                  \
+spritegroup name##_normal_sprites                                                   \
+{ loading: name##_loading_sprites;                                                  \
+   loaded: name##_traveling_sprites; }                                              \
+spriteset (name##_notpowered_sprites_right, IMAGEFILE)                              \
+{ s##n##_r_template(x, y, 0) }                                                      \
+spriteset (name##_loading_sprites_right, IMAGEFILE)                                 \
+{ s##n##_r_template(x+32+447, y+201, 0) }                                           \
+spriteset (name##_traveling_sprites_right, IMAGEFILE)                               \
+{ s##n##_r_template(x+32+447, y+67, 0) }                                            \
+spriteset (name##_notpowered_loading_sprites_right, IMAGEFILE)                      \
+{ s##n##_r_template(x+447*2+32, y+134+67, 0) }                                      \
+spriteset (name##_middle_notpowered_sprites_right, IMAGEFILE)                       \
+{ s##n##_r_template(x+447*2+32, y+67, 0) }                                          \
+spritegroup name##_normal_sprites_right                                             \
+{ loading: name##_loading_sprites_right;                                            \
+   loaded: name##_traveling_sprites_right; }                                        \
+spritegroup name##_notpowered_normal_sprites_left                                   \
+{ loading: name##_notpowered_loading_sprites;                                       \
+   loaded: name##_middle_notpowered_sprites_left; }                                 \
+spritegroup name##_notpowered_normal_sprites_right                                  \
+{ loading: name##_notpowered_loading_sprites_right;                                 \
+   loaded: name##_middle_notpowered_sprites_right; }                                \
+switch (FEAT_TRAINS, SELF, name##_sprites_left2,                                    \
+  vehicle_is_not_powered || vehicle_is_in_depot)                                    \
+{ 0: name##_normal_sprites;                                                         \
+     name##_notpowered_sprites_left; }                                              \
+switch (FEAT_TRAINS, SELF, name##_sprites_right2,                                   \
+  vehicle_is_not_powered || vehicle_is_in_depot)                                    \
+{ 0: name##_normal_sprites_right;                                                   \
+     name##_notpowered_sprites_right; }                                             \
+switch (FEAT_TRAINS, SELF, name##_middle_sprites_left,                              \
+  vehicle_is_not_powered || vehicle_is_in_depot)                                    \
+{ 0: name##_notpowered_normal_sprites_left;                                         \
+     name##_notpowered_sprites_left; }                                              \
+switch (FEAT_TRAINS, SELF, name##_middle_sprites_right,                             \
+  vehicle_is_not_powered || vehicle_is_in_depot)                                    \
+{ 0: name##_notpowered_normal_sprites_right;                                        \
+     name##_notpowered_sprites_right; }                                             \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_left1,                             \
+bitmask(TRIGGER_VEHICLE_SERVICE))                                                   \
+{ 1: name##_sprites_left2;                                                          \
+  1: name##_sprites_left2; }                                                        \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_left,                              \
+bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))  \
+{ independent: name##_sprites_left1;                                                \
+          128: name##_sprites_left1; }                                              \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_right1,                            \
+bitmask(TRIGGER_VEHICLE_SERVICE))                                                   \
+{ 1: name##_sprites_right2;                                                         \
+  1: name##_sprites_right2; }                                                       \
+random_switch (FEAT_TRAINS, SELF, name##_sprites_right,                             \
+bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED))  \
+{ independent: name##_sprites_right1;                                               \
+          128: name##_sprites_right1; }                                             \
+
+// головной односторонний несимметричный с промежуточной головой
 // c различной графикой на постоянном и переменном токе
 // (Промежуточные головы в пути отличаются от вида в депо)
+// Применяется только для TGV, на погрузке гасится прожектор
 #define MU_head_2d_middle_sp_sprites(n, name, x, y)                                                        \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                                                      \
 { s##n##_template(x, y, 0) }                                                                               \
@@ -358,8 +437,9 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
           128: name##_sprites_right1; }                                                                    \
 
 // головной односторонний несимметричный с промежуточной головой
-// c различной графикой на постоянном и переменном токе, На переменке оба пантографа
+// c различной графикой на постоянном и переменном токе, На переменке только один пантограф
 // (Промежуточные головы в пути отличаются от вида в депо)
+// Применяется только для TGV, на погрузке гасится прожектор
 #define MU_head_2d2_middle_sp_sprites(n, name, x, y)                                                       \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)                                                      \
 { s##n##_template(x, y, 0) }                                                                               \
@@ -474,7 +554,8 @@ bitmask(TRIGGER_VEHICLE_UNLOAD_ALL, TRIGGER_VEHICLE_ANY_LOAD, TRIGGER_ALL_NEEDED
 { independent: name##_sprites_right1;                                                                      \
           128: name##_sprites_right1; }                                                                    \
 
-// головной двухсторонний несимметричный
+// головной двухсторонний несимметричный (АС1А)
+// #define IMAGEFILE "src/align/templates/mu_head_single.png" #undef IMAGEFILE
 #define MU_head_single_sprites(n, name, x, y)           \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)   \
 { s##n##_template(x, y, 0) }                            \
@@ -547,7 +628,8 @@ switch (FEAT_TRAINS, SELF, name##_sprites_3right,       \
 { 0: name##_normal_sprites_right3;                      \
      name##_notpowered_sprites_right; }                 \
 
-// головной двухсторонний несимметричный с промежуточной головой
+// головной двухсторонний несимметричный с промежуточной головой (РА1)
+// #define IMAGEFILE "src/align/templates/mu_head_single_middle.png" #undef IMAGEFILE
 #define MU_head_single_middle_sprites(n, name, x, y)            \
 spriteset (name##_notpowered_sprites_left, IMAGEFILE)           \
 { s##n##_template(x, y, 0) }                                    \
