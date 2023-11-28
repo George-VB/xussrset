@@ -30,10 +30,10 @@ MU_head_middle_sprites(12, sr3_h_v2u_mu, 32, 844)
 #undef IMAGEFILE
 map_sprites(sr3_purchase_sprites, sr3_h_purchase_sprites)
 
-MU_head_middle_direction_template2(sr3_h_v1,  sr3_h, sr3_hmp)
-MU_head_middle_direction_template2(sr3_h_v1u, sr3_h, sr3_hmp)
-MU_head_middle_direction_template2(sr3_h_v2,  sr3_h, sr3_hmp)
-MU_head_middle_direction_template2(sr3_h_v2u, sr3_h, sr3_hmp)
+MU_head_direction_template2(sr3_h_v1,  sr3_h, sr3_hmp)
+MU_head_direction_template2(sr3_h_v1u, sr3_h, sr3_hmp)
+MU_head_direction_template2(sr3_h_v2,  sr3_h, sr3_hmp)
+MU_head_direction_template2(sr3_h_v2u, sr3_h, sr3_hmp)
 
 switch (FEAT_TRAINS, SELF, sr3_h_sprites_left_gr,
   check_year(GREAT_CHANGE_YEAR))
@@ -84,19 +84,12 @@ switch (FEAT_TRAINS, SELF, sr3_h_sprites_right,
 engine_direction_template4m3(sr3_h, sr3_hmp, sr3_c2, sr3_c3, )
 map_sprites(sr3_h_direction_template, sr3_h_sprites_start)
 
-switch (FEAT_TRAINS, SELF, sr3_h_prev2,
-[ set_offset_to(-4), prev_vehicle_type_id() ])
-{  sr3_c2: type_head_motor_pant_head_add_optional;
-   sr3_c3: type_head_motor_pant_head_add_optional;
-  sr3_hmp: type_head_motor_pant_head_add_optional;
-    sr3_h: type_head_motor_pant_head_add_optional;
-           dummy_sprites_big; }
-
 switch (FEAT_TRAINS, SELF, sr3_h_prev1,
-[ set_offset_to(-2), prev_vehicle_type_id() ])
+[ set_offset_to(-2),
+  prev_vehicle_type_id() ])
 {   sr3_h: type_head_motor_pant_add_mandatory;
-  sr3_hmp: sr3_h_prev2;
-           dummy_sprites_big; }
+  sr3_hmp: type_head_motor_pant_head_add_optional;  // TODO why doesn't it work????
+           type_head_motor_pant_head_add_optional; }
 
 switch (FEAT_TRAINS, PARENT, sr3_h_next_can_attach_wagon_template,
   count_veh_id(sr3_hmp))
@@ -140,29 +133,11 @@ switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon_h,
   1: sr3_can_attach_wagon_h1;
      sr3_can_attach_wagon_h3;
 }
-/*
-switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon_hmp3,
-[ set_offset_to(num_vehs_in_consist-4),
-  prev_vehicle_type_id() ])
-{
-    sr3_h: return CB_RESULT_ATTACH_ALLOW;
-  sr3_hmp: return CB_RESULT_ATTACH_ALLOW;
-          return string(STR_CAN_ATTACH_HEAD_ONLY);
-}
 
-switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon_hmp2,
-[ set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-  sr3_hmp: return sr3_can_attach_wagon_hmp3;
-           return CB_RESULT_ATTACH_ALLOW;
-}
-*/
 switch (FEAT_TRAINS, PARENT, sr3_can_attach_wagon_hmp,
   count_veh_id(sr3_hmp))
 {
   0..2: return CB_RESULT_ATTACH_ALLOW;
-//     2: sr3_can_attach_wagon_hmp2;
         return string(STR_CAN_ATTACH_NO_MORE);
 }
 
@@ -247,7 +222,6 @@ switch (FEAT_TRAINS, PARENT, sr3_start_stop,
 
 livery_template_alt0(sr3, STR_REFIT_TTD_53, STR_REFIT_TTD_63)
 engine_capacity_MU2(sr3_h, PROP_sr3_h_CC, sr3_h, sr3_hmp)
-engine_0_power(sr3_h)
 
 RC_head_check2(sr3_h, sr3_h, sr3_hmp)
 switch (FEAT_TRAINS, SELF, sr3_h_running_cost_factor,
@@ -294,7 +268,7 @@ item (FEAT_TRAINS, sr3_h, 415) {
          colour_mapping: any_cc_colour;
                 default: sr3_h_sprites;
                    name: sr3_h_name;
-                  power: sr3_h_power;
+                  power: return 0;
                purchase: sr3_h_purchase_sprites;
     running_cost_factor: sr3_h_running_cost_factor;
                   speed: return PROP_sr3_h_SD;
