@@ -1,0 +1,189 @@
+﻿// talgo6
+
+#define IMAGEFILE  "src/cars/talgo6/talgo_A.png"
+purchase_sprites(talgo6, 0, 0)
+MU_car_nd_sprites(7, talgo6_A, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_BC.png"
+MU_car_sprites(8, talgo6_BC, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_D.png"
+MU_car_nd_sprites(8, talgo6_D, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_E.png"
+MU_car_nd_sprites(8, talgo6_E, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_F.png"
+MU_car_sprites(8, talgo6_F, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_F2.png"
+MU_car_sprites(8, talgo6_F2, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_G.png"
+MU_car_sprites(8, talgo6_G, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_H.png"
+MU_car_sprites(8, talgo6_H, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_H2.png"
+MU_car_sprites(8, talgo6_H2, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_I.png"
+MU_car_sprites(8, talgo6_I, 32, 40)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/talgo6/talgo_J.png"
+MU_car_nd_sprites(8, talgo6_J, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, talgo6_A_sprites_check,
+  position_in_articulated_veh == 0)
+{
+  0: talgo6_A_sprites_left;
+     talgo6_A_sprites_right;
+}
+// А - 18хF2 - D - E - I - H - 2xG - J - A
+switch (FEAT_TRAINS, SELF, talgo6_sprites_right,
+   position_in_articulated_veh)
+{
+      0: talgo6_A_sprites_check;
+  1..18: talgo6_F2_sprites_right;
+     19: talgo6_D_sprites_right;
+     20: talgo6_E_sprites_right;
+     21: talgo6_I_sprites_right;
+     22: talgo6_H_sprites_right;
+     23: talgo6_G_sprites_right;
+     24: talgo6_G_sprites_right;
+     25: talgo6_J_sprites_right;
+     26: talgo6_A_sprites_check;
+         align_8_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, talgo6_sprites_left,
+   position_in_articulated_veh)
+{
+      0: talgo6_A_sprites_check;
+      1: talgo6_J_sprites_left;
+      2: talgo6_G_sprites_left;
+      3: talgo6_G_sprites_left;
+      4: talgo6_H_sprites_left;
+      5: talgo6_I_sprites_left;
+      6: talgo6_E_sprites_left;
+      7: talgo6_D_sprites_left;
+  8..25: talgo6_F2_sprites_left;
+     26: talgo6_A_sprites_check;
+         align_8_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, talgo6_sprites_start,
+[  set_offset_to(-position_in_articulated_veh),
+   (prev_vehicle_randombits() & 0x01) ])
+{
+  1: talgo6_sprites_left;
+     talgo6_sprites_right;
+}
+
+long_vehicle(talgo6)
+
+switch (FEAT_TRAINS, SELF, talgo6_length, position_in_articulated_veh)
+{
+   0: return 7;
+  26: return 7;
+      return 8;
+}
+
+switch (FEAT_TRAINS, SELF, talgo6_articulated_part,
+  extra_callback_info1)
+{
+      1: return talgo6_part2;
+  2..26: return talgo6_part3;
+         return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, talgo6_create_effect2,
+  diesel_create_effect(0, 10)) { return 1; }
+
+switch (FEAT_TRAINS, SELF, talgo6_create_effect,
+  position_in_articulated_veh)
+{
+   0: talgo6_create_effect2;
+  26: talgo6_create_effect2;
+      return disable_create_effect();
+}
+
+switch (FEAT_TRAINS, SELF, talgo6_running_cost_factor,
+[  STORE_TEMP(0, 0),     // Моторы
+   STORE_TEMP(2450, 1),  // Бригада
+   STORE_TEMP(6648, 2),  // Износ
+   STORE_TEMP(582, 3),   // Сопровождение
+   STORE_TEMP(1749, 4),  // ТО
+   STORE_TEMP(234, 5),   // Сертификация
+
+   STORE_TEMP(200, 6),                 // Скорость
+   STORE_TEMP(574, 7),                 // Тара
+   STORE_TEMP(LOAD_TEMP(7) + 28, 8)])  // Максимальная масса
+{ all_running_cost_factor; }           // 11663
+
+hint_wagon_coach_noto(talgo6,
+   string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+   STR_PURCHASE_HINT_CAP_008_VERY_SLOW,
+   STR_PURCHASE_HINT_COACH_TYPE_C_WITH_COND,
+   2003,
+   string(STR_PURCHASE_HINT_FACTORY_PATENTES_TALGO))
+
+item (FEAT_TRAINS, talgo6, 1256) {
+  property {
+    name: string(STR_NAME_TALGO6);
+    vehicle_dates(2003, 2050, 40, 10, 8, 10159)
+    vehicle_wagon(574, 200)
+    vehicle_tourists()
+    vehicle_group(group_class2)
+  }
+  graphics {
+        additional_text: talgo6_additional_text;
+       articulated_part: talgo6_articulated_part;
+       cargo_age_period: return CAP_016_ALMOST_NONE;
+         cargo_capacity: return 58;
+         colour_mapping: any_cc_colour;
+            cost_factor: return 16254;
+                default: talgo6_sprites;
+                 length: talgo6_length;
+          loading_speed: return round(2 * 5);
+               purchase: talgo6_purchase_sprites;
+         purchase_speed: return 200;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: talgo6_running_cost_factor;
+  }
+}
+
+long_name_template(talgo6, STR_LONGNAME_TALGO6)
+
+item (FEAT_TRAINS, talgo6_part2, 1257) {
+  property {
+    vehicle_no_dates(2003, 2050, 40, 10, 8, 0)
+    vehicle_wagon(0, 200)
+    vehicle_passengers()
+  }
+  graphics {
+    cargo_age_period: return CAP_001_NORMAL;
+      cargo_capacity: return 324;
+      colour_mapping: any_cc_colour;
+       create_effect: talgo6_create_effect;
+             default: talgo6_sprites;
+              length: talgo6_length;
+       loading_speed: return round(10 * 5);
+  }
+}
+
+item (FEAT_TRAINS, talgo6_part3, 1258) {
+  property {
+    vehicle_no_dates(2003, 2050, 40, 10, 8, 0)
+    vehicle_wagon(0, 200)
+  }
+  graphics {
+    cargo_capacity: return 0;
+    colour_mapping: any_cc_colour;
+     create_effect: talgo6_create_effect;
+           default: talgo6_sprites;
+            length: talgo6_length;
+  }
+}
