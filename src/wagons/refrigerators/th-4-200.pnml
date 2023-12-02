@@ -1,5 +1,16 @@
 // refrigerator_th_4_200
 
+#define PROP_refrigerator_th_4_200_CF  393
+#define PROP_refrigerator_th_4_200_RC  116
+#define PROP_refrigerator_th_4_200_SD  120
+#define PROP_refrigerator_th_4_200_WT  33
+#define PROP_refrigerator_th_4_200_TE  0
+#define PROP_refrigerator_th_4_200_PR  0
+#define PROP_refrigerator_th_4_200_CC  73
+#define PROP_refrigerator_th_4_200_LC  60
+#define PROP_refrigerator_th_4_200_VC  126
+#define PROP_refrigerator_th_4_200_AC  0
+
 #define IMAGEFILE  "src/wagons/refrigerators/th-4-200.png"
 purchase_sprites(refrigerator_th_4_200, 0, 0)
 combo_layout_boxcar_template(refrigerator_th_4_200_v1, 13, 32, 40)
@@ -84,11 +95,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_th_4_200_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_th_4_200_cargo_capacity,
-[  STORE_TEMP(60, 0),   // т
-   STORE_TEMP(126, 1),  // м³
-   STORE_TEMP(0, 2),    // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(13, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_th_4_200_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_th_4_200_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_th_4_200_AC, 2),  // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(13, 4)])                            // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_th_4_200_running_cost_factor,
@@ -99,19 +110,22 @@ switch (FEAT_TRAINS, SELF, refrigerator_th_4_200_running_cost_factor,
    STORE_TEMP(38, 4),  // ТО
    STORE_TEMP(2, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(33, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 60, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 114
+   STORE_TEMP(PROP_refrigerator_th_4_200_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_refrigerator_th_4_200_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_refrigerator_th_4_200_WT + PROP_refrigerator_th_4_200_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                              // 114
 
 switch (FEAT_TRAINS, SELF, refrigerator_th_4_200_loading_speed,
   STORE_TEMP(11, 2))
 { all_wagons_box_loading_speed; }
 
+name_in_group(refrigerator_th_4_200, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TH_4_200)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_REFRIGERATOR_TH_4_200)))
+
 hint_wagon(refrigerator_th_4_200,
-           60, 126,
+           PROP_refrigerator_th_4_200_LC, PROP_refrigerator_th_4_200_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_THERMOS,
            1987, 1992,
            string(STR_PURCHASE_HINT_FACTORY_DESSAU_W))
@@ -119,20 +133,22 @@ hint_wagon(refrigerator_th_4_200,
 item (FEAT_TRAINS, refrigerator_th_4_200, 334) {
   property {
     name: string(STR_NAME_REFRIGERATOR_TH_4_200);
-    vehicle_dates(1987, 1992, 25, 10, 8, 393)
-    vehicle_wagon(33, 120)
+    vehicle_dates(1987, 1992, 25, 10, 8, PROP_refrigerator_th_4_200_CF)
+    vehicle_wagon(PROP_refrigerator_th_4_200_WT, PROP_refrigerator_th_4_200_SD)
+    vehicle_group(group_refrigerators)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_th_4_200_CF, PROP_refrigerator_th_4_200_RC, PROP_refrigerator_th_4_200_SD, PROP_refrigerator_th_4_200_WT, PROP_refrigerator_th_4_200_TE, PROP_refrigerator_th_4_200_PR)
         additional_text: refrigerator_th_4_200_additional_text;
        articulated_part: articulated_part_dummy5;
-       cargo_age_period: return 400;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: refrigerator_th_4_200_cargo_capacity;
      cargo_subtype_text: refrigerator_th_4_200_cargo_subtype_text;
          colour_mapping: refrigerator_th_4_200_colour_mapping;
-            cost_factor: return 393;
                 default: refrigerator_th_4_200_sprites;
           loading_speed: refrigerator_th_4_200_loading_speed;
+                   name: refrigerator_th_4_200_name;
                purchase: refrigerator_th_4_200_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_th_4_200_running_cost_factor;

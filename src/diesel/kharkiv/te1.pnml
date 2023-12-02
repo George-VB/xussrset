@@ -7,30 +7,51 @@ diesel1r_sprites(10, te1_v2, 32, 241)
 diesel1r_sprites(10, te1_v3, 32, 442)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, te1_sprites_left_rnd,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x03])
+{
+  0..1: te1_v1_sprites_left;
+     2: te1_v2_sprites_left;
+        te1_v3_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, te1_sprites_right_rnd,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x03])
+{
+  0..1: te1_v1_sprites_right;
+     2: te1_v2_sprites_right;
+        te1_v3_sprites_right;
+}
+
 switch (FEAT_TRAINS, SELF, te1_sprites_left,
   cargo_subtype)
 {
-           0: te1_v1_sprites_left;
+           0: te1_sprites_left_rnd;
+           1: te1_v3_sprites_left;
+           2: te1_v2_sprites_left;
   LV_RAL6002: te1_v1_sprites_left;
-           1: te1_v2_sprites_left;
-           2: te1_v3_sprites_left;
      align_10_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, te1_sprites_right,
   cargo_subtype)
 {
-           0: te1_v1_sprites_right;
+           0: te1_sprites_right_rnd;
+           1: te1_v3_sprites_right;
+           2: te1_v2_sprites_right;
   LV_RAL6002: te1_v1_sprites_right;
-           1: te1_v2_sprites_right;
-           2: te1_v3_sprites_right;
      align_10_sprites;
 }
 
 engine_RNDany_direction_template(te1, 1, 1, )
 long_vehicle_sp(te1)
 
-livery_template_alt20(te1, STR_REFIT_TTD_53, STR_REFIT_TTD_54, STR_REFIT_TTD_93)
+    livery_template_base_list(te1_refit_alt, LV_RAL6002)
+  livery_template_alt(te1_refit, STR_REFIT_TTD_93)
+livery_template_refit_shifted(te1, 2, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_TTD_53, STR_REFIT_WITH_SPRIPES, te1_refit)
+
 engine_diesel_1r_effect(te1_create_effect_sprites, 0, 1, 10)
 engine_RNDany_direction_template(te1, 1, 1, _create_effect)
 engine_speed_change_after(te1, 93,

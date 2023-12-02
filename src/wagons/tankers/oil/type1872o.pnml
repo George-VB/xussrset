@@ -1,0 +1,108 @@
+﻿// tanker_type1872
+
+#define PROP_tanker_type1872o_CF  4
+#define PROP_tanker_type1872o_RC  2
+#define PROP_tanker_type1872o_SD  60
+#define PROP_tanker_type1872o_WT  6.25
+#define PROP_tanker_type1872o_TE  0
+#define PROP_tanker_type1872o_PR  0
+#define PROP_tanker_type1872o_CC  44
+#define PROP_tanker_type1872o_LC  11
+#define PROP_tanker_type1872o_VC  10
+#define PROP_tanker_type1872o_AC  0
+
+#define IMAGEFILE  "src/wagons/tankers/oil/type1872o.png"
+purchase_sprites(tanker_type1872o, 0, 0)
+tanker_layout_template(tanker_type1872o_tank, 4, 32, 40)
+tanker_layout_template(tanker_type1872o_frame, 4, 32, 107)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_frame_cc1,
+  STORE_TEMP(ttdall_cc + 0x22, 0x100))
+{ tanker_type1872o_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_frame_cc2,
+  STORE_TEMP(ttdall_cc + 0x6B, 0x100))
+{ tanker_type1872o_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_frame,
+[  set_offset_to(1),
+   prev_vehicle_randombits() >> 7 & 0x01])
+{
+  0: tanker_type1872o_frame_cc1;
+     tanker_type1872o_frame_cc2;
+}
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: tanker_type1872o_tank_sprites_start;
+  1: tanker_type1872o_frame;
+     return CB_FAILED;
+}
+
+long_vehicle(tanker_type1872o)
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_cargo_capacity,
+[  STORE_TEMP(PROP_tanker_type1872o_LC, 0),  // т
+   STORE_TEMP(PROP_tanker_type1872o_VC, 1),  // м³
+   STORE_TEMP(PROP_tanker_type1872o_AC, 2),  // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(4, 4)])                        // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1872o_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(1, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(PROP_tanker_type1872o_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_tanker_type1872o_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_tanker_type1872o_WT + PROP_tanker_type1872o_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 2
+
+name_in_group(tanker_type1872o, string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_OIL_SERIES), string(STR_NAME_TANKER_TYPE1872O)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_OIL_SERIES), string(STR_NAME_TANKER_TYPE1872O)))
+
+hint_wagon_with_uspeed_2fact(tanker_type1872o,
+                 PROP_tanker_type1872o_LC, PROP_tanker_type1872o_VC,
+                 string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_1TIC),
+                 STR_PURCHASE_HINT_CAP_001_NORMAL,
+                 STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+                 1872, 1889,
+                 string(STR_PURCHASE_HINT_RWFACTORY_DTS_RW),
+                 string(STR_PURCHASE_HINT_RWFACTORY_MNN_RW))
+
+item (FEAT_TRAINS, tanker_type1872o, 520) {
+  property {
+    name: string(STR_NAME_TANKER_TYPE1872O);
+    vehicle_dates(1872, 1889, 32, 10, 3, PROP_tanker_type1872o_CF)
+    vehicle_wagon(PROP_tanker_type1872o_WT, PROP_tanker_type1872o_SD)
+    vehicle_group(group_tankers_oil)
+    cargo_allow_refit: [cargo_all_oil_tanker()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_tanker_type1872o_CF, PROP_tanker_type1872o_RC, PROP_tanker_type1872o_SD, PROP_tanker_type1872o_WT, PROP_tanker_type1872o_TE, PROP_tanker_type1872o_PR)
+        additional_text: tanker_type1872o_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_type1872o_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_type1872o_sprites;
+          loading_speed: tanker_type1872o_loading_speed;
+                   name: tanker_type1872o_name;
+               purchase: tanker_type1872o_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_type1872o_running_cost_factor;
+  }
+}

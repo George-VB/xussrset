@@ -1,0 +1,84 @@
+﻿// hopper_11_715_type1976
+
+#define PROP_hopper_11_715_type1976_CF  76
+#define PROP_hopper_11_715_type1976_RC  29
+#define PROP_hopper_11_715_type1976_SD  120
+#define PROP_hopper_11_715_type1976_WT  19
+#define PROP_hopper_11_715_type1976_TE  0
+#define PROP_hopper_11_715_type1976_PR  0
+#define PROP_hopper_11_715_type1976_CC  153
+#define PROP_hopper_11_715_type1976_LC  67
+#define PROP_hopper_11_715_type1976_VC  55
+#define PROP_hopper_11_715_type1976_AC  0
+
+#define IMAGEFILE  "src/wagons/hoppers/cement/11-715-type1976.png"
+purchase_sprites(hopper_11_715_type1976, 0, 0)
+tanker_layout_template(hopper_11_715_type1976, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle(hopper_11_715_type1976)
+
+switch (FEAT_TRAINS, SELF, hopper_11_715_type1976_cargo_capacity,
+[  STORE_TEMP(PROP_hopper_11_715_type1976_LC, 0),  // т
+   STORE_TEMP(PROP_hopper_11_715_type1976_VC, 1),  // м³
+   STORE_TEMP(PROP_hopper_11_715_type1976_AC, 2),  // м²
+   STORE_TEMP(0, 3),                               // палетомест
+   STORE_TEMP(7, 4)])                              // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_11_715_type1976_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(19, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(10, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_hopper_11_715_type1976_SD, 6),                                           // Скорость
+   STORE_TEMP(round(PROP_hopper_11_715_type1976_WT), 7),                                    // Тара
+   STORE_TEMP(round(PROP_hopper_11_715_type1976_WT + PROP_hopper_11_715_type1976_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }
+
+switch (FEAT_TRAINS, SELF, hopper_11_715_type1976_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(4 * LARGE_HATCH, 2),    // 4 больших погрузочных люка
+   STORE_TEMP(4 * NORMAL_HATCH, 3)])  // 4 разгрузочных люка
+{ all_wagons_hopper_loading_speed; }
+
+name_in_group(hopper_11_715_type1976, string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_CEMENT_SERIES), string(STR_NAME_HOPPER_11_715_TYPE1976)),
+                                      string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_CEMENT_SERIES), string(STR_LONGNAME_HOPPER_11_715_TYPE1976)))
+
+hint_wagon_with_uspeed(hopper_11_715_type1976,
+     PROP_hopper_11_715_type1976_LC, PROP_hopper_11_715_type1976_VC,
+     calc_loading(PROP_hopper_11_715_type1976_LC / (4 * LARGE_HATCH)),
+     calc_loading(PROP_hopper_11_715_type1976_LC / (4 * NORMAL_HATCH)),
+     STR_PURCHASE_HINT_CAP_001_NORMAL,
+     STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+     1976, 1989,
+     string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW))
+
+item (FEAT_TRAINS, hopper_11_715_type1976, 1186) {
+  property {
+    name: string(STR_NAME_HOPPER_11_715_TYPE1976);
+    vehicle_dates(1976, 1989, 26, 10, 6, PROP_hopper_11_715_type1976_CF)
+    vehicle_wagon(PROP_hopper_11_715_type1976_WT, PROP_hopper_11_715_type1976_SD)
+    vehicle_group(group_hoppers_cement)
+    cargo_allow_refit: [cargo_all_cement_hopperlist()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_hopper_11_715_type1976_CF, PROP_hopper_11_715_type1976_RC, PROP_hopper_11_715_type1976_SD, PROP_hopper_11_715_type1976_WT, PROP_hopper_11_715_type1976_TE, PROP_hopper_11_715_type1976_PR)
+        additional_text: hopper_11_715_type1976_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: hopper_11_715_type1976_cargo_capacity;
+     cargo_subtype_text: cement_hopper_cargo_subtype_text;
+         colour_mapping: cement_hopper_colour_mapping;
+                default: hopper_11_715_type1976_sprites;
+          loading_speed: hopper_11_715_type1976_loading_speed;
+                   name: hopper_11_715_type1976_name;
+               purchase: hopper_11_715_type1976_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: hopper_11_715_type1976_running_cost_factor;
+  }
+}
+
+long_name_template(hopper_11_715_type1976, STR_LONGNAME_HOPPER_11_715_TYPE1976)

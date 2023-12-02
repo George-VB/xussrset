@@ -10,7 +10,7 @@
 #define PROP_evs1_type2013_h_SD  250
 #define PROP_evs1_type2013_h_WT  576.8
 #define PROP_evs1_type2013_h_TE  328.0
-#define PROP_evs1_type2013_h_PR  10876
+#define PROP_evs1_type2013_h_PR  kw2hp(7999.3)
 #define PROP_evs1_type2013_h_CC  75
 #define PROP_evs1_type2013_h_CC2 433
 
@@ -40,35 +40,13 @@
 
 map_sprites(evs1_type2013_purchase_sprites, evs1_purchase_sprites)
 
-switch (FEAT_TRAINS, SELF, evs1_type2013_h_gbt_sprites_left_check,
-  position_in_consist == 0)
-{
-  1: evs1_h_gbt_sprites_left;
-     evs1_h_gbt_middle_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, evs1_type2013_h_gbt_sprites_right_check,
-  position_in_consist_from_end == 1)
-{
-  1: evs1_h_gbt_sprites_right;
-     evs1_h_gbt_middle_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, evs1_type2013_h_gbt_notpowered_sprites_right_check,
-[  set_offset_to(2),
-   prev_vehicle_type_id() == evs1_type2013])
-{
-  1: evs1_h_gbt_notpowered_sprites_right;
-     evs1_h_gbt_middle_notpowered_sprites_right;
-}
-
 switch (FEAT_TRAINS, SELF, evs1_type2013_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
    ((LOAD_TEMP(4) != evs1_type2013) * 200) +
    (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
-   0: evs1_type2013_h_gbt_sprites_left_check;
+   0: evs1_h_gbt_sprites_left;
    2: evs1_m_dt_sprites_left;
    4: evs1_c_t_sprites_left;
    6: evs1_c_tt_sprites_left;
@@ -77,9 +55,9 @@ switch (FEAT_TRAINS, SELF, evs1_type2013_sprites_start,
   12: evs1_c_tt_sprites_right;
   14: evs1_c_t_sprites_right;
   16: evs1_m_dt_sprites_right;
-  18: evs1_type2013_h_gbt_sprites_right_check;
+  18: evs1_h_gbt_sprites_right;
 
- 100: evs1_type2013_h_gbt_sprites_left_check;
+ 100: evs1_h_gbt_sprites_left;
  102: evs1_m_dt_sprites_left;
  104: evs1_c_t_sprites_left;
  106: evs1_c_tt_sprites_left;
@@ -88,9 +66,9 @@ switch (FEAT_TRAINS, SELF, evs1_type2013_sprites_start,
  112: evs1_c_tt_sprites_right;
  114: evs1_c_t_sprites_right;
  116: evs1_m_dt_sprites_right;
- 118: evs1_type2013_h_gbt_sprites_right_check;
+ 118: evs1_h_gbt_sprites_right;
 
- 200: evs1_type2013_h_gbt_sprites_left_check;
+ 200: evs1_h_gbt_notpowered_sprites_left;
  202: evs1_m_dt_notpowered_sprites_left;
  204: evs1_c_t_notpowered_sprites_left;
  206: evs1_c_tt_notpowered_sprites_left;
@@ -99,9 +77,9 @@ switch (FEAT_TRAINS, SELF, evs1_type2013_sprites_start,
  212: evs1_c_tt_notpowered_sprites_right;
  214: evs1_c_t_notpowered_sprites_right;
  216: evs1_m_dt_notpowered_sprites_right;
- 218: evs1_type2013_h_gbt_notpowered_sprites_right_check;
+ 218: evs1_h_gbt_notpowered_sprites_right;
 
- 300: evs1_type2013_h_gbt_sprites_left_check;
+ 300: evs1_h_gbt_notpowered_sprites_left;
  302: evs1_m_dt_notpowered_sprites_left;
  304: evs1_c_t_notpowered_sprites_left;
  306: evs1_c_tt_notpowered_sprites_left;
@@ -110,7 +88,7 @@ switch (FEAT_TRAINS, SELF, evs1_type2013_sprites_start,
  312: evs1_c_tt_notpowered_sprites_right;
  314: evs1_c_t_notpowered_sprites_right;
  316: evs1_m_dt_notpowered_sprites_right;
- 318: evs1_type2013_h_gbt_notpowered_sprites_right_check;
+ 318: evs1_h_gbt_notpowered_sprites_right;
 
       align_14_sprites;
 }
@@ -199,7 +177,7 @@ name_in_group(evs1_type2013, string(STR_NAME_IN_GROUP, string(STR_NAME_EVS_SERIE
 
 hint_MU_with_subtype(evs1_type2013,
      calc_loading(max(PROP_evs1_type2013_h_CC2 / (7 * WAGON_DOOR), PROP_evs1_type2013_h_CC / (2 * WAGON_DOOR))),
-     STR_PURCHASE_HINT_AGING_PERIOD_3_2,
+     STR_PURCHASE_HINT_CAP_001_NORMAL,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_T_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_VELARO,
      STR_SECTIONS_MU_S1_2of10,
      2013, 2014,
@@ -210,15 +188,15 @@ item (FEAT_TRAINS, evs1_type2013, 821) {
     name: string(STR_NAME_EVS1_TYPE2013);
     vehicle_dates(2013, 2014, 30, 10, 8, PROP_evs1_type2013_h_CF)
     vehicle_emu(dc, PROP_evs1_type2013_h_PR, PROP_evs1_type2013_h_WT, PROP_evs1_type2013_h_TE, PROP_evs1_type2013_h_CC, 2 * WAGON_DOOR, _highspeed)
-    vehicle_allow_tourists()
-    vehicle_group(evs_group)
+    vehicle_tourists()
+    vehicle_group(group_evs)
   }
   graphics {
     purchase_menu(PROP_evs1_type2013_h_CF, PROP_evs1_type2013_h_RC, PROP_evs1_type2013_h_SD, PROP_evs1_type2013_h_WT, PROP_evs1_type2013_h_TE, PROP_evs1_type2013_h_PR, PROP_evs1_type2013_h_CC)
         additional_text: evs1_type2013_additional_text;
        articulated_part: evs1_type2013_articulated_part;
        can_attach_wagon: evs1_type2013_can_attach_wagon;
-       cargo_age_period: return 300;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: evs1_type2013_cargo_capacity;
          colour_mapping: any_cc_colour;
           create_effect: evs1_type2013_create_effect;
@@ -243,7 +221,7 @@ item (FEAT_TRAINS, evs1_type2013_part2, 822) {
     vehicle_emu_c(dc, 0, PROP_evs1_type2013_h_CC2, 7 * WAGON_DOOR, _highspeed)
   }
   graphics {
-    cargo_age_period: return 110;
+    cargo_age_period: return CAP_001_NORMAL;
       cargo_capacity: evs1_type2013_part2_cargo_capacity;
        create_effect: evs1_type2013_create_effect;
              default: evs1_type2013_sprites;

@@ -1,0 +1,84 @@
+﻿// 19_923_hopper
+
+#define PROP_hopper_19_923_CF  92
+#define PROP_hopper_19_923_RC  36
+#define PROP_hopper_19_923_SD  120
+#define PROP_hopper_19_923_WT  23
+#define PROP_hopper_19_923_TE  0
+#define PROP_hopper_19_923_PR  0
+#define PROP_hopper_19_923_CC  140
+#define PROP_hopper_19_923_LC  70
+#define PROP_hopper_19_923_VC  81
+#define PROP_hopper_19_923_AC  0
+
+#define IMAGEFILE  "src/wagons/hoppers/fert/19-923.png"
+purchase_sprites(hopper_19_923, 0, 0)
+tanker_layout_template(hopper_19_923, 8, 32, 40)
+#undef IMAGEFILE
+long_vehicle(hopper_19_923)
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_cargo_capacity,
+[  STORE_TEMP(PROP_hopper_19_923_LC, 0),  // т
+   STORE_TEMP(PROP_hopper_19_923_VC, 1),  // м³
+   STORE_TEMP(PROP_hopper_19_923_AC, 2),  // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(8, 4)])                     // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(24, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(12, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_hopper_19_923_SD, 6),                                  // Скорость
+   STORE_TEMP(round(PROP_hopper_19_923_WT), 7),                           // Тара
+   STORE_TEMP(round(PROP_hopper_19_923_WT + PROP_hopper_19_923_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }
+
+switch (FEAT_TRAINS, SELF, hopper_19_923_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(4 * LARGE_HATCH, 2),   // 4 больших погрузочных люка
+   STORE_TEMP(4 * LARGE_HATCH, 3)])  // 4 больших разгрузочных люка
+{ all_wagons_hopper_loading_speed; }
+
+name_in_group(hopper_19_923, string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_FERT_SERIES), string(STR_MODEL_NUMBER2, 19, 923)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_FERT_SERIES), string(STR_LONGNAME_HOPPER_19_923)))
+
+hint_wagon_with_uspeed_noto(hopper_19_923,
+     PROP_hopper_19_923_LC, PROP_hopper_19_923_VC,
+     calc_loading(PROP_hopper_19_923_LC / (4 * LARGE_HATCH)),
+     calc_loading(PROP_hopper_19_923_LC / (4 * LARGE_HATCH)),
+     STR_PURCHASE_HINT_CAP_001_NORMAL,
+     STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+     1988,
+     fact_stakhanovcw())
+
+item (FEAT_TRAINS, hopper_19_923, 531) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 19, 923);
+    vehicle_dates(1988, 2050, 26, 10, 7, PROP_hopper_19_923_CF)
+    vehicle_wagon(PROP_hopper_19_923_WT, PROP_hopper_19_923_SD)
+    vehicle_group(group_hoppers_fert)
+    cargo_allow_refit: [cargo_all_fert_hopperlist()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_hopper_19_923_CF, PROP_hopper_19_923_RC, PROP_hopper_19_923_SD, PROP_hopper_19_923_WT, PROP_hopper_19_923_TE, PROP_hopper_19_923_PR)
+        additional_text: hopper_19_923_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: hopper_19_923_cargo_capacity;
+     cargo_subtype_text: fert_hopper_cargo_subtype_text;
+         colour_mapping: fert_hopper_colour_mapping;
+                default: hopper_19_923_sprites;
+          loading_speed: hopper_19_923_loading_speed;
+                   name: hopper_19_923_name;
+               purchase: hopper_19_923_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: hopper_19_923_running_cost_factor;
+  }
+}
+
+long_name_template(hopper_19_923, STR_LONGNAME_HOPPER_19_923)

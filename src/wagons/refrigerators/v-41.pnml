@@ -1,5 +1,16 @@
 ﻿// refrigerator_v_41
 
+#define PROP_refrigerator_v_41_CF  180
+#define PROP_refrigerator_v_41_RC  61
+#define PROP_refrigerator_v_41_SD  120
+#define PROP_refrigerator_v_41_WT  32
+#define PROP_refrigerator_v_41_TE  0
+#define PROP_refrigerator_v_41_PR  0
+#define PROP_refrigerator_v_41_CC  70
+#define PROP_refrigerator_v_41_LC  44
+#define PROP_refrigerator_v_41_VC  82
+#define PROP_refrigerator_v_41_AC  0
+
 #define IMAGEFILE  "src/wagons/refrigerators/v-41.png"
 purchase_sprites(refrigerator_v_41, 0, 0)
 combo_layout_boxcar_template(refrigerator_v_41, 10, 32, 40)
@@ -24,11 +35,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_v_41_weight,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_v_41_cargo_capacity,
-[  STORE_TEMP(44, 0),   // т
-   STORE_TEMP(82, 1),   // м³
-   STORE_TEMP(0, 2),    // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(10, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_v_41_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_v_41_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_v_41_AC, 2),  // м²
+   STORE_TEMP(0, 3),                          // палетомест
+   STORE_TEMP(10, 4)])                        // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_v_41_running_cost_factor,
@@ -39,19 +50,22 @@ switch (FEAT_TRAINS, SELF, refrigerator_v_41_running_cost_factor,
    STORE_TEMP(20, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                     // Скорость
-   STORE_TEMP(32, 7),                      // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 44 + 6, 8)])  // Максимальная масса
-{ all_running_cost_factor; }               // 60
+   STORE_TEMP(PROP_refrigerator_v_41_SD, 6),                                      // Скорость
+   STORE_TEMP(round(PROP_refrigerator_v_41_WT), 7),                               // Тара
+   STORE_TEMP(round(PROP_refrigerator_v_41_WT + PROP_refrigerator_v_41_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                      // 60
 
 switch (FEAT_TRAINS, SELF, refrigerator_v_41_loading_speed,
   STORE_TEMP(9, 2))
 { all_wagons_box_loading_speed; }
 
+name_in_group(refrigerator_v_41, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_V_41)),
+                                 string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_REFRIGERATOR_V_41)))
+
 hint_wagon(refrigerator_v_41,
-           44, 82,
+           PROP_refrigerator_v_41_LC, PROP_refrigerator_v_41_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
            1956, 1965,
            fact_bryansk())
@@ -59,18 +73,21 @@ hint_wagon(refrigerator_v_41,
 item (FEAT_TRAINS, refrigerator_v_41, 289) {
   property {
     name: string(STR_NAME_REFRIGERATOR_V_41);
-    vehicle_dates(1956, 1965, 25, 10, 8, 180)
-    vehicle_wagon(32, 120)
+    vehicle_dates(1956, 1965, 25, 10, 8, PROP_refrigerator_v_41_CF)
+    vehicle_wagon(PROP_refrigerator_v_41_WT, PROP_refrigerator_v_41_SD)
+    vehicle_group(group_refrigerators)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_v_41_CF, PROP_refrigerator_v_41_RC, PROP_refrigerator_v_41_SD, PROP_refrigerator_v_41_WT, PROP_refrigerator_v_41_TE, PROP_refrigerator_v_41_PR)
         additional_text: refrigerator_v_41_additional_text;
        articulated_part: articulated_part_dummy2;
-       cargo_age_period: return 300;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: refrigerator_v_41_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: refrigerator_v_41_sprites;
           loading_speed: refrigerator_v_41_loading_speed;
+                   name: refrigerator_v_41_name;
                purchase: refrigerator_v_41_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_v_41_running_cost_factor;

@@ -13,7 +13,7 @@ use open qw(:std :utf8);
 # master file template (key-value)
 # destination file template (key-value) 
 # Footer separator - parts after the separator are ignored for both the files. If ommited, the ending of the file ends the last group, 
-# TODO but the separator is always placed into ditination file, even if it was not represented
+# TODO but the separator is always placed into distination file, even if it was not represented
 # TODO If data is represented in the wrong section, then it should be commented there and moved to the right section
 # if data is represented several times, all the variants should be placed in the one place 
 

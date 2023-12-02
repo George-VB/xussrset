@@ -1,0 +1,90 @@
+﻿// _2sb_type1946
+
+#define PROP__2sb_type1946_CF  144
+#define PROP__2sb_type1946_RC  91
+#define PROP__2sb_type1946_SD  120
+#define PROP__2sb_type1946_WT  54
+#define PROP__2sb_type1946_TE  0
+#define PROP__2sb_type1946_PR  0
+#define PROP__2sb_type1946_CC  60
+#define PROP__2sb_type1946_FC  60
+
+#define IMAGEFILE  "src/cars/class3/2sb-type1946.png"
+purchase_sprites(_2sb_type1946, 0, 0)
+
+pass_wagon_sprites(14, _2sb_type1946_v1, 32, 40)
+pass_wagon_sprites(14, _2sb_type1946_v2, 32, 308)
+pass_wagon_sprites(14, _2sb_type1946_v3, 32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _2sb_type1946_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _2sb_type1946_v1_sprites_start;
+     _2sb_type1946_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _2sb_type1946_sprites_start,
+  cargo_subtype)
+{
+                0: _2sb_type1946_sprites_start_random;
+       LV_RAL6002: _2sb_type1946_v1_sprites_start;
+       LV_RAL6020: _2sb_type1946_v2_sprites_start;
+  LV_BLUE_EXPRESS: _2sb_type1946_v3_sprites_start;
+     align_14_sprites;
+}
+
+long_vehicle(_2sb_type1946)
+
+livery_template_base_list3(_2sb_type1946, LV_BLUE_EXPRESS, LV_RAL6002, LV_RAL6020)
+
+switch (FEAT_TRAINS, SELF, _2sb_type1946_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(19, 1),  // Бригада
+   STORE_TEMP(51, 2),  // Износ
+   STORE_TEMP(5, 3),   // Сопровождение
+   STORE_TEMP(14, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP__2sb_type1946_SD, 6),                                       // Скорость
+   STORE_TEMP(round(PROP__2sb_type1946_WT), 7),                                // Тара
+   STORE_TEMP(round(PROP__2sb_type1946_WT + PROP__2sb_type1946_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                   // 91 // 90
+
+name_in_group(_2sb_type1946, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS3_SERIES), string(STR_NAME_2SB_TYPE1946)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS3_SERIES), string(STR_LONGNAME_2SB_TYPE1946)))
+
+hint_wagon_coach_2fact(_2sb_type1946,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+     STR_PURCHASE_HINT_CAP_001_NORMAL,
+     STR_PURCHASE_HINT_COACH_TYPE_NC,
+     1946, 1948,
+     fact_leningradcw(),
+     string(STR_PURCHASE_HINT_FACTORY_LIANOZOVSK))
+
+item (FEAT_TRAINS, _2sb_type1946, 240) {
+  property {
+    name: string(STR_NAME_2SB_TYPE1946);
+    vehicle_dates(1946, 1948, 28, 10, 8, PROP__2sb_type1946_CF)
+    vehicle_wagon(PROP__2sb_type1946_WT, PROP__2sb_type1946_SD)
+    vehicle_passengers()
+    vehicle_group(group_class3)
+  }
+  graphics {
+    purchase_menu(PROP__2sb_type1946_CF, PROP__2sb_type1946_RC, PROP__2sb_type1946_SD, PROP__2sb_type1946_WT, PROP__2sb_type1946_TE, PROP__2sb_type1946_PR, PROP__2sb_type1946_FC)
+        additional_text: _2sb_type1946_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return CAP_001_NORMAL;
+         cargo_capacity: return PROP__2sb_type1946_FC;
+     cargo_subtype_text: _2sb_type1946_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: _2sb_type1946_sprites;
+          loading_speed: return 15;
+                   name: _2sb_type1946_name;
+               purchase: _2sb_type1946_purchase_sprites;
+    running_cost_factor: _2sb_type1946_running_cost_factor;
+  }
+}
+
+long_name_template(_2sb_type1946, STR_LONGNAME_2SB_TYPE1946)

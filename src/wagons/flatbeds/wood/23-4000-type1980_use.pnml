@@ -8,6 +8,8 @@
 #define PROP_flatbed_23_4000_type1980_PR  0
 #define PROP_flatbed_23_4000_type1980_CC  64
 #define PROP_flatbed_23_4000_type1980_LC  55
+#define PROP_flatbed_23_4000_type1980_VC  150
+#define PROP_flatbed_23_4000_type1980_AC  60
 
 map_sprites(flatbed_23_4000_type1980_purchase_sprites, flatbed_23_4000_type1979_purchase_sprites)
 
@@ -24,6 +26,16 @@ switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1980_running_cost_factor,
    STORE_TEMP(round(PROP_flatbed_23_4000_type1980_WT + PROP_flatbed_23_4000_type1980_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }                                                                    // 22
 
+switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1980_cargo_capacity,
+[  STORE_TEMP(PROP_flatbed_23_4000_type1980_LC, 0),  // т
+   STORE_TEMP(PROP_flatbed_23_4000_type1980_VC, 1),  // м³
+   STORE_TEMP(PROP_flatbed_23_4000_type1980_AC, 2),  // м²
+   STORE_TEMP(0, 3),                                 // палетомест
+   STORE_TEMP(14, 4),                                // шаблон
+   cargo_type_in_veh])
+{ flatbed_capacity()
+  return 0; }
+
 switch (FEAT_TRAINS, SELF, flatbed_23_4000_type1980_loading_speed,
 [  STORE_TEMP(2, 0),
    STORE_TEMP(2, 1),
@@ -35,9 +47,9 @@ name_in_group(flatbed_23_4000_type1980, string(STR_NAME_IN_GROUP, string(STR_NAM
                                         string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_WOOD_SERIES), string(STR_LONGNAME_FLATBED_23_4000_TYPE1980)))
 
 hint_wagon_flat(flatbed_23_4000_type1980,
-           PROP_flatbed_23_4000_type1980_LC, 60,
+           PROP_flatbed_23_4000_type1980_LC, PROP_flatbed_23_4000_type1980_AC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_CAP_001_NORMAL,
            STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
            1979, 1991,
            string(STR_PURCHASE_HINT_FACTORY_RAUTARUUKKI))
@@ -47,14 +59,14 @@ item (FEAT_TRAINS, flatbed_23_4000_type1980, 1166) {
     name: string(STR_NAME_FLATBED_23_4000_TYPE1980);
     vehicle_dates(1979, 1991, 32, 10, 8, PROP_flatbed_23_4000_type1980_CF)
     vehicle_wagon(PROP_flatbed_23_4000_type1980_WT, PROP_flatbed_23_4000_type1980_SD)
-    vehicle_group(flatbeds_wood_group)
-    vehicle_wagon_cargo(PROP_flatbed_23_4000_type1980_LC, 14)
+    vehicle_group(group_flatbeds_wood)
     cargo_allow_refit: [WOOD];
   }
   graphics {
-    purchase_menu_wagon(PROP_flatbed_23_4000_type1980_CF, PROP_flatbed_23_4000_type1980_RC, PROP_flatbed_23_4000_type1980_SD, PROP_flatbed_23_4000_type1980_WT, PROP_flatbed_23_4000_type1980_TE, PROP_flatbed_23_4000_type1980_PR, PROP_flatbed_23_4000_type1980_LC)
+    purchase_menu_nocc(PROP_flatbed_23_4000_type1980_CF, PROP_flatbed_23_4000_type1980_RC, PROP_flatbed_23_4000_type1980_SD, PROP_flatbed_23_4000_type1980_WT, PROP_flatbed_23_4000_type1980_TE, PROP_flatbed_23_4000_type1980_PR)
         additional_text: flatbed_23_4000_type1980_additional_text;
        articulated_part: articulated_part_dummy6;
+         cargo_capacity: flatbed_23_4000_type1980_cargo_capacity;
      cargo_subtype_text: flatbed_23_4000_type1979_cargo_subtype_text;
          colour_mapping: flatbed_23_4000_type1979_colour_mapping;
                 default: flatbed_23_4000_type1979_sprites;

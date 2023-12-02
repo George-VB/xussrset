@@ -1,0 +1,95 @@
+﻿// sr3_c3
+
+#define PROP_sr3_c3_CF  7
+#define PROP_sr3_c3_RC  52
+#define PROP_sr3_c3_SD  PROP_sr3_h_SD
+#define PROP_sr3_c3_WT  42
+#define PROP_sr3_c3_TE  0
+#define PROP_sr3_c3_PR  0
+#define PROP_sr3_c3_CC  128
+
+#define IMAGEFILE  "src/emu/rvz/sr3_c3.png"
+purchase_sprites(sr3_c3, 0, 0)
+MU_car_sprites(14, sr3_c3_v1_mu, 32, 40)
+MU_car_sprites(14, sr3_c3_v2_mu, 32, 308)
+#undef IMAGEFILE
+EMU_motor_direction_template2(sr3_c3_v1, sr3_h, sr3_hmp)
+EMU_motor_direction_template2(sr3_c3_v2, sr3_h, sr3_hmp)
+
+switch (FEAT_TRAINS, SELF, sr3_c3_direction_left,
+  cargo_subtype)
+{
+           0: sr3_c3_v1_direction_left;
+           1: sr3_c3_v2_direction_left;
+  LV_RAL6002: sr3_c3_v1_direction_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, sr3_c3_direction_right,
+  cargo_subtype)
+{
+           0: sr3_c3_v1_direction_right;
+           1: sr3_c3_v2_direction_right;
+  LV_RAL6002: sr3_c3_v1_direction_right;
+  align_12_sprites;
+}
+
+MU_car_direction_calculation_template_s(sr3_c3, sr3_hmp)
+MU_attach_wagon_icon_template2_row2(sr3_c3_next_can_attach_wagon_template, sr3_c2, sr3_c3, type_head_motor_pant_car, type_head_motor_pant)
+MU_attach_wagon_icon_template2(sr3_c3, sr3_hmp, sr3_h, type_car)
+long_vehicle_sp(sr3_c3)
+
+engine_capacity_MU2(sr3_c3, PROP_sr3_c3_CC, sr3_h, sr3_hmp)
+
+RC_head_check2(sr3_c3, sr3_h, sr3_hmp)
+switch (FEAT_TRAINS, SELF, sr3_c3_running_cost_factor,
+[  STORE_TEMP(30, 0),  // Моторы
+   STORE_TEMP(4, 1),   // Бригада
+   STORE_TEMP(10, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(7, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_sr3_c3_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_sr3_c3_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_sr3_c3_WT + PROP_sr3_c3_CC / 16), 8)])  // Максимальная масса
+{ sr3_c3_check_running_cost_factor; }                            // 52
+
+name_in_group_subgroup(sr3_c3, string(STR_NAME_IN_GROUP, string(STR_NAME_EMU_S_SERIES), string(STR_NAME_SR3_C3)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_EMU_S_SERIES), string(STR_LONGNAME_SR3_C3)),
+                               string(STR_NAME_SR3))
+
+hint_MU(sr3_c3,
+     calc_loading(PROP_sr3_c3_CC / (3 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_CAP_00033_VERY_FAST,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC,
+     STR_SECTIONS_EMU_SR3,
+     1952, 1955,
+     fact_rigacw())
+
+item (FEAT_TRAINS, sr3_c3, 1255) {
+  property {
+    name: string(STR_NAME_SR3_C3);
+    vehicle_dates(1952, 1955, 30, 10, 8, PROP_sr3_c3_CF)
+    vehicle_emu_wagon(dc, PROP_sr3_c3_WT, PROP_sr3_c3_CC, 3 * DOUBLE_DOOR, _lowspeed)
+    vehicle_group(sr3_h)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_sr3_c3_CF, PROP_sr3_c3_RC, PROP_sr3_c3_SD, PROP_sr3_c3_WT, PROP_sr3_c3_TE, PROP_sr3_c3_PR, PROP_sr3_c3_CC)
+        additional_text: sr3_c3_additional_text;
+       articulated_part: articulated_part_dummy6;
+       can_attach_wagon: sr3_can_attach_wagon;
+       cargo_age_period: return CAP_00033_VERY_FAST;
+         cargo_capacity: sr3_c3_cargo_capacity;
+     cargo_subtype_text: sr3_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: sr3_c3_sprites;
+                   name: sr3_c3_name;
+               purchase: sr3_c3_purchase_sprites;
+    running_cost_factor: sr3_c3_running_cost_factor;
+                  speed: return PROP_sr3_c3_SD;
+  }
+}
+
+long_name_template(sr3_c3, STR_LONGNAME_SR3_C3)
+allow_dcemu(sr3_c3)

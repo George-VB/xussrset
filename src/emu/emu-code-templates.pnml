@@ -619,25 +619,36 @@ switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_max, LOAD_TEMP(5))         
 
 // emu_s support
 #define any_emu_s()                        \
- ((vehicle_type_id == emu_sd) ||           \
-  (vehicle_type_id == emu_sr) ||           \
-  (vehicle_type_id == emu_sr_type1951) ||  \
-  (vehicle_type_id == emu_sm) ||           \
-  (vehicle_type_id == emu_sv) )            \
+ ((vehicle_type_id == emu_sv_h) ||         \
+  (vehicle_type_id == emu_sv_hb) ||        \
+  (vehicle_type_id == emu_sv_hmp) ||       \
+  (vehicle_type_id == emu_sd_h) ||         \
+  (vehicle_type_id == emu_sd_hb) ||        \
+  (vehicle_type_id == emu_sd_hmp) ||       \
+  (vehicle_type_id == sr_type1947_h) ||    \
+  (vehicle_type_id == sr_type1947_hb) ||   \
+  (vehicle_type_id == sr_type1947_hmp) ||  \
+  (vehicle_type_id == sr_type1951_h) ||    \
+  (vehicle_type_id == sr_type1951_hb) ||   \
+  (vehicle_type_id == sr_type1951_hmp))    \
 
 #define no_emu_s_inR4()                   \
- (!((LOAD_TEMP(4) == emu_sd) ||           \
-    (LOAD_TEMP(4) == emu_sr) ||           \
-    (LOAD_TEMP(4) == emu_sr_type1951) ||  \
-    (LOAD_TEMP(4) == emu_sm) ||           \
-    (LOAD_TEMP(4) == emu_sv)))            \
+ (!((LOAD_TEMP(4) == emu_sv_h) ||         \
+    (LOAD_TEMP(4) == emu_sv_hb) ||        \
+    (LOAD_TEMP(4) == emu_sv_hmp) ||       \
+    (LOAD_TEMP(4) == emu_sd_h) ||         \
+    (LOAD_TEMP(4) == emu_sd_hb) ||        \
+    (LOAD_TEMP(4) == emu_sd_hmp) ||       \
+    (LOAD_TEMP(4) == sr_type1947_h) ||    \
+    (LOAD_TEMP(4) == sr_type1947_hmp) ||  \
+    (LOAD_TEMP(4) == sr_type1951_h) ||    \
+    (LOAD_TEMP(4) == sr_type1951_hmp)))   \
 
 #define emu_s_count()              \
- (count_veh_id(emu_sd) +           \
-  count_veh_id(emu_sr) +           \
-  count_veh_id(emu_sr_type1951) +  \
-  count_veh_id(emu_sm) +           \
-  count_veh_id(emu_sv))            \
+ (count_veh_id(emu_sd_hmp) +       \
+  count_veh_id(sr_type1947_hmp) +  \
+  count_veh_id(sr_type1951_hmp) +  \
+  count_veh_id(emu_sv_hmp))        \
 
 #define engine_power_MU_emu_s(name, power)               \
 switch (FEAT_TRAINS, PARENT, name##_power, any_emu_s())  \
@@ -660,5 +671,176 @@ switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
   any_emu_s())                                                   \
 { 1: all_running_cost_factor;                                    \
      name##_check2_running_cost_factor; }                        \
+
+#define engine_effects_MU_emu_s(name, effect)                    \
+switch (FEAT_TRAINS, PARENT, name##_create_effect, any_emu_s())  \
+{ 1: effect;                                                     \
+     return disable_create_effect(); }                           \
+
+switch (FEAT_TRAINS, PARENT, emu_s_can_attach_wagon_h3,
+[ set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+         emu_sv_h: return string(STR_CAN_ATTACH_NO_MORE);
+         emu_sd_h: return string(STR_CAN_ATTACH_NO_MORE);
+    sr_type1947_h: return string(STR_CAN_ATTACH_NO_MORE);
+    sr_type1951_h: return string(STR_CAN_ATTACH_NO_MORE);
+        emu_sv_hb: return string(STR_CAN_ATTACH_NO_MORE);
+        emu_sd_hb: return string(STR_CAN_ATTACH_NO_MORE);
+   sr_type1947_hb: return string(STR_CAN_ATTACH_NO_MORE);
+   sr_type1951_hb: return string(STR_CAN_ATTACH_NO_MORE);
+       emu_sv_hmp: return CB_RESULT_ATTACH_ALLOW;
+       emu_sd_hmp: return CB_RESULT_ATTACH_ALLOW;
+  sr_type1947_hmp: return CB_RESULT_ATTACH_ALLOW;
+  sr_type1951_hmp: return CB_RESULT_ATTACH_ALLOW;
+                   return string(STR_CAN_ATTACH_MHEAD_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_can_attach_wagon_h2,
+[ set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+       emu_sv_hmp: return CB_RESULT_ATTACH_ALLOW;
+       emu_sd_hmp: return CB_RESULT_ATTACH_ALLOW;
+  sr_type1947_hmp: return CB_RESULT_ATTACH_ALLOW;
+  sr_type1951_hmp: return CB_RESULT_ATTACH_ALLOW;
+                   return string(STR_CAN_ATTACH_MHEAD_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_can_attach_wagon_h1,
+[ set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+         emu_sv_h: emu_s_can_attach_wagon_h2;
+         emu_sd_h: emu_s_can_attach_wagon_h2;
+    sr_type1947_h: emu_s_can_attach_wagon_h2;
+    sr_type1951_h: emu_s_can_attach_wagon_h2;
+        emu_sv_hb: emu_s_can_attach_wagon_h2;
+        emu_sd_hb: emu_s_can_attach_wagon_h2;
+   sr_type1947_hb: emu_s_can_attach_wagon_h2;
+   sr_type1951_hb: emu_s_can_attach_wagon_h2;
+       emu_sv_hmp: return CB_RESULT_ATTACH_ALLOW;
+       emu_sd_hmp: return CB_RESULT_ATTACH_ALLOW;
+  sr_type1947_hmp: return CB_RESULT_ATTACH_ALLOW;
+  sr_type1951_hmp: return CB_RESULT_ATTACH_ALLOW;
+                   return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_can_attach_wagon_h,
+  emu_s_count() < 3)
+{
+  1: emu_s_can_attach_wagon_h1;
+     emu_s_can_attach_wagon_h3;
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_can_attach_wagon_hmp,
+  emu_s_count())
+{
+  0..2: return CB_RESULT_ATTACH_ALLOW;
+        return string(STR_CAN_ATTACH_NO_MORE);
+}
+
+switch (FEAT_TRAINS, SELF, emu_s_can_attach_wagon1,
+  vehicle_type_id)
+{
+         emu_sv_h: emu_s_can_attach_wagon_h;
+         emu_sd_h: emu_s_can_attach_wagon_h;
+    sr_type1947_h: emu_s_can_attach_wagon_h;
+    sr_type1951_h: emu_s_can_attach_wagon_h;
+        emu_sv_hb: emu_s_can_attach_wagon_h;
+        emu_sd_hb: emu_s_can_attach_wagon_h;
+   sr_type1947_hb: emu_s_can_attach_wagon_h;
+   sr_type1951_hb: emu_s_can_attach_wagon_h;
+       emu_sv_hmp: emu_s_can_attach_wagon_hmp;
+       emu_sd_hmp: emu_s_can_attach_wagon_hmp;
+  sr_type1947_hmp: emu_s_can_attach_wagon_hmp;
+  sr_type1951_hmp: emu_s_can_attach_wagon_hmp;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_can_attach_wagon,
+  num_vehs_in_consist < 18)
+{
+  1: return emu_s_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_TRAIN_TOO_LONG, 9);
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_start_stop4,
+[ set_offset_to(num_vehs_in_consist-4),
+  prev_vehicle_type_id() ])
+{
+        emu_sv_h: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+        emu_sd_h: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+   sr_type1947_h: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+   sr_type1951_h: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+       emu_sv_hb: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+       emu_sd_hb: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+  sr_type1947_hb: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+  sr_type1951_hb: return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR);
+                  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_start_stop2,
+[ set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+        emu_sv_h: emu_s_start_stop4;
+        emu_sd_h: emu_s_start_stop4;
+   sr_type1947_h: emu_s_start_stop4;
+   sr_type1951_h: emu_s_start_stop4;
+       emu_sv_hb: emu_s_start_stop4;
+       emu_sd_hb: emu_s_start_stop4;
+  sr_type1947_hb: emu_s_start_stop4;
+  sr_type1951_hb: emu_s_start_stop4;
+                  return CB_RESULT_NO_TEXT;
+}
+
+switch (FEAT_TRAINS, PARENT, emu_s_start_stop,
+        ((count_veh_id(emu_sv_hmp) + count_veh_id(emu_sd_hmp) + count_veh_id(sr_type1947_hmp) + count_veh_id(sr_type1951_hmp)) * 2 -
+          count_veh_id(emu_sv_h)   - count_veh_id(emu_sd_h)   - count_veh_id(sr_type1947_h)   - count_veh_id(sr_type1951_h) -
+          count_veh_id(emu_sv_hb)   - count_veh_id(emu_sd_hb)   - count_veh_id(sr_type1947_hb)   - count_veh_id(sr_type1951_hb) >= 0) &&  // at most 2 non-motors per motor
+        (num_vehs_in_consist -
+         2 * (count_veh_id(emu_sv_hmp) + count_veh_id(emu_sd_hmp) + count_veh_id(sr_type1947_hmp) + count_veh_id(sr_type1951_hmp) +
+              count_veh_id(emu_sv_h)   + count_veh_id(emu_sd_h)   + count_veh_id(sr_type1947_h)   + count_veh_id(sr_type1951_h) +
+              count_veh_id(emu_sv_hb)   + count_veh_id(emu_sd_hb)   + count_veh_id(sr_type1947_hb)   + count_veh_id(sr_type1951_hb)) == 0))  // no other wagons types
+{ 1: emu_s_start_stop2;
+     return string(STR_WRONG_STRUCTURE_OF_TRAIN_2CARS_PER_MOTOR); }
+
+switch (FEAT_TRAINS, SELF, emu_s_mail_articulated_part4, extra_callback_info1)
+{ 1: return emu_s_mail_compartment;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }
+
+#define PROP_emu_s_mail_LC  5
+#define PROP_emu_s_mail_AC  20
+#define PROP_emu_s_mail_VC  20
+
+switch (FEAT_TRAINS, SELF, emu_s_mail_compartment_cargo_capacity,
+[  STORE_TEMP(PROP_emu_s_mail_LC, 0),  // т
+   STORE_TEMP(PROP_emu_s_mail_AC, 1),  // м³
+   STORE_TEMP(PROP_emu_s_mail_VC, 2),  // м²
+   STORE_TEMP(0, 3),                   // палетомест
+   STORE_TEMP(2, 4)])                  // шаблон
+{ box_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, emu_s_mail_compartment_loading_speed,
+  STORE_TEMP(7, 2))
+{ all_wagons_box_loading_speed; }
+
+item (FEAT_TRAINS, emu_s_mail_compartment, 754) {
+  property {
+    vehicle_no_dates(1929, 2050, 20, 10, 4, 0)
+    vehicle_emu_c_mail(ddc, 0, 20, 10, _lowspeed)
+    default_cargo_type: MAIL;
+     cargo_allow_refit: [MAIL, cargo_all_luggagelist()];
+  }
+  graphics {
+    cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
+      cargo_capacity: emu_s_mail_compartment_cargo_capacity;
+      colour_mapping: any_cc_colour;
+             default: dummy_sprites;
+       loading_speed: emu_s_mail_compartment_loading_speed;
+          refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+  }
+}
 
 // end

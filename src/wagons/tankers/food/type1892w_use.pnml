@@ -1,0 +1,94 @@
+﻿// tanker_type1892w uses tanker_type1858w
+
+#define PROP_tanker_type1892w_CF  8
+#define PROP_tanker_type1892w_RC  3
+#define PROP_tanker_type1892w_SD  60
+#define PROP_tanker_type1892w_WT  7.5
+#define PROP_tanker_type1892w_TE  0
+#define PROP_tanker_type1892w_PR  0
+#define PROP_tanker_type1892w_CC  60
+#define PROP_tanker_type1892w_LC  15
+#define PROP_tanker_type1892w_VC  16
+#define PROP_tanker_type1892w_AC  0
+
+#define IMAGEFILE  "src/wagons/tankers/food/type1858w.png"
+purchase_sprites(tanker_type1892w, 100, 0)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_frame,
+  STORE_TEMP(ttdall_cc + 0x04, 0x100))
+{ tanker_type1858w_frame_sprites_start; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: tanker_type1858w_tank_sprites_start;
+  1: tanker_type1892w_frame;
+     return CB_FAILED;
+}
+
+long_vehicle(tanker_type1892w)
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_cargo_capacity,
+[  STORE_TEMP(PROP_tanker_type1892w_LC, 0),  // т
+   STORE_TEMP(PROP_tanker_type1892w_VC, 1),  // м³
+   STORE_TEMP(PROP_tanker_type1892w_AC, 2),  // м²
+   STORE_TEMP(0, 3),                         // палетомест
+   STORE_TEMP(4, 4)])                        // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_type1892w_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(2, 2),  // Износ
+   STORE_TEMP(0, 3),  // Сопровождение
+   STORE_TEMP(1, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(PROP_tanker_type1892w_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_tanker_type1892w_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_tanker_type1892w_WT + PROP_tanker_type1892w_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                    // 3
+
+name_in_group(tanker_type1892w, string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_FOOD_SERIES), string(STR_NAME_TANKER_TYPE1892W)),
+                                string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_FOOD_SERIES), string(STR_NAME_TANKER_TYPE1892W)))
+
+hint_wagon_with_uspeed_2fact(tanker_type1892w,
+                 PROP_tanker_type1892w_LC, PROP_tanker_type1892w_VC,
+                 string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+                 STR_PURCHASE_HINT_CAP_001_NORMAL,
+                 STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+                 1892, 1931,
+                 string(STR_PURCHASE_HINT_RWFACTORY_DTS_RW),
+                 string(STR_PURCHASE_HINT_RWFACTORY_MNN_RW))
+
+item (FEAT_TRAINS, tanker_type1892w, 527) {
+  property {
+    name: string(STR_NAME_TANKER_TYPE1892W);
+    vehicle_dates(1892, 1931, 32, 10, 3, PROP_tanker_type1892w_CF)
+    vehicle_wagon(PROP_tanker_type1892w_WT, PROP_tanker_type1892w_SD)
+    vehicle_group(group_tankers_food)
+    cargo_allow_refit: [cargo_all_food_gen_tanker()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_tanker_type1892w_CF, PROP_tanker_type1892w_RC, PROP_tanker_type1892w_SD, PROP_tanker_type1892w_WT, PROP_tanker_type1892w_TE, PROP_tanker_type1892w_PR)
+        additional_text: tanker_type1892w_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_type1892w_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_type1892w_sprites;
+          loading_speed: tanker_type1892w_loading_speed;
+                   name: tanker_type1892w_name;
+               purchase: tanker_type1892w_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_type1892w_running_cost_factor;
+  }
+}

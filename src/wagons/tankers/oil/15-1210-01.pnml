@@ -1,0 +1,83 @@
+﻿// tanker_15_1210_01
+
+#define PROP_tanker_15_1210_01_CF  93
+#define PROP_tanker_15_1210_01_RC  38
+#define PROP_tanker_15_1210_01_SD  120
+#define PROP_tanker_15_1210_01_WT  28
+#define PROP_tanker_15_1210_01_TE  0
+#define PROP_tanker_15_1210_01_PR  0
+#define PROP_tanker_15_1210_01_CC  150
+#define PROP_tanker_15_1210_01_LC  66
+#define PROP_tanker_15_1210_01_VC  71
+#define PROP_tanker_15_1210_01_AC  0
+
+#define IMAGEFILE  "src/wagons/tankers/oil/15-1210-01.png"
+purchase_sprites(tanker_15_1210_01, 0, 0)
+tanker_layout_template(tanker_15_1210_01, 7, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_15_1210_01)
+
+switch (FEAT_TRAINS, SELF, tanker_15_1210_01_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1210_01_cargo_capacity,
+[  STORE_TEMP(PROP_tanker_15_1210_01_LC, 0),  // т
+   STORE_TEMP(PROP_tanker_15_1210_01_VC, 1),  // м³
+   STORE_TEMP(PROP_tanker_15_1210_01_AC, 2),  // м²
+   STORE_TEMP(0, 3),                          // палетомест
+   STORE_TEMP(7, 4)])                         // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_1210_01_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(18, 2),  // Износ
+   STORE_TEMP(6, 3),   // Сопровождение обогрев
+   STORE_TEMP(12, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_tanker_15_1210_01_SD, 6),                                      // Скорость
+   STORE_TEMP(round(PROP_tanker_15_1210_01_WT), 7),                               // Тара
+   STORE_TEMP(round(PROP_tanker_15_1210_01_WT + PROP_tanker_15_1210_01_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                      // 36
+
+name_in_group(tanker_15_1210_01, string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_OIL_SERIES), string(STR_MODEL_NUMBER3, 15, 1210, 1)),
+                                 string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_OIL_SERIES), string(STR_LONGNAME_TANKER_15_1210_01)))
+
+hint_wagon_with_uspeed_noto(tanker_15_1210_01,
+    PROP_tanker_15_1210_01_LC, PROP_tanker_15_1210_01_VC,
+    string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
+    STR_PURCHASE_HINT_CAP_001_NORMAL,
+    STR_PURCHASE_HINT_WAGON_TYPE_TANK_WARM,
+    1996,
+    string(STR_PURCHASE_HINT_FACTORY_RUZHIMMASH))
+
+item (FEAT_TRAINS, tanker_15_1210_01, 488) {
+  property {
+    name: string(STR_MODEL_NUMBER3, 15, 1210, 1);
+    vehicle_dates(1996, 2050, 30, 10, 6, PROP_tanker_15_1210_01_CF)
+    vehicle_wagon(PROP_tanker_15_1210_01_WT, PROP_tanker_15_1210_01_SD)
+    vehicle_group(group_tankers_oil)
+    cargo_allow_refit: [cargo_all_oil_products_tanker()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_tanker_15_1210_01_CF, PROP_tanker_15_1210_01_RC, PROP_tanker_15_1210_01_SD, PROP_tanker_15_1210_01_WT, PROP_tanker_15_1210_01_TE, PROP_tanker_15_1210_01_PR)
+        additional_text: tanker_15_1210_01_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: tanker_15_1210_01_cargo_capacity;
+     cargo_subtype_text: oil_tanker_cargo_subtype_text;
+         colour_mapping: oil_tanker_colour_mapping;
+                default: tanker_15_1210_01_sprites;
+          loading_speed: tanker_15_1210_01_loading_speed;
+                   name: tanker_15_1210_01_name;
+               purchase: tanker_15_1210_01_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_15_1210_01_running_cost_factor;
+  }
+}
+
+long_name_template(tanker_15_1210_01, STR_LONGNAME_TANKER_15_1210_01)

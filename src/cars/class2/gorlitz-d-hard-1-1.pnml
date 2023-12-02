@@ -1,0 +1,86 @@
+﻿// ammendorf_d_hard
+
+#define PROP_gorlitz_d_hard_1_1_CF  226
+#define PROP_gorlitz_d_hard_1_1_RC  141
+#define PROP_gorlitz_d_hard_1_1_SD  120
+#define PROP_gorlitz_d_hard_1_1_WT  57
+#define PROP_gorlitz_d_hard_1_1_TE  0
+#define PROP_gorlitz_d_hard_1_1_PR  0
+#define PROP_gorlitz_d_hard_1_1_CC  38
+#define PROP_gorlitz_d_hard_1_1_FC  38
+
+#define IMAGEFILE  "src/cars/class2/gorlitz-d-hard-1-1.png"
+purchase_sprites(gorlitz_d_hard_1_1, 0, 0)
+pass_wagon_sprites(14, gorlitz_d_hard_1_1_v1,  32, 308)
+pass_wagon_sprites(14, gorlitz_d_hard_1_1_v2,  32, 576)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, gorlitz_d_hard_1_1_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: gorlitz_d_hard_1_1_v1_sprites_start;
+     gorlitz_d_hard_1_1_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, gorlitz_d_hard_1_1_sprites_start,
+  cargo_subtype)
+{
+           0: gorlitz_d_hard_1_1_sprites_start_random;
+  LV_RAL6020: gorlitz_d_hard_1_1_v1_sprites_start;
+  LV_RAL6002: gorlitz_d_hard_1_1_v2_sprites_start;
+  align_14_sprites;
+}
+
+long_vehicle(gorlitz_d_hard_1_1)
+
+livery_template_base_list2(gorlitz_d_hard_1_1, LV_RAL6020, LV_RAL6002)
+
+switch (FEAT_TRAINS, SELF, gorlitz_d_hard_1_1_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(30, 1),  // Бригада
+   STORE_TEMP(80, 2),  // Износ
+   STORE_TEMP(7, 3),   // Сопровождение
+   STORE_TEMP(21, 4),  // ТО
+   STORE_TEMP(3, 5),   // Сертификация
+
+   STORE_TEMP(PROP_gorlitz_d_hard_1_1_SD, 6),                                            // Скорость
+   STORE_TEMP(round(PROP_gorlitz_d_hard_1_1_WT), 7),                                     // Тара
+   STORE_TEMP(round(PROP_gorlitz_d_hard_1_1_WT + PROP_gorlitz_d_hard_1_1_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                             // 141 // 141
+
+name_in_group(gorlitz_d_hard_1_1, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_NAME_GORLITZ_D_HARD_1_1)),
+                                  string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_LONGNAME_GORLITZ_D_HARD_1_1)))
+
+hint_wagon_coach(gorlitz_d_hard_1_1,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_CAP_004_SLOW,
+     STR_PURCHASE_HINT_COACH_TYPE_C,
+     1950, 1952,
+     string(STR_PURCHASE_HINT_FACTORY_GORLITZ))
+
+item (FEAT_TRAINS, gorlitz_d_hard_1_1, 1239) {
+  property {
+    name: string(STR_NAME_GORLITZ_D_HARD_1_1);
+    vehicle_dates(1950, 1952, 28, 10, 8, PROP_gorlitz_d_hard_1_1_CF)
+    vehicle_wagon(PROP_gorlitz_d_hard_1_1_WT, PROP_gorlitz_d_hard_1_1_SD)
+    vehicle_passengers()
+    vehicle_group(group_class2)
+  }
+  graphics {
+    purchase_menu(PROP_gorlitz_d_hard_1_1_CF, PROP_gorlitz_d_hard_1_1_RC, PROP_gorlitz_d_hard_1_1_SD, PROP_gorlitz_d_hard_1_1_WT, PROP_gorlitz_d_hard_1_1_TE, PROP_gorlitz_d_hard_1_1_PR, PROP_gorlitz_d_hard_1_1_FC)
+        additional_text: gorlitz_d_hard_1_1_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return CAP_004_SLOW;
+         cargo_capacity: return PROP_gorlitz_d_hard_1_1_FC;
+     cargo_subtype_text: gorlitz_d_hard_1_1_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: gorlitz_d_hard_1_1_sprites;
+          loading_speed: return 15;
+                   name: gorlitz_d_hard_1_1_name;
+               purchase: gorlitz_d_hard_1_1_purchase_sprites;
+    running_cost_factor: gorlitz_d_hard_1_1_running_cost_factor;
+  }
+}
+
+long_name_template(gorlitz_d_hard_1_1, STR_LONGNAME_GORLITZ_D_HARD_1_1)

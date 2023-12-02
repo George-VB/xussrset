@@ -1,5 +1,16 @@
 ﻿// tanker_type1945
 
+#define PROP_tanker_type1945_CF  16
+#define PROP_tanker_type1945_RC  7
+#define PROP_tanker_type1945_SD  100
+#define PROP_tanker_type1945_WT  13.5
+#define PROP_tanker_type1945_TE  0
+#define PROP_tanker_type1945_PR  0
+#define PROP_tanker_type1945_CC  80
+#define PROP_tanker_type1945_LC  25
+#define PROP_tanker_type1945_VC  25
+#define PROP_tanker_type1945_AC  0
+
 #define IMAGEFILE  "src/wagons/tankers/type1945.png"
 purchase_sprites(tanker_type1945, 0, 0)
 tanker_layout_template(tanker_type1945, 5, 32, 40)
@@ -14,11 +25,11 @@ switch (FEAT_TRAINS, SELF, tanker_type1945_loading_speed,
 { all_wagons_tanker_loading_speed; }
 
 switch (FEAT_TRAINS, SELF, tanker_type1945_cargo_capacity,
-[  STORE_TEMP(25, 0),  // т
-   STORE_TEMP(25, 1),  // м³
-   STORE_TEMP(0, 2),   // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(5, 4)])  // шаблон
+[  STORE_TEMP(PROP_tanker_type1945_LC, 0),  // т
+   STORE_TEMP(PROP_tanker_type1945_VC, 1),  // м³
+   STORE_TEMP(PROP_tanker_type1945_AC, 2),  // м²
+   STORE_TEMP(0, 3),                        // палетомест
+   STORE_TEMP(5, 4)])                       // шаблон
 { tank_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, tanker_type1945_running_cost_factor,
@@ -29,15 +40,18 @@ switch (FEAT_TRAINS, SELF, tanker_type1945_running_cost_factor,
    STORE_TEMP(2, 4),  // ТО
    STORE_TEMP(1, 5),  // Сертификация
 
-   STORE_TEMP(100, 6),                 // Скорость
-   STORE_TEMP(13, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 25, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 5
+   STORE_TEMP(PROP_tanker_type1945_SD, 6),                                    // Скорость
+   STORE_TEMP(round(PROP_tanker_type1945_WT), 7),                             // Тара
+   STORE_TEMP(round(PROP_tanker_type1945_WT + PROP_tanker_type1945_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                  // 5
+
+name_in_group(tanker_type1945, string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_GEN_SERIES), string(STR_NAME_TANKER_TYPE1945)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_GEN_SERIES), string(STR_NAME_TANKER_TYPE1945)))
 
 hint_wagon_with_uspeed(tanker_type1945,
-           25, 25,
+           PROP_tanker_type1945_LC, PROP_tanker_type1945_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_CAP_001_NORMAL,
            STR_PURCHASE_HINT_WAGON_TYPE_TANK,
            1945, 1948,
            fact_azovmach())
@@ -45,11 +59,13 @@ hint_wagon_with_uspeed(tanker_type1945,
 item (FEAT_TRAINS, tanker_type1945, 288) {
   property {
     name: string(STR_NAME_TANKER_TYPE1945);
-    vehicle_dates(1945, 1948, 32, 10, 4, 16)
-    vehicle_wagon(13.5, 100)
+    vehicle_dates(1945, 1948, 32, 10, 4, PROP_tanker_type1945_CF)
+    vehicle_wagon(PROP_tanker_type1945_WT, PROP_tanker_type1945_SD)
+    vehicle_group(group_tankers_gen)
     cargo_allow_refit: [cargo_all_liquids_tanker()];
   }
   graphics {
+    purchase_menu_nocc(PROP_tanker_type1945_CF, PROP_tanker_type1945_RC, PROP_tanker_type1945_SD, PROP_tanker_type1945_WT, PROP_tanker_type1945_TE, PROP_tanker_type1945_PR)
         additional_text: tanker_type1945_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: tanker_type1945_cargo_capacity;
@@ -57,6 +73,7 @@ item (FEAT_TRAINS, tanker_type1945, 288) {
          colour_mapping: tanker_colour_mapping;
                 default: tanker_type1945_sprites;
           loading_speed: tanker_type1945_loading_speed;
+                   name: tanker_type1945_name;
                purchase: tanker_type1945_purchase_sprites;
              refit_cost: tanker_refit_cost;
     running_cost_factor: tanker_type1945_running_cost_factor;

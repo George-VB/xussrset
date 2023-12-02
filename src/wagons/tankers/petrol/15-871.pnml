@@ -1,0 +1,83 @@
+﻿// tanker_15_871
+
+#define PROP_tanker_15_871_CF  294
+#define PROP_tanker_15_871_RC  75
+#define PROP_tanker_15_871_SD  120
+#define PROP_tanker_15_871_WT  49
+#define PROP_tanker_15_871_TE  0
+#define PROP_tanker_15_871_PR  0
+#define PROP_tanker_15_871_CC  160
+#define PROP_tanker_15_871_LC  120
+#define PROP_tanker_15_871_VC  137
+#define PROP_tanker_15_871_AC  0
+
+#define IMAGEFILE  "src/wagons/tankers/petrol/15-871.png"
+purchase_sprites(tanker_15_871, 0, 0)
+tanker_layout_template(tanker_15_871, 12, 32, 40)
+#undef IMAGEFILE
+long_vehicle(tanker_15_871)
+
+switch (FEAT_TRAINS, SELF, tanker_15_871_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(15, 2),
+   STORE_TEMP(10, 3)])
+{ all_wagons_tanker_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_871_cargo_capacity,
+[  STORE_TEMP(PROP_tanker_15_871_LC, 0),  // т
+   STORE_TEMP(PROP_tanker_15_871_VC, 1),  // м³
+   STORE_TEMP(PROP_tanker_15_871_AC, 2),  // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(12, 4)])                    // шаблон
+{ tank_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, tanker_15_871_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(49, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(24, 4),  // ТО
+   STORE_TEMP(2, 5),   // Сертификация
+
+   STORE_TEMP(PROP_tanker_15_871_SD, 6),                                  // Скорость
+   STORE_TEMP(round(PROP_tanker_15_871_WT), 7),                           // Тара
+   STORE_TEMP(round(PROP_tanker_15_871_WT + PROP_tanker_15_871_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                              // 73
+
+name_in_group(tanker_15_871, string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_PETROL_SERIES), string(STR_MODEL_NUMBER2, 15, 871)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_TANKERS_PETROL_SERIES), string(STR_LONGNAME_TANKER_15_871)))
+
+hint_wagon_with_uspeed(tanker_15_871,
+           PROP_tanker_15_871_LC, PROP_tanker_15_871_VC,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC), string(STR_PURCHASE_HINT_LOADING_SPEED_4TIC),
+           STR_PURCHASE_HINT_CAP_001_NORMAL,
+           STR_PURCHASE_HINT_WAGON_TYPE_TANK,
+           1974, 1987,
+           fact_azovmach())
+
+item (FEAT_TRAINS, tanker_15_871, 264) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 15, 871);
+    vehicle_dates(1974, 1987, 32, 10, 8, PROP_tanker_15_871_CF)
+    vehicle_wagon(PROP_tanker_15_871_WT, PROP_tanker_15_871_SD)
+    vehicle_group(group_tankers_petrol)
+    cargo_allow_refit: [cargo_all_petr_tanker()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_tanker_15_871_CF, PROP_tanker_15_871_RC, PROP_tanker_15_871_SD, PROP_tanker_15_871_WT, PROP_tanker_15_871_TE, PROP_tanker_15_871_PR)
+        additional_text: tanker_15_871_additional_text;
+       articulated_part: articulated_part_dummy4;
+         cargo_capacity: tanker_15_871_cargo_capacity;
+     cargo_subtype_text: tanker_cargo_subtype_text;
+         colour_mapping: tanker_colour_mapping;
+                default: tanker_15_871_sprites;
+          loading_speed: tanker_15_871_loading_speed;
+                   name: tanker_15_871_name;
+               purchase: tanker_15_871_purchase_sprites;
+             refit_cost: tanker_refit_cost;
+    running_cost_factor: tanker_15_871_running_cost_factor;
+  }
+}
+
+long_name_template(tanker_15_871, STR_LONGNAME_TANKER_15_871)

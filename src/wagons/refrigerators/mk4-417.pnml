@@ -1,5 +1,16 @@
 ﻿// refrigerator_mk4_417
 
+#define PROP_refrigerator_mk4_417_CF  338
+#define PROP_refrigerator_mk4_417_RC  111
+#define PROP_refrigerator_mk4_417_SD  140
+#define PROP_refrigerator_mk4_417_WT  44
+#define PROP_refrigerator_mk4_417_TE  0
+#define PROP_refrigerator_mk4_417_PR  0
+#define PROP_refrigerator_mk4_417_CC  53
+#define PROP_refrigerator_mk4_417_LC  40
+#define PROP_refrigerator_mk4_417_VC  84
+#define PROP_refrigerator_mk4_417_AC  0
+
 #define IMAGEFILE  "src/wagons/refrigerators/mk4-417.png"
 purchase_sprites(refrigerator_mk4_417, 0, 0)
 combo_layout_boxcar_template(refrigerator_mk4_417, 12, 32, 40)
@@ -16,11 +27,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_sprites_start,
 long_vehicle(refrigerator_mk4_417)
 
 switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_cargo_capacity,
-[  STORE_TEMP(40, 0),   // т
-   STORE_TEMP(84, 1),   // м³
-   STORE_TEMP(0, 2),    // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(12, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_mk4_417_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_mk4_417_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_mk4_417_AC, 2),  // м²
+   STORE_TEMP(0, 3),                             // палетомест
+   STORE_TEMP(12, 4)])                           // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_running_cost_factor,
@@ -31,10 +42,10 @@ switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_running_cost_factor,
    STORE_TEMP(37, 4),  // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(140, 6),                 // Скорость
-   STORE_TEMP(44, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 40, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 110
+   STORE_TEMP(PROP_refrigerator_mk4_417_SD, 6),                                         // Скорость
+   STORE_TEMP(round(PROP_refrigerator_mk4_417_WT), 7),                                  // Тара
+   STORE_TEMP(round(PROP_refrigerator_mk4_417_WT + PROP_refrigerator_mk4_417_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                            // 110
 
 switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_loading_speed,
   STORE_TEMP(10, 2))
@@ -42,10 +53,13 @@ switch (FEAT_TRAINS, SELF, refrigerator_mk4_417_loading_speed,
 
 wagon_speed_change_on_load(refrigerator_mk4_417, 140, 120, 30)
 
+name_in_group(refrigerator_mk4_417, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_MK4_417)),
+                                    string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_REFRIGERATOR_MK4_417)))
+
 hint_wagon_chande_speed_on_load(refrigerator_mk4_417,
-     40, 84,
+     PROP_refrigerator_mk4_417_LC, PROP_refrigerator_mk4_417_VC,
      string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
-     STR_PURCHASE_HINT_AGING_PERIOD_8_1,
+     STR_PURCHASE_HINT_CAP_128_DOESNT,
      STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_AUTONOMUS,
      1965, 1970,
      string(STR_PURCHASE_HINT_FACTORY_DESSAU_W),
@@ -54,21 +68,22 @@ hint_wagon_chande_speed_on_load(refrigerator_mk4_417,
 item (FEAT_TRAINS, refrigerator_mk4_417, 397) {
   property {
     name: string(STR_NAME_REFRIGERATOR_MK4_417);
-    vehicle_dates(1965, 1970, 25, 10, 8, 338)
-    vehicle_wagon(44, 140)
+    vehicle_dates(1965, 1970, 25, 10, 8, PROP_refrigerator_mk4_417_CF)
+    vehicle_wagon(PROP_refrigerator_mk4_417_WT, PROP_refrigerator_mk4_417_SD)
+    vehicle_group(group_refrigerators)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_mk4_417_CF, PROP_refrigerator_mk4_417_RC, PROP_refrigerator_mk4_417_SD, PROP_refrigerator_mk4_417_WT, PROP_refrigerator_mk4_417_TE, PROP_refrigerator_mk4_417_PR)
         additional_text: refrigerator_mk4_417_additional_text;
        articulated_part: articulated_part_dummy4;
-       cargo_age_period: return 10000;
+       cargo_age_period: return CAP_128_DOESNT;
          cargo_capacity: refrigerator_mk4_417_cargo_capacity;
          colour_mapping: any_cc_colour;
-            cost_factor: return 338;
                 default: refrigerator_mk4_417_sprites;
           loading_speed: refrigerator_mk4_417_loading_speed;
+                   name: refrigerator_mk4_417_name;
                purchase: refrigerator_mk4_417_purchase_sprites;
-         purchase_speed: return 140;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_mk4_417_running_cost_factor;
                   speed: refrigerator_mk4_417_speed;

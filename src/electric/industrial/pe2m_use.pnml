@@ -5,7 +5,8 @@
 #define PROP_pe2m_SD  65
 #define PROP_pe2m_WT  120
 #define PROP_pe2m_TE  227.0
-#define PROP_pe2m_PR  930
+#define PROP_pe2m_PR  kw2hp(1965.3)
+#define PROP_pe2m_PR_15KV  kw2hp(930.5)
 #define PROP_pe2m_CC  0
 
 map_sprites(pe2m_purchase_sprites, pe2_purchase_sprites)
@@ -15,6 +16,7 @@ map_sprites(pe2m_sprites_right, pe2_sprites_right)
 engine_RNDany_direction_template(pe2m, 7, 1, )
 long_vehicle_sp(pe2m)
 
+is_ER3DC_ds(pe2m_power, return get_power_in_cb(PROP_pe2m_PR), return get_power_in_cb(PROP_pe2m_PR_15KV))
 engine_speed(pe2m, PROP_pe2m_SD)
 
 switch (FEAT_TRAINS, SELF, pe2m_running_cost_factor,
@@ -33,11 +35,12 @@ switch (FEAT_TRAINS, SELF, pe2m_running_cost_factor,
 name_in_group(pe2m, string(STR_NAME_IN_GROUP, string(STR_NAME_PE2_SERIES), string(STR_NAME_PE2M)),
                     string(STR_NAME_IN_GROUP, string(STR_NAME_PE2_SERIES), string(STR_LONGNAME_PE2M)))
 
-hint_engine(pe2m,
+hint_engine_chande_power_on_ddc(pe2m,
      STR_PURCHASE_HINT_ENGINE_TYPE_INDUSTRIAL_ELECTRIC_DDC,
      STR_PURCHASE_HINT_SECTIONS_1,
      1970, 1985,
-     fact_dnepropetrovsk())
+     fact_dnepropetrovsk(),
+     get_power_in_cb(PROP_pe2m_PR_15KV))
 
 item (FEAT_TRAINS, pe2m, 778) {
   property {
@@ -45,7 +48,7 @@ item (FEAT_TRAINS, pe2m, 778) {
     vehicle_dates(1970, 1985, 20, 15, 8, PROP_pe2m_CF)
     vehicle_cargo()
     vehicle_ddcelectric(PROP_pe2m_PR, PROP_pe2m_WT, PROP_pe2m_TE, _lowspeed)
-    vehicle_group(pe2_group)
+    vehicle_group(group_pe2)
   }
   graphics {
     purchase_menu(PROP_pe2m_CF, PROP_pe2m_RC, PROP_pe2m_SD, PROP_pe2m_WT, PROP_pe2m_TE, PROP_pe2m_PR, PROP_pe2m_CC)
@@ -59,6 +62,7 @@ item (FEAT_TRAINS, pe2m, 778) {
            create_effect: pe2_create_effect_sprites_start_sp;
                  default: pe2m_sprites;
                     name: pe2m_name;
+                   power: pe2m_power;
                 purchase: pe2m_purchase_sprites;
      running_cost_factor: pe2m_running_cost_factor;
                    speed: pe2m_speed;

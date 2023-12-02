@@ -1,0 +1,113 @@
+﻿// refrigerator_mk4_424_type1971
+
+#define PROP_refrigerator_mk4_424_type1971_CF  415
+#define PROP_refrigerator_mk4_424_type1971_RC  133
+#define PROP_refrigerator_mk4_424_type1971_SD  140
+#define PROP_refrigerator_mk4_424_type1971_WT  45
+#define PROP_refrigerator_mk4_424_type1971_TE  0
+#define PROP_refrigerator_mk4_424_type1971_PR  0
+#define PROP_refrigerator_mk4_424_type1971_CC  52
+#define PROP_refrigerator_mk4_424_type1971_LC  43
+#define PROP_refrigerator_mk4_424_type1971_VC  100
+#define PROP_refrigerator_mk4_424_type1971_AC  0
+
+#define IMAGEFILE  "src/wagons/refrigerators/mk4-424-type1971.png"
+purchase_sprites(refrigerator_mk4_424_type1971, 0, 0)
+combo_layout_boxcar_template(refrigerator_mk4_424_type1971, 13, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_type1971_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: refrigerator_mk4_424_type1971_sprites_back;
+  1: cargo13_frut_bc_sprites;
+  2: refrigerator_mk4_424_type1971_sprites_front;
+     return CB_FAILED;
+}
+long_vehicle(refrigerator_mk4_424_type1971)
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_type1971_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x07])
+{
+  0..3: return ttdall_cc + 0x0C;
+  4..6: return ttdall_cc + 0x0A;
+        return ttdall_cc + 0x73;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_type1971_colour_mapping,
+  cargo_subtype)
+{
+  0: refrigerator_mk4_424_type1971_random;
+  1: return ttdall_cc + 0x0C;
+  2: return ttdall_cc + 0x0A;
+  3: return ttdall_cc + 0x73;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_type1971_cargo_capacity,
+[  STORE_TEMP(PROP_refrigerator_mk4_424_type1971_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_mk4_424_type1971_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_mk4_424_type1971_AC, 2),  // м²
+   STORE_TEMP(0, 3),                                      // палетомест
+   STORE_TEMP(13, 4)])                                    // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_type1971_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(66, 2),  // Износ
+   STORE_TEMP(22, 3),  // Сопровождение (охлаждение)
+   STORE_TEMP(44, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_refrigerator_mk4_424_type1971_SD, 6),                                                  // Скорость
+   STORE_TEMP(round(PROP_refrigerator_mk4_424_type1971_WT), 7),                                           // Тара
+   STORE_TEMP(round(PROP_refrigerator_mk4_424_type1971_WT + PROP_refrigerator_mk4_424_type1971_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                                              // 131
+
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_424_type1971_loading_speed,
+  STORE_TEMP(10, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(refrigerator_mk4_424_type1971, 140, 120, 29)
+
+name_in_group(refrigerator_mk4_424_type1971, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_MK4_424_TYPE1971)),
+                                             string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_REFRIGERATOR_MK4_424_TYPE1971)))
+
+hint_wagon_chande_speed_on_load(refrigerator_mk4_424_type1971,
+     PROP_refrigerator_mk4_424_type1971_LC, PROP_refrigerator_mk4_424_type1971_VC,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_CAP_128_DOESNT,
+     STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_AUTONOMUS,
+     1971, 1991,
+     string(STR_PURCHASE_HINT_FACTORY_DESSAU_W),
+     120, 29)
+
+item (FEAT_TRAINS, refrigerator_mk4_424_type1971, 399) {
+  property {
+                  name: string(STR_NAME_REFRIGERATOR_MK4_424_TYPE1971);
+    climates_available: get_climates_available();
+    vehicle_dates(1971, 1991, 25, 10, 8, PROP_refrigerator_mk4_424_type1971_CF)
+    vehicle_wagon(PROP_refrigerator_mk4_424_type1971_WT, PROP_refrigerator_mk4_424_type1971_SD)
+    vehicle_group(group_refrigerators)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_refrigerator_mk4_424_type1971_CF, PROP_refrigerator_mk4_424_type1971_RC, PROP_refrigerator_mk4_424_type1971_SD, PROP_refrigerator_mk4_424_type1971_WT, PROP_refrigerator_mk4_424_type1971_TE, PROP_refrigerator_mk4_424_type1971_PR)
+        additional_text: refrigerator_mk4_424_type1971_additional_text;
+       articulated_part: articulated_part_dummy5;
+       cargo_age_period: return CAP_128_DOESNT;
+         cargo_capacity: refrigerator_mk4_424_type1971_cargo_capacity;
+         colour_mapping: refrigerator_mk4_424_type1971_colour_mapping;
+                default: refrigerator_mk4_424_type1971_sprites;
+          loading_speed: refrigerator_mk4_424_type1971_loading_speed;
+                   name: refrigerator_mk4_424_type1971_name;
+               purchase: refrigerator_mk4_424_type1971_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: refrigerator_mk4_424_type1971_running_cost_factor;
+                  speed: refrigerator_mk4_424_type1971_speed;
+  }
+}
+
+long_name_template(refrigerator_mk4_424_type1971, STR_LONGNAME_REFRIGERATOR_MK4_424_TYPE1971)

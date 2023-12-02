@@ -1,5 +1,16 @@
 ﻿// refrigerator_type1895
 
+#define PROP_refrigerator_type1895_CF  20
+#define PROP_refrigerator_type1895_RC  8
+#define PROP_refrigerator_type1895_SD  60
+#define PROP_refrigerator_type1895_WT  7
+#define PROP_refrigerator_type1895_TE  0
+#define PROP_refrigerator_type1895_PR  0
+#define PROP_refrigerator_type1895_CC  40
+#define PROP_refrigerator_type1895_LC  10
+#define PROP_refrigerator_type1895_VC  36
+#define PROP_refrigerator_type1895_AC  0
+
 #define IMAGEFILE  "src/wagons/refrigerators/type1895.png"
 purchase_sprites(refrigerator_type1895, 0, 0)
 combo_layout_boxcar_template(refrigerator_type1895, 4, 32, 40)
@@ -24,11 +35,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1895_weight,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1895_cargo_capacity,
-[  STORE_TEMP(10, 0),  // т
-   STORE_TEMP(36, 1),  // м³
-   STORE_TEMP(0, 2),   // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(4, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_type1895_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_type1895_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_type1895_AC, 2),  // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(4, 4)])                             // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1895_running_cost_factor,
@@ -39,19 +50,22 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1895_running_cost_factor,
    STORE_TEMP(2, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(60, 6),                      // Скорость
-   STORE_TEMP(7, 7),                       // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 10 + 3, 8)])  // Максимальная масса
+   STORE_TEMP(PROP_refrigerator_type1895_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_refrigerator_type1895_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_refrigerator_type1895_WT + PROP_refrigerator_type1895_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1895_loading_speed,
   STORE_TEMP(6, 2))
 { all_wagons_box_loading_speed; }
 
+name_in_group(refrigerator_type1895, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1895)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1895)))
+
 hint_wagon(refrigerator_type1895,
-           10, 36,
+           PROP_refrigerator_type1895_LC, PROP_refrigerator_type1895_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
            1895, 1905,
            string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
@@ -59,18 +73,21 @@ hint_wagon(refrigerator_type1895,
 item (FEAT_TRAINS, refrigerator_type1895, 305) {
   property {
     name: string(STR_NAME_REFRIGERATOR_TYPE1895);
-    vehicle_dates(1895, 1905, 25, 10, 3, 20)
-    vehicle_wagon(7, 60)
+    vehicle_dates(1895, 1905, 25, 10, 3, PROP_refrigerator_type1895_CF)
+    vehicle_wagon(PROP_refrigerator_type1895_WT, PROP_refrigerator_type1895_SD)
+    vehicle_group(group_refrigerators)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_type1895_CF, PROP_refrigerator_type1895_RC, PROP_refrigerator_type1895_SD, PROP_refrigerator_type1895_WT, PROP_refrigerator_type1895_TE, PROP_refrigerator_type1895_PR)
         additional_text: refrigerator_type1895_additional_text;
        articulated_part: articulated_part_dummy1;
-       cargo_age_period: return 300;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: refrigerator_type1895_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: refrigerator_type1895_sprites;
           loading_speed: refrigerator_type1895_loading_speed;
+                   name: refrigerator_type1895_name;
                purchase: refrigerator_type1895_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_type1895_running_cost_factor;

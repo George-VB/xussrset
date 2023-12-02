@@ -14,6 +14,20 @@ traininfo_y_offset = 3;
 // Мощность ПС / скорость, который не имеет мощности (чтобы он смог доехать до других рельсов, так как в игре нельзя послать за ним буксир.
 #define NO_POWER             5
 #define NO_SPEED             10
+#define INVALID_ENGINE       65535
+#define MAXSPEED             65000
+
+// скорость старения груза
+#define CAP_128_DOESNT         23680
+#define CAP_016_ALMOST_NONE    2960
+#define CAP_008_VERY_SLOW      1480
+#define CAP_004_SLOW           740
+#define CAP_002_SLIGHTLY_SLOW  370
+#define CAP_001_NORMAL         185
+#define CAP_00075_ACCELERATED  138
+#define CAP_0005_FAST          92
+#define CAP_00033_VERY_FAST    61
+#define CAP_00025_INSTANT      42
 
 // количество тиков на разгрузку высыпанием
 #define VERY_SLOW_FALL             5
@@ -156,6 +170,8 @@ delta_age = 1;
 #define FLAG_INADMISSIBLE_CARGO 2
 // Флаг недопустимой составности
 #define FLAG_WRONG_CONSIST 3
+// Флаг недопустимой составности ТЕП70БС+ЭС2Г
+#define FLAG_WRONG_TEP70BS_ES2G 4
 // Штрафуем ли по скорости
 #define is_penalise_speed() (hasbit(bitmask_consist_info, FLAG_PENALISE_SPEED))
 // Проверка 2 головы ДРБ1
@@ -164,6 +180,7 @@ delta_age = 1;
 #define has_inadmissible_cargo() (hasbit(bitmask_consist_info, FLAG_INADMISSIBLE_CARGO))
 // Проверка некорректного состава
 #define is_wrong_consist() (hasbit(bitmask_consist_info, FLAG_WRONG_CONSIST))
+#define is_wrong_tep70bs_es2g() (hasbit(bitmask_consist_info, FLAG_WRONG_TEP70BS_ES2G))
 // Вычисляем ТУ по формуле (табличное_значение/масса/9.8)
 #define get_tec(tec, weight) (((tec)*10)/(weight)/98)
 // ТУ для cb tractive_effort_coefficient
@@ -339,7 +356,7 @@ delta_age = 1;
     tractive_effort_coefficient: get_tec((TE) * 1.0, (weigthton));                                                                        \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -354,7 +371,7 @@ delta_age = 1;
     tractive_effort_coefficient: 0;                                                                                                       \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -369,7 +386,7 @@ delta_age = 1;
     tractive_effort_coefficient: 0;                                                                                                       \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -384,7 +401,7 @@ delta_age = 1;
     tractive_effort_coefficient: 0;                                                                                                       \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -399,7 +416,7 @@ delta_age = 1;
     tractive_effort_coefficient: get_tec((TE) * 1.0, (weigthton));                                                                        \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -414,7 +431,7 @@ delta_age = 1;
     tractive_effort_coefficient: 0;                                                                                                       \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -444,7 +461,7 @@ delta_age = 1;
     tractive_effort_coefficient: 0;                                                                                                       \
                  cargo_capacity: 0;                                                                                                       \
                   loading_speed: 0;                                                                                                       \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -459,7 +476,7 @@ delta_age = 1;
     tractive_effort_coefficient: 0;                                                                                                       \
                  cargo_capacity: capacitypass > 255 ? 255   : capacitypass;                                                               \
                   loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;                                                              \
-              cargo_allow_refit: [PASS, YETI, YETY];                                                                                      \
+              cargo_allow_refit: [PASS];                                                                                                  \
                 ai_special_flag: AI_FLAG_PASSENGER;                                                                                       \
                       sprite_id: SPRITE_ID_NEW_TRAIN;                                                                                     \
                      misc_flags: bitmask(TRAIN_FLAG_TILT, TRAIN_FLAG_2CC, TRAIN_FLAG_MU, TRAIN_FLAG_AUTOREFIT, TRAIN_FLAG_SPRITE_STACK);  \
@@ -477,17 +494,7 @@ delta_age = 1;
            track_type: get_normal_track_type(speedkmh);                                                                         \
     running_cost_base: RUNNING_COST_ROADVEH;                                                                                    \
  bitmask_vehicle_info: 0;                                                                                                       \
-       cargo_capacity: 1;
-
-#define vehicle_wagon_cargo(capacityunits, loadspeedunits)          \
-  cargo_allow_refit: [GOOD];                                        \
-     cargo_capacity: capacityunits > 255 ? 255   : capacityunits;   \
-      loading_speed: loadspeedunits > 255 ? 255  : loadspeedunits;  \
-
-#define vehicle_wagon_pass(capacitypass, loadspeedpass)           \
-  cargo_allow_refit: [PASS, YETI, YETY];                          \
-     cargo_capacity: capacitypass > 255 ? 255   : capacitypass;   \
-      loading_speed: loadspeedpass > 255 ? 255  : loadspeedpass;  \
+       cargo_capacity: 1;                                                                                                       \
 
 #define vehicle_cargo()              \
   cargo_allow_refit: [GOOD];         \
@@ -504,24 +511,27 @@ delta_age = 1;
      cargo_capacity: 1;                  \
     ai_special_flag: AI_FLAG_PASSENGER;  \
 
-#define vehicle_allow_tourists()               \
- cargo_allow_refit: [PASS, TOUR, YETI, YETY];  \
+#define vehicle_tourists()         \
+ cargo_allow_refit: [PASS, TOUR];  \
 
-#define group_steam(start, rd)                         \
-          track_type: get_normal_track_type_steam();   \
-  climates_available: NO_CLIMATE;                      \
-          model_life: 255;                             \
-        vehicle_life: 255;                             \
-               power: 1;                               \
-      cargo_capacity: 1;                               \
-   reliability_decay: rd;                              \
-         cost_factor: 1;                               \
- running_cost_factor: 1;                               \
-   introduction_date: date(start, 1, 1);               \
-   cargo_allow_refit: [PASS, YETI, YETY, MAIL, GOOD];  \
-           sprite_id: SPRITE_ID_NEW_TRAIN;             \
-   running_cost_base: RUNNING_COST_STEAM;              \
-        engine_class: ENGINE_CLASS_STEAM;              \
+#define vehicle_passengers()  \
+  cargo_allow_refit: [PASS];  \
+
+#define group_steam(start, rd)                        \
+          track_type: get_normal_track_type_steam();  \
+  climates_available: NO_CLIMATE;                     \
+          model_life: 255;                            \
+        vehicle_life: 255;                            \
+               power: 1;                              \
+      cargo_capacity: 1;                              \
+   reliability_decay: rd;                             \
+         cost_factor: 1;                              \
+ running_cost_factor: 1;                              \
+   introduction_date: date(start, 1, 1);              \
+   cargo_allow_refit: [PASS, MAIL, GOOD];             \
+           sprite_id: SPRITE_ID_NEW_TRAIN;            \
+   running_cost_base: RUNNING_COST_STEAM;             \
+        engine_class: ENGINE_CLASS_STEAM;             \
 
 #define group_diesel(start, rd)                        \
           track_type: get_normal_track_type_diesel();  \
@@ -534,26 +544,26 @@ delta_age = 1;
          cost_factor: 1;                               \
  running_cost_factor: 1;                               \
    introduction_date: date(start, 1, 1);               \
-   cargo_allow_refit: [PASS, YETI, YETY, MAIL, GOOD];  \
+   cargo_allow_refit: [PASS, MAIL, GOOD];              \
            sprite_id: SPRITE_ID_NEW_TRAIN;             \
    running_cost_base: RUNNING_COST_DIESEL;             \
         engine_class: ENGINE_CLASS_DIESEL;             \
 
-#define group_electric(current, start, rd)             \
-          track_type: get_##current##_track_type();    \
-  climates_available: NO_CLIMATE;                      \
-          model_life: 255;                             \
-        vehicle_life: 255;                             \
-               power: 1;                               \
-      cargo_capacity: 1;                               \
-   reliability_decay: rd;                              \
-         cost_factor: 1;                               \
- running_cost_factor: 1;                               \
-   introduction_date: date(start, 1, 1);               \
-   cargo_allow_refit: [PASS, YETI, YETY, MAIL, GOOD];  \
-           sprite_id: SPRITE_ID_NEW_TRAIN;             \
-        engine_class: ENGINE_CLASS_ELECTRIC;           \
-   running_cost_base: RUNNING_COST_ELECTRIC;           \
+#define group_electric(current, start, rd)           \
+          track_type: get_##current##_track_type();  \
+  climates_available: NO_CLIMATE;                    \
+          model_life: 255;                           \
+        vehicle_life: 255;                           \
+               power: 1;                             \
+      cargo_capacity: 1;                             \
+   reliability_decay: rd;                            \
+         cost_factor: 1;                             \
+ running_cost_factor: 1;                             \
+   introduction_date: date(start, 1, 1);             \
+   cargo_allow_refit: [PASS, MAIL, GOOD];            \
+           sprite_id: SPRITE_ID_NEW_TRAIN;           \
+        engine_class: ENGINE_CLASS_ELECTRIC;         \
+   running_cost_base: RUNNING_COST_ELECTRIC;         \
 
 #define group_wagon(start, rd)                        \
           track_type: get_normal_track_type_steam();  \
@@ -570,15 +580,15 @@ delta_age = 1;
    running_cost_base: RUNNING_COST_ROADVEH;           \
 
 #define vehicle_group(group_id)                                                                           \
-  variant_group: group_id;                                                                                \
+  variant_group: disable_groups == 0 ? group_id  : INVALID_ENGINE;                                        \
     extra_flags: bitmask(VEHICLE_FLAG_SYNC_VARIANT_RELIABILITY, VEHICLE_FLAG_DISABLE_EXCLUSIVE_PREVIEW);  \
 
-#define vehicle_group_pre(group_id)  \
-  variant_group: group_id;           \
-    extra_flags: bitmask();          \
+#define vehicle_group_pre(group_id)                                 \
+  variant_group: disable_groups == 0 ? group_id  : INVALID_ENGINE;  \
+    extra_flags: bitmask();                                         \
 
 #define vehicle_group_mu(group_id)                                                                                                                                                               \
-  variant_group: group_id;                                                                                                                                                                       \
+  variant_group: disable_groups == 0 ? group_id  : INVALID_ENGINE;                                                                                                                               \
     extra_flags: bitmask(VEHICLE_FLAG_DISABLE_NEW_VEHICLE_MESSAGE, VEHICLE_FLAG_DISABLE_EXCLUSIVE_PREVIEW, VEHICLE_FLAG_SYNC_VARIANT_EXCLUSIVE_PREVIEW, VEHICLE_FLAG_SYNC_VARIANT_RELIABILITY);  \
 
 #define purchase_menu(CF, RC, SD, WT, TE, PR, CC)                    \
@@ -590,6 +600,14 @@ delta_age = 1;
                         purchase_power: return get_power_in_cb(PR);  \
                purchase_cargo_capacity: return CC;                   \
 
+#define purchase_menu_nocc(CF, RC, SD, WT, TE, PR)                   \
+                           cost_factor: return CF;                   \
+          purchase_running_cost_factor: return RC;                   \
+                        purchase_speed: return SD;                   \
+                       purchase_weight: return round(WT);            \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);  \
+                        purchase_power: return get_power_in_cb(PR);  \
+
 #define purchase_menu_wagon(CF, RC, SD, WT, TE, PR, CC)                      \
                            cost_factor: return round(CF * ENGINE_WAGON_CF);  \
           purchase_running_cost_factor: return RC;                           \
@@ -597,7 +615,7 @@ delta_age = 1;
                        purchase_weight: return round(WT);                    \
   purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);          \
                         purchase_power: return get_power_in_cb(PR);          \
-               /*purchase_cargo_capacity: return CC;*/                       \
+               purchase_cargo_capacity: return CC;                           \
 
 #define purchase_menu_calc(CF, RC, SD, WT, TE, PR, CC)  \
                            cost_factor: CF;             \

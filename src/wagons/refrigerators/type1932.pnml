@@ -1,5 +1,16 @@
 ﻿// refrigerator_type1932
 
+#define PROP_refrigerator_type1932_CF  33
+#define PROP_refrigerator_type1932_RC  13
+#define PROP_refrigerator_type1932_SD  100
+#define PROP_refrigerator_type1932_WT  18
+#define PROP_refrigerator_type1932_TE  0
+#define PROP_refrigerator_type1932_PR  0
+#define PROP_refrigerator_type1932_CC  45
+#define PROP_refrigerator_type1932_LC  17
+#define PROP_refrigerator_type1932_VC  47
+#define PROP_refrigerator_type1932_AC  21
+
 #define IMAGEFILE  "src/wagons/refrigerators/type1932.png"
 purchase_sprites(refrigerator_type1932, 0, 0)
 combo_layout_boxcar_template(refrigerator_type1932, 6, 32, 40)
@@ -24,11 +35,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1932_weight,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1932_cargo_capacity,
-[  STORE_TEMP(17, 0),  // т
-   STORE_TEMP(47, 1),  // м³
-   STORE_TEMP(21, 2),  // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(6, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_type1932_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_type1932_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_type1932_AC, 2),  // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(6, 4)])                             // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1932_running_cost_factor,
@@ -39,19 +50,22 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1932_running_cost_factor,
    STORE_TEMP(3, 4),  // ТО
    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(100, 6),                     // Скорость
-   STORE_TEMP(18, 7),                      // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 17 + 3, 8)])  // Максимальная масса
+   STORE_TEMP(PROP_refrigerator_type1932_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_refrigerator_type1932_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_refrigerator_type1932_WT + PROP_refrigerator_type1932_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1932_loading_speed,
   STORE_TEMP(7, 2))
 { all_wagons_box_loading_speed; }
 
+name_in_group(refrigerator_type1932, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1932)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1932)))
+
 hint_wagon(refrigerator_type1932,
-           17, 47,
+           PROP_refrigerator_type1932_LC, PROP_refrigerator_type1932_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
            1932, 1937,
            fact_tambov())
@@ -59,18 +73,21 @@ hint_wagon(refrigerator_type1932,
 item (FEAT_TRAINS, refrigerator_type1932, 689) {
   property {
     name: string(STR_NAME_REFRIGERATOR_TYPE1932);
-    vehicle_dates(1932, 1937, 25, 10, 5, 33)
-    vehicle_wagon(18, 100)
+    vehicle_dates(1932, 1937, 25, 10, 5, PROP_refrigerator_type1932_CF)
+    vehicle_wagon(PROP_refrigerator_type1932_WT, PROP_refrigerator_type1932_SD)
+    vehicle_group(group_refrigerators)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_type1932_CF, PROP_refrigerator_type1932_RC, PROP_refrigerator_type1932_SD, PROP_refrigerator_type1932_WT, PROP_refrigerator_type1932_TE, PROP_refrigerator_type1932_PR)
         additional_text: refrigerator_type1932_additional_text;
        articulated_part: articulated_part_dummy1;
-       cargo_age_period: return 300;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: refrigerator_type1932_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: refrigerator_type1932_sprites;
           loading_speed: refrigerator_type1932_loading_speed;
+                   name: refrigerator_type1932_name;
                purchase: refrigerator_type1932_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_type1932_running_cost_factor;

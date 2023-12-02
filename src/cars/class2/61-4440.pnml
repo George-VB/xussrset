@@ -1,0 +1,112 @@
+﻿// 61_4440
+
+#define PROP__61_4440_CF  448
+#define PROP__61_4440_RC  281
+#define PROP__61_4440_SD  160
+#define PROP__61_4440_WT  61
+#define PROP__61_4440_TE  0
+#define PROP__61_4440_PR  0
+#define PROP__61_4440_CC  36
+#define PROP__61_4440_FC  36
+
+#define IMAGEFILE  "src/cars/class2/61-4440-part1.png"
+purchase_sprites(_61_4440, 0, 0)
+
+pass_wagon_sprites(15, _61_4440_v1,  32, 40)
+pass_wagon_sprites(15, _61_4440_v2,  32, 308)
+pass_wagon_sprites(15, _61_4440_v3,  32, 576)
+pass_wagon_sprites(15, _61_4440_v4,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/class2/61-4440-part2.png"
+pass_wagon_sprites(15, _61_4440_v5,  32, 40)
+pass_wagon_sprites(15, _61_4440_v6,  32, 308)
+pass_wagon_sprites(15, _61_4440_v7,  32, 576)
+pass_wagon_sprites(15, _61_4440_v8,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/class2/61-4440-part3.png"
+pass_wagon_sprites(15, _61_4440_v9,  32, 40)
+pass_wagon_sprites(15, _61_4440_v10, 32, 308)
+pass_wagon_sprites(15, _61_4440_v11, 32, 576)
+pass_wagon_sprites(15, _61_4440_v12, 32, 844)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, _61_4440_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: _61_4440_v1_sprites_start;
+     _61_4440_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, _61_4440_sprites_start,
+  cargo_subtype)
+{
+                    0: _61_4440_sprites_start_random;
+           LV_RAL6002: _61_4440_v1_sprites_start;
+           LV_RAL6020: _61_4440_v2_sprites_start;
+           LV_RZD_PID: _61_4440_v3_sprites_start;
+            LV_RUSSIA: _61_4440_v4_sprites_start;
+         LV_TATARSTAN: _61_4440_v5_sprites_start;
+  LV_NORTHERN_RAILWAY: _61_4440_v6_sprites_start;
+    LV_SOUTHERN_URALS: _61_4440_v7_sprites_start;
+          LV_SIBERIAN: _61_4440_v8_sprites_start;
+             LV_KUBAN: _61_4440_v9_sprites_start;
+       LV_RITSA_SOCHI: _61_4440_v10_sprites_start;
+       LV_LEO_TOLSTOY: _61_4440_v11_sprites_start;
+              LV_URAL: _61_4440_v12_sprites_start;
+  align_15_sprites;
+}
+
+long_vehicle(_61_4440)
+
+livery_template_base_list12(_61_4440, LV_RAL6002, LV_RAL6020, LV_RZD_PID, LV_RUSSIA, LV_TATARSTAN, LV_NORTHERN_RAILWAY, LV_SOUTHERN_URALS, LV_SIBERIAN, LV_KUBAN, LV_RITSA_SOCHI, LV_LEO_TOLSTOY, LV_URAL)
+
+switch (FEAT_TRAINS, SELF, _61_4440_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(59, 1),   // Бригада
+   STORE_TEMP(160, 2),  // Износ
+   STORE_TEMP(14, 3),   // Сопровождение
+   STORE_TEMP(42, 4),   // ТО
+   STORE_TEMP(6, 5),    // Сертификация
+
+   STORE_TEMP(PROP__61_4440_SD, 6),                                  // Скорость
+   STORE_TEMP(round(PROP__61_4440_WT), 7),                           // Тара
+   STORE_TEMP(round(PROP__61_4440_WT + PROP__61_4440_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                         // 281 // 280
+
+name_in_group(_61_4440, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_MODEL_NUMBER2, 61, 4440)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_LONGNAME_61_4440)))
+
+hint_wagon_coach_noto(_61_4440,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_CAP_008_VERY_SLOW,
+     STR_PURCHASE_HINT_COACH_TYPE_C_WITH_COND,
+     2009,
+     fact_tver())
+
+item (FEAT_TRAINS, _61_4440, 237) {
+  property {
+    name: string(STR_MODEL_NUMBER2, 61, 4440);
+    vehicle_dates(2009, 2050, 40, 10, 8, PROP__61_4440_CF)
+    vehicle_wagon(PROP__61_4440_WT, PROP__61_4440_SD)
+    vehicle_tourists()
+    vehicle_group(group_class2)
+  }
+  graphics {
+    purchase_menu(PROP__61_4440_CF, PROP__61_4440_RC, PROP__61_4440_SD, PROP__61_4440_WT, PROP__61_4440_TE, PROP__61_4440_PR, PROP__61_4440_FC)
+        additional_text: _61_4440_additional_text;
+       articulated_part: articulated_part_dummy7;
+       cargo_age_period: return CAP_008_VERY_SLOW;
+         cargo_capacity: return PROP__61_4440_FC;
+     cargo_subtype_text: _61_4440_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: _61_4440_sprites;
+          loading_speed: return 15;
+                   name: _61_4440_name;
+               purchase: _61_4440_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: _61_4440_running_cost_factor;
+  }
+}
+
+long_name_template(_61_4440, STR_LONGNAME_61_4440)

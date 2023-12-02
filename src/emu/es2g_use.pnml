@@ -46,34 +46,33 @@ map_sprites(es2g_purchase_sprites, es2g_hm_purchase_sprites)
 switch (FEAT_TRAINS, PARENT, es2g_hm_sprites_left,
   tep70bs_es1_2() + 2 * (vehicle_type_id == es2g_hm))
 {
-  2: es1_h_sprites_left_check;
-  1: es1_h_notpowered_normal_sprites_left;
+  2: es1_h_sprites_left;
+  1: es1_h_middle_sprites_left;
      es1_h_notpowered_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, es2g_hm_tep70bs_sprites_right_check,
-  position_in_consist_from_end == 1)
-{
-  1: es1_h_normal_sprites_right;
-     es1_h_notpowered_normal_sprites_right;
 }
 
 switch (FEAT_TRAINS, PARENT, es2g_hm_sprites_right,
   tep70bs_es1_2() + 2 * (vehicle_type_id == es2g_hm))
 {
-  2: es1_h_sprites_right_check;
-  1: es2g_hm_tep70bs_sprites_right_check;
+  2: es1_h_sprites_right;
+  1: es1_h_sprites_right;
      es1_h_notpowered_sprites_right;
 }
 
-switch (FEAT_TRAINS, SELF, es2g_hm_sprites_start,
-  ((LOAD_TEMP(0) - count_veh_id(es2g_hm)) % 2))
+engine_direction_template4m3(es2g_hm, es2g_c, es2g_cp, es2g_mn, )
+
+// 8-car can-not be used with sme (max 7 + 5 = 12)
+switch (FEAT_TRAINS, PARENT, es2g_hm_last_head_icon,
+  (num_vehs_in_consist < 16 ) && (vehicle_type_id == es2g_hm))
 {
-  0: es2g_hm_sprites_left;
-     es2g_hm_sprites_right;
+  1: type_head_motor_add_optional;
+     dummy_sprites;
 }
 
-MU_attach_wagon_icon_template_only2(es2g_hm, es2g_hm, type_head_motor, type_car_pant_add_mandatory, type_head_motor_add_optional)
+MU_attach_wagon_icon_template2_only2_countonly1_extracheckparent(es2g_hm,
+                                                                 es2g_hm, TEP70BS_ID,
+                                                                 type_head_motor, type_car_pant_add_mandatory, es2g_hm_last_head_icon, ,
+                                                                 (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 long_vehicle_sp(es2g_hm)
 
 switch (FEAT_TRAINS, PARENT, es2g_c_direction_left,
@@ -111,7 +110,7 @@ EMU_es2g_c_template(es2g)
 EMU_direction_calculation_template2b(es2g_c, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
 EMU_es2g_attach_wagon_icon_template(es2g_c)
 EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, _c_next)
-MU_attach_wagon_icon_template(es2g_c, es2g_hm, type_car)
+MU_attach_wagon_icon_template2_extracheckparent(es2g_c, es2g_hm, TEP70BS_ID, type_car, (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 long_vehicle_sp(es2g_c)
 
 switch (FEAT_TRAINS, PARENT, es2g_mn_direction_left,
@@ -148,7 +147,7 @@ EMU_es2g_mn_template(es2g)
 EMU_direction_calculation_template2b(es2g_mn, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
 EMU_es2g_attach_wagon_icon_template(es2g_mn)
 EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, _mn_next)
-MU_attach_wagon_icon_template(es2g_mn, es2g_hm, type_car_motor)
+MU_attach_wagon_icon_template2_extracheckparent(es2g_mn, es2g_hm, TEP70BS_ID, type_car_motor, (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 long_vehicle_sp(es2g_mn)
 
 // графика ЭС1_m зачем-то развёрнута
@@ -157,7 +156,7 @@ switch (FEAT_TRAINS, PARENT, es2g_cp_direction_right,
   tep70bs_es1_2() + 2 * (vehicle_type_id == es2g_hm))
 {
   2: es1_m_sprites_left;
-  1: es1_m_notpowered_normal_sprites_left;
+  1: es1_m_normal_sprites_left;
      es1_m_notpowered_sprites_left;
 }
 
@@ -165,7 +164,7 @@ switch (FEAT_TRAINS, PARENT, es2g_cp_direction_left,
   tep70bs_es1_2() + 2 * (vehicle_type_id == es2g_hm))
 {
   2: es1_m_sprites_right;
-  1: es1_m_notpowered_normal_sprites_right;
+  1: es1_m_normal_sprites_right;
      es1_m_notpowered_sprites_right;
 }
 
@@ -201,7 +200,7 @@ EMU_es2g_cp_template(es2g)
 EMU_direction_calculation_template2b(es2g_cp, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm)
 EMU_es2g_attach_wagon_icon_template(es2g_cp)
 EMU_attach_calculation_template2b(es2g, es2g_cp, es2g_mn, es1, es2g_hm, es2g_hm, es2g_hm, es2g_hm, _cp_next)
-MU_attach_wagon_icon_template(es2g_cp, es2g_hm, type_car_pant)
+MU_attach_wagon_icon_template2_extracheckparent(es2g_cp, es2g_hm, TEP70BS_ID, type_car_pant, (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 long_vehicle_sp(es2g_cp)
 
 EMU_es2g_can_attach_wagon_template(es2g)
@@ -217,13 +216,13 @@ switch (FEAT_TRAINS, SELF, es2g_can_attach_wagon1, vehicle_type_id)
 }
 
 switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon_hm0,
-  (num_vehs_in_consist < 14) && (vehicle_type_id == es2g_hm))
+  (num_vehs_in_consist < 16 ) && (vehicle_type_id == es2g_hm))
 {
   1: es2g_can_attach_wagon_hm;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
-switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon,
+switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon_num,
   count_veh_id(es2g_hm))
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
@@ -231,6 +230,13 @@ switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon,
   2: es2g_can_attach_wagon_hm0;
   3: es2g_can_attach_wagon1;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, es2g_can_attach_wagon,
+  num_vehs_in_consist < 24)
+{
+  1: es2g_can_attach_wagon_num;
+     return string(STR_CAN_ATTACH_TRAIN_TOO_LONG, 12);
 }
 
 switch (FEAT_TRAINS, PARENT, es2g_hm_start_stop,
@@ -247,12 +253,21 @@ switch (FEAT_TRAINS, PARENT, es2g_hm_cargo_capacity, (vehicle_type_id == es2g_hm
 switch (FEAT_TRAINS, PARENT, es2g_mn_cargo_capacity, (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 {  1: return PROP_es2g_m_CC;
       return 0;  }
-switch (FEAT_TRAINS, PARENT, es2g_c_cargo_capacity, (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
+switch (FEAT_TRAINS, PARENT, es2g_c_cargo_capacity,  (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 {  1: return PROP_es2g_c_CC;
       return 0;  }
 switch (FEAT_TRAINS, PARENT, es2g_cp_cargo_capacity, (vehicle_type_id == es2g_hm) || tep70bs_es1_2())
 {  1: return PROP_es2g_n_CC;
       return 0;  }
+
+switch (FEAT_TRAINS, PARENT, es2g_bitmask_vehicle_info_advanced2,
+  ((count_veh_id(ES2G_HM_ID) - LOAD_TEMP(11)) % 2 == 0))
+{ 1: return bitmask(FLAG_WRONG_TEP70BS_ES2G);
+     return 0; }
+
+switch (FEAT_TRAINS, SELF, es2g_bitmask_vehicle_info_advanced,
+  STORE_TEMP(count_veh_id(ES2G_HM_ID), 11))
+{ es2g_bitmask_vehicle_info_advanced2; }
 
 engine_electric1r_1_effect(es2g_create_effect_cp_direction, -1, 7)
 EMU_es2g_cp_template(es2g_create_effect)
@@ -333,14 +348,14 @@ name_in_group_subgroup(es2g_cp, string(STR_NAME_IN_GROUP, string(STR_NAME_ES_SER
 
 hint_MU_with_subtype(es2g_hm_b2018,
      calc_loading(PROP_es2g_h_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_HM_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2014, 2023,
      string(STR_PURCHASE_HINT_FACTORY_URAL))
 hint_MU_with_subtype_comment(es2g_hm_a2018,
      calc_loading(PROP_es2g_h_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_HM_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2014, 2023,
@@ -350,7 +365,7 @@ hint_change_after(es2g_hm, 2018)
 
 hint_MU_with_subtype_PTE(es2g_mn_b2018,
      calc_loading(PROP_es2g_m_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2018, 2023,
@@ -358,7 +373,7 @@ hint_MU_with_subtype_PTE(es2g_mn_b2018,
      string(STR_NAME_ES2G), PROP_es2g_m_PR, PROP_es2g_m_TE)
 hint_MU_with_subtype_comment_PTE(es2g_mn_a2018,
      calc_loading(PROP_es2g_m_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MN_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2018, 2023,
@@ -369,14 +384,14 @@ hint_change_after(es2g_mn, 2018)
 
 hint_MU_with_subtype(es2g_c_b2018,
      calc_loading(PROP_es2g_c_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2014, 2023,
      string(STR_PURCHASE_HINT_FACTORY_URAL))
 hint_MU_with_subtype_comment(es2g_c_a2018,
      calc_loading(PROP_es2g_c_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2014, 2023,
@@ -386,14 +401,14 @@ hint_change_after(es2g_c, 2018)
 
 hint_MU_with_subtype(es2g_cp_b2018,
      calc_loading(PROP_es2g_n_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_CP_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2014, 2023,
      string(STR_PURCHASE_HINT_FACTORY_URAL))
 hint_MU_with_subtype_comment(es2g_cp_a2018,
      calc_loading(PROP_es2g_n_CC / (2 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_1,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_CP_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_DESIRO,
      STR_SECTIONS_EMU_ES2G,
      2014, 2023,
@@ -407,14 +422,14 @@ item (FEAT_TRAINS, es2g_hm, 630) {
     name: string(STR_NAME_ES2G);
     vehicle_dates(2014, 2023, 40, 10, 8, PROP_es2g_h_CF)
     vehicle_emu(dc, PROP_es2g_h_PR, PROP_es2g_h_WT, PROP_es2g_h_TE, PROP_es2g_h_CC, 2 * WIDERST_D_DOOR, _highspeed)
-    vehicle_group(es_group)
+    vehicle_group(group_es)
   }
   graphics {
   purchase_menu(PROP_es2g_h_CF, PROP_es2g_h_RC, PROP_es2g_h_SD, PROP_es2g_h_WT, PROP_es2g_h_TE, PROP_es2g_h_PR, PROP_es2g_h_CC)
         additional_text: es2g_hm_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: es2g_can_attach_wagon;
-       cargo_age_period: return 60;
+       cargo_age_period: return CAP_0005_FAST;
          cargo_capacity: es2g_hm_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: es2g_hm_sprites;
@@ -438,8 +453,9 @@ item (FEAT_TRAINS, es2g_mn, 631) {
   purchase_menu_wagon(PROP_es2g_m_CF, PROP_es2g_m_RC, PROP_es2g_m_SD, PROP_es2g_m_WT, PROP_es2g_m_TE, PROP_es2g_m_PR, PROP_es2g_m_CC)
                 additional_text: es2g_mn_additional_text;
                articulated_part: articulated_part_dummy6;
+           bitmask_vehicle_info: es2g_bitmask_vehicle_info_advanced;
                can_attach_wagon: es2g_can_attach_wagon;
-               cargo_age_period: return 60;
+               cargo_age_period: return CAP_0005_FAST;
                  cargo_capacity: es2g_mn_cargo_capacity;
                  colour_mapping: any_cc_colour;
                         default: es2g_mn_sprites;
@@ -462,19 +478,20 @@ item (FEAT_TRAINS, es2g_c, 632) {
   }
   graphics {
   purchase_menu_wagon(PROP_es2g_c_CF, PROP_es2g_c_RC, PROP_es2g_c_SD, PROP_es2g_c_WT, PROP_es2g_c_TE, PROP_es2g_c_PR, PROP_es2g_c_CC)
-        additional_text: es2g_c_additional_text;
-       articulated_part: articulated_part_dummy6;
-       can_attach_wagon: es2g_can_attach_wagon;
-       cargo_age_period: return 60;
-         cargo_capacity: es2g_c_cargo_capacity;
-         colour_mapping: any_cc_colour;
-                default: es2g_c_sprites;
-                   name: es2g_c_name;
-                  power: return 0;
-               purchase: es2g_c_purchase_sprites;
-    running_cost_factor: es2g_c_running_cost_factor;
-                  speed: return 160;
-             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+         additional_text: es2g_c_additional_text;
+        articulated_part: articulated_part_dummy6;
+    bitmask_vehicle_info: es2g_bitmask_vehicle_info_advanced;
+        can_attach_wagon: es2g_can_attach_wagon;
+        cargo_age_period: return CAP_0005_FAST;
+          cargo_capacity: es2g_c_cargo_capacity;
+          colour_mapping: any_cc_colour;
+                 default: es2g_c_sprites;
+                    name: es2g_c_name;
+                   power: return 0;
+                purchase: es2g_c_purchase_sprites;
+     running_cost_factor: es2g_c_running_cost_factor;
+                   speed: return 160;
+              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
   }
 }
 
@@ -487,20 +504,21 @@ item (FEAT_TRAINS, es2g_cp, 633) {
   }
   graphics {
   purchase_menu_wagon(PROP_es2g_n_CF, PROP_es2g_n_RC, PROP_es2g_n_SD, PROP_es2g_n_WT, PROP_es2g_n_TE, PROP_es2g_n_PR, PROP_es2g_n_CC)
-        additional_text: es2g_cp_additional_text;
-       articulated_part: articulated_part_dummy6;
-       can_attach_wagon: es2g_can_attach_wagon;
-       cargo_age_period: return 60;
-         cargo_capacity: es2g_cp_cargo_capacity;
-         colour_mapping: any_cc_colour;
-          create_effect: es2g_create_effect;
-                default: es2g_cp_sprites;
-                   name: es2g_cp_name;
-                  power: return 0;
-               purchase: es2g_cp_purchase_sprites;
-    running_cost_factor: es2g_cp_running_cost_factor;
-                  speed: return 160;
-             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+         additional_text: es2g_cp_additional_text;
+        articulated_part: articulated_part_dummy6;
+    bitmask_vehicle_info: es2g_bitmask_vehicle_info_advanced;
+        can_attach_wagon: es2g_can_attach_wagon;
+        cargo_age_period: return CAP_0005_FAST;
+          cargo_capacity: es2g_cp_cargo_capacity;
+          colour_mapping: any_cc_colour;
+           create_effect: es2g_create_effect;
+                 default: es2g_cp_sprites;
+                    name: es2g_cp_name;
+                   power: return 0;
+                purchase: es2g_cp_purchase_sprites;
+     running_cost_factor: es2g_cp_running_cost_factor;
+                   speed: return 160;
+              start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
   }
 }
 

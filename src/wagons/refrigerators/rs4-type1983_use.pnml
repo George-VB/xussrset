@@ -1,0 +1,95 @@
+// rs4_type1983 uses rs4_type1979
+
+#define PROP_rs4_type1983_CF  4*398+315
+#define PROP_rs4_type1983_RC  686
+#define PROP_rs4_type1983_SD  140
+#define PROP_rs4_type1983_WT  222
+#define PROP_rs4_type1983_TE  0
+#define PROP_rs4_type1983_PR  0
+#define PROP_rs4_type1983_CC  47
+#define PROP_rs4_type1983_LC  46 * 4
+#define PROP_rs4_type1983_VC  112 * 4
+#define PROP_rs4_type1983_AC  0
+
+map_sprites(rs4_type1983_purchase_sprites, rs4_type1979_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, rs4_type1983_articulated_part,
+  extra_callback_info1)
+{
+  1: return dummy5;
+  2: return rs4_int;
+  3: return dummy5;
+  4: return rs4_int;
+  5: return dummy2;
+  6: return rs4_int;
+  7: return dummy5;
+  8: return rs4_int;
+  9: return dummy5;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+
+switch (FEAT_TRAINS, SELF, rs4_type1983_cargo_capacity,
+[  STORE_TEMP(PROP_rs4_type1983_LC, 0),  // т
+   STORE_TEMP(PROP_rs4_type1983_VC, 1),  // м³
+   STORE_TEMP(PROP_rs4_type1983_AC, 2),  // м²
+   STORE_TEMP(0, 3),                     // палетомест
+   STORE_TEMP(13 * 4, 4)])               // шаблон
+{ ref_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, rs4_type1983_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(0, 1),    // Бригада
+   STORE_TEMP(342, 2),  // Износ
+   STORE_TEMP(114, 3),  // Сопровождение
+   STORE_TEMP(228, 4),  // ТО
+   STORE_TEMP(2, 5),    // Сертификация
+
+   STORE_TEMP(PROP_rs4_type1983_SD, 6),                                 // Скорость
+   STORE_TEMP(round(PROP_rs4_type1983_WT), 7),                          // Тара
+   STORE_TEMP(round(PROP_rs4_type1983_WT + PROP_rs4_type1983_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                            // 684
+
+switch (FEAT_TRAINS, SELF, rs4_type1983_loading_speed,
+  STORE_TEMP(12 * 4, 2))
+{ all_wagons_box_loading_speed; }
+
+wagon_speed_change_on_load(rs4_type1983, 140, 120, 148)
+
+name_in_group(rs4_type1983, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_RS4_TYPE1983)),
+                            string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_RS4_TYPE1983)))
+
+hint_wagon_with_spectype_chande_speed_on_load(rs4_type1983,
+     PROP_rs4_type1983_LC, PROP_rs4_type1983_VC,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_CAP_128_DOESNT,
+     string(STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_4AND1, string(STR_MODEL_NUMBER2, 16, 380), string(STR_MODEL_NUMBER2, 16, 381)),
+     1983, 1985,
+     fact_bryansk(),
+     120, 148)
+
+item (FEAT_TRAINS, rs4_type1983, 1215) {
+  property {
+    name: string(STR_NAME_RS4_TYPE1983);
+    vehicle_dates(1983, 1985, 25, 10, 8, 4*398+315)
+    vehicle_wagon(PROP_rs4_type1983_WT, PROP_rs4_type1983_SD)
+    vehicle_group(group_refrigerators)
+    cargo_allow_refit: [cargo_all_reflist()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_rs4_type1983_CF, PROP_rs4_type1983_RC, PROP_rs4_type1983_SD, PROP_rs4_type1983_WT, PROP_rs4_type1983_TE, PROP_rs4_type1983_PR)
+        additional_text: rs4_type1983_additional_text;
+       articulated_part: rs4_type1983_articulated_part;
+       cargo_age_period: return CAP_128_DOESNT;
+         cargo_capacity: rs4_type1983_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: rs4_type1979_sprites;
+          loading_speed: rs4_type1983_loading_speed;
+                   name: rs4_type1983_name;
+               purchase: rs4_type1983_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: rs4_type1983_running_cost_factor;
+                  speed: rs4_type1983_speed;
+  }
+}
+
+long_name_template(rs4_type1983, STR_LONGNAME_RS4_TYPE1983)

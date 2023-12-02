@@ -1,5 +1,16 @@
 // gondola_22_473
 
+#define PROP_gondola_22_473_CF  38
+#define PROP_gondola_22_473_RC  15
+#define PROP_gondola_22_473_SD  120
+#define PROP_gondola_22_473_WT  23
+#define PROP_gondola_22_473_TE  0
+#define PROP_gondola_22_473_PR  0
+#define PROP_gondola_22_473_CC  92
+#define PROP_gondola_22_473_LC  58
+#define PROP_gondola_22_473_VC  110
+#define PROP_gondola_22_473_AC  0
+
 #define IMAGEFILE  "src/wagons/gondolas/special/22-473.png"
 purchase_sprites(gondola_22_473, 0, 0)
 flatbed_empty_layout_template(gondola_22_473, 10, 32, 40)
@@ -44,11 +55,11 @@ switch (FEAT_TRAINS, SELF, gondola_22_473_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, gondola_22_473_cargo_capacity,
-[  STORE_TEMP(58, 0),   // т
-   STORE_TEMP(110, 1),  // м³
-   STORE_TEMP(0, 2),    // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(10, 4),   // шаблон
+[  STORE_TEMP(PROP_gondola_22_473_LC, 0),  // т
+   STORE_TEMP(PROP_gondola_22_473_VC, 1),  // м³
+   STORE_TEMP(PROP_gondola_22_473_AC, 2),  // м²
+   STORE_TEMP(0, 3),                       // палетомест
+   STORE_TEMP(10, 4),                      // шаблон
    cargo_type_in_veh])
 {
   hopper_cargo_capacity;
@@ -62,10 +73,10 @@ switch (FEAT_TRAINS, SELF, gondola_22_473_running_cost_factor,
    STORE_TEMP(5, 4),   // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                 // Скорость
-   STORE_TEMP(23, 7),                  // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 58, 8)])  // Максимальная масса
-{ all_running_cost_factor; }           // 15
+   STORE_TEMP(PROP_gondola_22_473_SD, 6),                                   // Скорость
+   STORE_TEMP(round(PROP_gondola_22_473_WT), 7),                            // Тара
+   STORE_TEMP(round(PROP_gondola_22_473_WT + PROP_gondola_22_473_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                // 15
 
 switch (FEAT_TRAINS, SELF, gondola_22_473_loading_speed,
 [  STORE_TEMP(0, 0),     // определяется элеватором
@@ -74,11 +85,14 @@ switch (FEAT_TRAINS, SELF, gondola_22_473_loading_speed,
    STORE_TEMP(6*2, 3)])  // нижняя разгрузка ограничена 6 единицами груза на люк
 { cargo8_piece_loading_speed; }
 
+name_in_group(gondola_22_473, string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_MODEL_NUMBER2, 22, 473)),
+                              string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_LONGNAME_GONDOLA_22_473)))
+
 hint_wagon_with_uspeed_noto(gondola_22_473,
-           58, 110,
+           PROP_gondola_22_473_LC, PROP_gondola_22_473_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
            string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_CAP_001_NORMAL,
            STR_PURCHASE_HINT_WAGON_TYPE_GONDOLA_HOPPER,
            1972,
            fact_dneprodzerzhinskycw())
@@ -86,11 +100,13 @@ hint_wagon_with_uspeed_noto(gondola_22_473,
 item (FEAT_TRAINS, gondola_22_473, 589) {
   property {
     name: string(STR_MODEL_NUMBER2, 22, 473);
-    vehicle_dates(1972, 2050, 26, 10, 8, 38)
-    vehicle_wagon(23, 120)
+    vehicle_dates(1972, 2050, 26, 10, 8, PROP_gondola_22_473_CF)
+    vehicle_wagon(PROP_gondola_22_473_WT, PROP_gondola_22_473_SD)
+    vehicle_group(group_gondolas)
     cargo_allow_refit: [cargo_all_peat_hopperlist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_gondola_22_473_CF, PROP_gondola_22_473_RC, PROP_gondola_22_473_SD, PROP_gondola_22_473_WT, PROP_gondola_22_473_TE, PROP_gondola_22_473_PR)
         additional_text: gondola_22_473_additional_text;
        articulated_part: articulated_part_dummy2;
          cargo_capacity: gondola_22_473_cargo_capacity;
@@ -98,6 +114,7 @@ item (FEAT_TRAINS, gondola_22_473, 589) {
          colour_mapping: gondola_22_473_colour_mapping;
                 default: gondola_22_473_sprites;
           loading_speed: gondola_22_473_loading_speed;
+                   name: gondola_22_473_name;
                purchase: gondola_22_473_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: gondola_22_473_running_cost_factor;

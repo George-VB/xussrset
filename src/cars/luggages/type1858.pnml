@@ -1,0 +1,79 @@
+﻿// mail_type1858
+
+#define PROP_mail_type1858_CF  17
+#define PROP_mail_type1858_RC  11
+#define PROP_mail_type1858_SD  100
+#define PROP_mail_type1858_WT  11
+#define PROP_mail_type1858_TE  0
+#define PROP_mail_type1858_PR  0
+#define PROP_mail_type1858_CC  22
+#define PROP_mail_type1858_LC  10
+#define PROP_mail_type1858_VC  45
+#define PROP_mail_type1858_AC  15
+
+#define IMAGEFILE  "src/cars/luggages/type1858.png"
+purchase_sprites(mail_type1858, 0, 0)
+pass_wagon_sprites(7, mail_type1858, 32, 40)
+#undef IMAGEFILE
+long_vehicle(mail_type1858)
+
+switch (FEAT_TRAINS, SELF, mail_type1858_running_cost_factor,
+[  STORE_TEMP(0, 0),  // Моторы
+   STORE_TEMP(0, 1),  // Бригада
+   STORE_TEMP(6, 2),  // Износ
+   STORE_TEMP(1, 3),  // Сопровождение (сотрудник почты)
+   STORE_TEMP(4, 4),  // ТО
+   STORE_TEMP(0, 5),  // Сертификация
+
+   STORE_TEMP(PROP_mail_type1858_SD, 6),                                  // Скорость
+   STORE_TEMP(round(PROP_mail_type1858_WT), 7),                           // Тара
+   STORE_TEMP(round(PROP_mail_type1858_WT + PROP_mail_type1858_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                              // 11
+
+switch (FEAT_TRAINS, SELF, mail_type1858_loading_speed,
+  STORE_TEMP(7, 2))
+{ all_wagons_box_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, mail_type1858_cargo_capacity,
+[  STORE_TEMP(PROP_mail_type1858_LC, 0),  // т
+   STORE_TEMP(PROP_mail_type1858_VC, 1),  // м³
+   STORE_TEMP(PROP_mail_type1858_AC, 2),  // м²
+   STORE_TEMP(0, 3),                      // палетомест
+   STORE_TEMP(7, 4)])                     // шаблон
+{ box_cargo_capacity; }
+
+name_in_group(mail_type1858, string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_NAME_MAIL_TYPE1858)),
+                             string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_NAME_MAIL_TYPE1858)))
+
+hint_wagon(mail_type1858,
+           PROP_mail_type1858_LC, PROP_mail_type1858_VC,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
+           STR_PURCHASE_HINT_WAGON_TYPE_MAIL,
+           1858, 1905,
+           string(STR_PURCHASE_HINT_FACTORY_BREMME_LEVESTAM))
+
+item (FEAT_TRAINS, mail_type1858, 582) {
+  property {
+    name: string(STR_NAME_MAIL_TYPE1858);
+    vehicle_dates(1858, 1905, 28, 10, 6, PROP_mail_type1858_CF)
+    vehicle_wagon(PROP_mail_type1858_WT, PROP_mail_type1858_SD)
+    vehicle_group(group_mail)
+     cargo_allow_refit: [MAIL, cargo_all_luggagelist()];
+    default_cargo_type: MAIL;
+  }
+  graphics {
+    purchase_menu_nocc(PROP_mail_type1858_CF, PROP_mail_type1858_RC, PROP_mail_type1858_SD, PROP_mail_type1858_WT, PROP_mail_type1858_TE, PROP_mail_type1858_PR)
+        additional_text: mail_type1858_additional_text;
+       articulated_part: articulated_part_dummy1;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
+         cargo_capacity: mail_type1858_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: mail_type1858_sprites;
+          loading_speed: mail_type1858_loading_speed;
+                   name: mail_type1858_name;
+               purchase: mail_type1858_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: mail_type1858_running_cost_factor;
+  }
+}

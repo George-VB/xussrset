@@ -1,0 +1,80 @@
+﻿// hopper_19_9870_01 uses hopper_19_9870
+
+#define PROP_hopper_19_9870_01_CF  132
+#define PROP_hopper_19_9870_01_RC  47
+#define PROP_hopper_19_9870_01_SD  120
+#define PROP_hopper_19_9870_01_WT  24
+#define PROP_hopper_19_9870_01_TE  0
+#define PROP_hopper_19_9870_01_PR  0
+#define PROP_hopper_19_9870_01_CC  136
+#define PROP_hopper_19_9870_01_LC  77
+#define PROP_hopper_19_9870_01_VC  101
+#define PROP_hopper_19_9870_01_AC  0
+
+map_sprites(hopper_19_9870_01_purchase_sprites, hopper_19_9870_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_01_cargo_capacity,
+[  STORE_TEMP(PROP_hopper_19_9870_01_LC, 0),  // т
+   STORE_TEMP(PROP_hopper_19_9870_01_VC, 1),  // м³
+   STORE_TEMP(PROP_hopper_19_9870_01_AC, 2),  // м²
+   STORE_TEMP(0, 3),                          // палетомест
+   STORE_TEMP(9, 4)])                         // шаблон
+{ hopper_cargo_capacity; }
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_01_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(31, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(16, 4),  // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_hopper_19_9870_01_SD, 6),                                      // Скорость
+   STORE_TEMP(round(PROP_hopper_19_9870_01_WT), 7),                               // Тара
+   STORE_TEMP(round(PROP_hopper_19_9870_01_WT + PROP_hopper_19_9870_01_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                      // 47
+
+switch (FEAT_TRAINS, SELF, hopper_19_9870_01_loading_speed,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(4 * LARGE_HATCH, 2),   // 4 больших погрузочных люка
+   STORE_TEMP(6 * SMALL_HATCH, 3)])  // 6 малых разгрузочных люков
+{ all_wagons_hopper_loading_speed; }
+
+name_in_group(hopper_19_9870_01, string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_GRAIN_SERIES), string(STR_MODEL_NUMBER3, 19, 9870, 1)),
+                                 string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_GRAIN_SERIES), string(STR_LONGNAME_HOPPER_19_9870_01)))
+
+hint_wagon_with_uspeed_noto(hopper_19_9870_01,
+     PROP_hopper_19_9870_01_LC, PROP_hopper_19_9870_01_VC,
+     calc_loading(PROP_hopper_19_9870_01_LC / (4 * LARGE_HATCH)),
+     calc_loading(PROP_hopper_19_9870_01_LC / (6 * SMALL_HATCH)),
+     STR_PURCHASE_HINT_CAP_001_NORMAL,
+     STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+     2012,
+     string(STR_PURCHASE_HINT_FACTORY_TIKHVIN_CBP))
+
+item (FEAT_TRAINS, hopper_19_9870_01, 571) {
+  property {
+    name: string(STR_MODEL_NUMBER3, 19, 9870, 1);
+    vehicle_dates(2012, 2050, 32, 10, 8, PROP_hopper_19_9870_01_CF)
+    vehicle_wagon(PROP_hopper_19_9870_01_WT, PROP_hopper_19_9870_01_SD)
+    vehicle_group(group_hoppers_grain)
+    cargo_allow_refit: [cargo_all_grain_hopperlist()];
+  }
+  graphics {
+    purchase_menu_nocc(PROP_hopper_19_9870_01_CF, PROP_hopper_19_9870_01_RC, PROP_hopper_19_9870_01_SD, PROP_hopper_19_9870_01_WT, PROP_hopper_19_9870_01_TE, PROP_hopper_19_9870_01_PR)
+        additional_text: hopper_19_9870_01_additional_text;
+       articulated_part: articulated_part_dummy1;
+         cargo_capacity: hopper_19_9870_01_cargo_capacity;
+     cargo_subtype_text: grain_hopper_cargo_subtype_text;
+         colour_mapping: grain_hopper_colour_mapping;
+                default: hopper_19_9870_sprites;
+          loading_speed: hopper_19_9870_01_loading_speed;
+                   name: hopper_19_9870_01_name;
+               purchase: hopper_19_9870_01_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: hopper_19_9870_01_running_cost_factor;
+  }
+}
+
+long_name_template(hopper_19_9870_01, STR_LONGNAME_HOPPER_19_9870_01)

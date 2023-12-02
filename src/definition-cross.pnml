@@ -1,7 +1,7 @@
  /// definition
 
 // ТЭП70БС + ЭС1 / ЭС2Г
-// голова ТЭП70БС 2018 года или новее, и общее количество (ЭС1 * 5) + (ЭС2) <= количество (ТЭП70БС * 6) и нет другого ПС
+// голова ТЭП70БС 2018 года или новее, общее количество вагонов / 7 <= количество ТЭП70БС, и нет другого ПС, только 1 ЭМВПС в составе
 #define TEP70BS_WAGONS_ENERGY_LIMIT 7
 #define TEP70BS_ID 175
 #define ES1_ID 413
@@ -10,12 +10,21 @@
 #define ES2G_C_ID  632
 #define ES2G_CP_ID 633
 
-#define tep70bs_es1_2()                                                                                                                        \
-  (((vehicle_type_id == TEP70BS_ID) && (build_year >= 2018)) &&                                                                                \
-   ((count_veh_id(TEP70BS_ID) * TEP70BS_WAGONS_ENERGY_LIMIT) >=                                                                                \
-    (count_veh_id(ES1_ID) * 5 + count_veh_id(ES2G_HM_ID) + count_veh_id(ES2G_MN_ID) + count_veh_id(ES2G_C_ID) + count_veh_id(ES2G_CP_ID))) &&  \
-   ((count_veh_id(TEP70BS_ID) + count_veh_id(ES1_ID) * 5 +                                                                                     \
-     count_veh_id(ES2G_HM_ID) + count_veh_id(ES2G_MN_ID) + count_veh_id(ES2G_C_ID) + count_veh_id(ES2G_CP_ID)) == (num_vehs_in_consist / 2)))  \
+#define tep70bs_es1_2()                                                                                                                       \
+  (((vehicle_type_id == TEP70BS_ID)) &&                                                                                                       \
+  (! is_wrong_tep70bs_es2g()) &&                                                                                                              \
+  (((count_veh_id(ES2G_HM_ID) == 0) && (count_veh_id(ES1_ID) == 1)) ||   /* ES1 */                                                            \
+   ((count_veh_id(ES2G_HM_ID) == 2) && (count_veh_id(ES1_ID) == 0) &&                                                                         \
+   (((count_veh_id(ES2G_CP_ID) == 2) && (count_veh_id(ES2G_C_ID) == 1)) ||  /* ES2G - 5 cars */                                               \
+    ((count_veh_id(ES2G_CP_ID) == 2) && (count_veh_id(ES2G_C_ID) == 2)) ||  /* ES2G - 6 cars */                                               \
+    ((count_veh_id(ES2G_CP_ID) == 3) && (count_veh_id(ES2G_C_ID) == 1) && (count_veh_id(ES2G_MN_ID) == 1)) ||  /* ES2G - 7 cars */            \
+    ((count_veh_id(ES2G_CP_ID) == 4) && (count_veh_id(ES2G_C_ID) == 2) && (count_veh_id(ES2G_MN_ID) == 2)) ||  /* ES2G - 10 cars */           \
+    ((count_veh_id(ES2G_CP_ID) == 5) && (count_veh_id(ES2G_C_ID) == 2) && (count_veh_id(ES2G_MN_ID) == 3))     /* ES2G - 12 cars */           \
+    ))) &&                                                                                                                                    \
+  ((count_veh_id(TEP70BS_ID) * TEP70BS_WAGONS_ENERGY_LIMIT) >=   /* Enougth Enrgy */                                                          \
+   (count_veh_id(ES1_ID) * 5 + count_veh_id(ES2G_HM_ID) + count_veh_id(ES2G_MN_ID) + count_veh_id(ES2G_C_ID) + count_veh_id(ES2G_CP_ID))) &&  \
+  ((count_veh_id(TEP70BS_ID) + count_veh_id(ES1_ID) * 5 +        /* No other cars */                                                          \
+    count_veh_id(ES2G_HM_ID) + count_veh_id(ES2G_MN_ID) + count_veh_id(ES2G_C_ID) + count_veh_id(ES2G_CP_ID)) == (num_vehs_in_consist / 2)))  \
 
 // 2М62У + ДР1А
 #define _2M62U_ID 168
@@ -27,23 +36,6 @@
 #define DR1A_TYPE1985_C_ID 985
 #define DR1A_TYPE1991_N_ID 213
 
-#define drb1_2m62u_dr1a()                                                                                               \
-(((((cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB) && (vehicle_type_id == _2M62U_ID)) ||                                 \
-    ((vehicle_type_id == DR1A_TYPE1991_N_ID) && (cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB))) &&                      \
-    is_drb1sh() &&                                                                                                      \
-    ((count_veh_id(_2M62U_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) == 2) &&                                              \
-    ((count_veh_id(DR1A_TYPE1976_H_ID) + count_veh_id(DR1A_TYPE1978_H_ID) + count_veh_id(DR1A_TYPE1985_H_ID)) == 0) &&  \
-    ((count_veh_id(DR1A_TYPE1976_C_ID) + count_veh_id(DR1A_TYPE1978_C_ID) + count_veh_id(DR1A_TYPE1985_C_ID) +          \
-     (count_veh_id(DR1A_TYPE1991_N_ID))) <= 10)) * 2) +   /* ДРБ1 */                                                    \
-  ((count_veh_id(_2M62U_ID) == 0) &&                                                                                    \
-   ((vehicle_type_id == DR1A_TYPE1976_H_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1978_H_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1985_H_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1991_N_ID) ||            /* Не ДРБ1 */                                                 \
-    (vehicle_type_id == DR1A_TYPE1976_C_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1978_C_ID) ||                                                                          \
-    (vehicle_type_id == DR1A_TYPE1985_C_ID) ))   /* одинокий вагон */                                                   \
-
 #define drb1_2m62u_dr1a_check()                                                                                                                          \
   ((num_vehs_in_consist - count_veh_id(DR1A_TYPE1976_C_ID) * 2                                                                                           \
                         - count_veh_id(DR1A_TYPE1978_C_ID) * 2                                                                                           \
@@ -53,5 +45,27 @@
   ((count_veh_id(DR1A_TYPE1976_C_ID) + count_veh_id(DR1A_TYPE1978_C_ID) + count_veh_id(DR1A_TYPE1985_C_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) >= 1) &&  \
   ((count_veh_id(_2M62U_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) == 2) &&                                                                                 \
   ((count_veh_id(DR1A_TYPE1976_C_ID) + count_veh_id(DR1A_TYPE1978_C_ID) + count_veh_id(DR1A_TYPE1985_C_ID) + count_veh_id(DR1A_TYPE1991_N_ID)) <= 10)    \
+
+#define dr1a_check()                                                   \
+  ((num_vehs_in_consist - count_veh_id(DR1A_TYPE1976_C_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1978_C_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1985_C_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1976_H_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1978_H_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1985_H_ID) * 2         \
+                        - count_veh_id(DR1A_TYPE1991_N_ID) * 2) == 0)  \
+
+// 2 if DRB1, 1 if DR1A
+#define drb1_2m62u_dr1a()                                                                           \
+((( ((cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB) && (vehicle_type_id == _2M62U_ID)) ||            \
+    ((cargo_subtype == LV_BELARUSSIAN_RAILWAY_DRB) && (vehicle_type_id == DR1A_TYPE1991_N_ID))) &&  \
+     is_drb1sh() && drb1_2m62u_dr1a_check()) * 2) +   /* ДРБ1 */                                    \
+  (((vehicle_type_id == DR1A_TYPE1976_H_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1978_H_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1985_H_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1991_N_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1976_C_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1978_C_ID) ||                                                      \
+    (vehicle_type_id == DR1A_TYPE1985_C_ID) ) && dr1a_check() )   /* ДР1А */                        \
 
 // end

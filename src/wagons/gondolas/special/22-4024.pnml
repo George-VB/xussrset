@@ -1,5 +1,16 @@
 ﻿// gondola_22-4024
 
+#define PROP_gondola_22_4024_CF  101
+#define PROP_gondola_22_4024_RC  65
+#define PROP_gondola_22_4024_SD  120
+#define PROP_gondola_22_4024_WT  46
+#define PROP_gondola_22_4024_TE  0
+#define PROP_gondola_22_4024_PR  0
+#define PROP_gondola_22_4024_CC  204
+#define PROP_gondola_22_4024_LC  115
+#define PROP_gondola_22_4024_VC  76
+#define PROP_gondola_22_4024_AC  41
+
 #define IMAGEFILE  "src/wagons/gondolas/special/22-4024.png"
 purchase_sprites(gondola_22_4024, 0, 0)
 combo_layout_template(gondola_22_4024, 9, 32, 40)
@@ -49,11 +60,11 @@ switch (FEAT_TRAINS, SELF, gondola_22_4024_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, gondola_22_4024_cargo_capacity,
-[  STORE_TEMP(115, 0),  // т
-   STORE_TEMP(76, 1),   // м³
-   STORE_TEMP(41, 2),   // м²
-   STORE_TEMP(0, 3),    // палетомест
-   STORE_TEMP(9, 4),    // шаблон
+[  STORE_TEMP(PROP_gondola_22_4024_LC, 0),  // т
+   STORE_TEMP(PROP_gondola_22_4024_VC, 1),  // м³
+   STORE_TEMP(PROP_gondola_22_4024_AC, 2),  // м²
+   STORE_TEMP(0, 3),                        // палетомест
+   STORE_TEMP(9, 4),                        // шаблон
    cargo_type_in_veh])
 {
 gondola_capacity()
@@ -75,15 +86,18 @@ switch (FEAT_TRAINS, SELF, gondola_22_4024_running_cost_factor,
    STORE_TEMP(22, 4),  // ТО
    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                  // Скорость
-   STORE_TEMP(46, 7),                   // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 115, 8)])  // Максимальная масса
-{ all_running_cost_factor; }            // 65
+   STORE_TEMP(PROP_gondola_22_4024_SD, 6),                                    // Скорость
+   STORE_TEMP(round(PROP_gondola_22_4024_WT), 7),                             // Тара
+   STORE_TEMP(round(PROP_gondola_22_4024_WT + PROP_gondola_22_4024_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                  // 65
+
+name_in_group(gondola_22_4024, string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_MODEL_NUMBER2, 22, 4024)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_GONDOLAS_SERIES), string(STR_LONGNAME_GONDOLA_22_4024)))
 
 hint_wagon_noto(gondola_22_4024,
-           115, 76,
+           PROP_gondola_22_4024_LC, PROP_gondola_22_4024_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_3_1,
+           STR_PURCHASE_HINT_CAP_001_NORMAL,
            STR_PURCHASE_HINT_WAGON_TYPE_SEMI_GONDOLA,
            1989,
            fact_dneprodzerzhinskycw())
@@ -91,11 +105,13 @@ hint_wagon_noto(gondola_22_4024,
 item (FEAT_TRAINS, gondola_22_4024, 375) {
   property {
     name: string(STR_MODEL_NUMBER2, 22, 4024);
-    vehicle_dates(1989, 2050, 22, 10, 8, 101)
-    vehicle_wagon(46, 120)
+    vehicle_dates(1989, 2050, 22, 10, 8, PROP_gondola_22_4024_CF)
+    vehicle_wagon(PROP_gondola_22_4024_WT, PROP_gondola_22_4024_SD)
+    vehicle_group(group_gondolas)
     cargo_allow_refit: [cargo_all_bulklist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_gondola_22_4024_CF, PROP_gondola_22_4024_RC, PROP_gondola_22_4024_SD, PROP_gondola_22_4024_WT, PROP_gondola_22_4024_TE, PROP_gondola_22_4024_PR)
         additional_text: gondola_22_4024_additional_text;
        articulated_part: articulated_part_dummy1;
          cargo_capacity: gondola_22_4024_cargo_capacity;
@@ -103,6 +119,7 @@ item (FEAT_TRAINS, gondola_22_4024, 375) {
          colour_mapping: gondola_22_4024_colour_mapping;
                 default: gondola_22_4024_sprites;
           loading_speed: gondola_22_4024_loading_speed;
+                   name: gondola_22_4024_name;
                purchase: gondola_22_4024_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: gondola_22_4024_running_cost_factor;

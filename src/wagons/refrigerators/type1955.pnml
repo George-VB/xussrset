@@ -1,5 +1,16 @@
 ﻿// refrigerator_type1955_with_tanks
 
+#define PROP_refrigerator_type1955_CF  59
+#define PROP_refrigerator_type1955_RC  28
+#define PROP_refrigerator_type1955_SD  120
+#define PROP_refrigerator_type1955_WT  35
+#define PROP_refrigerator_type1955_TE  0
+#define PROP_refrigerator_type1955_PR  0
+#define PROP_refrigerator_type1955_CC  42
+#define PROP_refrigerator_type1955_LC  24
+#define PROP_refrigerator_type1955_VC  66
+#define PROP_refrigerator_type1955_AC  0
+
 #define IMAGEFILE  "src/wagons/refrigerators/type1955.png"
 purchase_sprites(refrigerator_type1955, 0, 0)
 combo_layout_boxcar_template(refrigerator_type1955, 9, 32, 40)
@@ -23,11 +34,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1955_weight,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1955_cargo_capacity,
-[  STORE_TEMP(24, 0),  // т
-   STORE_TEMP(66, 1),  // м³
-   STORE_TEMP(0, 2),   // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(9, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_type1955_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_type1955_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_type1955_AC, 2),  // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(9, 4)])                             // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1955_running_cost_factor,
@@ -38,19 +49,22 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1955_running_cost_factor,
    STORE_TEMP(9, 4),   // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                     // Скорость
-   STORE_TEMP(35, 7),                      // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 24 + 6, 8)])  // Максимальная масса
-{ all_running_cost_factor; }               // 28
+   STORE_TEMP(PROP_refrigerator_type1955_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_refrigerator_type1955_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_refrigerator_type1955_WT + PROP_refrigerator_type1955_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                              // 28
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1955_loading_speed,
   STORE_TEMP(9, 2))
 { all_wagons_box_loading_speed; }
 
+name_in_group(refrigerator_type1955, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1955)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1955)))
+
 hint_wagon(refrigerator_type1955,
-           24, 66,
+           PROP_refrigerator_type1955_LC, PROP_refrigerator_type1955_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
            1955, 1957,
            fact_bryansk())
@@ -58,24 +72,25 @@ hint_wagon(refrigerator_type1955,
 item (FEAT_TRAINS, refrigerator_type1955, 369) {
   property {
     name: string(STR_NAME_REFRIGERATOR_TYPE1955);
-    vehicle_dates(1955, 1957, 25, 10, 8, 59)
-    vehicle_wagon(35, 120)
+    vehicle_dates(1955, 1957, 25, 10, 8, PROP_refrigerator_type1955_CF)
+    vehicle_wagon(PROP_refrigerator_type1955_WT, PROP_refrigerator_type1955_SD)
+    vehicle_group(group_refrigerators)
     default_cargo_type: MILK;
      cargo_allow_refit: [cargo_all_gen_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_type1955_CF, PROP_refrigerator_type1955_RC, PROP_refrigerator_type1955_SD, PROP_refrigerator_type1955_WT, PROP_refrigerator_type1955_TE, PROP_refrigerator_type1955_PR)
         additional_text: refrigerator_type1955_additional_text;
        articulated_part: articulated_part_dummy1;
-       cargo_age_period: return 300;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: refrigerator_type1955_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: refrigerator_type1955_sprites;
           loading_speed: refrigerator_type1955_loading_speed;
+                   name: refrigerator_type1955_name;
                purchase: refrigerator_type1955_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_type1955_running_cost_factor;
                  weight: refrigerator_type1955_weight;
   }
 }
-
-long_name_template(refrigerator_type1955, STR_LONGNAME_REFRIGERATOR_TYPE1955)

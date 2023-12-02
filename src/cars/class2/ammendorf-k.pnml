@@ -1,0 +1,134 @@
+﻿// ammendorf_d
+
+#define PROP_ammendorf_k_CF  354
+#define PROP_ammendorf_k_RC  220
+#define PROP_ammendorf_k_SD  160
+#define PROP_ammendorf_k_WT  55
+#define PROP_ammendorf_k_TE  0
+#define PROP_ammendorf_k_PR  0
+#define PROP_ammendorf_k_CC  38
+#define PROP_ammendorf_k_FC  38
+
+#define IMAGEFILE  "src/cars/class2/ammendorf-k-part1.png"
+purchase_sprites(ammendorf_k, 0, 0)
+
+pass_wagon_sprites(14, ammendorf_k_v1,  32, 40)
+pass_wagon_sprites(14, ammendorf_k_v2,  32, 308)
+pass_wagon_sprites(14, ammendorf_k_v3,  32, 576)
+pass_wagon_sprites(14, ammendorf_k_v4,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/class2/ammendorf-k-part2.png"
+pass_wagon_sprites(14, ammendorf_k_v5,  32, 40)
+pass_wagon_sprites(14, ammendorf_k_v6,  32, 308)
+pass_wagon_sprites(14, ammendorf_k_v7,  32, 576)
+pass_wagon_sprites(14, ammendorf_k_v8,  32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/class2/ammendorf-k-part3.png"
+pass_wagon_sprites(14, ammendorf_k_v9,  32, 40)
+pass_wagon_sprites(14, ammendorf_k_v10, 32, 308)
+pass_wagon_sprites(14, ammendorf_k_v11, 32, 576)
+pass_wagon_sprites(14, ammendorf_k_v12, 32, 844)
+#undef IMAGEFILE
+#define IMAGEFILE  "src/cars/class2/ammendorf-k-part4.png"
+pass_wagon_sprites(14, ammendorf_k_v13, 32, 40)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: ammendorf_k_v1_sprites_start;
+     ammendorf_k_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_rbr,
+ check_year(GREAT_CHANGE_YEAR))
+{
+  0: ammendorf_k_v5_sprites_start;
+     ammendorf_k_v6_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_ebr,
+ check_year(GREAT_CHANGE_YEAR))
+{
+  0: ammendorf_k_v7_sprites_start;
+     ammendorf_k_v8_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start_rus,
+ check_year(1975))
+{
+  0: ammendorf_k_v11_sprites_start;
+     ammendorf_k_v12_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, ammendorf_k_sprites_start,
+  cargo_subtype)
+{
+                          0: ammendorf_k_sprites_start_random;
+                 LV_RAL6002: ammendorf_k_v2_sprites_start;
+                 LV_RAL6020: ammendorf_k_v1_sprites_start;
+               LV_RED_ARROW: ammendorf_k_v3_sprites_start;
+              LV_BELARUSSIA: ammendorf_k_v4_sprites_start;
+     LV_BALTIC_RAILWAY_RIGA: ammendorf_k_sprites_start_rbr;
+  LV_BALTIC_RAILWAY_ESTONIA: ammendorf_k_sprites_start_ebr;
+                   LV_AMBER: ammendorf_k_v9_sprites_start;
+                    LV_EAST: ammendorf_k_v10_sprites_start;
+                  LV_RUSSIA: ammendorf_k_sprites_start_rus;
+                LV_SIBERIAN: ammendorf_k_v13_sprites_start;
+  align_14_sprites;
+}
+
+long_vehicle(ammendorf_k)
+
+livery_template_base_list10(ammendorf_k, LV_RAL6020, LV_RAL6002, LV_RED_ARROW, LV_BELARUSSIA, LV_BALTIC_RAILWAY_RIGA, LV_BALTIC_RAILWAY_ESTONIA, LV_AMBER, LV_EAST, LV_RUSSIA, LV_SIBERIAN)
+switch (FEAT_TRAINS, SELF, ammendorf_k_running_cost_factor,
+[  STORE_TEMP(0, 0),    // Моторы
+   STORE_TEMP(46, 1),   // Бригада
+   STORE_TEMP(126, 2),  // Износ
+   STORE_TEMP(11, 3),   // Сопровождение
+   STORE_TEMP(33, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP_ammendorf_k_SD, 6),                                     // Скорость
+   STORE_TEMP(round(PROP_ammendorf_k_WT), 7),                              // Тара
+   STORE_TEMP(round(PROP_ammendorf_k_WT + PROP_ammendorf_k_FC / 16), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                               // 220 // 221
+
+name_in_group(ammendorf_k, string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_NAME_AMMENDORF_K)),
+                           string(STR_NAME_IN_GROUP, string(STR_NAME_CLASS2_SERIES), string(STR_LONGNAME_AMMENDORF_K)))
+
+hint_wagon_coach_comment(ammendorf_k,
+     string(STR_PURCHASE_HINT_LOADING_SPEED_3TIC),
+     STR_PURCHASE_HINT_CAP_008_VERY_SLOW,
+     STR_PURCHASE_HINT_COACH_TYPE_C_WITH_COND,
+     1966, 1973,
+     string(STR_PURCHASE_HINT_FACTORY_AMMENDORF),
+     string(STR_PURCHASE_HINT_INTERIOR_WHITE))
+
+item (FEAT_TRAINS, ammendorf_k, 436) {
+  property {
+    name: string(STR_NAME_AMMENDORF_K);
+    vehicle_dates(1966, 1973, 28, 10, 8, PROP_ammendorf_k_CF)
+    vehicle_wagon(PROP_ammendorf_k_WT, PROP_ammendorf_k_SD)
+    vehicle_tourists()
+    vehicle_group(group_class2)
+  }
+  graphics {
+    purchase_menu(PROP_ammendorf_k_CF, PROP_ammendorf_k_RC, PROP_ammendorf_k_SD, PROP_ammendorf_k_WT, PROP_ammendorf_k_TE, PROP_ammendorf_k_PR, PROP_ammendorf_k_FC)
+        additional_text: ammendorf_k_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return CAP_008_VERY_SLOW;
+         cargo_capacity: return PROP_ammendorf_k_FC;
+     cargo_subtype_text: ammendorf_k_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: ammendorf_k_sprites;
+          loading_speed: return 15;
+                   name: ammendorf_k_name;
+               purchase: ammendorf_k_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: ammendorf_k_running_cost_factor;
+  }
+}
+
+long_name_template(ammendorf_k, STR_LONGNAME_AMMENDORF_K)

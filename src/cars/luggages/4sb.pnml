@@ -1,0 +1,104 @@
+﻿// mail_4sb
+
+#define PROP_mail_4sb_CF  183
+#define PROP_mail_4sb_RC  116
+#define PROP_mail_4sb_SD  120
+#define PROP_mail_4sb_WT  55
+#define PROP_mail_4sb_TE  0
+#define PROP_mail_4sb_PR  0
+#define PROP_mail_4sb_CC  18
+#define PROP_mail_4sb_LC  16
+#define PROP_mail_4sb_VC  120
+#define PROP_mail_4sb_AC  40
+
+#define IMAGEFILE  "src/cars/luggages/4sb.png"
+purchase_sprites(mail_4sb, 0, 0)
+
+pass_wagon_sprites(14, mail_4sb_v1, 32, 40)
+pass_wagon_sprites(14, mail_4sb_v2, 32, 308)
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, mail_4sb_sprites_start_random,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x01])
+{
+  0: mail_4sb_v1_sprites_start;
+     mail_4sb_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, mail_4sb_sprites_start,
+  cargo_subtype )
+{
+           0: mail_4sb_sprites_start_random;
+  LV_RAL6002: mail_4sb_v1_sprites_start;
+  LV_RAL6020: mail_4sb_v2_sprites_start;
+              align_14_sprites;
+}
+
+long_vehicle(mail_4sb)
+
+switch (FEAT_TRAINS, SELF, mail_4sb_loading_speed,
+  STORE_TEMP(7 * 2, 2))
+{ all_wagons_box_loading_speed; }
+
+switch (FEAT_TRAINS, SELF, mail_4sb_cargo_capacity,
+[  STORE_TEMP(PROP_mail_4sb_LC, 0),  // т
+   STORE_TEMP(PROP_mail_4sb_VC, 1),  // м³
+   STORE_TEMP(PROP_mail_4sb_AC, 2),  // м²
+   STORE_TEMP(0, 3),                 // палетомест
+   STORE_TEMP(14, 4)])               // шаблон
+{ box_cargo_capacity; }
+
+livery_template_base_list2(mail_4sb, LV_RAL6020, LV_RAL6002)
+
+switch (FEAT_TRAINS, SELF, mail_4sb_running_cost_factor,
+[  STORE_TEMP(0, 0),   // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(67, 2),  // Износ
+   STORE_TEMP(10, 3),  // Сопровождение (сотрудник почты)
+   STORE_TEMP(38, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_mail_4sb_SD, 6),                             // Скорость
+   STORE_TEMP(round(PROP_mail_4sb_WT), 7),                      // Тара
+   STORE_TEMP(round(PROP_mail_4sb_WT + PROP_mail_4sb_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                    // PROP_mail_4sb_RC // 114
+
+name_in_group(mail_4sb, string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_NAME_MAIL_4SB)),
+                        string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_LONGNAME_MAIL_4SB)))
+
+hint_wagon(mail_4sb,
+           PROP_mail_4sb_LC, PROP_mail_4sb_VC,
+           string(STR_PURCHASE_HINT_LOADING_SPEED_6TIC),
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
+           STR_PURCHASE_HINT_WAGON_TYPE_MAIL,
+           1949, 1957,
+           fact_leningradcw())
+
+item (FEAT_TRAINS, mail_4sb, 269) {
+  property {
+    name: string(STR_NAME_MAIL_4SB);
+    vehicle_dates(1949, 1957, 28, 10, 8, PROP_mail_4sb_CF)
+    vehicle_wagon(PROP_mail_4sb_WT, PROP_mail_4sb_SD)
+    vehicle_group(group_mail)
+     cargo_allow_refit: [MAIL, cargo_all_luggagelist()];
+    default_cargo_type: MAIL;
+  }
+  graphics {
+    purchase_menu_nocc(PROP_mail_4sb_CF, PROP_mail_4sb_RC, PROP_mail_4sb_SD, PROP_mail_4sb_WT, PROP_mail_4sb_TE, PROP_mail_4sb_PR)
+        additional_text: mail_4sb_additional_text;
+       articulated_part: articulated_part_dummy6;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
+         cargo_capacity: mail_4sb_cargo_capacity;
+     cargo_subtype_text: mail_4sb_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: mail_4sb_sprites;
+          loading_speed: mail_4sb_loading_speed;
+                   name: mail_4sb_name;
+               purchase: mail_4sb_purchase_sprites;
+             refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+    running_cost_factor: mail_4sb_running_cost_factor;
+  }
+}
+
+long_name_template(mail_4sb, STR_LONGNAME_MAIL_4SB)

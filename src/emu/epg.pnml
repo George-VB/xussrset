@@ -11,20 +11,13 @@ EMU_motor1_middle_sprites(10, epg_m1, 32, 40)
 EMU_motor1_middle_sprites(10, epg_m2, 32, 40)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, epg_h_sprites_left_check,
-  position_in_consist == 0)
-{
-  1: epg_h_sprites_left;
-     epg_h_notpowered_normal_sprites_left;
-}
-
 switch (FEAT_TRAINS, SELF, epg_b_sprites_start,
 [  set_offset_to(-2),
    ((LOAD_TEMP(4) != epg) * 2) +
    (prev_vehicle_randombits() & 0x01)])
 {
-  0: epg_m1_notpowered_normal_sprites_left;
-  1: epg_m2_notpowered_normal_sprites_right;
+  0: epg_m1_normal_sprites_left;
+  1: epg_m2_normal_sprites_right;
   2: epg_m1_notpowered_sprites_left;
   3: epg_m2_notpowered_sprites_right;
      align_11_sprites;
@@ -45,34 +38,29 @@ switch (FEAT_TRAINS, SELF, epg_c_sprites_start,
 switch (FEAT_TRAINS, SELF, epg_never_train, position_in_articulated_veh)
 {
   1: epg_m1_sprites_left;
-  2: epg_m1_normal_sprites;
+  2: epg_m1_normal_sprites_left;
   3: epg_m2_sprites_right;
   4: epg_m2_normal_sprites_right;
+  5: epg_m2_normal_sprites_left;
+  6: epg_m1_normal_sprites_right;
      align_11_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, epg_h_sprites_right_check,
-  position_in_consist_from_end == 1)
-{
-  1: epg_h_sprites_right;
-  0: epg_h_notpowered_normal_sprites_right;
-     epg_never_train;
 }
 
 switch (FEAT_TRAINS, SELF, epg_d_sprites_start,
    LOAD_TEMP(4) == epg)
 {
-   1: epg_h_sprites_right_check;
+   1: epg_h_sprites_right;
       epg_h_notpowered_sprites_right;
 }
 
 switch (FEAT_TRAINS, SELF, epg_sprites_start,
   position_in_articulated_veh)
 {
-  0: epg_h_sprites_left_check;
-  2: epg_b_sprites_start;
-  4: epg_c_sprites_start;
-  6: epg_d_sprites_start;
+    0: epg_h_sprites_left;
+    2: epg_b_sprites_start;
+    4: epg_c_sprites_start;
+    6: epg_d_sprites_start;
+  999: epg_never_train;
      dummy_sprites;
 }
 
@@ -150,7 +138,7 @@ name_in_group(epg, string(STR_NAME_IN_GROUP, string(STR_NAME_EP_SERIES), string(
 
 hint_MU_with_subtype_sme2(epg,
      calc_loading(260 / (6 * WIDERST_D_DOOR)),
-     STR_PURCHASE_HINT_AGING_PERIOD_1_2,
+     STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SI_AC_WITH_SUBTYPE, STR_PURCHASE_HINT_FLIRT,
      STR_SECTIONS_MU_S1_3of4_WITH_ATTACH, STR_NAME_EPR, STR_NAME_EPRII,
      2011, 2012,
@@ -161,13 +149,13 @@ item (FEAT_TRAINS, epg, 225) {
     name: string(STR_NAME_EPG);
     vehicle_dates(2011, 2012, 30, 10, 8, 274)
     vehicle_emu(ac, 2719, 132, 200.0, 260, 6 * WIDERST_D_DOOR, )
-    vehicle_group(ep_group)
+    vehicle_group(group_ep)
   }
   graphics {
         additional_text: epg_additional_text;
        articulated_part: epg_articulated_part;
        can_attach_wagon: epg_can_attach_wagon;
-       cargo_age_period: return 68;
+       cargo_age_period: return CAP_0005_FAST;
          cargo_capacity: epg_cargo_capacity;
          colour_mapping: any_cc_colour;
             cost_factor: return 274;

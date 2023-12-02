@@ -1,34 +1,29 @@
 ﻿// refrigerator_type1951
 
+#define PROP_refrigerator_type1951_CF  62
+#define PROP_refrigerator_type1951_RC  28
+#define PROP_refrigerator_type1951_SD  120
+#define PROP_refrigerator_type1951_WT  32
+#define PROP_refrigerator_type1951_TE  0
+#define PROP_refrigerator_type1951_PR  0
+#define PROP_refrigerator_type1951_CC  42
+#define PROP_refrigerator_type1951_LC  24
+#define PROP_refrigerator_type1951_VC  65
+#define PROP_refrigerator_type1951_AC  0
+
 #define IMAGEFILE  "src/wagons/refrigerators/type1951.png"
-purchase_sprites(refrigerator_type1951_v1, 0, 0)
-combo_layout_boxcar_template(refrigerator_type1951_v1, 9, 32, 40)
+purchase_sprites(refrigerator_type1951, 0, 0)
+combo_layout_boxcar_template(refrigerator_type1951, 9, 32, 40)
 #undef IMAGEFILE
-#define IMAGEFILE  "src/wagons/refrigerators/type1951-a1954.png"
-purchase_sprites(refrigerator_type1951_v2, 0, 0)
-combo_layout_boxcar_template(refrigerator_type1951_v2, 9, 32, 40)
-#undef IMAGEFILE
-purchase_sprites_select(refrigerator_type1951, 1954)
 
-switch (FEAT_TRAINS, SELF, refrigerator_type1951_b1954_sprites_start,
+switch (FEAT_TRAINS, SELF, refrigerator_type1951_sprites_start,
   getbits(extra_callback_info1, 8, 8))
 {
-  0: refrigerator_type1951_v1_sprites_back;
+  0: refrigerator_type1951_sprites_back;
   1: cargo9_frut_bc_sprites;
-  2: refrigerator_type1951_v1_sprites_front;
+  2: refrigerator_type1951_sprites_front;
      return CB_FAILED;
 }
-
-switch (FEAT_TRAINS, SELF, refrigerator_type1951_a1954_sprites_start,
-  getbits(extra_callback_info1, 8, 8))
-{
-  0: refrigerator_type1951_v2_sprites_back;
-  1: cargo9_frut_bc_sprites;
-  2: refrigerator_type1951_v2_sprites_front;
-     return CB_FAILED;
-}
-
-engine_build_year_template(refrigerator_type1951, 1954, start, )
 long_vehicle(refrigerator_type1951)
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1951_weight,
@@ -39,11 +34,11 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1951_weight,
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1951_cargo_capacity,
-[  STORE_TEMP(24, 0),  // т
-   STORE_TEMP(65, 1),  // м³
-   STORE_TEMP(0, 2),   // м²
-   STORE_TEMP(0, 3),   // палетомест
-   STORE_TEMP(9, 4)])  // шаблон
+[  STORE_TEMP(PROP_refrigerator_type1951_LC, 0),  // т
+   STORE_TEMP(PROP_refrigerator_type1951_VC, 1),  // м³
+   STORE_TEMP(PROP_refrigerator_type1951_AC, 2),  // м²
+   STORE_TEMP(0, 3),                              // палетомест
+   STORE_TEMP(9, 4)])                             // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1951_running_cost_factor,
@@ -54,38 +49,44 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1951_running_cost_factor,
    STORE_TEMP(9, 4),   // ТО
    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(120, 6),                     // Скорость
-   STORE_TEMP(32, 7),                      // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 24 + 6, 8)])  // Максимальная масса
-{ all_running_cost_factor; }               // 28
+   STORE_TEMP(PROP_refrigerator_type1951_SD, 6),                                          // Скорость
+   STORE_TEMP(round(PROP_refrigerator_type1951_WT), 7),                                   // Тара
+   STORE_TEMP(round(PROP_refrigerator_type1951_WT + PROP_refrigerator_type1951_LC), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                                                              // 28
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1951_loading_speed,
   STORE_TEMP(9, 2))
 { all_wagons_box_loading_speed; }
 
+name_in_group(refrigerator_type1951, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1951)),
+                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1951)))
+
 hint_wagon(refrigerator_type1951,
-           24, 65,
+           PROP_refrigerator_type1951_LC, PROP_refrigerator_type1951_VC,
            string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_AGING_PERIOD_5_1,
+           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
            STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
-           1951, 1957,
+           1951, 1954,
            fact_bryansk())
 
 item (FEAT_TRAINS, refrigerator_type1951, 359) {
   property {
     name: string(STR_NAME_REFRIGERATOR_TYPE1951);
-    vehicle_dates(1951, 1957, 25, 10, 8, 62)
-    vehicle_wagon(32, 120)
+    vehicle_dates(1951, 1954, 25, 10, 8, PROP_refrigerator_type1951_CF)
+    vehicle_wagon(PROP_refrigerator_type1951_WT, PROP_refrigerator_type1951_SD)
+    vehicle_group(group_refrigerators)
     cargo_allow_refit: [cargo_all_reflist()];
   }
   graphics {
+    purchase_menu_nocc(PROP_refrigerator_type1951_CF, PROP_refrigerator_type1951_RC, PROP_refrigerator_type1951_SD, PROP_refrigerator_type1951_WT, PROP_refrigerator_type1951_TE, PROP_refrigerator_type1951_PR)
         additional_text: refrigerator_type1951_additional_text;
        articulated_part: articulated_part_dummy1;
-       cargo_age_period: return 300;
+       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
          cargo_capacity: refrigerator_type1951_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: refrigerator_type1951_sprites;
           loading_speed: refrigerator_type1951_loading_speed;
+                   name: refrigerator_type1951_name;
                purchase: refrigerator_type1951_purchase_sprites;
              refit_cost: return 0 | CB_RESULT_AUTOREFIT;
     running_cost_factor: refrigerator_type1951_running_cost_factor;
