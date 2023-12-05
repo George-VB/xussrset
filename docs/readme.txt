@@ -1,4 +1,4 @@
-readme
+#readme
 
 xUSSR Railway Set v0.8
 
@@ -19,3 +19,5 @@ Rau117 (Nikita Mikhailov).
 Special thanks to: Oleg, STD.
 
 Created using the NML.
+
+![](https://github.com/George-VB/xussrset/raw/main/src/diesel/2te116.png)
