@@ -8,21 +8,38 @@
 #define PROP_flatbed_type1930_PR  0
 #define PROP_flatbed_type1930_CC  100
 #define PROP_flatbed_type1930_LC  50
-#define PROP_flatbed_type1930_VC  30
 #define PROP_flatbed_type1930_AC  37
+#define PROP_flatbed_type1930_VC  30
 
 #define IMAGEFILE  "src/wagons/flatbeds/type1930.png"
 purchase_sprites(flatbed_type1930, 0, 0)
 combo_layout_template(flatbed_type1930, 8, 32, 40)
+combo_layout_template(flatbed_type1930_wood, 8, 32, 174)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, flatbed_type1930_sprites_start,
+switch (FEAT_TRAINS, SELF, flatbed_type1930_all_sprites_start,
   getbits(extra_callback_info1, 8, 8))
 {
   0: flatbed_type1930_sprites_back;
   1: cargo8flatbed_sprites;
   2: flatbed_type1930_sprites_front;
      return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1930_wood_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
+  0: flatbed_type1930_wood_sprites_back;
+  1: cargo8flatbed_sprites;
+  2: flatbed_type1930_wood_sprites_front;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, flatbed_type1930_sprites_start,
+   cargo_type_in_veh)
+{
+  cargo_check_woodlist(flatbed_type1930_wood_sprites_start)
+  flatbed_type1930_all_sprites_start;
 }
 
 long_vehicle(flatbed_type1930)
@@ -63,11 +80,11 @@ switch (FEAT_TRAINS, SELF, flatbed_type1930_cargo_subtype_text,
 }
 
 switch (FEAT_TRAINS, SELF, flatbed_type1930_cargo_capacity,
-[  STORE_TEMP(PROP_flatbed_type1930_LC, 0),  // т
-   STORE_TEMP(PROP_flatbed_type1930_VC, 1),  // м³
-   STORE_TEMP(PROP_flatbed_type1930_AC, 2),  // м²
-   STORE_TEMP(0, 3),                         // палетомест
-   STORE_TEMP(8, 4),                         // шаблон
+[  STORE_TEMP(round(PROP_flatbed_type1930_LC), 0),  // т
+   STORE_TEMP(round(PROP_flatbed_type1930_VC), 1),  // м³
+   STORE_TEMP(round(PROP_flatbed_type1930_AC), 2),  // м²
+   STORE_TEMP(0, 3),                                // палетомест
+   STORE_TEMP(8, 4),                                // шаблон
    cargo_type_in_veh])
 {
 flatbed_capacity()
@@ -100,7 +117,7 @@ name_in_group(flatbed_type1930, string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBE
                                 string(STR_NAME_IN_GROUP, string(STR_NAME_FLATBEDS_SERIES), string(STR_NAME_FLATBED_TYPE1930)))
 
 hint_wagon_flat(flatbed_type1930,
-                PROP_flatbed_type1930_LC, PROP_flatbed_type1930_AC,
+                round(PROP_flatbed_type1930_LC), round(PROP_flatbed_type1930_AC),
                 string(STR_PURCHASE_HINT_LOADING_SPEED_5TIC),
                 STR_PURCHASE_HINT_CAP_001_NORMAL,
                 STR_PURCHASE_HINT_WAGON_TYPE_FLATBED,
