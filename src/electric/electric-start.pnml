@@ -115,6 +115,17 @@ switch (FEAT_TRAINS, PARENT, q_vl85_start_stop,
      q_vl80s_start_stop;
 }
 
+switch (FEAT_TRAINS, PARENT, q_vl85_pre_start_stop,
+[  set_offset_to(num_vehs_in_consist-2),
+   STORE_TEMP (prev_vehicle_type_id(), 3),
+   set_offset_to(num_vehs_in_consist-4),
+   (LOAD_TEMP(3) == vl85_pre) &&
+   (!(prev_vehicle_type_id() == vl85_pre)) ])
+{
+  1: return string(STR_START_STOP_DUAL_END_REQUIRED);
+     q_vl85_start_stop;
+}
+
 switch (FEAT_TRAINS, PARENT, q_2es5_start_stop,
 [  set_offset_to(num_vehs_in_consist-2),
    STORE_TEMP (prev_vehicle_type_id(), 3),
@@ -125,7 +136,7 @@ switch (FEAT_TRAINS, PARENT, q_2es5_start_stop,
       (prev_vehicle_type_id() == _2es5_type2015))) ])
 {
   1: return string(STR_START_STOP_DUAL_END_REQUIRED);
-     q_vl85_start_stop;
+     q_vl85_pre_start_stop;
 }
 
 switch (FEAT_TRAINS, PARENT, q_2es5s_start_stop,
