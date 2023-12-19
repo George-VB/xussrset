@@ -1,0 +1,144 @@
+﻿// er9m
+
+#define PROP_er9m_h_num  2
+#define PROP_er9m_n_num  0
+#define PROP_er9m_m_num  5
+#define PROP_er9m_c_num  3
+
+#define PROP_er9m_h_CF  9
+#define PROP_er9m_h_RC  66
+#define PROP_er9m_h_SD  130
+#define PROP_er9m_h_WT  39
+#define PROP_er9m_h_TE  0
+#define PROP_er9m_h_PR  0
+#define PROP_er9m_h_CC  88
+
+#define PROP_er9m_n_CF  0
+#define PROP_er9m_n_RC  0
+#define PROP_er9m_n_SD  0
+#define PROP_er9m_n_WT  0
+#define PROP_er9m_n_TE  0
+#define PROP_er9m_n_PR  0
+#define PROP_er9m_n_CC  0
+
+#define IMAGEFILE  "src/emu/rvz/er9m_h.png"
+purchase_sprites(er9m_h, 0, 0)
+MU_head_sprites(12, er9m_h_v1_mu, 32, 40)
+MU_head_sprites(12, er9m_h_v2_mu, 32, 308)
+MU_head_sprites(12, er9m_h_v3_mu, 32, 576)
+#undef IMAGEFILE
+map_sprites(er9m_purchase_sprites, er9m_h_purchase_sprites)
+
+MU_head_direction_template(er9m_h_v1, er9m_h)
+MU_head_direction_template(er9m_h_v2, er9m_h)
+MU_head_direction_template(er9m_h_v3, er9m_h)
+
+switch (FEAT_TRAINS, SELF, er9m_h_sprites_left,
+  cargo_subtype)
+{
+                     0: er9m_h_v1_sprites_left;
+            LV_RAL6002: er9m_h_v1_sprites_left;
+  LV_UKRAINIAN_RAILWAY: er9m_h_v2_sprites_left;
+  LV_KYIV_CITY_EXPRESS: er9m_h_v3_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er9m_h_sprites_right,
+  cargo_subtype)
+{
+                     0: er9m_h_v1_sprites_right;
+            LV_RAL6002: er9m_h_v1_sprites_right;
+  LV_UKRAINIAN_RAILWAY: er9m_h_v2_sprites_right;
+  LV_KYIV_CITY_EXPRESS: er9m_h_v3_sprites_right;
+  align_12_sprites;
+}
+
+engine_direction_template3m2(er9m_h, er9m_m, er9m_c, )
+MU_attach_wagon_icon_template_only(er9m_h, er9m_h, type_head, type_car_motor_pant_add_mandatory)
+long_vehicle_sp(er9m_h)
+
+EMU_4681012_can_attach_wagon_template(er9m)
+EMU_attach_calculation_template(er9m, )
+
+switch (FEAT_TRAINS, SELF, er9m_can_attach_wagon1,
+  vehicle_type_id)
+{
+  er9m_h: er9m_can_attach_wagon_template;
+  er9m_m: er9m_can_attach_wagon_template;
+  er9m_c: er9m_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er9m_can_attach_wagon,
+  count_veh_id(er9m_h))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: er9m_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, er9m_h_start_stop,
+  count_veh_id(er9m_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+livery_template_base_list3(er9m, LV_RAL6002, LV_UKRAINIAN_RAILWAY, LV_KYIV_CITY_EXPRESS)
+engine_capacity_MU(er9m_h, PROP_er9m_h_CC, er9m_h)
+
+RC_head_check(er9m_h, er9m_h)
+switch (FEAT_TRAINS, SELF, er9m_h_running_cost_factor,
+[  STORE_TEMP(38, 0),  // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(13, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(9, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_er9m_h_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_er9m_h_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_er9m_h_WT + PROP_er9m_h_CC / 16), 8)])  // Максимальная масса
+{ er9m_h_check_running_cost_factor; }                            // 66
+
+name_in_group_subgroup(er9m_h, string(STR_NAME_IN_GROUP, string(STR_NAME_ER9_SERIES), string(STR_NAME_ER9M)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ER9_SERIES), string(STR_LONGNAME_ER9M_H)),
+                               string(STR_NAME_ER9M))
+
+hint_MU_with_model2(er9m_h,
+     calc_loading(PROP_er9m_h_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_CAP_00033_VERY_FAST,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_AC_WITH_SUBTYPE, 62, 257,
+     STR_SECTIONS_EMU_4_6_8_10_12,
+     1976, 1983,
+     fact_rigacw())
+map_sprites(er9m_additional_text, er9m_h_additional_text)
+
+item (FEAT_TRAINS, er9m_h, 387) {
+  property {
+    name: string(STR_NAME_ER9M);
+    vehicle_dates(1976, 1983, 30, 10, 8, PROP_er9m_h_CF)
+    vehicle_emu_c(ac, PROP_er9m_h_WT, PROP_er9m_h_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group(group_er9)
+  }
+  graphics {
+  purchase_menu(PROP_er9m_h_CF, PROP_er9m_h_RC, PROP_er9m_h_SD, PROP_er9m_h_WT, PROP_er9m_h_TE, PROP_er9m_h_PR, PROP_er9m_h_CC)
+        additional_text: er9m_h_additional_text;
+       articulated_part: articulated_part_dummy4;
+       can_attach_wagon: er9m_can_attach_wagon;
+       cargo_age_period: return CAP_00033_VERY_FAST;
+         cargo_capacity: er9m_h_cargo_capacity;
+     cargo_subtype_text: er9m_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: er9m_h_sprites;
+                   name: er9m_h_name;
+                  power: return 0;
+               purchase: er9m_h_purchase_sprites;
+    running_cost_factor: er9m_h_running_cost_factor;
+                  speed: speed_after30_130to110;
+             start_stop: er9m_h_start_stop;
+  }
+}
+
+long_name_template(er9m_h, STR_LONGNAME_ER9M_H)
+allow_acemu(er9m_h)
