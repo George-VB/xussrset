@@ -1,56 +1,42 @@
-// te1
+// te1 uses diesel_da
 
-#define IMAGEFILE  "src/diesel/kharkiv/te1.png"
-purchase_sprites(te1, 0, 0)
-diesel1r_sprites(10, te1_v1, 32, 40)
-diesel1r_sprites(10, te1_v2, 32, 241)
-diesel1r_sprites(10, te1_v3, 32, 442)
+#define IMAGEFILE  "src/diesel/da.png"
+purchase_sprites(te1, 100, 0)
 #undef IMAGEFILE
 
-switch (FEAT_TRAINS, SELF, te1_sprites_left_rnd,
-[  set_offset_to(1),
-   prev_vehicle_randombits() & 0x03])
-{
-  0..1: te1_v1_sprites_left;
-     2: te1_v2_sprites_left;
-        te1_v3_sprites_left;
-}
-
-switch (FEAT_TRAINS, SELF, te1_sprites_right_rnd,
-[  set_offset_to(1),
-   prev_vehicle_randombits() & 0x03])
-{
-  0..1: te1_v1_sprites_right;
-     2: te1_v2_sprites_right;
-        te1_v3_sprites_right;
-}
-
-switch (FEAT_TRAINS, SELF, te1_sprites_left,
-  cargo_subtype)
-{
-           0: te1_sprites_left_rnd;
-           1: te1_v3_sprites_left;
-           2: te1_v2_sprites_left;
-  LV_RAL6002: te1_v1_sprites_left;
-     align_10_sprites;
-}
-
-switch (FEAT_TRAINS, SELF, te1_sprites_right,
-  cargo_subtype)
-{
-           0: te1_sprites_right_rnd;
-           1: te1_v3_sprites_right;
-           2: te1_v2_sprites_right;
-  LV_RAL6002: te1_v1_sprites_right;
-     align_10_sprites;
-}
+map_sprites(te1_sprites_left, diesel_da_sprites_left)
+map_sprites(te1_sprites_right, diesel_da_sprites_right)
 
 engine_RNDany_direction_template(te1, 1, 1, )
 long_vehicle_sp(te1)
 
-    livery_template_base_list(te1_refit_alt, LV_RAL6002)
-  livery_template_alt(te1_refit, STR_REFIT_TTD_93)
-livery_template_refit_shifted(te1, 2, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_TTD_53, STR_REFIT_WITH_STRIPES, te1_refit)
+switch (FEAT_TRAINS, SELF, te1_colour_mapping_rnd,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+    0..2: return shunting_cc + 0;
+    3..4: return shunting_cc + 1;
+    5..7: return shunting_cc + 2;
+   8..10: return shunting_cc + 3;
+  11..12: return shunting_cc + 5;
+  13..15: return shunting_cc + 6;
+          return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, te1_colour_mapping,
+  cargo_subtype)
+{
+  0: te1_colour_mapping_rnd;
+  1: return shunting_cc + 0;
+  2: return shunting_cc + 1;
+  3: return shunting_cc + 2;
+  4: return shunting_cc + 3;
+  5: return shunting_cc + 5;
+  6: return shunting_cc + 6;
+     return CB_FAILED;
+}
+
+livery_template_alt6f(te1, STR_REFIT_TTD_B6, STR_REFIT_TTD_B5, STR_REFIT_TTD_63, STR_REFIT_TTD_54, STR_REFIT_TTD_93, STR_REFIT_TTD_96)
 
 engine_diesel_1r_effect(te1_create_effect_sprites, 0, 1, 10)
 engine_RNDany_direction_template(te1, 1, 1, _create_effect)
@@ -97,7 +83,7 @@ item (FEAT_TRAINS, te1, 145) {
         can_attach_wagon: any_can_attach_wagon;
           cargo_capacity: return 0;
       cargo_subtype_text: te1_cargo_subtype_text;
-          colour_mapping: any_cc_colour;
+          colour_mapping: te1_colour_mapping;
            create_effect: te1_create_effect_sprites_start_sp;
                  default: te1_sprites;
                 purchase: te1_purchase_sprites;

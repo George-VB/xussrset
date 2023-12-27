@@ -8,6 +8,34 @@ diesel1r_sprites(10, diesel_da, 32, 40)
 engine_RNDany_direction_template(diesel_da, 1, 1, )
 long_vehicle_sp(diesel_da)
 
+switch (FEAT_TRAINS, SELF, diesel_da_colour_mapping_rnd,
+[  set_offset_to(1),
+   prev_vehicle_randombits() & 0x0F])
+{
+    0..2: return shunting_cc + 0;
+    3..4: return shunting_cc + 1;
+    5..7: return shunting_cc + 2;
+   8..10: return shunting_cc + 3;
+  11..12: return shunting_cc + 5;
+  13..15: return shunting_cc + 6;
+          return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, diesel_da_colour_mapping,
+  cargo_subtype)
+{
+  0: diesel_da_colour_mapping_rnd;
+  1: return shunting_cc + 0;
+  2: return shunting_cc + 1;
+  3: return shunting_cc + 2;
+  4: return shunting_cc + 3;
+  5: return shunting_cc + 5;
+  6: return shunting_cc + 6;
+     return CB_FAILED;
+}
+
+livery_template_alt6f(diesel_da, STR_REFIT_TTD_B6, STR_REFIT_TTD_B5, STR_REFIT_TTD_63, STR_REFIT_TTD_54, STR_REFIT_TTD_93, STR_REFIT_TTD_96)
+
 engine_diesel_1r_effect(diesel_da_create_effect_sprites, 0, 1, 10)
 engine_RNDany_direction_template(diesel_da, 1, 1, _create_effect)
 engine_speed(diesel_da, 96)
@@ -38,19 +66,21 @@ item (FEAT_TRAINS, diesel_da, 144) {
     vehicle_diesel(840, 121, 353.0, _lowspeed)
   }
   graphics {
-         additional_text: diesel_da_additional_text;
-        articulated_part: articulated_part_dummy2;
-    bitmask_vehicle_info: diesel_da_bitmask_vehicle_info;
-        can_attach_wagon: any_can_attach_wagon;
-          cargo_capacity: return 0;
-          colour_mapping: any_cc_colour;
-           create_effect: diesel_da_create_effect_sprites_start_sp;
-                 default: diesel_da_sprites;
-                purchase: diesel_da_purchase_sprites;
-          purchase_speed: return 96;
-     running_cost_factor: diesel_da_running_cost_factor;
-                   speed: diesel_da_speed;
-              start_stop: any_start_stop;
+            additional_text: diesel_da_additional_text;
+           articulated_part: articulated_part_dummy2;
+       bitmask_vehicle_info: diesel_da_bitmask_vehicle_info;
+           can_attach_wagon: any_can_attach_wagon;
+             cargo_capacity: return 0;
+         cargo_subtype_text: diesel_da_cargo_subtype_text;
+             colour_mapping: diesel_da_colour_mapping;
+              create_effect: diesel_da_create_effect_sprites_start_sp;
+                    default: diesel_da_sprites;
+                   purchase: diesel_da_purchase_sprites;
+    purchase_colour_mapping: return shunting_cc + 2;
+             purchase_speed: return 96;
+        running_cost_factor: diesel_da_running_cost_factor;
+                      speed: diesel_da_speed;
+                 start_stop: any_start_stop;
   }
 }
 
