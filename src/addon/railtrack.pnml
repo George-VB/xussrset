@@ -1,0 +1,239 @@
+ /// railtracks
+
+map_color_rail = 0x07;
+map_color_ac = 0x91;
+map_color_15ac = 0x80;
+map_color_dc = 0x73;
+map_color_15dc = 0x2B;  //0xB2;
+map_color_double = 0xBB;
+map_color_metro = 0xCF;
+
+// 2D = D + d
+// 2S = A + D
+// 2s = A + d (TGV)
+// 3a = A + a + d (TGV-POS)
+// 3D = D + d + A (ETR500)
+// 4S = A + D + a + d (ETR575, ICE-3M)
+
+#define all_standard_rails()                \
+ "SAAN",                                    \
+ "SAAA",                                    \
+ "SAAa",                                    \
+ "SAAD",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_EL_standard_rails()             \
+ "SAAA",                                    \
+ "SAAa",                                    \
+ "SAAD",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_25AC_standard_rails()    \
+ "SAAA",                             \
+ "SAA)","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_15AC_standard_rails()  \
+ "SAAa",                           \
+ "SAA^","SAA*"                     \
+
+#define all_aAC_standard_rails()     \
+ "SAAA",                             \
+ "SAAa",                             \
+ "SAA)","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_3DC_standard_rails()  \
+ "SAAD",                          \
+ "SAA=","SAA)","SAA_","SAA*"      \
+
+#define all_15DC_standard_rails()    \
+ "SAAd",                             \
+ "SAA=","SAA(","SAA^","SAA_","SAA*"  \
+
+#define all_dDC_standard_rails()            \
+ "SAAD",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_ACDC_standard_rails()           \
+ "SAAA",                                    \
+ "SAAD",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_ACdDC_standard_rails()          \
+ "SAAA",                                    \
+ "SAAD",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_AC15DC_standard_rails()         \
+ "SAAA",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_aAC15DC_standard_rails()        \
+ "SAAA",                                    \
+ "SAAa",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define all_aACdDC_standard_rails()         \
+ "SAAA",                                    \
+ "SAAa",                                    \
+ "SAAD",                                    \
+ "SAAd",                                    \
+ "SAA)","SAA=","SAA(","SAA_","SAA^","SAA*"  \
+
+#define new_standard_rails(rail_name, rail_label, year, strname, powered, cost, RCcost, speed, colour, sort_oder, rails_graphics, fences_graphics, depots_graphics, flags)  \
+item (FEAT_RAILTYPES, rail_name) {                                                                                                                                          \
+  property {                                                                                                                                                                \
+                       label: rail_label;                                                                                                                                   \
+           introduction_date: date(year, 1, 1);                                                                                                                             \
+                        name: string(STR_S_##strname##_NAME);                                                                                                               \
+             toolbar_caption: string(STR_S_##strname##_TOOLBAR);                                                                                                            \
+                   menu_text: string(STR_S_##strname##_MENU);                                                                                                               \
+        build_window_caption: string(STR_S_##strname##_BUILD_CAPTION);                                                                                                      \
+            autoreplace_text: string(STR_S_##strname##_AUTOREPLACE);                                                                                                        \
+             new_engine_text: string(STR_S_##strname##_NEW_ENGINE);                                                                                                         \
+    compatible_railtype_list: [all_standard_rails()];                                                                                                                       \
+       powered_railtype_list: [powered##_standard_rails()];                                                                                                                 \
+              railtype_flags: flags;                                                                                                                                        \
+      curve_speed_multiplier: 1;                                                                                                                                            \
+            station_graphics: RAILTYPE_STATION_NORMAL;                                                                                                                      \
+           construction_cost: cost;                                                                                                                                         \
+            maintenance_cost: RCcost;                                                                                                                                       \
+                 speed_limit: speed;                                                                                                                                        \
+          acceleration_model: ACC_MODEL_RAIL;                                                                                                                               \
+                  map_colour: colour;                                                                                                                                       \
+                  sort_order: 0x40 + sort_oder;                                                                                                                             \
+  }                                                                                                                                                                         \
+  graphics {                                                                                                                                                                \
+    bridge_surfaces: get_##rails_graphics##_bridge_surfaces;                                                                                                                \
+             depots: depots_graphics;                                                                                                                                       \
+             fences: fences_graphics;                                                                                                                                       \
+                gui: rails_graphics##_gui;                                                                                                                                  \
+    level_crossings: get_##rails_graphics##_level_crossings;                                                                                                                \
+      track_overlay: get_##rails_graphics##_track_overlay;                                                                                                                  \
+            tunnels: get_##rails_graphics##_tunnels;                                                                                                                        \
+           underlay: get_##rails_graphics##_underlay;                                                                                                                       \
+  }                                                                                                                                                                         \
+}                                                                                                                                                                           \
+
+#define electric_rails(rail_name, catenary_graphics)       \
+item (FEAT_RAILTYPES, rail_name) {                         \
+  graphics {                                               \
+    catenary_pylons: catenary_graphics##_catenary_pylons;  \
+      catenary_wire: catenary_graphics##_catenary_wire;    \
+  }                                                        \
+}                                                          \
+
+new_standard_rails(rla1      , "SAAN", 1880, RAIL       , all         ,  64,  2, 0 km/h, map_color_rail+2,    0x01, rail4, fences_1435, rail1_depots, 0)  // Unelectrified rails
+
+new_standard_rails(er25ac1   , "SAAA", 1952, ER25AC     , all_25AC    , 115,  4, 0 km/h, map_color_ac+2,      0x1C, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified rails AC 25kV
+new_standard_rails(er15ac1   , "SAAa", 1961, ER15AC     , all_15AC    , 115,  4, 0 km/h, map_color_15ac+2,    0x18, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified rails AC 15kV
+
+new_standard_rails(er3dc1    , "SAAD", 1930, ER3DC      , all_3DC     , 128,  5, 0 km/h, map_color_dc+2,      0x0C, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified rails DC 3 kV
+new_standard_rails(er15dc1   , "SAAd", 1924, ER15DC     , all_15DC    , 100,  4, 0 km/h, map_color_15dc+2,    0x09, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY))  // Electrified rails DC 1,5 kV
+
+new_standard_rails(er2s      , "SAA)", 1963, ER25AC3DC  , all_ACDC    , 384, 10, 0 km/h, map_color_double+0,  0x21, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN))  // Electrified Trunk rails AC 25 kV + DC 3 kV
+new_standard_rails(er2d      , "SAA=", 1930, ERDDC      , all_dDC     , 192,  7, 0 km/h, map_color_double+2,  0x20, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN))  // Electrified rails DC 1,5 kV + DC 3 kV
+new_standard_rails(er2ac15dc , "SAA(", 1963, ER25AC15DC , all_AC15DC  , 384, 10, 0 km/h, map_color_double+4,  0x22, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN))  // Electrified Trunk rails AC 25 kV + DC 1,5 kV
+new_standard_rails(er3acddc  , "SAA_", 1963, ER25ACDDC  , all_ACdDC   , 384, 10, 0 km/h, map_color_double+6,  0x23, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN))  // Electrified Trunk rails AC 25 kV + DC 3 kV + DC 1,5 kV
+new_standard_rails(er3aac15dc, "SAA^", 1963, ERAAC15DC  , all_aAC15DC , 384, 10, 0 km/h, map_color_double+8,  0x24, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN))  // Electrified Trunk rails AC 25 kV + AC 15 kV + DC 1,5 kV
+new_standard_rails(er4aacddc , "SAA*", 1963, ERAACDDC   , all_aACdDC  , 384, 10, 0 km/h, map_color_double+10, 0x25, rail4, fences_1435, rail1_depots, bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN))  // Electrified Trunk rails AC 25 kV + AC 15 kV + DC 3 kV + DC 1,5 kV
+
+electric_rails(er25ac1, erac)
+electric_rails(er15ac1, er15ac)
+electric_rails(er3dc1, erdc)
+electric_rails(er15dc1, er15dc)
+electric_rails(er2d, erds)
+electric_rails(er2s, erds)
+electric_rails(er2ac15dc, erds)
+electric_rails(er3acddc, erds)
+electric_rails(er3aac15dc, erds)
+electric_rails(er4aacddc, erds)
+
+item (FEAT_RAILTYPES, er4aacddc) { property {
+  alternative_railtype_list: ["SAAE", "SABE", "SACE", "SADE", "SAEE"]; } }
+
+/*
+
+STR_S_ER15AC_NAME
+STR_S_ER15AC_TOOLBAR
+STR_S_ER15AC_MENU
+STR_S_ER15AC_BUILD_CAPTION
+STR_S_ER15AC_AUTOREPLACE
+STR_S_ER15AC_NEW_ENGINE
+
+STR_S_ER15DC_NAME
+STR_S_ER15DC_TOOLBAR
+STR_S_ER15DC_MENU
+STR_S_ER15DC_BUILD_CAPTION
+STR_S_ER15DC_AUTOREPLACE
+STR_S_ER15DC_NEW_ENGINE
+
+STR_S_ER25AC15DC_NAME
+STR_S_ER25AC15DC_TOOLBAR
+STR_S_ER25AC15DC_MENU
+STR_S_ER25AC15DC_BUILD_CAPTION
+STR_S_ER25AC15DC_AUTOREPLACE
+STR_S_ER25AC15DC_NEW_ENGINE
+
+STR_S_ER25AC3DC_NAME
+STR_S_ER25AC3DC_TOOLBAR
+STR_S_ER25AC3DC_MENU
+STR_S_ER25AC3DC_BUILD_CAPTION
+STR_S_ER25AC3DC_AUTOREPLACE
+STR_S_ER25AC3DC_NEW_ENGINE
+
+STR_S_ER25ACDDC_NAME
+STR_S_ER25ACDDC_TOOLBAR
+STR_S_ER25ACDDC_MENU
+STR_S_ER25ACDDC_BUILD_CAPTION
+STR_S_ER25ACDDC_AUTOREPLACE
+STR_S_ER25ACDDC_NEW_ENGINE
+
+STR_S_ER25AC_NAME
+STR_S_ER25AC_TOOLBAR
+STR_S_ER25AC_MENU
+STR_S_ER25AC_BUILD_CAPTION
+STR_S_ER25AC_AUTOREPLACE
+STR_S_ER25AC_NEW_ENGINE
+
+STR_S_ER3DC_NAME
+STR_S_ER3DC_TOOLBAR
+STR_S_ER3DC_MENU
+STR_S_ER3DC_BUILD_CAPTION
+STR_S_ER3DC_AUTOREPLACE
+STR_S_ER3DC_NEW_ENGINE
+
+STR_S_ERAAC15DC_NAME
+STR_S_ERAAC15DC_TOOLBAR
+STR_S_ERAAC15DC_MENU
+STR_S_ERAAC15DC_BUILD_CAPTION
+STR_S_ERAAC15DC_AUTOREPLACE
+STR_S_ERAAC15DC_NEW_ENGINE
+
+STR_S_ERAACDDC_NAME
+STR_S_ERAACDDC_TOOLBAR
+STR_S_ERAACDDC_MENU
+STR_S_ERAACDDC_BUILD_CAPTION
+STR_S_ERAACDDC_AUTOREPLACE
+STR_S_ERAACDDC_NEW_ENGINE
+
+STR_S_ERDDC_NAME
+STR_S_ERDDC_TOOLBAR
+STR_S_ERDDC_MENU
+STR_S_ERDDC_BUILD_CAPTION
+STR_S_ERDDC_AUTOREPLACE
+STR_S_ERDDC_NEW_ENGINE
+
+STR_S_RAIL_NAME
+STR_S_RAIL_TOOLBAR
+STR_S_RAIL_MENU
+STR_S_RAIL_BUILD_CAPTION
+STR_S_RAIL_AUTOREPLACE
+STR_S_RAIL_NEW_ENGINE
+
+*/
