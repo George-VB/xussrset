@@ -6,9 +6,9 @@
 #define PROP_subway_a_c_num  0
 
 #define PROP_subway_a_h_CF  18
-#define PROP_subway_a_h_RC  1354
+#define PROP_subway_a_h_RC  134
 #define PROP_subway_a_h_SD  65
-#define PROP_subway_a_h_WT  51.7 + 31.6
+#define PROP_subway_a_h_WT  51.7 + 36
 #define PROP_subway_a_h_TE  100
 #define PROP_subway_a_h_PR  kw2hp(612)
 #define PROP_subway_a_h_CC  137
@@ -47,11 +47,19 @@ MU_head_direction_template(subway_a_h, subway_a_h)
 engine_direction_template_only2(subway_a_h, )
 long_vehicle(subway_a_h)
 
-switch (FEAT_TRAINS, PARENT, subway_a_h_can_attach_wagon,
-  (num_vehs_in_consist <= 8) &&
-  (num_vehs_in_consist == count_veh_id(subway_a_h) * 2))
+switch (FEAT_TRAINS, PARENT, subway_ab_can_attach_wagon1,
+  num_vehs_in_consist <= 8)
 { 1: return CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE); }
+
+switch (FEAT_TRAINS, PARENT, subway_ab_can_attach_wagon,
+[ set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])
+{
+  subway_a_h: subway_ab_can_attach_wagon1;
+  subway_b_h: subway_ab_can_attach_wagon1;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
 
 engine_ARVs(subway_a_h, 3)
 engine_capacity_MU(subway_a_h, PROP_subway_a_h_CC, subway_a_h)
@@ -82,14 +90,14 @@ hint_MU(subway_a_h,
 item (FEAT_TRAINS, subway_a_h, 704) {
   property {
     name: string(STR_NAME_SUBWAY_A);
-    vehicle_dates(1934, 1937, 25, 10, 8, PROP_subway_a_h_CF)
+    vehicle_dates(1934, 1937, 50, 10, 8, PROP_subway_a_h_CF)
     vehicle_subway(PROP_subway_a_h_PR, PROP_subway_a_h_WT, PROP_subway_a_h_TE, PROP_subway_a_h_CC, 4 * WIDERST_D_DOOR)
   }
   graphics {
   purchase_menu(PROP_subway_a_h_CF, PROP_subway_a_h_RC, PROP_subway_a_h_SD, PROP_subway_a_h_WT, PROP_subway_a_h_TE, PROP_subway_a_h_PR, PROP_subway_a_h_CC)
         additional_text: subway_a_h_additional_text;
        articulated_part: subway_a_h_articulated_part;
-       can_attach_wagon: subway_a_h_can_attach_wagon;
+       can_attach_wagon: subway_ab_can_attach_wagon;
        cargo_age_period: return CAP_00025_INSTANT;
          cargo_capacity: subway_a_h_cargo_capacity;
          colour_mapping: any_cc_colour;
