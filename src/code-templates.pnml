@@ -326,10 +326,44 @@ switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)            
   vehmid1: name##_c_can_attach_wagon;                                            \
   return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
 
+// Heads - heads - Head. 1 head type
+#define MU_can_attach_wagon_hnhh_template(name, vehid, h_num)         \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,          \
+  count_veh_id(vehid) >= h_num)                                       \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                          \
+     return string(STR_CAN_ATTACH_NO_MORE); }                         \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)  \
+{ vehid: name##_can_attach_wagon_length;                              \
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                    \
+
+// Heads - heads - Head. 2 head types
+#define MU_can_attach_wagon_hnhh_template2(name, vehid1, vehid2, h_num)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,             \
+  count_veh_id(vehid1) + count_veh_id(vehid2) >= h_num)                  \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                             \
+     return string(STR_CAN_ATTACH_NO_MORE); }                            \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)     \
+{ vehid1: name##_can_attach_wagon_length;                                \
+  vehid2: name##_can_attach_wagon_length;                                \
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                       \
+
 // Can start / stop templates
 
-// Number of head sections should be even. 1 head car type
+// Consist length shorter, than intended. 1 head car type
+#define MU_start_stop_template_minlength(name, vehid, num)  \
+switch (FEAT_TRAINS, PARENT, name##_start_stop,             \
+  count_veh_id(vehid) < num)                                \
+{ 0: return CB_RESULT_NO_TEXT;                              \
+     return string(STR_START_STOP_MORE_WAGONS_REQUIRED); }  \
 
+// Consist length shorter, than intended. 2 head car types
+#define MU_start_stop_template2_minlength(name, vehid1, vehid2, num)  \
+switch (FEAT_TRAINS, PARENT, name##_start_stop,                       \
+  count_veh_id(vehid1) + count_veh_id(vehid2) < num)                  \
+{ 0: return CB_RESULT_NO_TEXT;                                        \
+     return string(STR_START_STOP_MORE_WAGONS_REQUIRED); }            \
+
+// Number of head sections should be even. 1 head car type
 #define MU_start_stop_template_even(name, vehid)                       \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                        \
   (count_veh_id(vehid)) % 2)                                           \
@@ -337,7 +371,6 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                        \
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN); }  \
 
 // Number of head sections should be even. 2 head car types
-
 #define MU_start_stop_template2_even(name, vehid1, vehid2)             \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                        \
   (count_veh_id(vehid1) +                                              \
@@ -346,7 +379,6 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                        \
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN); }  \
 
 // Number of head sections should be even. 3 head car types
-
 #define MU_start_stop_template3_even(name, vehid1, vehid2, vehid3)     \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                        \
   (count_veh_id(vehid1) +                                              \
@@ -356,7 +388,6 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                        \
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN); }  \
 
 // Number of head sections should be even. 4 head car types
-
 #define MU_start_stop_template4_even(name, vehid1, vehid2, vehid3, vehid4)  \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                             \
   (count_veh_id(vehid1) +                                                   \
@@ -367,7 +398,6 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                             \
      return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN); }       \
 
 // не выпускать новые четвёрки без средней секции
-
 #define  new_4x_train_start_stop(name)                                               \
 switch (FEAT_TRAINS, PARENT, name##_start_stop3,                                     \
 [ set_offset_to(4),                                                                  \
@@ -384,7 +414,6 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * NEW_TRAIN_A
       name##_start_stop2; }                                                          \
 
 // не выпускать новые тройники без средней секции
-
 #define  new_3x_train_start_stop(name)                                               \
 switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                     \
 [ set_offset_to(2),                                                                  \
@@ -396,7 +425,6 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop, age_in_days >= 365 * NEW_TRAIN_A
       name##_start_stop2; }                                                          \
 
 // не выпускать новые двойки с средней секцией
-
 #define  new_2x_train_start_stop(name, namem)                                        \
 switch (FEAT_TRAINS, PARENT, name##_start_stop2,                                     \
 [ set_offset_to(2),                                                                  \

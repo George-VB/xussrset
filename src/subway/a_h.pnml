@@ -47,20 +47,8 @@ MU_head_direction_template2(subway_a_h, subway_a_h, subway_b_h)
 engine_direction_template_only2(subway_a_h, )
 long_vehicle(subway_a_h)
 
-switch (FEAT_TRAINS, PARENT, subway_ab_can_attach_wagon1,
-  num_vehs_in_consist <= 8)
-{ 1: return CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE); }
-
-switch (FEAT_TRAINS, PARENT, subway_ab_can_attach_wagon,
-[ set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
-{
-  subway_a_h: subway_ab_can_attach_wagon1;
-  subway_b_h: subway_ab_can_attach_wagon1;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
-
+MU_can_attach_wagon_hnhh_template2(subway_ab, subway_a_h, subway_b_h, 6)
+MU_start_stop_template2_minlength(subway_ab, subway_a_h, subway_b_h, 4)
 engine_ARVs(subway_a_h, 3)
 engine_capacity_MU2(subway_a_h, PROP_subway_a_h_CC, subway_a_h, subway_b_h)
 engine_power_MU2(subway_a_h, PROP_subway_a_h_PR, subway_a_h, subway_b_h)
@@ -83,14 +71,14 @@ hint_MU(subway_a_h_b1937,
      calc_loading(PROP_subway_a_h_CC / (4 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_CAP_00025_INSTANT,
      STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HC,
-     STR_SECTIONS_MU_S1_3of2_WITH_ATTACH,
+     STR_SECTIONS_MU_S2_3of2_WITH_ATTACH,
      1934, 1937,
      fact_mytishchi())
 hint_MU_with_sme(subway_a_h_a1937,
      calc_loading(PROP_subway_a_h_CC / (4 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_CAP_00025_INSTANT,
      STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HC,
-     STR_SECTIONS_MU_S1_3of2_WITH_ATTACH, STR_NAME_SUBWAY_B,
+     STR_SECTIONS_MU_S2_3of2_WITH_ATTACH, STR_NAME_SUBWAY_B,
      1934, 1937,
      fact_mytishchi())
 hint_change_after(subway_a_h, 1937)
@@ -114,6 +102,7 @@ item (FEAT_TRAINS, subway_a_h, 704) {
                purchase: subway_a_h_purchase_sprites;
     running_cost_factor: subway_a_h_running_cost_factor;
                   speed: return PROP_subway_a_h_SD;
+             start_stop: subway_ab_start_stop;
   }
 }
 
