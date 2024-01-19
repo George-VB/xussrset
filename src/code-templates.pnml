@@ -281,7 +281,7 @@ switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)            
   vehmid1: name##_c_can_attach_wagon;                                            \
   return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
 
-// Head - 1..4car - Head. (2 types) 1 head type and 1 car type
+// Head - 1..5car - Head. (2 types) 1 head type and 1 car type
 #define MU_can_attach_wagon_h15ch_template2m(name, vehid1, vehmid1, num, error)  \
 switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                     \
   (count_veh_id(vehid1)) > num * 2 - 1)                                          \
@@ -350,18 +350,34 @@ switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)     \
 // Can start / stop templates
 
 // Consist length shorter, than intended. 1 head car type
-#define MU_start_stop_template_minlength(name, vehid, num)  \
+#define MU_start_stop_template_minamount(name, vehid, num)  \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,             \
   count_veh_id(vehid) < num)                                \
 { 0: return CB_RESULT_NO_TEXT;                              \
      return string(STR_START_STOP_MORE_WAGONS_REQUIRED); }  \
 
 // Consist length shorter, than intended. 2 head car types
-#define MU_start_stop_template2_minlength(name, vehid1, vehid2, num)  \
+#define MU_start_stop_template2_minamount(name, vehid1, vehid2, num)  \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                       \
   count_veh_id(vehid1) + count_veh_id(vehid2) < num)                  \
 { 0: return CB_RESULT_NO_TEXT;                                        \
      return string(STR_START_STOP_MORE_WAGONS_REQUIRED); }            \
+
+// Number required. 1 car type
+#define MU_start_stop_template_minnumber(name, vehid, num)  \
+switch (FEAT_TRAINS, PARENT, name##_start_stop,             \
+  count_veh_id(vehid) < num)                                \
+{ 0: return CB_RESULT_NO_TEXT;                              \
+     return string(STR_START_STOP_MORE_WAGONS_REQUIRED); }  \
+
+// Number required. 2 car types
+#define MU_start_stop_template2_minnumber(name, vehid1, num1, vehid2, num2)  \
+switch (FEAT_TRAINS, PARENT, name##_start_stop,                              \
+  (count_veh_id(vehid1) < num1) ||                                           \
+  (count_veh_id(vehid2) < num2))                                             \
+{ 0: return CB_RESULT_NO_TEXT;                                               \
+     return string(STR_START_STOP_MORE_WAGONS_REQUIRED); }                   \
+
 
 // Number of head sections should be even. 1 head car type
 #define MU_start_stop_template_even(name, vehid)                       \
