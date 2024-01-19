@@ -12,10 +12,10 @@
 
 map_color_rail = 0x07;
 map_color_ac = 0x91;
-map_color_15ac = 0x80;
-map_color_dc = 0x73;
-map_color_15dc = 0x2B;  //0xB2;
-map_color_double = 0xBB;
+map_color_15ac = 0x9A;    // 0x80;
+map_color_dc = 0xB2;      // 0x73;
+map_color_15dc = 0x48;    // 0x2B;  //0xB2;
+map_color_double = 0x40;  // 0xBB; // 0xBB;
 map_color_metro = 0xCF;
 
 // 2D = D + d
@@ -25,14 +25,13 @@ map_color_metro = 0xCF;
 // 3D = D + d + A (ETR500)
 // 4S = A + D + a + d (ETR575, ICE-3M)
 
-#define all_broad_rails()                    \
-  "RLA0", "RLA1", "RLA2", "RLA3", "RLAN",    \
-          "ERA1", "ERA2", "ERA3", "ERA4",    \
-  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",    \
-          "ERD1", "ERD2", "ERD3",            \
-  "ERd0", "ERd1", "ERd2", "ERd3",            \
- "ER2D","ER2S","ER2s","ER3a","ER3D","ER4S",  \
- "BAA3"                                      \
+#define all_broad_rails()                   \
+  "RLA0", "RLA1", "RLA2", "RLA3", "RLAN",   \
+          "ERA1", "ERA2", "ERA3", "ERA4",   \
+  "ERa0", "ERa1", "ERa2", "ERa3", "ERa4",   \
+          "ERD1", "ERD2", "ERD3",           \
+  "ERd0", "ERd1", "ERd2", "ERd3",           \
+ "ER2D","ER2S","ER2s","ER3a","ER3D","ER4S"  \
 
 #define all_EL_broad_rails()                \
           "ERA1", "ERA2", "ERA3", "ERA4",   \
@@ -230,7 +229,7 @@ item (FEAT_RAILTYPES, rail_name) {                                              
         build_window_caption: string(STR_##strnamebase##_BUILD_CAPTION);                                                                                                              \
             autoreplace_text: string(STR_##strnamebase##_AUTOREPLACE);                                                                                                                \
              new_engine_text: string(STR_##strnamebase##_NEW_ENGINE);                                                                                                                 \
-    compatible_railtype_list: [all_broad_rails()];                                                                                                                                    \
+    compatible_railtype_list: [all_broad_rails(), "BAA3"];                                                                                                                            \
        powered_railtype_list: [powered##_broad_rails()];                                                                                                                              \
               railtype_flags: flags;                                                                                                                                                  \
       curve_speed_multiplier: 1;                                                                                                                                                      \
@@ -386,7 +385,7 @@ if (currents_mode == 3) {
 
 // Adjust for xUSSR Railways Set.
 if (((grf_future_status("AKA\08")) ||
-     (grf_future_status("Meo\B0")) ||
+     /* (grf_future_status("Meo\B0")) || */  // B0 is add-on, has its own rails
      /* (grf_future_status("Meo\B1")) || */  // B1 is a railsway set, skipped
      (grf_future_status("Meo\B2")) ||
      (grf_future_status("Meo\B3")) ||
@@ -420,18 +419,6 @@ if (((grf_future_status("AKA\08")) ||
       xUSSRset_disable_acemu        = (param["AKA\08", 2] >> 6) & 0x01;
       xUSSRset_disable_dcemu        = (param["AKA\08", 2] >> 7) & 0x01;
       xUSSRset_disable_acdcemu      = (param["AKA\08", 3] >> 0) & 0x01;
-  }
-// Addon does not have management for engines types, all showd be available
-  if (grf_future_status("Meo\B0")) {
-    xUSSRset_disable_steamer      = 0;
-    xUSSRset_disable_diesel       = 0;
-    xUSSRset_disable_acelectric   = 0;
-    xUSSRset_disable_dcelectric   = 0;
-    xUSSRset_disable_acdcelectric = 0;
-    xUSSRset_disable_dmu          = 0;
-    xUSSRset_disable_acemu        = 0;
-    xUSSRset_disable_dcemu        = 0;
-    xUSSRset_disable_acdcemu      = 0;
   }
 
   if (grf_future_status("Meo\B2")) {
@@ -511,17 +498,12 @@ if (((grf_future_status("AKA\08")) ||
           railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
     }
   }
-// Adjust for xUSSR Railways Set & add-on
-  if (((! grf_future_status("Meo\B0")) ||
-       (xUSSRset_disable_dcemu && xUSSRset_disable_dcelectric)) &&
-      (speedlimit_mode != 2) ) {
+
+  if (speedlimit_mode != 2) {
     item (FEAT_RAILTYPES, er15dc2) { property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er15dc3) { property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN, RAILTYPE_FLAG_NO_LEVEL_CROSSING); } }
-  }
-// er25ac4 available only with add-on
-  if ((! grf_future_status("Meo\B0")) && (speedlimit_mode != 2)) {
     item (FEAT_RAILTYPES, er15ac1) { property {
         railtype_flags: bitmask(RAILTYPE_FLAG_CATENARY, RAILTYPE_FLAG_HIDDEN); } }
     item (FEAT_RAILTYPES, er15ac2) { property {
@@ -539,25 +521,26 @@ if (((grf_future_status("AKA\08")) ||
 
 item (FEAT_RAILTYPES, bg_metro) {
   property {
-                       label: "BAA3";
-           introduction_date: date(1935, 1, 1);
-                        name: string(STR_NAME_R3);
-             toolbar_caption: string(STR_R3_TOOLBAR);
-                   menu_text: string(STR_R3_MENU);
-        build_window_caption: string(STR_R3_BUILD_CAPTION);
-            autoreplace_text: string(STR_R3_AUTOREPLACE);
-             new_engine_text: string(STR_R3_NEW_ENGINE);
-    compatible_railtype_list: ["BAA3"];
-       powered_railtype_list: ["BAA3"];
-              railtype_flags: bitmask(RAILTYPE_FLAG_NO_LEVEL_CROSSING, RAILTYPE_FLAG_PRECOMBINED);
-      curve_speed_multiplier: 1;
-            station_graphics: RAILTYPE_STATION_NORMAL;
-           construction_cost: 750;
-            maintenance_cost: 32;
-                 speed_limit: 100 km/h;
-          acceleration_model: ACC_MODEL_RAIL;
-                  map_colour: map_color_metro;
-                  sort_order: 0x26;
+                      label: "BAA3";
+          introduction_date: date(1935, 1, 1);
+                       name: string(STR_NAME_R3);
+            toolbar_caption: string(STR_R3_TOOLBAR);
+                  menu_text: string(STR_R3_MENU);
+       build_window_caption: string(STR_R3_BUILD_CAPTION);
+           autoreplace_text: string(STR_R3_AUTOREPLACE);
+            new_engine_text: string(STR_R3_NEW_ENGINE);
+   compatible_railtype_list: ["BAA3", all_broad_rails()];
+      powered_railtype_list: ["BAA3"];
+             railtype_flags: bitmask(RAILTYPE_FLAG_NO_LEVEL_CROSSING, RAILTYPE_FLAG_PRECOMBINED);
+     curve_speed_multiplier: 1;
+           station_graphics: RAILTYPE_STATION_NORMAL;
+          construction_cost: 750;
+           maintenance_cost: 32;
+                speed_limit: 100 km/h;
+         acceleration_model: ACC_MODEL_RAIL;
+                 map_colour: map_color_metro;
+                 sort_order: 0x26;
+  alternative_railtype_list: ["BAB3","BAC3","BAD3","BAE3", "3DRL", "MTRO"];
   }
   graphics {
     bridge_surfaces: get_rail_3d_bridge_surfaces;
