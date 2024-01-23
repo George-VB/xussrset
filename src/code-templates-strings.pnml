@@ -2171,6 +2171,27 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                    \
      name##_additional_text_shown; }                                                                   \
 
+// Описание МВПС c примечанием c Мощностью и ТУ
+#define hint_MU_comment_PTE(name, lspeed, straging, strmutype, strengsmetype, from, to, factory, comment, headname, power, te)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                        \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                         \
+  STORE_TEMP(string(strmutype) | (string(strengsmetype) << 16), 0x101),                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (factory << 16), 0x102),                                              \
+  STORE_TEMP(comment | (headname << 16), 0x103),                                                                                \
+  STORE_TEMP(round(power * POWER_MULT) | ((round(te * EFFORT_MULT) & 0x0000FFFF) << 16), 0x104),                                \
+  STORE_TEMP(round(te * EFFORT_MULT) >> 16, 0x105) ])                                                                           \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_PTE); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                       \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                         \
+  STORE_TEMP(string(strmutype) | (string(strengsmetype) << 16), 0x101),                                                         \
+  STORE_TEMP(factory | (comment << 16), 0x102),                                                                                 \
+  STORE_TEMP(headname | ((round(power * POWER_MULT)) << 16), 0x103),                                                            \
+  STORE_TEMP(round(te * EFFORT_MULT), 0x104) ])                                                                                 \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_COMMENT_PTE_NODATES); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                          \
+{ 1: name##_additional_text_hidden;                                                                                             \
+     name##_additional_text_shown; }                                                                                            \
+
 #define hint_MU_chande_speed_on_dc(name, lspeed, straging, strmutype, strengsmetype, from, to, factory, speed)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                        \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                         \

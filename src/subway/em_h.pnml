@@ -27,16 +27,21 @@ purchase_sprites(subway_em_h, 0, 0)
 MU_head_middle_sprites(11, subway_em_h_v1_mu, 32, 40)
 MU_head_middle_sprites(11, subway_em_h_v2_mu, 32, 308)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/subway/ema_h-kiev.png"
+MU_head_middle_sprites(11, subway_em_h_v3_mu, 32, 40)
+#undef IMAGEFILE
 map_sprites(subway_em_purchase_sprites, subway_em_h_purchase_sprites)
 
 MU_head_direction_template2(subway_em_h_v1, subway_em_h, subway_em_n)
 MU_head_direction_template2(subway_em_h_v2, subway_em_h, subway_em_n)
+MU_head_direction_template2(subway_em_h_v3, subway_em_h, subway_em_n)
 
 switch (FEAT_TRAINS, SELF, subway_em_h_sprites_left,
   cargo_subtype)
 {
               0: subway_em_h_v1_sprites_left;
   LV_SUBWAY_SPB: subway_em_h_v2_sprites_left;
+           0xE0: subway_em_h_v3_sprites_left;
      align_11_sprites;
 }
 switch (FEAT_TRAINS, SELF, subway_em_h_sprites_right,
@@ -44,6 +49,7 @@ switch (FEAT_TRAINS, SELF, subway_em_h_sprites_right,
 {
               0: subway_em_h_v1_sprites_right;
   LV_SUBWAY_SPB: subway_em_h_v2_sprites_right;
+           0xE0: subway_em_h_v3_sprites_right;
        align_11_sprites;
 }
 
@@ -89,11 +95,16 @@ switch (FEAT_TRAINS, SELF, subway_em_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
+  livery_template_base_list(subway_em_b2000, LV_SUBWAY_SPB)
+
+  livery_template_simplerefit(subway_em_a2000, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LV_SUBWAY_KIEV, subway_em_b2000)
+livery_template_service_year(subway_em, 2000)
+
 MU_start_stop_template_minamount(subway_em_alt, subway_em_n, 1, string(STR_START_STOP_ADDING_REQUIRED, string(STR_CAN_ATTACH_HEAD_ONLY)))
 MU_start_stop_template_minamount_alt(subway_em, subway_em_h, 1, string(STR_START_STOP_ADDING_REQUIRED, string(STR_CAN_ATTACH_HEAD_ONLY)), subway_em_alt)
-livery_template_base_list(subway_em, LV_SUBWAY_SPB)
 engine_capacity_MU2(subway_em_h, PROP_subway_em_h_CC, subway_em_h, subway_em_n)
 engine_power_MU2(subway_em_h, PROP_subway_em_h_PR, subway_em_h, subway_em_n)
+engine_refit_cost_for_a2_livery_change(subway_em_h, 0xE0, 1, 2)
 
 RC_head_check2(subway_em_h, subway_em_h, subway_em_n)
 switch (FEAT_TRAINS, SELF, subway_em_h_running_cost_factor,
@@ -113,13 +124,22 @@ name_in_group_subgroup(subway_em_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SU
                                     string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E), string(STR_LONGNAME_SUBWAY_EM_H)),
                                     string(STR_NAME_SUBWAY_EM))
 
-hint_MU(subway_em_h,
+hint_MU(subway_em_h_b2000,
      calc_loading(PROP_subway_em_h_CC / (4 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_CAP_00025_INSTANT,
      STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
      STR_SECTIONS_SMU_HT3_8,
      1966, 1970,
      fact_mytishchi())
+hint_MU_comment(subway_em_h_a2000,
+     calc_loading(PROP_subway_em_h_CC / (4 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00025_INSTANT,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
+     STR_SECTIONS_SMU_HT3_8,
+     1966, 1970,
+     fact_mytishchi(),
+     string(STR_PURCHASE_HINT_UPGRADE))
+hint_change_after(subway_em_h, 2000)
 map_sprites(subway_em_additional_text, subway_em_h_additional_text)
 
 item (FEAT_TRAINS, subway_em_h, 1267) {
@@ -142,6 +162,7 @@ item (FEAT_TRAINS, subway_em_h, 1267) {
                    name: subway_em_h_name;
                   power: subway_em_h_power;
                purchase: subway_em_h_purchase_sprites;
+             refit_cost: subway_em_h_refit_cost;
     running_cost_factor: subway_em_h_running_cost_factor;
                   speed: return PROP_subway_em_h_SD;
              start_stop: subway_em_start_stop;
