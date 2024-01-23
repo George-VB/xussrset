@@ -35,36 +35,46 @@ purchase_sprites(subway_81_717_h, 0, 0)
 MU_head_middle_sprites(11, subway_81_717_h_v1_mu, 32, 40)
 MU_head_middle_sprites(11, subway_81_717_h_v2_mu, 32, 308)
 #undef IMAGEFILE
+#define IMAGEFILE  "src/subway/81-717_h-kiev.png"
+MU_head_middle_sprites(11, subway_81_717_h_v3_mu, 32, 40)
+MU_head_middle_sprites(11, subway_81_717_h_v4_mu, 32, 308)
+#undef IMAGEFILE
 map_sprites(subway_81_717_purchase_sprites, subway_81_717_h_purchase_sprites)
 
 MU_head_direction_template(subway_81_717_h_v1, subway_81_717_h)
 MU_head_direction_template(subway_81_717_h_v2, subway_81_717_h)
+MU_head_direction_template(subway_81_717_h_v3, subway_81_717_h)
+MU_head_direction_template(subway_81_717_h_v4, subway_81_717_h)
 
 switch (FEAT_TRAINS, SELF, subway_81_717_h_sprites_left,
   cargo_subtype)
 {
-              0: subway_81_717_h_v1_sprites_left;
-  LV_SUBWAY_SPB: subway_81_717_h_v2_sprites_left;
+               0: subway_81_717_h_v1_sprites_left;
+   LV_SUBWAY_SPB: subway_81_717_h_v2_sprites_left;
+  LV_SUBWAY_KIEV: subway_81_717_h_v4_sprites_left;
+            0xF0: subway_81_717_h_v3_sprites_left;
      align_11_sprites;
 }
 switch (FEAT_TRAINS, SELF, subway_81_717_h_sprites_right,
   cargo_subtype)
 {
-              0: subway_81_717_h_v1_sprites_right;
-  LV_SUBWAY_SPB: subway_81_717_h_v2_sprites_right;
+               0: subway_81_717_h_v1_sprites_right;
+   LV_SUBWAY_SPB: subway_81_717_h_v2_sprites_right;
+  LV_SUBWAY_KIEV: subway_81_717_h_v4_sprites_right;
+            0xF0: subway_81_717_h_v3_sprites_right;
        align_11_sprites;
 }
 
 engine_direction_template2m(subway_81_717_h, subway_em508_m, )
 map_sprites(subway_81_717_h_direction_template, subway_81_717_h_sprites_start)
 MU_attach_wagon_icon_template_at(subway_81_717_h_next_can_attach_wagon_template,
-                                 type_head_motor_pant_car_motor_pant_add_mandatory,
-                                 type_head_motor_pant_car_motor_pant_add_optional,
-                                 type_head_motor_pant_car_motor_pant_add_optional,
-                                 type_head_motor_pant_car_motor_pant_add_optional,
-                                 type_head_motor_pant_car_motor_pant_add_optional,
-                                 type_head_motor_pant_car_motor_pant_add_optional,
-                                 type_head_motor_pant_add_optional,
+                                 type_car_motor_pant_add_mandatory,
+                                 dummy_sprites,
+                                 dummy_sprites,
+                                 dummy_sprites,
+                                 dummy_sprites,
+                                 dummy_sprites,
+                                 dummy_sprites,
                                  dummy_sprites,
                                  dummy_sprites_big,
                                  dummy_sprites_big,
@@ -72,28 +82,17 @@ MU_attach_wagon_icon_template_at(subway_81_717_h_next_can_attach_wagon_template,
 MU_attach_wagon_icon_template(subway_81_717_h, subway_81_717_h, type_head_motor_pant)
 long_vehicle_sp(subway_81_717_h)
 
-switch (FEAT_TRAINS, PARENT, subway_81_714_m_can_attach_wagon2,
-  count_veh_id(subway_81_717_h) + count_veh_id(subway_81_714_m) >= 7)
-{ 0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_HEAD_ONLY); }
+MU_can_attach_wagon_h16ch_template2m(subway_81_717,
+                                     subway_81_717_h, subway_81_714_m,
+                                     1, return string(STR_CAN_ATTACH_HEAD_ONLY))
+MU_start_stop_template_even(subway_81_717, subway_81_717_h)
 
-switch (FEAT_TRAINS, PARENT, subway_81_717_h_can_attach_wagon2,
-  count_veh_id(subway_81_717_h) + count_veh_id(subway_81_714_m) >= 8)
-{ 0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE); }
+  livery_template_base_list(subway_81_717_b2000, LV_SUBWAY_SPB)
 
-switch (FEAT_TRAINS, SELF, subway_81_717_can_attach_wagon,
-  vehicle_type_id)
-{
-    subway_81_717_h: subway_81_717_h_can_attach_wagon2;
-    subway_81_714_m: subway_81_714_m_can_attach_wagon2;
-     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
-}
+    livery_template_base_list2(subway_81_717_refit, LV_SUBWAY_SPB, LV_SUBWAY_KIEV)
+  livery_template_refit_shifted(subway_81_717_a2000, 0xF0, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_LV_SUBWAY_KIEV, STR_REFIT_WITH_STRIPES, subway_81_717_refit)
+livery_template_service_year(subway_81_717, 2000)
 
-MU_start_stop_template_notlast(subway_81_717_alt2, subway_81_714_m, string(STR_START_STOP_DUAL_END_REQUIRED))
-MU_start_stop_template2_minamount_alt(subway_81_717_alt, subway_81_717_h, subway_81_714_m, 2, string(STR_START_STOP_MORE_WAGONS_REQUIRED), subway_81_717_alt2)
-MU_start_stop_template_minamount_alt(subway_81_717, subway_81_717_h, 2, string(STR_START_STOP_ADDING_REQUIRED, string(STR_CAN_ATTACH_HEAD_ONLY)), subway_81_717_alt)
-livery_template_base_list(subway_81_717, LV_SUBWAY_SPB)
 engine_capacity_MU(subway_81_717_h, PROP_subway_81_717_h_CC, subway_81_717_h)
 engine_power_MU(subway_81_717_h, PROP_subway_81_717_h_PR, subway_81_717_h)
 
