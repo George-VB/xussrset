@@ -1,0 +1,163 @@
+﻿  /// Objects
+
+// Depot parts to emulate large depots
+
+#define ground() terrain_type == TILETYPE_SNOW ? GROUNDSPRITE_SNOW  : terrain_type == TILETYPE_DESERT ? GROUNDSPRITE_DESERT : GROUNDSPRITE_NORMAL
+
+template object_template(x, y)
+{
+  [x, y, 64, 53, -31, -22]
+}
+
+#define IMAGEFILE  "src/rails/depot4.png"
+spriteset(depot_left_sprite, IMAGEFILE)
+{ object_template(311, 24) }
+spriteset(depot_top_sprite, IMAGEFILE)
+{ object_template(311+80*1, 24) }
+spriteset(depot_right_sprite, IMAGEFILE)
+{ object_template(311+80*2, 24) }
+spriteset(depot_bottom_sprite, IMAGEFILE)
+{ object_template(311+80*3, 24) }
+spriteset(depot_middle_sprite, IMAGEFILE)
+{ object_template(311+80*4, 24) }
+
+#undef IMAGEFILE
+
+spritelayout depot_left {
+    ground {
+             sprite: ground();
+    }
+    building {
+              xoffset: 0;
+              yoffset: 0;
+              zoffset: 0;
+              xextent: 16;
+              yextent: 16;
+              zextent: 16;
+               sprite: depot_left_sprite;
+          always_draw: 1;
+        recolour_mode: RECOLOUR_REMAP;
+              palette: PALETTE_USE_DEFAULT;
+    }
+}
+
+spritelayout depot_top {
+    ground {
+             sprite: ground();
+    }
+    building {
+              xoffset: 0;
+              yoffset: 0;
+              zoffset: 0;
+              xextent: 16;
+              yextent: 16;
+              zextent: 16;
+               sprite: depot_top_sprite;
+          always_draw: 1;
+        recolour_mode: RECOLOUR_REMAP;
+              palette: PALETTE_USE_DEFAULT;
+    }
+}
+
+spritelayout depot_right {
+    ground {
+             sprite: ground();
+    }
+    building {
+              xoffset: 0;
+              yoffset: 0;
+              zoffset: 0;
+              xextent: 16;
+              yextent: 16;
+              zextent: 16;
+               sprite: depot_right_sprite;
+          always_draw: 1;
+        recolour_mode: RECOLOUR_REMAP;
+              palette: PALETTE_USE_DEFAULT;
+    }
+}
+
+spritelayout depot_bottom {
+    ground {
+             sprite: ground();
+    }
+    building {
+              xoffset: 0;
+              yoffset: 0;
+              zoffset: 0;
+              xextent: 16;
+              yextent: 16;
+              zextent: 16;
+               sprite: depot_bottom_sprite;
+          always_draw: 1;
+        recolour_mode: RECOLOUR_REMAP;
+              palette: PALETTE_USE_DEFAULT;
+    }
+}
+
+spritelayout depot_middle_graphics {
+    ground {
+             sprite: ground();
+    }
+    building {
+              xoffset: 0;
+              yoffset: 0;
+              zoffset: 0;
+              xextent: 16;
+              yextent: 16;
+              zextent: 16;
+               sprite: depot_middle_sprite;
+          always_draw: 1;
+        recolour_mode: RECOLOUR_REMAP;
+              palette: PALETTE_USE_DEFAULT;
+    }
+}
+
+switch (FEAT_OBJECTS, SELF, depot_corner_graphics,
+  view) {
+  0: depot_left;
+  1: depot_top;
+  2: depot_right;
+  3: depot_bottom;
+}
+
+item (FEAT_OBJECTS, depot_corner_obj) {
+    property {
+                         class: "DEPO";
+                     classname: string(STR_OBJECT_CLASS_DEPOT_PARTS);
+                          name: string(STR_OBJECT_DEPOT_CORNER);
+            climates_available: ALL_CLIMATES;
+                          size: [1,1];
+         build_cost_multiplier: 2;
+        remove_cost_multiplier: 8;
+             introduction_date: date(0,1,1);
+              end_of_life_date: 0xFFFFFFFF;
+                  object_flags: bitmask(OBJ_FLAG_REMOVE_IS_INCOME, OBJ_FLAG_2CC, OBJ_FLAG_RANDOM_ANIMATION);
+                        height: 2;
+                     num_views: 4;
+    }
+    graphics {
+    additional_text: string(STR_OBJECT_DEPOT_CORNER_PURCHASE);
+            default: depot_corner_graphics;
+  }
+}
+
+item (FEAT_OBJECTS, depot_middle_obj) {
+    property {
+                         class: "DEPO";
+                          name: string(STR_OBJECT_DEPOT_CENTER);
+            climates_available: ALL_CLIMATES;
+                          size: [1,1];
+         build_cost_multiplier: 2;
+        remove_cost_multiplier: 8;
+             introduction_date: date(0,1,1);
+              end_of_life_date: 0xFFFFFFFF;
+                  object_flags: bitmask(OBJ_FLAG_REMOVE_IS_INCOME, OBJ_FLAG_2CC, OBJ_FLAG_RANDOM_ANIMATION);
+                        height: 2;
+                     num_views: 1;
+    }
+    graphics {
+    additional_text: string(STR_OBJECT_DEPOT_CORNER_PURCHASE);
+            default: depot_middle_graphics;
+  }
+}
