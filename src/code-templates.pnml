@@ -569,6 +569,29 @@ switch (FEAT_TRAINS, SELF, name##_sprites,           \
 { 1: dummy_sprites;                                  \
      name##_sprites_parent; }                        \
 
+// special vehicle template (отличия в имени вызываемого метода _sprites_start_##base)
+#define long_vehicle_advanced(name, basename)        \
+switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,   \
+[ STORE_TEMP(                                        \
+             (var[0x9F, 0, 0x07] == 3) ?             \
+               var[0x9C, 0, 0x0F] & 3  :             \
+             (var[0x9F, 0, 0x07] == 7) ?             \
+               (3 - var[0x9C, 0, 0x0F] & 3)  :       \
+             (var[0x9F, 0, 0x07] > 3) ?              \
+               var[0x9A, 0, 0x0F] & 3  :             \
+               (3 - var[0x9A, 0, 0x0F] & 3), 3) ])   \
+{ basename; }                                        \
+switch (FEAT_TRAINS, PARENT, name##_sprites_parent,  \
+[ STORE_TEMP(count_veh_id(name), 0),                 \
+  STORE_TEMP(current_speed, 1),                      \
+  STORE_TEMP(vehicle_type_id, 4) ])                  \
+{  name##_sprites_selfpos; }                         \
+switch (FEAT_TRAINS, SELF, name##_sprites,           \
+  is_not_build_yet() ||                              \
+  (is_drawn_in_viewport() && is_hidden_at(1)))       \
+{ 1: dummy_sprites;                                  \
+     name##_sprites_parent; }                        \
+
 // special vehicle template (отличия в имени вызываемого метода _sprites_start_sp)
 #define long_vehicle_sp(name)                        \
 switch (FEAT_TRAINS, SELF, name##_sprites_selfpos,   \
