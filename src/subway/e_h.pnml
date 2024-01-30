@@ -11,8 +11,7 @@
 #define PROP_subway_e_h_WT  31.5
 #define PROP_subway_e_h_TE  35
 #define PROP_subway_e_h_PR  370
-#define PROP_subway_e_h_CC  130
-// (264 - 40) /10 * 4 + 40 (сидячие + стоячие из расчёта 4 человека на кв.метр. Заводской расчёт на 10 человек на кв. метр
+#define PROP_subway_e_h_CC  recalc_capacity(264, 40, 10)
 
 #define PROP_subway_e_n_CF  0
 #define PROP_subway_e_n_RC  0
@@ -46,16 +45,26 @@ map_sprites(subway_e_purchase_sprites, subway_e_h_purchase_sprites)
 
 MU_head_direction_template(subway_e_h, subway_e_h)
 engine_direction_template(subway_e_h, )
-long_vehicle(subway_e_h)
+engine_change_refit(subway_e_h_sprites_start_sp, subway_e_h_sprites_start, subway_e_km_m_sprites_start_sp)
+long_vehicle_advanced(subway_e_h, subway_e_h_sprites_start_sp)
 
-MU_can_attach_wagon_hnhh_template(subway_e, subway_e_h, 8)
-MU_start_stop_template_minamount(subway_e, subway_e_h, 2, string(STR_START_STOP_MORE_WAGONS_REQUIRED))
-livery_template_base_list2(subway_e_h, LV_SUBWAY_MOSCOW, LV_SUBWAY_SPB)
-engine_capacity_MU(subway_e_h, PROP_subway_e_h_CC, subway_e_h)
-engine_power_MU(subway_e_h, PROP_subway_e_h_PR, subway_e_h)
+MU_can_attach_wagon_hnhh_template(subway_e_norefit, subway_e_h, 8)
+engine_change_refit(subway_e_can_attach_wagon, subway_e_norefit_can_attach_wagon, subway_e_km_can_attach_wagon)
+MU_start_stop_template_minamount(subway_e_norefit, subway_e_h, 2, string(STR_START_STOP_MORE_WAGONS_REQUIRED))
+engine_change_refit(subway_e_start_stop, subway_e_norefit_start_stop, subway_e_km_start_stop)
+
+  livery_template_base_list2(subway_e_h_b2013, LV_SUBWAY_MOSCOW, LV_SUBWAY_SPB)
+
+  livery_template_simplerefit2_shifted(subway_e_h_a2013, 0xE1, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE, STR_NAME_SUBWAY_E_KM_PM, STR_NAME_SUBWAY_E_KM_PM_01, subway_e_h_b2013)
+livery_template_service_year(subway_e_h, 2013)
+
+engine_capacity_MU(subway_e_h_norefit, PROP_subway_e_h_CC, subway_e_h)
+engine_change_refit(subway_e_h_cargo_capacity, subway_e_h_norefit_cargo_capacity, subway_e_km_cargo_capacity)
+engine_power_MU(subway_e_h_norefit, PROP_subway_e_h_PR, subway_e_h)
+engine_change_refit(subway_e_h_power, subway_e_h_norefit_power, subway_e_km_power)
 
 RC_head_check(subway_e_h, subway_e_h)
-switch (FEAT_TRAINS, SELF, subway_e_h_running_cost_factor,
+switch (FEAT_TRAINS, SELF, subway_e_h_norefit_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
    STORE_TEMP(9, 1),   // Бригада
    STORE_TEMP(21, 2),  // Износ
@@ -67,17 +76,27 @@ switch (FEAT_TRAINS, SELF, subway_e_h_running_cost_factor,
    STORE_TEMP(round(PROP_subway_e_h_WT), 7),                             // Тара
    STORE_TEMP(round(PROP_subway_e_h_WT + PROP_subway_e_h_CC / 16), 8)])  // Максимальная масса
 { subway_e_h_check_running_cost_factor; }                                // 103
+engine_change_refit(subway_e_h_running_cost_factor, subway_e_h_norefit_running_cost_factor, subway_e_km_running_cost_factor)
 
 name_in_group(subway_e_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E_SERIES), string(STR_NAME_SUBWAY_E)),
                           string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E_SERIES), string(STR_LONGNAME_SUBWAY_E)))
 
-hint_MU(subway_e_h,
+hint_MU(subway_e_h_b2013,
      calc_loading(PROP_subway_e_h_CC / (4 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_CAP_00025_INSTANT,
      STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
      STR_SECTIONS_MU_2_8,
      1963, 1969,
      fact_mytishchi())
+hint_MU_comment(subway_e_h_a2013,
+     calc_loading(PROP_subway_e_h_CC / (4 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00025_INSTANT,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
+     STR_SECTIONS_MU_2_8,
+     1963, 1969,
+     fact_mytishchi(),
+     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, string(STR_NAME_SUBWAY_E_KM)))
+hint_change_after(subway_e_h, 2013)
 map_sprites(subway_e_additional_text, subway_e_h_additional_text)
 
 item (FEAT_TRAINS, subway_e_h, 1265) {
@@ -100,6 +119,7 @@ item (FEAT_TRAINS, subway_e_h, 1265) {
                    name: subway_e_h_name;
                   power: subway_e_h_power;
                purchase: subway_e_h_purchase_sprites;
+             refit_cost: subway_e_km_refit_cost;
     running_cost_factor: subway_e_h_running_cost_factor;
                   speed: return PROP_subway_e_h_SD;
              start_stop: subway_e_start_stop;
