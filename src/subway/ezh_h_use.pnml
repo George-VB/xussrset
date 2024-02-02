@@ -49,17 +49,17 @@ MU_attach_wagon_icon_template_at(subway_ezh_h_next_can_attach_wagon_template,
                                  dummy_sprites_big,
                                  dummy_sprites_big)
 MU_attach_wagon_icon_template(subway_ezh_h, subway_ezh_h, type_head_motor_pant)
-engine_change_refit(subway_ezh_h_e_km, subway_ezh_h_sprites_start_sp, subway_e_km_h_sprites_start_sp)
+engine_change_refit(subway_ezh_h_e_km, subway_ezh_h_sprites_start_sp, subway_e_km_sprites_start)
 long_vehicle_advanced(subway_ezh_h, subway_ezh_h_e_km)
 
 switch (FEAT_TRAINS, PARENT, subway_ezh_m_can_attach_wagon2,
   count_veh_id(subway_ezh_h) + count_veh_id(subway_ezh_m) >= 7)
-{ 0: CB_RESULT_ATTACH_ALLOW;
+{ 0: subway_e_km_can_attach_wagon_disallowed;
      return string(STR_CAN_ATTACH_HEAD_ONLY); }
 
 switch (FEAT_TRAINS, PARENT, subway_ezh_h_can_attach_wagon2,
   count_veh_id(subway_ezh_h) + count_veh_id(subway_ezh_m) >= 8)
-{ 0: CB_RESULT_ATTACH_ALLOW;
+{ 0: subway_e_km_can_attach_wagon_disallowed;
      return string(STR_CAN_ATTACH_NO_MORE); }
 
 switch (FEAT_TRAINS, SELF, subway_ezh_can_attach_wagon0,
@@ -72,14 +72,21 @@ switch (FEAT_TRAINS, SELF, subway_ezh_can_attach_wagon0,
 
 parent_engine_change_refit(subway_ezh_can_attach_wagon, subway_ezh_can_attach_wagon0, subway_e_km_can_attach_wagon)
 
-MU_start_stop_template_notlast(subway_ezh_alt2, subway_ezh_m, string(STR_START_STOP_DUAL_END_REQUIRED))
-MU_start_stop_template2_minamount_alt(subway_ezh_alt, subway_ezh_h, subway_ezh_m, 3, string(STR_START_STOP_MORE_WAGONS_REQUIRED), subway_ezh_alt2)
-MU_start_stop_template_minamount_alt(subway_ezh, subway_ezh_h, 2, string(STR_CAN_ATTACH_HEAD_ONLY), subway_ezh_alt)
-engine_capacity_MU(subway_ezh_h, PROP_subway_ezh_h_CC, subway_ezh_h)
-engine_power_MU(subway_ezh_h, PROP_subway_ezh_h_PR, subway_ezh_h)
+MU_start_stop_template_notlast_alt(subway_ezh_alt2, subway_ezh_m, string(STR_START_STOP_DUAL_END_REQUIRED), subway_e_km_start_stop_disallowed)
+MU_start_stop_template2_minamount_alt(subway_ezh_alt, subway_ezh_h, subway_ezh_m, 3, string(STR_START_STOP_MORE_WAGONS_REQUIRED), subway_ezh_alt2_start_stop)
+MU_start_stop_template_minamount_alt(subway_ezh_norefit, subway_ezh_h, 2, string(STR_CAN_ATTACH_HEAD_ONLY), subway_ezh_alt_start_stop)
+parent_engine_change_refit(subway_ezh_start_stop, subway_ezh_norefit_start_stop, subway_e_km_start_stop)
+
+  livery_template_simplerefit3(subway_ezh_h_a2013, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE, STR_NAME_SUBWAY_E_KM_GB, STR_NAME_SUBWAY_E_KM_PM, STR_NAME_SUBWAY_E_KM_PM_01, return string(STR_REFIT_FACTORY))
+livery_template_service_year_ao(subway_ezh_h, 2013)
+
+engine_capacity_MU(subway_ezh_h_norefit, PROP_subway_ezh_h_CC, subway_ezh_h)
+engine_change_refit(subway_ezh_h_cargo_capacity, subway_ezh_h_norefit_cargo_capacity, subway_e_km_cargo_capacity)
+engine_power_MU(subway_ezh_h_norefit, PROP_subway_ezh_h_PR, subway_ezh_h)
+engine_change_refit(subway_ezh_h_power, subway_ezh_h_norefit_power, subway_e_km_power)
 
 RC_head_check(subway_ezh_h, subway_ezh_h)
-switch (FEAT_TRAINS, SELF, subway_ezh_h_running_cost_factor,
+switch (FEAT_TRAINS, SELF, subway_ezh_h_norefit_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
    STORE_TEMP(9, 1),   // Бригада
    STORE_TEMP(21, 2),  // Износ
@@ -91,18 +98,28 @@ switch (FEAT_TRAINS, SELF, subway_ezh_h_running_cost_factor,
    STORE_TEMP(round(PROP_subway_ezh_h_WT), 7),                               // Тара
    STORE_TEMP(round(PROP_subway_ezh_h_WT + PROP_subway_ezh_h_CC / 16), 8)])  // Максимальная масса
 { subway_ezh_h_check_running_cost_factor; }                                  // 103
+engine_change_refit(subway_ezh_h_running_cost_factor, subway_ezh_h_norefit_running_cost_factor, subway_e_km_running_cost_factor)
 
 name_in_group_subgroup(subway_ezh_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E), string(STR_NAME_SUBWAY_EZH_H)),
                                      string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E), string(STR_LONGNAME_SUBWAY_EZH_H)),
                                      string(STR_NAME_SUBWAY_EZH))
 
-hint_MU(subway_ezh_h,
+hint_MU(subway_ezh_h_b2013,
      calc_loading(PROP_subway_ezh_h_CC / (4 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_CAP_00025_INSTANT,
      STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
      STR_SECTIONS_SMU_HH3_8,
      1970, 1973,
      fact_mytishchi())
+hint_MU_comment(subway_ezh_h_a2013,
+     calc_loading(PROP_subway_ezh_h_CC / (4 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00025_INSTANT,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
+     STR_SECTIONS_SMU_HH3_8,
+     1970, 1973,
+     fact_mytishchi(),
+     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, string(STR_NAME_SUBWAY_E_KM)))
+hint_change_after(subway_ezh_h, 2013)
 map_sprites(subway_ezh_additional_text, subway_ezh_h_additional_text)
 
 item (FEAT_TRAINS, subway_ezh_h, 1275) {
@@ -119,11 +136,13 @@ item (FEAT_TRAINS, subway_ezh_h, 1275) {
        can_attach_wagon: subway_ezh_can_attach_wagon;
        cargo_age_period: return CAP_00025_INSTANT;
          cargo_capacity: subway_ezh_h_cargo_capacity;
+     cargo_subtype_text: subway_ezh_h_cargo_subtype_text;
          colour_mapping: any_cc_colour;
                 default: subway_ezh_h_sprites;
                    name: subway_ezh_h_name;
                   power: subway_ezh_h_power;
                purchase: subway_ezh_h_purchase_sprites;
+             refit_cost: subway_e_km_refit_cost;
     running_cost_factor: subway_ezh_h_running_cost_factor;
                   speed: return PROP_subway_ezh_h_SD;
              start_stop: subway_ezh_start_stop;

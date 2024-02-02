@@ -37,7 +37,7 @@ switch (FEAT_TRAINS, SELF, subway_em501_h_sprites_left,
 {
               0: subway_em501_h_v1_sprites_left;
   LV_SUBWAY_SPB: subway_em501_h_v2_sprites_left;
-           0xE0: subway_em501_h_v3_sprites_left;
+ LV_SUBWAY_KIEV: subway_em501_h_v3_sprites_left;
      align_11_sprites;
 }
 switch (FEAT_TRAINS, SELF, subway_em501_h_sprites_right,
@@ -45,7 +45,7 @@ switch (FEAT_TRAINS, SELF, subway_em501_h_sprites_right,
 {
               0: subway_em501_h_v1_sprites_right;
   LV_SUBWAY_SPB: subway_em501_h_v2_sprites_right;
-           0xE0: subway_em501_h_v3_sprites_right;
+ LV_SUBWAY_KIEV: subway_em501_h_v3_sprites_right;
        align_11_sprites;
 }
 
@@ -64,7 +64,8 @@ MU_attach_wagon_icon_template_at(subway_em501_h_next_can_attach_wagon_template,
                                  dummy_sprites_big,
                                  dummy_sprites_big)
 MU_attach_wagon_icon_template2(subway_em501_h, subway_em501_h, subway_em501_n, type_head_motor_pant)
-long_vehicle_advanced(subway_em501_h, subway_em501_h_sprites_start_sp)
+engine_change_refit(subway_em501_h_e_km, subway_em501_h_sprites_start_sp, subway_e_km_sprites_start)
+long_vehicle_advanced(subway_em501_h, subway_em501_h_e_km)
 
 switch (FEAT_TRAINS, PARENT, subway_em501_m_can_attach_wagon2,
   count_veh_id(subway_em501_h) + count_veh_id(subway_em501_n) + count_veh_id(subway_em501_m) >= 7)
@@ -76,7 +77,7 @@ switch (FEAT_TRAINS, PARENT, subway_em501_can_attach_wagon2,
 { 0: CB_RESULT_ATTACH_ALLOW;
      return string(STR_CAN_ATTACH_NO_MORE); }
 
-switch (FEAT_TRAINS, SELF, subway_em501_can_attach_wagon,
+switch (FEAT_TRAINS, SELF, subway_em501_can_attach_wagon0,
   vehicle_type_id)
 {
   subway_em501_h: subway_em501_can_attach_wagon2;
@@ -85,19 +86,29 @@ switch (FEAT_TRAINS, SELF, subway_em501_can_attach_wagon,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
+parent_engine_change_refit(subway_em501_can_attach_wagon, subway_em501_can_attach_wagon0, subway_e_km_can_attach_wagon)
+
   livery_template_base_list(subway_em501_b2000, LV_SUBWAY_SPB)
 
-  livery_template_simplerefit(subway_em501_a2000, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LV_SUBWAY_KIEV, subway_em501_b2000)
-livery_template_service_year(subway_em501, 2000)
+  livery_template_simplerefit_shifted(subway_em501_a2000, LV_SUBWAY_KIEV, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LV_SUBWAY_KIEV, subway_em501_b2000_cargo_subtype_text)
+
+  livery_template_simplerefit(subway_em501_a2013, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE, STR_NAME_SUBWAY_E_KM_GB, subway_em501_a2000_cargo_subtype_text)
+livery_template_service_year2(subway_em501, 2000, 2013)
+
 MU_start_stop_template_notlast(subway_em501_alt2, subway_em501_m, string(STR_START_STOP_DUAL_END_REQUIRED))
-MU_start_stop_template3_minamount_alt(subway_em501_alt, subway_em501_h, subway_em501_n, subway_em501_m, 3, string(STR_START_STOP_MORE_WAGONS_REQUIRED), subway_em501_alt2)
-MU_start_stop_template_minamount_alt(subway_em501, subway_em501_h, 1, string(STR_CAN_ATTACH_HEAD_ONLY), subway_em501_alt)
-engine_capacity_MU2(subway_em501_h, PROP_subway_em501_h_CC, subway_em501_h, subway_em501_n)
-engine_power_MU2(subway_em501_h, PROP_subway_em501_h_PR, subway_em501_h, subway_em501_n)
-engine_refit_cost_for_a2_livery_change(subway_em501_h, 0xE0, 1, 2)
+MU_start_stop_template3_minamount_alt(subway_em501_alt, subway_em501_h, subway_em501_n, subway_em501_m, 3, string(STR_START_STOP_MORE_WAGONS_REQUIRED), subway_em501_alt2_start_stop)
+MU_start_stop_template_minamount_alt(subway_em501_norefit, subway_em501_h, 1, string(STR_CAN_ATTACH_HEAD_ONLY), subway_em501_alt_start_stop)
+parent_engine_change_refit(subway_em501_start_stop, subway_em501_norefit_start_stop, subway_e_km_start_stop)
+
+engine_capacity_MU2(subway_em501_h_norefit, PROP_subway_em501_h_CC, subway_em501_h, subway_em501_n)
+engine_change_refit(subway_em501_h_cargo_capacity, subway_em501_h_norefit_cargo_capacity, subway_e_km_cargo_capacity)
+engine_power_MU2(subway_em501_h_norefit, PROP_subway_em501_h_PR, subway_em501_h, subway_em501_n)
+engine_change_refit(subway_em501_h_power, subway_em501_h_norefit_power, subway_e_km_power)
+
+engine_refit_cost_for_range_livery_change(subway_em501_h, LV_SUBWAY_KIEV, LV_SUBWAY_KIEV, 2, subway_e_km_refit_cost)
 
 RC_head_check2(subway_em501_h, subway_em501_h, subway_em501_n)
-switch (FEAT_TRAINS, SELF, subway_em501_h_running_cost_factor,
+switch (FEAT_TRAINS, SELF, subway_em501_h_norefit_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
    STORE_TEMP(9, 1),   // Бригада
    STORE_TEMP(21, 2),  // Износ
@@ -109,6 +120,7 @@ switch (FEAT_TRAINS, SELF, subway_em501_h_running_cost_factor,
    STORE_TEMP(round(PROP_subway_em501_h_WT), 7),                                 // Тара
    STORE_TEMP(round(PROP_subway_em501_h_WT + PROP_subway_em501_h_CC / 16), 8)])  // Максимальная масса
 { subway_em501_h_check_running_cost_factor; }                                    // 103
+engine_change_refit(subway_em501_h_running_cost_factor, subway_em501_h_norefit_running_cost_factor, subway_e_km_running_cost_factor)
 
 name_in_group_subgroup(subway_em501_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E), string(STR_NAME_SUBWAY_EM501_H)),
                                        string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_E), string(STR_LONGNAME_SUBWAY_EM501_H)),
@@ -129,7 +141,15 @@ hint_MU_comment(subway_em501_h_a2000,
      1969, 1980,
      fact_leningradcw(),
      string(STR_PURCHASE_HINT_UPGRADE))
-hint_change_after(subway_em501_h, 2000)
+hint_MU_comment(subway_em501_h_a2013,
+     calc_loading(PROP_subway_em501_h_CC / (4 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00025_INSTANT,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HM,
+     STR_SECTIONS_SMU_HHT3_8,
+     1969, 1980,
+     fact_leningradcw(),
+     string(STR_PURCHASE_HINT_UPGRADE_AVAILABLE, string(STR_NAME_SUBWAY_E_KM)))
+hint_change_after2(subway_em501_h, 2000, 2013)
 map_sprites(subway_em501_additional_text, subway_em501_h_additional_text)
 
 item (FEAT_TRAINS, subway_em501_h, 1270) {

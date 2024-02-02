@@ -405,10 +405,11 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                    \
 { vehid: return errstr;                                            \
          return CB_RESULT_NO_TEXT; }                               \
 
-#define MU_start_stop_template_notlast_alt(name, vehid, num, errstr, base_name)  \
-[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
-{ vehid: return errstr;                                                          \
-     base_name; }                                                                \
+#define MU_start_stop_template_notlast_alt(name, vehid, errstr, base_name)  \
+switch (FEAT_TRAINS, PARENT, name##_start_stop,                             \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])           \
+{ vehid: return errstr;                                                     \
+     base_name; }                                                           \
 
 // Consist length shorter, than intended. 1 head car type
 #define MU_start_stop_template_minamount(name, vehid, num, errstr)  \
@@ -420,7 +421,7 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                     \
 #define MU_start_stop_template_minamount_alt(name, vehid, num, errstr, base_name)  \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                                    \
   count_veh_id(vehid) < num)                                                       \
-{ 0: base_name##_start_stop;                                                       \
+{ 0: base_name;                                                                    \
      return errstr; }                                                              \
 
 // Consist length shorter, than intended. 2 head car types
@@ -433,7 +434,7 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                               \
 #define MU_start_stop_template2_minamount_alt(name, vehid1, vehid2, num, errstr, base_name)  \
 switch (FEAT_TRAINS, PARENT, name##_start_stop,                                              \
   count_veh_id(vehid1) + count_veh_id(vehid2) < num)                                         \
-{ 0: base_name##_start_stop;                                                                 \
+{ 0: base_name;                                                                              \
      return errstr; }                                                                        \
 
 // Consist length shorter, than intended. 3 head car types
@@ -450,7 +451,7 @@ switch (FEAT_TRAINS, PARENT, name##_start_stop,                                 
   count_veh_id(vehid1) +                                                                             \
   count_veh_id(vehid2) +                                                                             \
   count_veh_id(vehid3) < num)                                                                        \
-{ 0: base_name##_start_stop;                                                                         \
+{ 0: base_name;                                                                                      \
      return errstr; }                                                                                \
 
 // Number of head sections should be even. 1 head car type
