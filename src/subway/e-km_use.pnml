@@ -247,7 +247,6 @@ switch (FEAT_TRAINS, PARENT, subway_e_km_start_stop_disallowed,
 }
 
 // start-stop allowed
-// интересно, надо ли кидать флаг с некорректного вагона Е-КМ или тут можно проверить переоборудование каждого вагона
 
 switch (FEAT_TRAINS, PARENT, subway_e_km_start_stop_at8,
 [ set_offset_to(8),
@@ -300,19 +299,38 @@ switch (FEAT_TRAINS, PARENT, subway_e_km_start_stop, num_vehs_in_consist)
 }
 
 // cargo capacity
-// TODO check head engine refit and model, drop to 0 if not e-km
-switch (FEAT_TRAINS, SELF, subway_e_km_cargo_capacity, cargo_subtype)
+
+switch (FEAT_TRAINS, SELF, subway_e_km_cargo_capacity2, cargo_subtype)
 { 0xE0: return PROP_subway_e_km_h_CC;
   0xE1: return PROP_subway_e_km_m_CC;
   0xE2: return PROP_subway_e_km_m_CC;
         return 0;
 }
-switch (FEAT_TRAINS, SELF, subway_e_km_power, cargo_subtype)
+switch (FEAT_TRAINS, PARENT, subway_e_km_cargo_capacity,
+  ((vehicle_type_id == subway_ezh_h) ||
+   (vehicle_type_id == subway_em501_h)) &&
+  (cargo_subtype == 0xE0))
+{ 1: subway_e_km_cargo_capacity2;
+     return 0;
+}
+
+// power
+
+switch (FEAT_TRAINS, SELF, subway_e_km_power2, cargo_subtype)
 { 0xE0: return get_power_in_cb(PROP_subway_e_km_h_PR);
   0xE1: return get_power_in_cb(PROP_subway_e_km_m_PR);
   0xE2: return get_power_in_cb(PROP_subway_e_km_m_PR);
         return 0;
 }
+switch (FEAT_TRAINS, PARENT, subway_e_km_power,
+  ((vehicle_type_id == subway_ezh_h) ||
+   (vehicle_type_id == subway_em501_h)) &&
+  (cargo_subtype == 0xE0))
+{ 1: subway_e_km_power2;
+     return 0;
+}
+
+// running cost
 
 RC_head_check2(subway_e_km, subway_ezh_h, subway_em501_h)
 switch (FEAT_TRAINS, SELF, subway_e_km_h_running_cost_factor,
@@ -354,13 +372,29 @@ switch (FEAT_TRAINS, SELF, subway_e_km_c_running_cost_factor,
    STORE_TEMP(round(PROP_subway_e_km_c_WT + PROP_subway_e_km_c_CC / 16), 8)])  // Максимальная масса
 { subway_e_km_check_running_cost_factor; }                                     // 103
 
-switch (FEAT_TRAINS, SELF, subway_e_km_running_cost_factor, cargo_subtype)
+switch (FEAT_TRAINS, PARENT, subway_e_km_running_cost_factor_none,
+[  STORE_TEMP(0, 0),
+   STORE_TEMP(0, 1),
+   STORE_TEMP(0, 3),
+   STORE_TEMP(LOAD_TEMP(7), 8)])
+{ all_running_cost_factor; }
+
+switch (FEAT_TRAINS, SELF, subway_e_km_running_cost_factor2, cargo_subtype)
 { 0xE0: subway_e_km_h_running_cost_factor;
   0xE1: subway_e_km_m_running_cost_factor;
   0xE2: subway_e_km_c_running_cost_factor;
-        return 0;
+        subway_e_km_running_cost_factor_none;
+}
+switch (FEAT_TRAINS, PARENT, subway_e_km_running_cost_factor,
+  ((vehicle_type_id == subway_ezh_h) ||
+   (vehicle_type_id == subway_em501_h)) &&
+  (cargo_subtype == 0xE0))
+{ 1: subway_e_km_running_cost_factor2;
+     subway_e_km_running_cost_factor_none;
 }
 
-    engine_refit_cost_for_exact_livery_change2_shifted(subway_e_km_3, 0xE2, 6, 100)
+// Refit cost
+
+    engine_refit_cost_for_livery_change2(subway_e_km_3, 6, 100)
   engine_refit_cost_for_range_livery_change(subway_e_km_2, 0xE1, 0xE1, 6, subway_e_km_3_refit_cost)
-engine_refit_cost_for_range_livery_change(subway_e_km, 0xE0, 0xE0, 7, subway_e_km_2_refit_cost)
+engine_refit_cost_for_range_livery_change(subway_e_km, 0xE2, 0xE2, 6, subway_e_km_2_refit_cost)
