@@ -32,9 +32,6 @@
 #define PROP_subway_e_km_c_PR  PROP_subway_e_km_m_PR
 #define PROP_subway_e_km_c_CC  PROP_subway_e_km_m_CC
 
-
-// E-KM car uses graphics of Ema-502
-
 /*
 Вагоны Еж, Ема-502 могут быть модернизированы до Е-КМ-Гб / 81-7080 (немоторный головной)
 Вагоны Е, Еж могут быть модернизированы до Е-КМ-Пм / 81-7081 и Е-КМ-Пм-01 / 81-7081-01
@@ -43,6 +40,8 @@
 0xE1 - Е-КМ-Пм
 0xE2 - Е-КМ-Пм-01
 */
+
+// Graphics for Kiev livery for Ema-502 was moved here because of circular depedencies
 
 #define IMAGEFILE  "src/subway/e-km_h.png"
 MU_head_middle_sprites(11, subway_e_km_h_mu, 32, 40)
@@ -80,7 +79,7 @@ map_sprites(subway_e_km_m_direction_template, subway_e_km_m_sprites_start)
 MU_attach_wagon_icon_template_at(subway_e_km_m_next_can_attach_wagon_template,
                                  type_car_motor_pant,
                                  type_car_motor_pant_add_mandatory,
-                                 type_car_motor_pant_add_mandatory,
+                                 dummy_sprites_big,
                                  type_head_pant_add_mandatory,
                                  dummy_sprites_big,
                                  dummy_sprites_big,
@@ -91,10 +90,25 @@ MU_attach_wagon_icon_template_at(subway_e_km_m_next_can_attach_wagon_template,
                                  dummy_sprites_big)
 MU_attach_wagon_icon_template2_extracheckparent(subway_e_km_m, subway_ezh_h, subway_em501_h, type_car_motor_pant, cargo_subtype >= 0xE0)
 
+map_sprites(subway_e_km_m2_direction_template, subway_e_km_m_sprites_start)
+MU_attach_wagon_icon_template_at(subway_e_km_m2_next_can_attach_wagon_template,
+                                 type_car_motor_pant,
+                                 dummy_sprites_big,
+                                 type_car_motor_pant_add_mandatory,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big)
+MU_attach_wagon_icon_template2_extracheckparent(subway_e_km_m2, subway_ezh_h, subway_em501_h, type_car_motor_pant, cargo_subtype >= 0xE0)
+
 switch (FEAT_TRAINS, SELF, subway_e_km_sprites_start, cargo_subtype)
 { 0xE0: subway_e_km_h_sprites_start_sp;
   0xE1: subway_e_km_m_sprites_start_sp;
-  0xE2: subway_e_km_m_sprites_start_sp;
+  0xE2: subway_e_km_m2_sprites_start_sp;
         align_11_sprites;
 }
 
@@ -108,7 +122,7 @@ switch (FEAT_TRAINS, SELF, subway_e_km_can_attach_wagon_disallowed,
   0xE2: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
         return CB_RESULT_ATTACH_ALLOW;
 }
-
+/*
 switch (FEAT_TRAINS, PARENT, subway_e_km_gb_can_attach_wagon, num_vehs_in_consist)
 { 2: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM));
   4: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM_01));
@@ -132,25 +146,23 @@ switch (FEAT_TRAINS, PARENT, subway_e_km_pm_01_can_attach_wagon, num_vehs_in_con
   8: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
      return string(STR_CAN_ATTACH_NO_MORE);
 }
-
+*/
 switch (FEAT_TRAINS, SELF, subway_e_km_ezh_h_can_attach_wagon, cargo_subtype)
-{ 0xE0: subway_e_km_gb_can_attach_wagon;
-  0xE1: subway_e_km_pm_can_attach_wagon;
-  0xE2: subway_e_km_pm_01_can_attach_wagon;
+{ 0xE0: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_gb_can_attach_wagon;
+  0xE1: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_can_attach_wagon;
+  0xE2: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_01_can_attach_wagon;
         return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
 }
-
 switch (FEAT_TRAINS, SELF, subway_e_km_e_h_can_attach_wagon, cargo_subtype)
-{ 0xE1: subway_e_km_pm_can_attach_wagon;
-  0xE2: subway_e_km_pm_01_can_attach_wagon;
+{ 0xE1: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_can_attach_wagon;
+  0xE2: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_01_can_attach_wagon;
         return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
 }
-
 switch (FEAT_TRAINS, SELF, subway_e_km_can_attach_wagon2,
   vehicle_type_id)
 {
     subway_ezh_h: subway_e_km_ezh_h_can_attach_wagon;
-  subway_em501_h: subway_e_km_gb_can_attach_wagon;
+  subway_em501_h: return CB_RESULT_ATTACH_ALLOW;  //subway_e_km_gb_can_attach_wagon;
       subway_e_h: subway_e_km_e_h_can_attach_wagon;
      return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM));
 }

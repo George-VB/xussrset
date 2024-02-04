@@ -1,0 +1,164 @@
+ /// code definition - subway
+
+// e-series support
+#define any_subway_e()                    \
+ ((vehicle_type_id == subway_e_h) ||      \
+  (vehicle_type_id == subway_em_h) ||     \
+  (vehicle_type_id == subway_em_n) ||     \
+  (vehicle_type_id == subway_em501_h) ||  \
+  (vehicle_type_id == subway_em501_n) ||  \
+  (vehicle_type_id == subway_em508_h) ||  \
+  (vehicle_type_id == subway_ezh_h))      \
+
+#define no_subway_e_inR4()               \
+ (!((LOAD_TEMP(4) == subway_e_h) ||      \
+    (LOAD_TEMP(4) == subway_em_h) ||     \
+    (LOAD_TEMP(4) == subway_em_n) ||     \
+    (LOAD_TEMP(4) == subway_em501_h) ||  \
+    (LOAD_TEMP(4) == subway_em501_n) ||  \
+    (LOAD_TEMP(4) == subway_em508_h) ||  \
+    (LOAD_TEMP(4) == subway_ezh_h)))     \
+
+#define engine_power_MU_subway_e(name, power)               \
+switch (FEAT_TRAINS, PARENT, name##_power, any_subway_e())  \
+{ 1: return get_power_in_cb(power);                         \
+     return 0; }                                            \
+
+#define engine_capacity_MU_subway_e(name, capacity)                  \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_subway_e())  \
+{ 1: return capacity;                                                \
+     return 0; }                                                     \
+
+#define RC_head_check_subway_e(name)                             \
+switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
+[  STORE_TEMP(0, 0),                                             \
+   STORE_TEMP(0, 1),                                             \
+   STORE_TEMP(0, 3),                                             \
+   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
+{ all_running_cost_factor; }                                     \
+switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
+  any_subway_e())                                                \
+{ 1: all_running_cost_factor;                                    \
+     name##_check2_running_cost_factor; }                        \
+
+MU_attach_wagon_icon_template_at(subway_e_h_next_can_attach_wagon_template,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_optional,
+                                 type_head_motor_pant_car_motor_pant_add_optional,
+                                 type_head_motor_pant_car_motor_pant_add_optional,
+                                 type_head_motor_pant_car_motor_pant_add_optional,
+                                 type_head_motor_pant_add_optional,
+                                 dummy_sprites,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big)
+
+MU_attach_wagon_icon_template_at(subway_e_m_next_can_attach_wagon_template,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_car_motor_pant_add_mandatory,
+                                 type_head_motor_pant_add_mandatory,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big,
+                                 dummy_sprites_big)
+
+#define MU_attach_wagon_icon_template_subway_e(name, icon, type)   \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_add2,              \
+  (position_in_consist_from_end == 1) )                            \
+{ 1: subway_e##type##_next_can_attach_wagon_template;              \
+     dummy_sprites; }                                              \
+switch (FEAT_TRAINS, PARENT, name##_sprites_start_add,             \
+  !(any_subway_e()))                                               \
+{ 1: icon;                                                         \
+     name##_sprites_start_add2; }                                  \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_add0,              \
+  (getbits(extra_callback_info1, 0, 8) == 0x10) && enable_icons )  \
+{ 1: name##_sprites_start_add;                                     \
+     return CB_FAILED; }                                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),   \
+  getbits(extra_callback_info1, 8, 8) > 0 ])                       \
+{ 1: name##_sprites_start_add0;                                    \
+     name##_sprites_start; }                                       \
+
+// can attach wagon CB
+
+switch (FEAT_TRAINS, SELF, subway_e_can_attach_wagon3,
+  (vehicle_type_id == subway_em_m) ||
+  (vehicle_type_id == subway_em501_m) ||
+  (vehicle_type_id == subway_em508_m) ||
+  (vehicle_type_id == subway_ezh_m))
+{ 1: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     return subway_e_km_can_attach_wagon_disallowed;
+}
+
+switch (FEAT_TRAINS, PARENT, subway_e_can_attach_wagon2,
+  num_vehs_in_consist == 16)
+{ 1: return subway_e_can_attach_wagon3;
+     return subway_e_km_can_attach_wagon_disallowed;
+}
+
+switch (FEAT_TRAINS, SELF, subway_e_can_attach_wagon1,
+  any_subway_e() ||
+  (vehicle_type_id == subway_em_m) ||
+  (vehicle_type_id == subway_em501_m) ||
+  (vehicle_type_id == subway_em508_m) ||
+  (vehicle_type_id == subway_ezh_m))
+{ 1: subway_e_can_attach_wagon2;
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, subway_e_can_attach_wagon0,
+  num_vehs_in_consist < 16)
+{ 1: return subway_e_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_TRAIN_TOO_LONG, 8);
+}
+
+parent_engine_change_refit(subway_e_can_attach_wagon, subway_e_can_attach_wagon0, subway_e_km_can_attach_wagon)
+
+// start - stop CB
+
+switch (FEAT_TRAINS, PARENT, subway_e_start_stop3_n,
+[ set_offset_to(num_vehs_in_consist-2),
+  prev_vehicle_type_id() ])  // only _h heads
+{
+     subway_e_h: subway_e_km_start_stop_disallowed;
+    subway_em_h: subway_e_km_start_stop_disallowed;
+ subway_em501_h: subway_e_km_start_stop_disallowed;
+ subway_em508_h: subway_e_km_start_stop_disallowed;
+   subway_ezh_h: subway_e_km_start_stop_disallowed;
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_E);
+}
+
+switch (FEAT_TRAINS, PARENT, subway_e_start_stop3_h,
+[ set_offset_to(num_vehs_in_consist-2),
+  STORE_TEMP(prev_vehicle_type_id(), 4),
+  no_subway_e_inR4() ])
+{ 1: return string(STR_WRONG_STRUCTURE_OF_TRAIN_E);
+     return subway_e_km_start_stop_disallowed;
+}
+
+switch (FEAT_TRAINS, PARENT, subway_e_start_stop2, vehicle_type_id) {
+     subway_e_h: subway_e_start_stop3_h;
+    subway_em_h: subway_e_start_stop3_h;
+    subway_em_n: subway_e_start_stop3_n;
+ subway_em501_h: subway_e_start_stop3_h;
+ subway_em501_n: subway_e_start_stop3_n;
+ subway_em508_h: subway_e_start_stop3_h;
+   subway_ezh_h: subway_e_start_stop3_h;
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_E_KM);
+}
+
+switch (FEAT_TRAINS, PARENT, subway_e_start_stop1,
+  (num_vehs_in_consist >= 3) && (num_vehs_in_consist <= 8))
+{ 1: subway_e_start_stop2;
+     return string(STR_WRONG_STRUCTURE_OF_TRAIN_E); }
+
+parent_engine_change_refit(subway_e_start_stop, subway_e_start_stop1, subway_e_km_start_stop)
+
+// end
