@@ -1,33 +1,16 @@
- /// code definition - subway
+ /// code definition - subway e-series support
 
-// e-series support
-#define any_subway_e()                    \
- ((vehicle_type_id == subway_e_h) ||      \
-  (vehicle_type_id == subway_em_h) ||     \
-  (vehicle_type_id == subway_em_n) ||     \
-  (vehicle_type_id == subway_em501_h) ||  \
-  (vehicle_type_id == subway_em501_n) ||  \
-  (vehicle_type_id == subway_em508_h) ||  \
-  (vehicle_type_id == subway_ezh_h))      \
+// E series list template is in the E-KM file because it goes first
 
-#define no_subway_e_inR4()               \
- (!((LOAD_TEMP(4) == subway_e_h) ||      \
-    (LOAD_TEMP(4) == subway_em_h) ||     \
-    (LOAD_TEMP(4) == subway_em_n) ||     \
-    (LOAD_TEMP(4) == subway_em501_h) ||  \
-    (LOAD_TEMP(4) == subway_em501_n) ||  \
-    (LOAD_TEMP(4) == subway_em508_h) ||  \
-    (LOAD_TEMP(4) == subway_ezh_h)))     \
+#define engine_power_MU_subway_e(name, power)                      \
+switch (FEAT_TRAINS, PARENT, name##_power, any_subway_e_not_km())  \
+{ 1: return get_power_in_cb(power);                                \
+     return 0; }                                                   \
 
-#define engine_power_MU_subway_e(name, power)               \
-switch (FEAT_TRAINS, PARENT, name##_power, any_subway_e())  \
-{ 1: return get_power_in_cb(power);                         \
-     return 0; }                                            \
-
-#define engine_capacity_MU_subway_e(name, capacity)                  \
-switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_subway_e())  \
-{ 1: return capacity;                                                \
-     return 0; }                                                     \
+#define engine_capacity_MU_subway_e(name, capacity)                         \
+switch (FEAT_TRAINS, PARENT, name##_cargo_capacity, any_subway_e_not_km())  \
+{ 1: return capacity;                                                       \
+     return 0; }                                                            \
 
 #define RC_head_check_subway_e(name)                             \
 switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
@@ -37,7 +20,7 @@ switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
    STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
 { all_running_cost_factor; }                                     \
 switch (FEAT_TRAINS, PARENT, name##_check_running_cost_factor,   \
-  any_subway_e())                                                \
+  any_subway_e_not_km())                                         \
 { 1: all_running_cost_factor;                                    \
      name##_check2_running_cost_factor; }                        \
 
@@ -68,12 +51,18 @@ MU_attach_wagon_icon_template_at(subway_e_m_next_can_attach_wagon_template,
                                  dummy_sprites_big)
 
 #define MU_attach_wagon_icon_template_subway_e(name, icon, type)   \
-switch (FEAT_TRAINS, SELF, name##_sprites_start_add2,              \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_add3,              \
   (position_in_consist_from_end == 1) )                            \
 { 1: subway_e##type##_next_can_attach_wagon_template;              \
      dummy_sprites; }                                              \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_add2,              \
+  ((cargo_subtype >= 0xE0) && (LOAD_TEMP(8) < 0xE0)) ||            \
+  ((cargo_subtype < 0xE0) && (LOAD_TEMP(8) >= 0xE0)) )             \
+{ 1: icon;                                                         \
+     name##_sprites_start_add3; }                                  \
 switch (FEAT_TRAINS, PARENT, name##_sprites_start_add,             \
-  !(any_subway_e()))                                               \
+  [STORE_TEMP(cargo_subtype, 8),                                   \
+  !(any_subway_e()) ])                                             \
 { 1: icon;                                                         \
      name##_sprites_start_add2; }                                  \
 switch (FEAT_TRAINS, SELF, name##_sprites_start_add0,              \
@@ -94,13 +83,13 @@ switch (FEAT_TRAINS, SELF, subway_e_can_attach_wagon3,
   (vehicle_type_id == subway_em508_m) ||
   (vehicle_type_id == subway_ezh_m))
 { 1: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     return subway_e_km_can_attach_wagon_disallowed;
+     return CB_RESULT_ATTACH_ALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, subway_e_can_attach_wagon2,
-  num_vehs_in_consist == 16)
-{ 1: return subway_e_can_attach_wagon3;
-     return subway_e_km_can_attach_wagon_disallowed;
+  num_vehs_in_consist == 14)
+{ 1: subway_e_can_attach_wagon3;
+     return CB_RESULT_ATTACH_ALLOW;
 }
 
 switch (FEAT_TRAINS, SELF, subway_e_can_attach_wagon1,
@@ -113,13 +102,14 @@ switch (FEAT_TRAINS, SELF, subway_e_can_attach_wagon1,
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
-switch (FEAT_TRAINS, PARENT, subway_e_can_attach_wagon0,
+switch (FEAT_TRAINS, PARENT, subway_e_can_attach_wagon,
   num_vehs_in_consist < 16)
 { 1: return subway_e_can_attach_wagon1;
      return string(STR_CAN_ATTACH_TRAIN_TOO_LONG, 8);
 }
 
-parent_engine_change_refit(subway_e_can_attach_wagon, subway_e_can_attach_wagon0, subway_e_km_can_attach_wagon)
+// E-KM check is useless, because of possibility to refit existing consist
+// parent_engine_change_refit(subway_e_can_attach_wagon, subway_e_can_attach_wagon0, subway_e_km_can_attach_wagon)
 
 // start - stop CB
 
@@ -151,11 +141,11 @@ switch (FEAT_TRAINS, PARENT, subway_e_start_stop2, vehicle_type_id) {
  subway_em501_n: subway_e_start_stop3_n;
  subway_em508_h: subway_e_start_stop3_h;
    subway_ezh_h: subway_e_start_stop3_h;
-    return string(STR_WRONG_STRUCTURE_OF_TRAIN_E_KM);
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_E);
 }
 
 switch (FEAT_TRAINS, PARENT, subway_e_start_stop1,
-  (num_vehs_in_consist >= 3) && (num_vehs_in_consist <= 8))
+  (num_vehs_in_consist >= 3*2) && (num_vehs_in_consist <= 8*2))
 { 1: subway_e_start_stop2;
      return string(STR_WRONG_STRUCTURE_OF_TRAIN_E); }
 

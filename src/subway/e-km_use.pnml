@@ -41,6 +41,36 @@
 0xE2 - Е-КМ-Пм-01
 */
 
+// E series list
+
+#define any_subway_e()                    \
+ ((vehicle_type_id == subway_e_h) ||      \
+  (vehicle_type_id == subway_em_h) ||     \
+  (vehicle_type_id == subway_em_n) ||     \
+  (vehicle_type_id == subway_em501_h) ||  \
+  (vehicle_type_id == subway_em501_n) ||  \
+  (vehicle_type_id == subway_em508_h) ||  \
+  (vehicle_type_id == subway_ezh_h))      \
+
+#define any_subway_e_not_km()             \
+(((vehicle_type_id == subway_e_h) ||      \
+  (vehicle_type_id == subway_em_h) ||     \
+  (vehicle_type_id == subway_em_n) ||     \
+  (vehicle_type_id == subway_em501_h) ||  \
+  (vehicle_type_id == subway_em501_n) ||  \
+  (vehicle_type_id == subway_em508_h) ||  \
+  (vehicle_type_id == subway_ezh_h)) &&   \
+  (cargo_subtype < 0xE0))                 \
+
+#define no_subway_e_inR4()               \
+ (!((LOAD_TEMP(4) == subway_e_h) ||      \
+    (LOAD_TEMP(4) == subway_em_h) ||     \
+    (LOAD_TEMP(4) == subway_em_n) ||     \
+    (LOAD_TEMP(4) == subway_em501_h) ||  \
+    (LOAD_TEMP(4) == subway_em501_n) ||  \
+    (LOAD_TEMP(4) == subway_em508_h) ||  \
+    (LOAD_TEMP(4) == subway_ezh_h)))     \
+
 // Graphics for Kiev livery for Ema-502 was moved here because of circular depedencies
 
 #define IMAGEFILE  "src/subway/e-km_h.png"
@@ -114,63 +144,6 @@ switch (FEAT_TRAINS, SELF, subway_e_km_sprites_start, cargo_subtype)
   0xE2: subway_e_km_m2_sprites_start_sp;
         align_11_sprites;
 }
-
-// attach wagon
-
-switch (FEAT_TRAINS, SELF, subway_e_km_can_attach_wagon_disallowed,
-  cargo_subtype)
-{
-  0xE0: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-  0xE1: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-  0xE2: return string(STR_CAN_ATTACH_AFTER_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-        return CB_RESULT_ATTACH_ALLOW;
-}
-/*
-switch (FEAT_TRAINS, PARENT, subway_e_km_gb_can_attach_wagon, num_vehs_in_consist)
-{ 2: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM));
-  4: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM_01));
-  6: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM));
-  8: return CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, subway_e_km_pm_can_attach_wagon, num_vehs_in_consist)
-{ 2: return CB_RESULT_ATTACH_ALLOW;
-  4: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM_01));
-  6: return CB_RESULT_ATTACH_ALLOW;
-  8: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-
-switch (FEAT_TRAINS, PARENT, subway_e_km_pm_01_can_attach_wagon, num_vehs_in_consist)
-{ 2: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM));
-  4: return CB_RESULT_ATTACH_ALLOW;
-  6: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_PM));
-  8: return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-     return string(STR_CAN_ATTACH_NO_MORE);
-}
-*/
-switch (FEAT_TRAINS, SELF, subway_e_km_ezh_h_can_attach_wagon, cargo_subtype)
-{ 0xE0: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_gb_can_attach_wagon;
-  0xE1: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_can_attach_wagon;
-  0xE2: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_01_can_attach_wagon;
-        return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-}
-switch (FEAT_TRAINS, SELF, subway_e_km_e_h_can_attach_wagon, cargo_subtype)
-{ 0xE1: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_can_attach_wagon;
-  0xE2: return CB_RESULT_ATTACH_ALLOW;  // subway_e_km_pm_01_can_attach_wagon;
-        return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM_GB));
-}
-switch (FEAT_TRAINS, SELF, subway_e_km_can_attach_wagon2,
-  vehicle_type_id)
-{
-    subway_ezh_h: subway_e_km_ezh_h_can_attach_wagon;
-  subway_em501_h: return CB_RESULT_ATTACH_ALLOW;  //subway_e_km_gb_can_attach_wagon;
-      subway_e_h: subway_e_km_e_h_can_attach_wagon;
-     return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM));
-}
-
-engine_change_refit(subway_e_km_can_attach_wagon, return string(STR_CAN_ATTACH_SPECIFIED_CAR, string(STR_NAME_SUBWAY_E_KM)), subway_e_km_can_attach_wagon2)
 
 // start-stop disallowed (for the case when non e_km is a head)
 
@@ -347,7 +320,6 @@ switch (FEAT_TRAINS, PARENT, subway_e_km_power,
 
 // running cost
 
-RC_head_check2(subway_e_km, subway_ezh_h, subway_em501_h)
 switch (FEAT_TRAINS, SELF, subway_e_km_h_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
    STORE_TEMP(9, 1),   // Бригада
@@ -359,7 +331,7 @@ switch (FEAT_TRAINS, SELF, subway_e_km_h_running_cost_factor,
    STORE_TEMP(PROP_subway_e_km_h_SD, 6),                                       // Скорость
    STORE_TEMP(round(PROP_subway_e_km_h_WT), 7),                                // Тара
    STORE_TEMP(round(PROP_subway_e_km_h_WT + PROP_subway_e_km_h_CC / 16), 8)])  // Максимальная масса
-{ subway_e_km_check_running_cost_factor; }                                     // 103
+{ all_running_cost_factor; }                                                   // 103
 
 switch (FEAT_TRAINS, SELF, subway_e_km_m_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
@@ -372,7 +344,7 @@ switch (FEAT_TRAINS, SELF, subway_e_km_m_running_cost_factor,
    STORE_TEMP(PROP_subway_e_km_m_SD, 6),                                       // Скорость
    STORE_TEMP(round(PROP_subway_e_km_m_WT), 7),                                // Тара
    STORE_TEMP(round(PROP_subway_e_km_m_WT + PROP_subway_e_km_m_CC / 16), 8)])  // Максимальная масса
-{ subway_e_km_check_running_cost_factor; }                                     // 103
+{ all_running_cost_factor; }                                                   // 103
 
 switch (FEAT_TRAINS, SELF, subway_e_km_c_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
@@ -385,7 +357,7 @@ switch (FEAT_TRAINS, SELF, subway_e_km_c_running_cost_factor,
    STORE_TEMP(PROP_subway_e_km_c_SD, 6),                                       // Скорость
    STORE_TEMP(round(PROP_subway_e_km_c_WT), 7),                                // Тара
    STORE_TEMP(round(PROP_subway_e_km_c_WT + PROP_subway_e_km_c_CC / 16), 8)])  // Максимальная масса
-{ subway_e_km_check_running_cost_factor; }                                     // 103
+{ all_running_cost_factor; }                                                   // 103
 
 switch (FEAT_TRAINS, PARENT, subway_e_km_running_cost_factor_none,
 [  STORE_TEMP(0, 0),
