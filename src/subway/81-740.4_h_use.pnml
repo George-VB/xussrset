@@ -1,0 +1,148 @@
+﻿// 81_740_4 (81_740_4 = 81_740_4_h, 81_741_4 = 81_741_4_m)
+
+#define PROP_subway_81_740_4_h_num  2
+#define PROP_subway_81_740_4_n_num  0
+#define PROP_subway_81_740_4_m_num  1
+#define PROP_subway_81_740_4_c_num  0
+
+#define PROP_subway_81_740_4_h_CF  18
+#define PROP_subway_81_740_4_h_RC  134
+#define PROP_subway_81_740_4_h_SD  90
+#define PROP_subway_81_740_4_h_WT  47
+#define PROP_subway_81_740_4_h_TE  29
+#define PROP_subway_81_740_4_h_PR  kw2hp(680)
+#define PROP_subway_81_740_4_h_CC  recalc_capacity(353, 46, 10)
+
+#define PROP_subway_81_740_4_n_CF  0
+#define PROP_subway_81_740_4_n_RC  0
+#define PROP_subway_81_740_4_n_SD  0
+#define PROP_subway_81_740_4_n_WT  0
+#define PROP_subway_81_740_4_n_TE  0
+#define PROP_subway_81_740_4_n_PR  0
+#define PROP_subway_81_740_4_n_CC  0
+
+#define PROP_subway_81_740_4_c_CF  0
+#define PROP_subway_81_740_4_c_RC  0
+#define PROP_subway_81_740_4_c_SD  0
+#define PROP_subway_81_740_4_c_WT  0
+#define PROP_subway_81_740_4_c_TE  0
+#define PROP_subway_81_740_4_c_PR  0
+#define PROP_subway_81_740_4_c_CC  0
+
+#define IMAGEFILE  "src/subway/81-740.4_h.png"
+purchase_sprites(subway_81_740_4_h, 0, 0)
+#undef IMAGEFILE
+map_sprites(subway_81_740_4_purchase_sprites, subway_81_740_4_h_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, subway_81_740_4_h_first_part,
+  position_in_consist)
+{ 0: subway_81_740_4_h_sprites_left;
+     subway_81_741_4_m_direction_left; }
+
+long_vehicle_advanced(subway_81_740_4_h, subway_81_740_4_h_first_part)
+
+switch (FEAT_TRAINS, PARENT, subway_81_740_4_h_can_attach_wagon,
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])
+{
+  subway_81_741_4_m: return CB_RESULT_ATTACH_ALLOW;
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_5S);
+}
+switch (FEAT_TRAINS, PARENT, subway_81_740_4_can_attach_wagon_length,
+  (count_veh_id(subway_81_740_4_h)) > 1)
+{ 0: subway_81_740_4_h_can_attach_wagon;
+     return string(STR_CAN_ATTACH_NO_MORE); }
+switch (FEAT_TRAINS, PARENT, subway_81_740_4_c_can_attach_wagon_h,
+  (count_veh_id(subway_81_740_4_h)) % 2)
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+     return CB_RESULT_ATTACH_ALLOW; }
+switch (FEAT_TRAINS, PARENT, subway_81_740_4_c_can_attach_wagon3,
+[ set_offset_to(num_vehs_in_consist-12), prev_vehicle_type_id() ])
+{
+  subway_81_740_4_h: subway_81_740_4_c_can_attach_wagon_h;
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_5S);
+}
+switch (FEAT_TRAINS, PARENT, subway_81_740_4_c_can_attach_wagon2,
+[ set_offset_to(num_vehs_in_consist-8), prev_vehicle_type_id() ])
+{
+  subway_81_741_4_m: subway_81_740_4_c_can_attach_wagon3;
+  subway_81_740_4_h: subway_81_740_4_c_can_attach_wagon_h;
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_5S);
+}
+switch (FEAT_TRAINS, PARENT, subway_81_740_4_c_can_attach_wagon,
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])
+{
+  subway_81_741_4_m: subway_81_740_4_c_can_attach_wagon2;
+  subway_81_740_4_h: subway_81_740_4_c_can_attach_wagon_h;
+    return string(STR_WRONG_STRUCTURE_OF_TRAIN_3_5S);
+}
+switch (FEAT_TRAINS, SELF, subway_81_740_4_can_attach_wagon, vehicle_type_id)
+{
+  subway_81_740_4_h: subway_81_740_4_can_attach_wagon_length;
+  subway_81_741_4_m: subway_81_740_4_c_can_attach_wagon;
+    return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, SELF, subway_81_740_4_h_articulated_part, extra_callback_info1)
+{ 1: return dummy1;
+  2: return subway_81_740_part2;
+  3: return dummy1;
+     return CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+MU_start_stop_template_even(subway_81_740_4, subway_81_740_4_h)
+engine_capacity_MU(subway_81_740_4_h, PROP_subway_81_740_4_h_CC, subway_81_740_4_h)
+engine_power_MU(subway_81_740_4_h, PROP_subway_81_740_4_h_PR, subway_81_740_4_h)
+
+RC_head_check(subway_81_740_4_h, subway_81_740_4_h)
+switch (FEAT_TRAINS, SELF, subway_81_740_4_h_running_cost_factor,
+[  STORE_TEMP(76, 0),  // Моторы
+   STORE_TEMP(11, 1),  // Бригада
+   STORE_TEMP(27, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(19, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_subway_81_740_4_h_SD, 6),                                           // Скорость
+   STORE_TEMP(round(PROP_subway_81_740_4_h_WT), 7),                                    // Тара
+   STORE_TEMP(round(PROP_subway_81_740_4_h_WT + PROP_subway_81_740_4_h_CC / 16), 8)])  // Максимальная масса
+{ subway_81_740_4_h_check_running_cost_factor; }                                       // 134
+
+name_in_group_subgroup(subway_81_740_4_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_81_740_SERIES), string(STR_NAME_SUBWAY_81_740_4_H)),
+                                          string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_81_740_SERIES), string(STR_LONGNAME_SUBWAY_81_740_4_H)),
+                                          string(STR_NAME_SUBWAY_81_740_4))
+
+hint_MU(subway_81_740_4_h,
+     calc_loading(PROP_subway_81_740_4_h_CC / (5 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00025_INSTANT,
+     STR_PURCHASE_HINT_ENGINE_TYPE_SUBWAY_HMA,
+     STR_SECTIONS_SMU_RUSICH3,
+     2009, 2013,
+     fact_mytishchi())
+map_sprites(subway_81_740_4_additional_text, subway_81_740_4_h_additional_text)
+
+item (FEAT_TRAINS, subway_81_740_4_h, 1289) {
+  property {
+    name: string(STR_NAME_SUBWAY_81_740_4_H);
+    vehicle_dates(2009, 2013, 30, 10, 7, PROP_subway_81_740_4_h_CF)
+    vehicle_subway(PROP_subway_81_740_4_h_PR, PROP_subway_81_740_4_h_WT, PROP_subway_81_740_4_h_TE, PROP_subway_81_740_4_h_CC, 5 * WIDERST_D_DOOR)
+    vehicle_group(group_subway_81_740)
+  }
+  graphics {
+  purchase_menu(PROP_subway_81_740_4_h_CF, PROP_subway_81_740_4_h_RC, PROP_subway_81_740_4_h_SD, PROP_subway_81_740_4_h_WT, PROP_subway_81_740_4_h_TE, PROP_subway_81_740_4_h_PR, PROP_subway_81_740_4_h_CC)
+        additional_text: subway_81_740_4_h_additional_text;
+       articulated_part: subway_81_740_4_h_articulated_part;
+       can_attach_wagon: subway_81_740_4_can_attach_wagon;
+       cargo_age_period: return CAP_00025_INSTANT;
+         cargo_capacity: subway_81_740_4_h_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: subway_81_740_4_h_sprites;
+                   name: subway_81_740_4_h_name;
+                  power: subway_81_740_4_h_power;
+               purchase: subway_81_740_4_h_purchase_sprites;
+    running_cost_factor: subway_81_740_4_h_running_cost_factor;
+                  speed: return PROP_subway_81_740_4_h_SD;
+             start_stop: subway_81_740_4_start_stop;
+  }
+}
+
+long_name_template(subway_81_740_4_h, STR_LONGNAME_SUBWAY_81_740_4_H)
+allow_subway(subway_81_740_4_h)
