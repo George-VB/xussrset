@@ -14,7 +14,7 @@
 #define PROP_vl19m_15dc_PR  2661
 
 #define IMAGEFILE  "src/electric/surami/vl19.png"
-purchase_sprites(vl19_15dc, 200, 0)
+purchase_sprites_with_icon(vl19_15dc, 218, 0, 15dc)
 #undef IMAGEFILE
 
 switch (FEAT_TRAINS, SELF, vl19_15dc_sprites_left_powered,
@@ -98,6 +98,7 @@ switch (FEAT_TRAINS, SELF, vl19_15dc_sprites_right,
 }
 
 engine_RNDany_direction_template(vl19_15dc, 5, 3, )
+
 switch (FEAT_TRAINS, SELF, vl19_15dc_sprites_current,
   cargo_subtype + 256 * (current_year < 1947) + 256 * (1 - enable_icons))
 {
@@ -106,11 +107,21 @@ switch (FEAT_TRAINS, SELF, vl19_15dc_sprites_current,
               dummy_sprites;
 }
 
+switch (FEAT_TRAINS, SELF, vl19_15dc_sprites_back,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  cargo_subtype + 256 * (current_year < 1947) + 256 * (1 - enable_icons) ])
+{
+  0x00..0xDF: icon_sprites_back1;
+  0xE0..0xFF: icon_sprites_back1;
+              dummy_sprites;
+}
+
 switch (FEAT_TRAINS, SELF, vl19_15dc_sprites_depot,
   getbits(extra_callback_info1, 8, 8))
 {
   0: vl19_15dc_sprites_start_sp;
-  1: vl19_15dc_sprites_current;
+  1: vl19_15dc_sprites_back;
+  2: vl19_15dc_sprites_current;
      return CB_FAILED;
 }
 

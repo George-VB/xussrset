@@ -22,7 +22,7 @@
 #define PROP_vl19m_PR  2661
 
 #define IMAGEFILE  "src/electric/surami/vl19.png"
-purchase_sprites(vl19, 0, 0)
+purchase_sprites_with_icon(vl19, 18, 0, 3dc)
 electric1r_2_sprites(10, vl19_v2, 32, 40)
 electric1r_2_sprites(10, vl19_v3, 32, 375)
 electric1r_2_sprites(10, vl19_v4, 32, 710)
@@ -129,11 +129,22 @@ switch (FEAT_TRAINS, SELF, vl19_sprites_current,
               dummy_sprites;
 }
 
+switch (FEAT_TRAINS, SELF, vl19_sprites_back,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+  cargo_subtype + 256 * (current_year < 1935) + 256 * (1 - enable_icons) ])
+{
+  0x00..0xDF: icon_sprites_back1;
+  0xE0..0xE2: icon_sprites_back2;
+  0xE3..0xFF: icon_sprites_back1;
+              dummy_sprites;
+}
+
 switch (FEAT_TRAINS, SELF, vl19_sprites_depot,
   getbits(extra_callback_info1, 8, 8))
 {
   0: vl19_sprites_start_sp;
-  1: vl19_sprites_current;
+  1: vl19_sprites_back;
+  2: vl19_sprites_current;
      return CB_FAILED;
 }
 
