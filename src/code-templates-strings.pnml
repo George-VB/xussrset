@@ -1884,6 +1884,26 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                                            \
      name##_additional_text_shown; }                                                                           \
 
+// Описание МВПС c Мощностью и ТУ
+#define hint_MU_in_PTE(name, lspeed, straging, strmutype, strengsmetype, in, factory, headname, power, te)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                    \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                     \
+  STORE_TEMP(string(strmutype) | (string(strengsmetype) << 16), 0x101),                                     \
+  STORE_TEMP(string(STR_PURCHASE_HINT_IN, in) | (factory << 16), 0x102),                                    \
+  STORE_TEMP(headname | (round(power * POWER_MULT) << 16), 0x103),                                          \
+  STORE_TEMP(round(te * EFFORT_MULT), 0x104) ])                                                             \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_PTE); }                                                         \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                   \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                     \
+  STORE_TEMP(string(strmutype) | (string(strengsmetype) << 16), 0x101),                                     \
+  STORE_TEMP(factory | (headname << 16), 0x102),                                                            \
+  STORE_TEMP(round(power * POWER_MULT) | ((round(te * EFFORT_MULT) & 0x0000FFFF) << 16), 0x103) ,           \
+  STORE_TEMP(round(te * EFFORT_MULT) >> 16, 0x104) ])                                                       \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_PTE_NODATES); }                                                 \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= in)                                      \
+{ 1: name##_additional_text_hidden;                                                                         \
+     name##_additional_text_shown; }                                                                        \
+
 // Описание МВПС c 2 производителями
 #define hint_MU_2fact(name, lspeed, straging, strmutype, strengsmetype, from, to, factory, factory2)        \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                    \
