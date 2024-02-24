@@ -266,6 +266,27 @@ switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                             
 { 1: name##_sprites_start_add0;                                                                            \
      name##_sprites_start; }                                                                               \
 
+#define MU_attach_wagon_icon_template3(name, vehid1, vehid2, vehid3, icon)  \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_add2,                       \
+  (position_in_consist_from_end == 1) )                                     \
+{ 1: name##_next_can_attach_wagon_template;                                 \
+     dummy_sprites; }                                                       \
+switch (FEAT_TRAINS, PARENT, name##_sprites_start_add,                      \
+  (vehicle_type_id != vehid1) &&                                            \
+  (vehicle_type_id != vehid2) &&                                            \
+  (vehicle_type_id != vehid3))                                              \
+{ 1: icon;                                                                  \
+     name##_sprites_start_add2; }                                           \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_add0,                       \
+  (getbits(extra_callback_info1, 0, 8) == 0x10) && enable_icons )           \
+{ 1: name##_sprites_start_add;                                              \
+     return CB_FAILED; }                                                    \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_sp,                         \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),            \
+  getbits(extra_callback_info1, 8, 8) > 0 ])                                \
+{ 1: name##_sprites_start_add0;                                             \
+     name##_direction_template; }                                           \
+
 #define MU_attach_wagon_icon_template4_only(name, vehid1, vehid2, vehid3, vehid4, icon, only)  \
 switch (FEAT_TRAINS, PARENT, name##_sprites_start_add3,                                        \
   count_veh_id(vehid1) +                                                                       \
