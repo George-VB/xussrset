@@ -1,0 +1,95 @@
+// esh2
+
+#define PROP_esh2_m_CF  235
+#define PROP_esh2_m_RC  1824
+#define PROP_esh2_m_SD  160
+#define PROP_esh2_m_WT  59
+#define PROP_esh2_m_TE  200.0
+#define PROP_esh2_m_PR  2176
+#define PROP_esh2_m_CC  94
+
+#define IMAGEFILE  "src/emu/esh2_m1.png"
+purchase_sprites_with_icon(esh2_m1, 18, 0, 3dc)
+MU_car_sprites(13, esh2_m1_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_power_template2(esh2_m1, esh2_h1, esh2_h2)
+
+switch (FEAT_TRAINS, SELF, esh2_m1_sprites_start,
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100) ,
+  set_offset_to(-2),
+  prev_vehicle_type_id() ])
+{
+  esh2_h_part2: esh2_m1_sprites_left;
+                esh2_m1_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, esh2_m1_sprites_start4,
+[ set_offset_to(-2),
+  prev_vehicle_type_id() ])
+{
+  esh2_h_part2: type_car_motor_car_add_mandatory;
+                type_head_pant_add_mandatory;
+}
+
+MU_attach_wagon_icon_template2_only2(esh2_m1, esh2_h1, esh2_h2, type_car_motor, esh2_m1_sprites_start4, dummy_sprites_big, )
+long_vehicle_advanced(esh2_m1, esh2_m1_sprites_start_sp)
+
+engine_power_MU2(esh2_m1, PROP_esh2_m_PR, esh2_h1, esh2_h2)
+engine_capacity_MU2(esh2_m1, PROP_esh2_m_CC, esh2_h1, esh2_h2)
+
+RC_head_check2(esh2_m1, esh2_h1, esh2_h2)
+switch (FEAT_TRAINS, SELF, esh2_m1_running_cost_factor,
+[  STORE_TEMP(1040, 0),  // Моторы
+   STORE_TEMP(146, 1),   // Бригада
+   STORE_TEMP(365, 2),   // Износ
+   STORE_TEMP(0, 3),     // Сопровождение
+   STORE_TEMP(255, 4),   // ТО
+   STORE_TEMP(18, 5),    // Сертификация
+
+   STORE_TEMP(PROP_esh2_m_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_esh2_m_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_esh2_m_WT + PROP_esh2_m_CC / 16), 8)])  // Максимальная масса
+{ esh2_m1_check_running_cost_factor; }                           //
+
+name_in_group(esh2_m1, string(STR_NAME_IN_GROUP, string(STR_NAME_ESH2_SERIES), string(STR_NAME_ESH2)),
+                       string(STR_NAME_IN_GROUP, string(STR_NAME_ESH2_SERIES), string(STR_LONGNAME_ESH2_M1)))
+
+hint_MU_with_subtype_PTE(esh2_m1,
+     calc_loading(PROP_esh2_m_CC / (2 * WIDER_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00075_ACCELERATED,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC_WITH_SUBTYPE, STR_PURCHASE_HINT_KISS,
+     STR_SECTIONS_EMU_ESH2,
+     2014, 2017,
+     string(STR_PURCHASE_HINT_FACTORY_BUSSNANG_MINSK),
+     string(STR_NAME_ESH2), PROP_esh2_m_PR, PROP_esh2_m_TE)
+
+item (FEAT_TRAINS, esh2_m1, 649) {
+  property {
+    name: string(STR_NAME_ESH2);
+    vehicle_dates(2014, 2017, 40, 10, 8, PROP_esh2_m_CF)
+    vehicle_emu_wagon(dc, PROP_esh2_m_WT, PROP_esh2_m_CC, 2 * WIDER_D_DOOR, _highspeed)
+    vehicle_group_mu(group_esh2)
+  }
+  graphics {
+  purchase_menu_wagon(PROP_esh2_m_CF, PROP_esh2_m_RC, PROP_esh2_m_SD, PROP_esh2_m_WT, PROP_esh2_m_TE, PROP_esh2_m_PR, PROP_esh2_m_CC)
+                additional_text: esh2_m1_additional_text;
+               articulated_part: articulated_part_dummy5;
+               can_attach_wagon: esh2_can_attach_wagon;
+               cargo_age_period: return CAP_00075_ACCELERATED;
+                 cargo_capacity: esh2_m1_cargo_capacity;
+                 colour_mapping: any_cc_colour;
+                  create_effect: return disable_create_effect();
+                        default: esh2_m1_sprites;
+                           name: esh2_m1_name;
+                          power: esh2_m1_power;
+                       purchase: esh2_m1_purchase_sprites;
+            running_cost_factor: esh2_m1_running_cost_factor;
+                          speed: return 160;
+                     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    tractive_effort_coefficient: return get_tec_int(PROP_esh2_m_TE, PROP_esh2_m_WT);
+  }
+}
+
+long_name_template(esh2_m1, STR_LONGNAME_ESH2_M1)
+allow_dcemu(esh2_m1)
