@@ -50,7 +50,7 @@ EMU_motor1_middle_sprites(10, epr_m2, 32, 40)
 
 switch (FEAT_TRAINS, SELF, epr_b_sprites_start,
 [  set_offset_to(-2),
-   ((LOAD_TEMP(4) != epr) * 2) +
+   ((no_emu_ep_inR4()) * 2) +
    (prev_vehicle_randombits() & 0x01)])
 {
   0: epr_m1_normal_sprites_left;
@@ -62,7 +62,7 @@ switch (FEAT_TRAINS, SELF, epr_b_sprites_start,
 
 switch (FEAT_TRAINS, SELF, epr_c_sprites_start,
 [  set_offset_to(-4),
-   ((LOAD_TEMP(4) != epr) * 2) +
+   (no_emu_ep_inR4() * 2) +
    (prev_vehicle_randombits() & 0x01)])
 {
   0: epr_m2_sprites_left;
@@ -83,8 +83,8 @@ switch (FEAT_TRAINS, SELF, epr_never_train, position_in_articulated_veh)
      align_11_sprites;
 }
 
-switch (FEAT_TRAINS, SELF, epr_d_sprites_start,
-  LOAD_TEMP(4) == epr)
+switch (FEAT_TRAINS, PARENT, epr_d_sprites_start,
+  any_emu_ep())
 {
    1: epr_h_sprites_right;
    0: epr_h_notpowered_sprites_right;
@@ -111,13 +111,13 @@ switch (FEAT_TRAINS, SELF, epr_can_attach_wagon2,
 }
 
 switch (FEAT_TRAINS, PARENT, epr_can_attach_wagon1,
-  STORE_TEMP(count_veh_id(epr) + count_veh_id(eprii) + count_veh_id(epg), 0))
+  STORE_TEMP(emu_ep_count(), 0))
 {
   epr_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, SELF, epr_can_attach_wagon,
-  (vehicle_type_id == epr) || (vehicle_type_id == eprii) || (vehicle_type_id == epg))
+  any_emu_ep())
 {
   1: epr_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
@@ -140,7 +140,7 @@ switch (FEAT_TRAINS, SELF, epr_c_create_effect1,
   electric_create_effect(4)) { return 1; }
 
 switch (FEAT_TRAINS, PARENT, epr_c_create_effect,
-  (vehicle_type_id == epr) || (vehicle_type_id == eprii) || (vehicle_type_id == epg))
+  any_emu_ep())
 {
   1: epr_c_create_effect1;
      return disable_create_effect();

@@ -63,7 +63,7 @@ switch (FEAT_TRAINS, SELF, eprii_never_train, position_in_articulated_veh)
 // H-M2-M1-C-H
 switch (FEAT_TRAINS, SELF, eprii_sprites_start,
 [  set_offset_to(-position_in_articulated_veh),
-   (((LOAD_TEMP(4) != eprii) && (LOAD_TEMP(4) != epr) && (LOAD_TEMP(4) != epg)) * 200) +
+   ((no_emu_ep_inR4()) * 200) +
    (prev_vehicle_randombits() & 0x01) * 100 +
    position_in_articulated_veh])
 {
@@ -106,13 +106,13 @@ switch (FEAT_TRAINS, SELF, eprii_can_attach_wagon2,
 }
 
 switch (FEAT_TRAINS, PARENT, eprii_can_attach_wagon1,
-  STORE_TEMP(count_veh_id(eprii) + count_veh_id(epg), 0))
+  STORE_TEMP(emu_ep_count(), 0))
 {
   eprii_can_attach_wagon2;
 }
 
 switch (FEAT_TRAINS, SELF, eprii_can_attach_wagon,
-  (vehicle_type_id == eprii) || (vehicle_type_id == epg))
+  any_emu_ep())
 {
   1: eprii_can_attach_wagon1;
      return string(STR_CAN_ATTACH_SAME_MU_ONLY);
@@ -161,7 +161,7 @@ switch (FEAT_TRAINS, SELF, eprii_create_effect1,
 }
 
 switch (FEAT_TRAINS, PARENT, eprii_create_effect,
-  (vehicle_type_id == eprii) || (vehicle_type_id == epr) || (vehicle_type_id == epg))
+  any_emu_ep())
 {
   1: eprii_create_effect1;
      return disable_create_effect();
