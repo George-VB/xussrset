@@ -87,7 +87,7 @@ goto :EOF
 :WriteCustomTags
 echo VERSION  :%REPO_REVISION%
 echo MIN_COMPATIBLE_REVISION:%MIN_COMPATIBLE_REVISION%
-echo TITLE    :xUSSR Rails Set 0.3-dev.r%REPO_REVISION%
+echo TITLE    :xUSSR Rails Set 0.2.2.r%REPO_REVISION%
 echo FILENAME :%NMLNAME%.grf
 goto :EOF
 
