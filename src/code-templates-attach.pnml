@@ -1,0 +1,615 @@
+﻿  /// code definition
+
+// Can attach wagon templates
+
+// Head - 0..1car - Head. (4 types) 2 head types and 2 cars types
+#define MU_can_attach_wagon_h01ch_template4m2(name, vehid1, vehid2, vehmid1, vehmid2, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                                       \
+  (count_veh_id(vehid1) +                                                                          \
+   count_veh_id(vehid2)) > num * 2 - 1)                                                            \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                                       \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                                      \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                          \
+  (count_veh_id(vehid1) +                                                                          \
+   count_veh_id(vehid2)) % 2)                                                                      \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                                      \
+     return CB_RESULT_ATTACH_ALLOW; }                                                              \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                            \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                                  \
+{  vehid1: name##_c_can_attach_wagon_h;                                                            \
+   vehid2: name##_c_can_attach_wagon_h;                                                            \
+  vehmid1: error;                                                                                  \
+  vehmid2: error;                                                                                  \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                               \
+{  vehid1: name##_can_attach_wagon_length;                                                         \
+   vehid2: name##_can_attach_wagon_length;                                                         \
+  vehmid1: name##_c_can_attach_wagon;                                                              \
+  vehmid2: name##_c_can_attach_wagon;                                                              \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                    \
+
+// Head - 0..2car - Head. (2 types) 1 head type and 1 car type
+#define MU_can_attach_wagon_h02ch_template2m(name, vehid1, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                     \
+  (count_veh_id(vehid1)) > num * 2 - 1)                                          \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                     \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                    \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                        \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                    \
+     return CB_RESULT_ATTACH_ALLOW; }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                         \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                \
+{ vehmid1: error;                                                                \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_c_can_attach_wagon_h;                                          \
+  vehmid1: name##_c_can_attach_wagon2;                                           \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)             \
+{  vehid1: name##_can_attach_wagon_length;                                       \
+  vehmid1: name##_c_can_attach_wagon;                                            \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+
+// Head - 0..2car - Head. (3 types) 2 head types and 1 cars types
+#define MU_can_attach_wagon_h02ch_template3m(name, vehid1, vehid2, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                             \
+  (count_veh_id(vehid1) +                                                                \
+   count_veh_id(vehid2)) > num * 2 - 1)                                                  \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                             \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                \
+  (count_veh_id(vehid1) +                                                                \
+   count_veh_id(vehid2)) % 2)                                                            \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                            \
+     return CB_RESULT_ATTACH_ALLOW; }                                                    \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                                 \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                        \
+{ vehmid1: error;                                                                        \
+  return CB_RESULT_ATTACH_ALLOW; }                                                       \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                  \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                        \
+{  vehid1: name##_c_can_attach_wagon_h;                                                  \
+   vehid2: name##_c_can_attach_wagon_h;                                                  \
+  vehmid1: name##_c_can_attach_wagon2;                                                   \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                          \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                     \
+{  vehid1: name##_can_attach_wagon_length;                                               \
+   vehid2: name##_can_attach_wagon_length;                                               \
+  vehmid1: name##_c_can_attach_wagon;                                                    \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                          \
+
+// Head - 0..2car - Head. (4 types) 2 head types and 2 cars types
+#define MU_can_attach_wagon_h02ch_template4m2(name, vehid1, vehid2, vehmid1, vehmid2, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                                       \
+  (count_veh_id(vehid1) +                                                                          \
+   count_veh_id(vehid2)) > num * 2 - 1)                                                            \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                                       \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                                      \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                          \
+  (count_veh_id(vehid1) +                                                                          \
+   count_veh_id(vehid2)) % 2)                                                                      \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                                      \
+     return CB_RESULT_ATTACH_ALLOW; }                                                              \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                                           \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                                  \
+{ vehmid1: error;                                                                                  \
+  vehmid2: error;                                                                                  \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                 \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                            \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                                  \
+{  vehid1: name##_c_can_attach_wagon_h;                                                            \
+   vehid2: name##_c_can_attach_wagon_h;                                                            \
+  vehmid1: name##_c_can_attach_wagon2;                                                             \
+  vehmid2: name##_c_can_attach_wagon2;                                                             \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                    \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                               \
+{  vehid1: name##_can_attach_wagon_length;                                                         \
+   vehid2: name##_can_attach_wagon_length;                                                         \
+  vehmid1: name##_c_can_attach_wagon;                                                              \
+  vehmid2: name##_c_can_attach_wagon;                                                              \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                    \
+
+// Head - 0..3car - Head. (3 types) 2 head types and 1 car type
+#define MU_can_attach_wagon_h03ch_template3m(name, vehid1, vehid2, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                             \
+  (count_veh_id(vehid1) +                                                                \
+   count_veh_id(vehid2)) > num * 2 - 1)                                                  \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                             \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                \
+  (count_veh_id(vehid1) +                                                                \
+   count_veh_id(vehid2)) % 2)                                                            \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                            \
+     return CB_RESULT_ATTACH_ALLOW; }                                                    \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                                 \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                        \
+{ vehmid1: error;                                                                        \
+  return CB_RESULT_ATTACH_ALLOW; }                                                       \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                                 \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                        \
+{ vehmid1: name##_c_can_attach_wagon3;                                                   \
+  return CB_RESULT_ATTACH_ALLOW; }                                                       \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                  \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                        \
+{ vehmid1: name##_c_can_attach_wagon2;                                                   \
+   vehid1: name##_c_can_attach_wagon_h;                                                  \
+   vehid2: name##_c_can_attach_wagon_h;                                                  \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                          \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                     \
+{  vehid1: name##_can_attach_wagon_length;                                               \
+   vehid2: name##_can_attach_wagon_length;                                               \
+  vehmid1: name##_c_can_attach_wagon;                                                    \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                          \
+
+// Head - 0..4car - Head. (8 types) 4 head types and 4 cars types
+#define MU_can_attach_wagon_h04ch_template8m4(name, vehid1, vehid2, vehid3, vehid4, vehmid1, vehmid2, vehmid3, vehmid4, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                                                                         \
+  (count_veh_id(vehid1) +                                                                                                            \
+   count_veh_id(vehid2) +                                                                                                            \
+   count_veh_id(vehid3) +                                                                                                            \
+   count_veh_id(vehid4)) > num * 2 - 1)                                                                                              \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                                                                         \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                                                                        \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                                                            \
+  (count_veh_id(vehid1) +                                                                                                            \
+   count_veh_id(vehid2) +                                                                                                            \
+   count_veh_id(vehid3) +                                                                                                            \
+   count_veh_id(vehid4)) % 2)                                                                                                        \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                                                                        \
+     return CB_RESULT_ATTACH_ALLOW; }                                                                                                \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon4,                                                                             \
+[ set_offset_to(num_vehs_in_consist-8), prev_vehicle_type_id() ])                                                                    \
+{ vehmid1: error;                                                                                                                    \
+  vehmid2: error;                                                                                                                    \
+  vehmid3: error;                                                                                                                    \
+  vehmid4: error;                                                                                                                    \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                                   \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                                                                             \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                                                                    \
+{ vehmid1: name##_c_can_attach_wagon4;                                                                                               \
+  vehmid2: name##_c_can_attach_wagon4;                                                                                               \
+  vehmid3: name##_c_can_attach_wagon4;                                                                                               \
+  vehmid4: name##_c_can_attach_wagon4;                                                                                               \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                                   \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                                                                             \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                                                                    \
+{ vehmid1: name##_c_can_attach_wagon3;                                                                                               \
+  vehmid2: name##_c_can_attach_wagon3;                                                                                               \
+  vehmid3: name##_c_can_attach_wagon3;                                                                                               \
+  vehmid4: name##_c_can_attach_wagon3;                                                                                               \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                                   \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                                                              \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                                                                    \
+{ vehmid1: name##_c_can_attach_wagon2;                                                                                               \
+  vehmid2: name##_c_can_attach_wagon2;                                                                                               \
+  vehmid3: name##_c_can_attach_wagon2;                                                                                               \
+  vehmid4: name##_c_can_attach_wagon2;                                                                                               \
+   vehid1: name##_c_can_attach_wagon_h;                                                                                              \
+   vehid2: name##_c_can_attach_wagon_h;                                                                                              \
+   vehid3: name##_c_can_attach_wagon_h;                                                                                              \
+   vehid4: name##_c_can_attach_wagon_h;                                                                                              \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                                                      \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                                                                 \
+{  vehid1: name##_can_attach_wagon_length;                                                                                           \
+   vehid2: name##_can_attach_wagon_length;                                                                                           \
+   vehid3: name##_can_attach_wagon_length;                                                                                           \
+   vehid4: name##_can_attach_wagon_length;                                                                                           \
+  vehmid1: name##_c_can_attach_wagon;                                                                                                \
+  vehmid2: name##_c_can_attach_wagon;                                                                                                \
+  vehmid3: name##_c_can_attach_wagon;                                                                                                \
+  vehmid4: name##_c_can_attach_wagon;                                                                                                \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                                                      \
+
+// Head - 0..6car - Head. (3 types) 1 head types and 2 cars types
+#define MU_can_attach_wagon_h06ch_template3m2(name, vehid, vehmid1, vehmid2, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                              \
+  (count_veh_id(vehid)) > num * 2 - 1)                                                    \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                              \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                             \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                 \
+  (count_veh_id(vehid)) % 2)                                                              \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                             \
+     return CB_RESULT_ATTACH_ALLOW; }                                                     \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon6,                                  \
+[ set_offset_to(num_vehs_in_consist-12), prev_vehicle_type_id() ])                        \
+{ vehmid1: error;                                                                         \
+  vehmid2: error;                                                                         \
+  return CB_RESULT_ATTACH_ALLOW; }                                                        \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon5,                                  \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                         \
+{ vehmid1: name##_c_can_attach_wagon6;                                                    \
+  vehmid2: name##_c_can_attach_wagon6;                                                    \
+  return CB_RESULT_ATTACH_ALLOW; }                                                        \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon4,                                  \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                         \
+{ vehmid1: name##_c_can_attach_wagon5;                                                    \
+  vehmid2: name##_c_can_attach_wagon5;                                                    \
+  return CB_RESULT_ATTACH_ALLOW; }                                                        \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                                  \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                         \
+{ vehmid1: name##_c_can_attach_wagon4;                                                    \
+  vehmid2: name##_c_can_attach_wagon4;                                                    \
+  return CB_RESULT_ATTACH_ALLOW; }                                                        \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                                  \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                         \
+{ vehmid1: name##_c_can_attach_wagon3;                                                    \
+  vehmid2: name##_c_can_attach_wagon3;                                                    \
+  return CB_RESULT_ATTACH_ALLOW; }                                                        \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                   \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                         \
+{ vehmid1: name##_c_can_attach_wagon2;                                                    \
+  vehmid2: name##_c_can_attach_wagon2;                                                    \
+    vehid: name##_c_can_attach_wagon_h;                                                   \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                           \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                      \
+{   vehid: name##_can_attach_wagon_length;                                                \
+  vehmid1: name##_c_can_attach_wagon;                                                     \
+  vehmid2: name##_c_can_attach_wagon;                                                     \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                           \
+
+// Head - 1..2car - Head. (2 types) 1 head type and 1 car type
+#define MU_can_attach_wagon_h12ch_template2m(name, vehid1, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                     \
+  (count_veh_id(vehid1)) > num * 2 - 1)                                          \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                     \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                    \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon2,                         \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 1: return string(STR_CAN_ATTACH_CAR_ONLY);                                     \
+     name##_can_attach_wagon_length; }                                           \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_h_can_attach_wagon2;                                           \
+  vehmid1: CB_RESULT_ATTACH_ALLOW;                                               \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                        \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                    \
+     return CB_RESULT_ATTACH_ALLOW; }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                         \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                \
+{ vehmid1: error;                                                                \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_c_can_attach_wagon_h;                                          \
+  vehmid1: name##_c_can_attach_wagon2;                                           \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)             \
+{  vehid1: name##_h_can_attach_wagon;                                            \
+  vehmid1: name##_c_can_attach_wagon;                                            \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+
+// Head - 1..4car - Head. (2 types) 1 head type and 1 car type
+#define MU_can_attach_wagon_h14ch_template2m(name, vehid1, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                     \
+  (count_veh_id(vehid1)) > num * 2 - 1)                                          \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                     \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                    \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon2,                         \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 1: return string(STR_CAN_ATTACH_CAR_ONLY);                                     \
+     name##_can_attach_wagon_length; }                                           \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_h_can_attach_wagon2;                                           \
+  vehmid1: CB_RESULT_ATTACH_ALLOW;                                               \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                        \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                    \
+     return CB_RESULT_ATTACH_ALLOW; }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon4,                         \
+[ set_offset_to(num_vehs_in_consist-8), prev_vehicle_type_id() ])                \
+{ vehmid1: error;                                                                \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                         \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon4;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                         \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon3;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_c_can_attach_wagon_h;                                          \
+  vehmid1: name##_c_can_attach_wagon2;                                           \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)             \
+{  vehid1: name##_h_can_attach_wagon;                                            \
+  vehmid1: name##_c_can_attach_wagon;                                            \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+
+// Head - 1..5car - Head. (2 types) 1 head type and 1 car type
+#define MU_can_attach_wagon_h15ch_template2m(name, vehid1, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                     \
+  (count_veh_id(vehid1)) > num * 2 - 1)                                          \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                     \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                    \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon2,                         \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 1: return string(STR_CAN_ATTACH_CAR_ONLY);                                     \
+     name##_can_attach_wagon_length; }                                           \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_h_can_attach_wagon2;                                           \
+  vehmid1: CB_RESULT_ATTACH_ALLOW;                                               \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                        \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                    \
+     return CB_RESULT_ATTACH_ALLOW; }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon5,                         \
+[ set_offset_to(num_vehs_in_consist-10), prev_vehicle_type_id() ])               \
+{ vehmid1: error;                                                                \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon4,                         \
+[ set_offset_to(num_vehs_in_consist-8), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon5;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                         \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon4;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                         \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon3;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_c_can_attach_wagon_h;                                          \
+  vehmid1: name##_c_can_attach_wagon2;                                           \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)             \
+{  vehid1: name##_h_can_attach_wagon;                                            \
+  vehmid1: name##_c_can_attach_wagon;                                            \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+
+// Head - 1..6car - Head. (2 types) 1 head type and 1 car type
+#define MU_can_attach_wagon_h16ch_template2m(name, vehid1, vehmid1, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                     \
+  (count_veh_id(vehid1)) > num * 2 - 1)                                          \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                     \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                    \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon2,                         \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 1: return string(STR_CAN_ATTACH_CAR_ONLY);                                     \
+     name##_can_attach_wagon_length; }                                           \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_h_can_attach_wagon2;                                           \
+  vehmid1: CB_RESULT_ATTACH_ALLOW;                                               \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                        \
+  (count_veh_id(vehid1)) % 2)                                                    \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                    \
+     return CB_RESULT_ATTACH_ALLOW; }                                            \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon6,                         \
+[ set_offset_to(num_vehs_in_consist-12), prev_vehicle_type_id() ])               \
+{ vehmid1: error;                                                                \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon5,                         \
+[ set_offset_to(num_vehs_in_consist-10), prev_vehicle_type_id() ])               \
+{ vehmid1: name##_c_can_attach_wagon6;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon4,                         \
+[ set_offset_to(num_vehs_in_consist-8), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon5;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                         \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon4;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                         \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                \
+{ vehmid1: name##_c_can_attach_wagon3;                                           \
+  return CB_RESULT_ATTACH_ALLOW; }                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                          \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                \
+{  vehid1: name##_c_can_attach_wagon_h;                                          \
+  vehmid1: name##_c_can_attach_wagon2;                                           \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)             \
+{  vehid1: name##_h_can_attach_wagon;                                            \
+  vehmid1: name##_c_can_attach_wagon;                                            \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                  \
+
+// Head - 1..6car - Head. (6 types) 3 head type and 3 car type
+#define MU_can_attach_wagon_h16ch_template6m3(name, vehid1, vehid2, vehid3, vehmid1, vehmid2, vehmid3, num, error)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,                                                        \
+  (count_veh_id(vehid1) +                                                                                           \
+   count_veh_id(vehid2) +                                                                                           \
+   count_veh_id(vehid3)) > num * 2 - 1)                                                                             \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                                                                        \
+     return string(STR_CAN_ATTACH_NO_MORE); }                                                                       \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon2,                                                            \
+  (count_veh_id(vehid1) +                                                                                           \
+   count_veh_id(vehid2) +                                                                                           \
+   count_veh_id(vehid3)) % 2)                                                                                       \
+{ 1: return string(STR_CAN_ATTACH_CAR_ONLY);                                                                        \
+     name##_can_attach_wagon_length; }                                                                              \
+switch (FEAT_TRAINS, PARENT, name##_h_can_attach_wagon,                                                             \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                                                   \
+{  vehid1: name##_h_can_attach_wagon2;                                                                              \
+   vehid2: name##_h_can_attach_wagon2;                                                                              \
+   vehid3: name##_h_can_attach_wagon2;                                                                              \
+  vehmid1: CB_RESULT_ATTACH_ALLOW;                                                                                  \
+  vehmid2: CB_RESULT_ATTACH_ALLOW;                                                                                  \
+  vehmid3: CB_RESULT_ATTACH_ALLOW;                                                                                  \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                                     \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon_h,                                                           \
+  (count_veh_id(vehid1) +                                                                                           \
+   count_veh_id(vehid2) +                                                                                           \
+   count_veh_id(vehid3)) % 2)                                                                                       \
+{ 0: return string(STR_CAN_ATTACH_HEAD_ONLY);                                                                       \
+     return CB_RESULT_ATTACH_ALLOW; }                                                                               \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon6,                                                            \
+[ set_offset_to(num_vehs_in_consist-12), prev_vehicle_type_id() ])                                                  \
+{ vehmid1: error;                                                                                                   \
+  vehmid2: error;                                                                                                   \
+  vehmid3: error;                                                                                                   \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon5,                                                            \
+[ set_offset_to(num_vehs_in_consist-10), prev_vehicle_type_id() ])                                                  \
+{ vehmid1: name##_c_can_attach_wagon6;                                                                              \
+  vehmid2: name##_c_can_attach_wagon6;                                                                              \
+  vehmid3: name##_c_can_attach_wagon6;                                                                              \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon4,                                                            \
+[ set_offset_to(num_vehs_in_consist-8), prev_vehicle_type_id() ])                                                   \
+{ vehmid1: name##_c_can_attach_wagon5;                                                                              \
+  vehmid2: name##_c_can_attach_wagon5;                                                                              \
+  vehmid3: name##_c_can_attach_wagon5;                                                                              \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon3,                                                            \
+[ set_offset_to(num_vehs_in_consist-6), prev_vehicle_type_id() ])                                                   \
+{ vehmid1: name##_c_can_attach_wagon4;                                                                              \
+  vehmid2: name##_c_can_attach_wagon4;                                                                              \
+  vehmid3: name##_c_can_attach_wagon4;                                                                              \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon2,                                                            \
+[ set_offset_to(num_vehs_in_consist-4), prev_vehicle_type_id() ])                                                   \
+{ vehmid1: name##_c_can_attach_wagon3;                                                                              \
+  vehmid2: name##_c_can_attach_wagon3;                                                                              \
+  vehmid3: name##_c_can_attach_wagon3;                                                                              \
+  return CB_RESULT_ATTACH_ALLOW; }                                                                                  \
+switch (FEAT_TRAINS, PARENT, name##_c_can_attach_wagon,                                                             \
+[ set_offset_to(num_vehs_in_consist-2), prev_vehicle_type_id() ])                                                   \
+{  vehid1: name##_c_can_attach_wagon_h;                                                                             \
+   vehid2: name##_c_can_attach_wagon_h;                                                                             \
+   vehid3: name##_c_can_attach_wagon_h;                                                                             \
+  vehmid1: name##_c_can_attach_wagon2;                                                                              \
+  vehmid2: name##_c_can_attach_wagon2;                                                                              \
+  vehmid3: name##_c_can_attach_wagon2;                                                                              \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)                                                \
+{  vehid1: name##_h_can_attach_wagon;                                                                               \
+   vehid2: name##_h_can_attach_wagon;                                                                               \
+   vehid3: name##_h_can_attach_wagon;                                                                               \
+  vehmid1: name##_c_can_attach_wagon;                                                                               \
+  vehmid2: name##_c_can_attach_wagon;                                                                               \
+  vehmid3: name##_c_can_attach_wagon;                                                                               \
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                                                                     \
+
+// Heads - heads - Head. 1 head type
+#define MU_can_attach_wagon_hnhh_template(name, vehid, h_num)         \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,          \
+  count_veh_id(vehid) >= h_num)                                       \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                          \
+     return string(STR_CAN_ATTACH_NO_MORE); }                         \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)  \
+{ vehid: name##_can_attach_wagon_length;                              \
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                    \
+
+// Heads - heads - Head. 2 head types
+#define MU_can_attach_wagon_hnhh_template2(name, vehid1, vehid2, h_num)  \
+switch (FEAT_TRAINS, PARENT, name##_can_attach_wagon_length,             \
+  count_veh_id(vehid1) + count_veh_id(vehid2) >= h_num)                  \
+{ 0: CB_RESULT_ATTACH_ALLOW;                                             \
+     return string(STR_CAN_ATTACH_NO_MORE); }                            \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon, vehicle_type_id)     \
+{ vehid1: name##_can_attach_wagon_length;                                \
+  vehid2: name##_can_attach_wagon_length;                                \
+     return string(STR_CAN_ATTACH_SAME_MU_ONLY); }                       \
+
+// Attacj errpr messages
+#define EMU_4_12_can_attach_wagon_errors_template(name, vehid_h, vehid_m, vehid_c)  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_head, vehicle_type_id)           \
+{ vehid_h: return CB_RESULT_ATTACH_ALLOW;                                           \
+           return string(STR_CAN_ATTACH_HEAD_ONLY); }                               \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_car, vehicle_type_id)            \
+{ vehid_c: return CB_RESULT_ATTACH_ALLOW;                                           \
+           return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                           \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_motor, vehicle_type_id)          \
+{ vehid_m: return CB_RESULT_ATTACH_ALLOW;                                           \
+           return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                           \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_head, vehicle_type_id)       \
+{ vehid_m: return CB_RESULT_ATTACH_ALLOW;                                           \
+  vehid_c: return CB_RESULT_ATTACH_ALLOW;                                           \
+           return string(STR_CAN_ATTACH_CAR_ONLY); }                                \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_motor, vehicle_type_id)      \
+{ vehid_h: return CB_RESULT_ATTACH_ALLOW;                                           \
+  vehid_c: return CB_RESULT_ATTACH_ALLOW;                                           \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                          \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_car, vehicle_type_id)        \
+{ vehid_h: return CB_RESULT_ATTACH_ALLOW;                                           \
+  vehid_m: return CB_RESULT_ATTACH_ALLOW;                                           \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                          \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_base, vehicle_type_id)           \
+{ vehid_h: return CB_RESULT_ATTACH_ALLOW;                                           \
+  vehid_m: return CB_RESULT_ATTACH_ALLOW;                                           \
+  vehid_c: return CB_RESULT_ATTACH_ALLOW;                                           \
+           return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                           \
+
+#define EMU_4_12_can_attach_wagon_errors_template2set(name, name2)              \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_head, vehicle_type_id)       \
+{ name##_h: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name2##_h: return CB_RESULT_ATTACH_ALLOW;                                     \
+            return string(STR_CAN_ATTACH_HEAD_ONLY); }                          \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_car, vehicle_type_id)        \
+{ name##_c: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name2##_c: return CB_RESULT_ATTACH_ALLOW;                                     \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                      \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_motor, vehicle_type_id)      \
+{ name##_m: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name2##_m: return CB_RESULT_ATTACH_ALLOW;                                     \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                      \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_head, vehicle_type_id)   \
+{ name##_m: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name##_c: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name2##_m: return CB_RESULT_ATTACH_ALLOW;                                     \
+  name2##_c: return CB_RESULT_ATTACH_ALLOW;                                     \
+            return string(STR_CAN_ATTACH_CAR_ONLY); }                           \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_motor, vehicle_type_id)  \
+{ name##_h: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name##_c: return CB_RESULT_ATTACH_ALLOW;                                      \
+  name2##_h: return CB_RESULT_ATTACH_ALLOW;                                     \
+  name2##_c: return CB_RESULT_ATTACH_ALLOW;                                     \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                      \
+
+#define EMU_4_12_can_attach_wagon_errors_template2setdiff(name, name1_h, name1_m, name1_c, name2_h, name2_m, name2_c)  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_head, vehicle_type_id)                                              \
+{ name1_h: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_h: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+            return string(STR_CAN_ATTACH_HEAD_ONLY); }                                                                 \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_car, vehicle_type_id)                                               \
+{ name1_c: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_c: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_motor, vehicle_type_id)                                             \
+{ name1_m: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_m: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                                                             \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_head, vehicle_type_id)                                          \
+{ name1_m: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name1_c: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_m: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_c: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+            return string(STR_CAN_ATTACH_CAR_ONLY); }                                                                  \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_motor, vehicle_type_id)                                         \
+{ name1_h: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name1_c: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_h: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+  name2_c: return CB_RESULT_ATTACH_ALLOW;                                                                              \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                                                             \
+
+#define EMU_4_12_can_attach_wagon_errors_template2(name)                           \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_not_basehead, vehicle_type_id)  \
+{ name##_hm: return CB_RESULT_ATTACH_ALLOW;                                        \
+  name##_m: return CB_RESULT_ATTACH_ALLOW;                                         \
+  name##_c: return CB_RESULT_ATTACH_ALLOW;                                         \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                         \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_motorhead, vehicle_type_id)     \
+{ name##_hm: return CB_RESULT_ATTACH_ALLOW;                                        \
+  name##_m: return CB_RESULT_ATTACH_ALLOW;                                         \
+            return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }                         \
+switch (FEAT_TRAINS, SELF, name##_can_attach_wagon_anyhead, vehicle_type_id)       \
+{ name##_h: return CB_RESULT_ATTACH_ALLOW;                                         \
+  name##_hm: return CB_RESULT_ATTACH_ALLOW;                                        \
+            return string(STR_CAN_ATTACH_HEAD_ONLY); }                             \
+
+
+// end
