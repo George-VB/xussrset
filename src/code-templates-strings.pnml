@@ -1939,6 +1939,27 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= FUTURE_YEAR) 
 { 1: name##_additional_text_hidden;                                                                     \
      name##_additional_text_shown; }
 
+#define hint_MU_2fact_PTE(name, lspeed, straging, strmutype, strengsmetype, from, to, factory1, factory2, headname, power, te)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                        \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                         \
+  STORE_TEMP(string(strmutype) | (string(strengsmetype) << 16), 0x101),                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_FROMTO, from, to) | (string(STR_PURCHASE_HINT_LIST2) << 16), 0x102),                      \
+  STORE_TEMP(factory1 | (factory2 << 16), 0x103),                                                                               \
+  STORE_TEMP(headname | ((round(power * POWER_MULT)) << 16), 0x104),                                                            \
+  STORE_TEMP(round(te * EFFORT_MULT) , 0x105) ])                                                                                \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_PTE); }                                                                             \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                       \
+[ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                         \
+  STORE_TEMP(string(strmutype) | (string(strengsmetype) << 16), 0x101),                                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory1 << 16), 0x102),                                                        \
+  STORE_TEMP(factory2 | (headname << 16), 0x103),                                                                               \
+  STORE_TEMP(round(power * POWER_MULT) | ((round(te * EFFORT_MULT) & 0x0000FFFF) << 16), 0x104),                                \
+  STORE_TEMP(round(te * EFFORT_MULT) >> 16, 0x105) ])                                                                           \
+{ return string(STR_PURCHASE_HINT_ENGINE_MU_PTE_NODATES); }                                                                     \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                          \
+{ 1: name##_additional_text_hidden;                                                                                             \
+     name##_additional_text_shown; }                                                                                            \
+
 #define hint_MU_2fact_noto_PTE(name, lspeed, straging, strmutype, strengsmetype, from, factory1, factory2, headname, power, te)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                         \
 [ STORE_TEMP(lspeed | (string(straging) << 16), 0x100),                                                                          \

@@ -27,8 +27,10 @@ MU_head_middle_sprites(11anim, subway_81_765_h_mu, 32, 40)
 #undef IMAGEFILE
 map_sprites(subway_81_765_purchase_sprites, subway_81_765_h_purchase_sprites)
 
-MU_power_template(subway_81_765_h, subway_81_765_h)
-engine_direction_template2m(subway_81_765_h, subway_81_765_h,  subway_81_766_m)
+MU_power_template2(subway_81_765_h, subway_81_765_h, subway_81_765_b_h)
+engine_direction_template5m3(subway_81_765_h,
+                             subway_81_765_h, subway_81_765_b_h,
+                             subway_81_766_m, subway_81_766_b_m, subway_81_767_c)
 map_sprites(subway_81_765_h_direction_template, subway_81_765_h_sprites_start)
 MU_attach_wagon_icon_template_at(subway_81_765_h_next_can_attach_wagon_template,
                                  type_head_motor_pant_car_motor_pant_car_pant_add_mandatory,
@@ -42,7 +44,7 @@ MU_attach_wagon_icon_template_at(subway_81_765_h_next_can_attach_wagon_template,
                                  dummy_sprites_big,
                                  dummy_sprites_big,
                                  dummy_sprites_big)
-MU_attach_wagon_icon_template(subway_81_765_h, subway_81_765_h, type_head_motor_pant)
+MU_attach_wagon_icon_template2(subway_81_765_h, subway_81_765_h, subway_81_765_b_h, type_head_motor_pant)
 long_vehicle_advanced(subway_81_765_h, subway_81_765_h_sprites_start_sp)
 
 switch (FEAT_TRAINS, PARENT, subway_81_766_m_next_can_attach_wagon_max, LOAD_TEMP(5))
@@ -72,7 +74,7 @@ switch (FEAT_TRAINS, PARENT, subway_81_766_m_next_can_attach_wagon_max, LOAD_TEM
   0x703F: type_head_motor_pant_add_mandatory;                                  /* Г-М-М-М-М-М-М-(Г)         */
           return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }
 
-EMU_4_12_can_attach_wagon_errors_template(subway_81_765, subway_81_765_h, subway_81_766_m, subway_81_767_c)
+EMU_4_12_can_attach_wagon_errors_template2set(subway_81_765, subway_81_765_h, subway_81_766_m, subway_81_767_c, subway_81_765_b_h, subway_81_766_b_m, subway_81_767_c)
 switch (FEAT_TRAINS, PARENT, subway_81_765_can_attach_wagon_max, LOAD_TEMP(5))
 { 0x1000: subway_81_765_can_attach_wagon_base;          /* Г-(Г/М/П)                 */
   0x2000: subway_81_765_can_attach_wagon_motor;         /* Г-П-(М)                   */
@@ -99,30 +101,32 @@ switch (FEAT_TRAINS, PARENT, subway_81_765_can_attach_wagon_max, LOAD_TEMP(5))
   0x703D: subway_81_765_can_attach_wagon_head;          /* Г-М-М-М-М-П-М-(Г)         */
   0x703F: subway_81_765_can_attach_wagon_head;          /* Г-М-М-М-М-М-М-(Г)         */
           return string(STR_CAN_ATTACH_OTHERCAR_ONLY); }
-EMU_attach_calculation_template(subway_81_765, subway_81_765_h, subway_81_766_m, subway_81_767_c)
+EMU_attach_calculation_template2set(subway_81_765, subway_81_765_h, subway_81_766_m, subway_81_767_c, subway_81_765_b_h, subway_81_766_b_m, subway_81_767_c)
 
 switch (FEAT_TRAINS, SELF, subway_81_765_can_attach_wagon1,
   vehicle_type_id)
 {
-  subway_81_765_h: subway_81_765_can_attach_wagon_template;
-  subway_81_766_m: subway_81_765_can_attach_wagon_template;
-  subway_81_767_c: subway_81_765_can_attach_wagon_template;
+  subway_81_765_b_h: subway_81_765_can_attach_wagon_template;
+  subway_81_766_b_m: subway_81_765_can_attach_wagon_template;
+    subway_81_765_h: subway_81_765_can_attach_wagon_template;
+    subway_81_766_m: subway_81_765_can_attach_wagon_template;
+    subway_81_767_c: subway_81_765_can_attach_wagon_template;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, subway_81_765_can_attach_wagon,
-  count_veh_id(subway_81_765_h))
+  count_veh_id(subway_81_765_h) + count_veh_id(subway_81_765_b_h))
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
   1: subway_81_765_can_attach_wagon1;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
-MU_start_stop_template_even(subway_81_765, subway_81_765_h)
-engine_capacity_MU(subway_81_765_h, PROP_subway_81_765_h_CC, subway_81_765_h)
-engine_power_MU(subway_81_765_h, PROP_subway_81_765_h_PR, subway_81_765_h)
+MU_start_stop_template2_even(subway_81_765, subway_81_765_h, subway_81_765_b_h)
+engine_capacity_MU2(subway_81_765_h, PROP_subway_81_765_h_CC, subway_81_765_h, subway_81_765_b_h)
+engine_power_MU2(subway_81_765_h, PROP_subway_81_765_h_PR, subway_81_765_h, subway_81_765_b_h)
 
-RC_head_check(subway_81_765_h, subway_81_765_h)
+RC_head_check2(subway_81_765_h, subway_81_765_h, subway_81_765_b_h)
 switch (FEAT_TRAINS, SELF, subway_81_765_h_running_cost_factor,
 [  STORE_TEMP(57, 0),  // Моторы
    STORE_TEMP(9, 1),   // Бригада
@@ -136,8 +140,9 @@ switch (FEAT_TRAINS, SELF, subway_81_765_h_running_cost_factor,
    STORE_TEMP(round(PROP_subway_81_765_h_WT + PROP_subway_81_765_h_CC / 16), 8)])  // Максимальная масса
 { subway_81_765_h_check_running_cost_factor; }                                     // 103
 
-name_in_group(subway_81_765_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_81_765_SERIES), string(STR_NAME_SUBWAY_81_765_H)),
-                               string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_81_765_SERIES), string(STR_LONGNAME_SUBWAY_81_765_H)))
+name_in_group_subgroup(subway_81_765_h, string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_81_765_SERIES), string(STR_NAME_SUBWAY_81_765_H)),
+                                        string(STR_NAME_IN_GROUP, string(STR_NAME_SUBWAY_81_765_SERIES), string(STR_LONGNAME_SUBWAY_81_765_H)),
+                                        string(STR_NAME_SUBWAY_81_765))
 
 hint_MU_2fact_noto(subway_81_765_h,
      calc_loading(PROP_subway_81_765_h_CC / (4 * WIDERST_D_DOOR)),
