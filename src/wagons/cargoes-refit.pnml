@@ -1,39 +1,38 @@
 // paiment for cleaning after cargo
-switch (FEAT_TRAINS, SELF, tanker_refit_cost,
-  (6 * (((cargo_type_in_veh == O2__) || (cargo_type_in_veh == CHLO) || (cargo_type_in_veh == NH3_)) &&
-       (getbits(extra_callback_info1, 0, 8) != O2__) && (getbits(extra_callback_info1, 0, 8) != CHLO) && (getbits(extra_callback_info1, 0, 8) != NH3_))) +
-  (5 * (((cargo_type_in_veh == PETR) || (cargo_type_in_veh == FUEL)) &&
-       (getbits(extra_callback_info1, 0, 8) != PETR) && (getbits(extra_callback_info1, 0, 8) != FUEL))) +
-  (4 * (((cargo_type_in_veh == RFPR) || (cargo_type_in_veh == OIL_)) &&
-       (getbits(extra_callback_info1, 0, 8) != RFPR) && (getbits(extra_callback_info1, 0, 8) != OIL_))) +
-  (1 * (((cargo_type_in_veh == WATR) || (cargo_type_in_veh == COLA) || (cargo_type_in_veh == EOIL) ||
-         (cargo_type_in_veh == MILK) || (cargo_type_in_veh == BEER) || (cargo_type_in_veh == FZDR) ||
-         (cargo_type_in_veh == FOOD)) &&
-       (getbits(extra_callback_info1, 0, 8) != WATR) && (getbits(extra_callback_info1, 0, 8) != COLA) && (getbits(extra_callback_info1, 0, 8) != EOIL) &&
-       (getbits(extra_callback_info1, 0, 8) != MILK) && (getbits(extra_callback_info1, 0, 8) != BEER) && (getbits(extra_callback_info1, 0, 8) != FZDR) &&
-       (getbits(extra_callback_info1, 0, 8) != FOOD))) +
-  (2 * (((cargo_type_in_veh == RUBR) || (cargo_type_in_veh == COAT) || (cargo_type_in_veh == DYES) ||
-         (cargo_type_in_veh == PLAS) || (cargo_type_in_veh == PLST)) &&
-       (getbits(extra_callback_info1, 0, 8) != RUBR) && (getbits(extra_callback_info1, 0, 8) != COAT) && (getbits(extra_callback_info1, 0, 8) != DYES) &&
-       (getbits(extra_callback_info1, 0, 8) != PLAS) && (getbits(extra_callback_info1, 0, 8) != PLST))) )
-{
-  1..6: return;
-        return 0 | CB_RESULT_AUTOREFIT;
+
+// TODO currently payment is taken on class change. instead payment should be a sum of the cleaning cost (depending on previous cargo) and preparation cost (depending on new cargo)
+// calculations should be done via register
+switch (FEAT_TRAINS, SELF, oil_tanker_refit_cost,         getbits(extra_callback_info1, 0, 8)) { cargo_check_oil_tanker(return 0 | CB_RESULT_AUTOREFIT)         return 4; }
+switch (FEAT_TRAINS, SELF, oilp_tanker_refit_cost,        getbits(extra_callback_info1, 0, 8)) { cargo_check_petr_tanker(return 0 | CB_RESULT_AUTOREFIT)        return 5; }
+switch (FEAT_TRAINS, SELF, food_tanker_refit_cost,        getbits(extra_callback_info1, 0, 8)) { cargo_check_food_tanker(return 0 | CB_RESULT_AUTOREFIT)        return 1; }
+switch (FEAT_TRAINS, SELF, chem_gen_tanker_refit_cost,    getbits(extra_callback_info1, 0, 8)) { cargo_check_chem_gen_tanker(return 0 | CB_RESULT_AUTOREFIT)    return 2; }
+switch (FEAT_TRAINS, SELF, chem_dang_tanker_refit_cost,   getbits(extra_callback_info1, 0, 8)) { cargo_check_chem_dang_tanker(return 0 | CB_RESULT_AUTOREFIT)   return 7; }
+switch (FEAT_TRAINS, SELF, chem_heated_tanker_refit_cost, getbits(extra_callback_info1, 0, 8)) { cargo_check_chem_heated_tanker(return 0 | CB_RESULT_AUTOREFIT) return 6; }
+switch (FEAT_TRAINS, SELF, cement_hopper_refit_cost,      getbits(extra_callback_info1, 0, 8)) { cargo_check_bulk_cargo_tanker(return 0 | CB_RESULT_AUTOREFIT)  return 2; }
+switch (FEAT_TRAINS, SELF, gas_chem_tanker_refit_cost,    getbits(extra_callback_info1, 0, 8)) { cargo_check_gas_chem_tanker(return 0 | CB_RESULT_AUTOREFIT)    return 3; }
+switch (FEAT_TRAINS, SELF, gas_cryo_tanker_refit_cost,    getbits(extra_callback_info1, 0, 8)) { cargo_check_gas_cryo_tanker(return 0 | CB_RESULT_AUTOREFIT)    return 2; }
+switch (FEAT_TRAINS, SELF, gas_natural_tanker_refit_cost, getbits(extra_callback_info1, 0, 8)) { cargo_check_gas_natural_tanker(return 0 | CB_RESULT_AUTOREFIT) return 1; }
+
+switch (FEAT_TRAINS, SELF, tanker_refit_cost, cargo_type_in_veh) {
+  cargo_check_oil_tanker(oil_tanker_refit_cost)
+  cargo_check_petr_tanker(oilp_tanker_refit_cost)
+  cargo_check_food_tanker(food_tanker_refit_cost)
+  cargo_check_chem_gen_tanker(chem_gen_tanker_refit_cost)
+  cargo_check_chem_dang_tanker(chem_dang_tanker_refit_cost)
+  cargo_check_chem_heated_tanker(chem_heated_tanker_refit_cost)
+  cargo_check_bulk_cargo_tanker(cement_hopper_refit_cost)
+  cargo_check_gas_chem_tanker(gas_chem_tanker_refit_cost)
+  cargo_check_gas_cryo_tanker(gas_cryo_tanker_refit_cost)
+  cargo_check_gas_natural_tanker(gas_natural_tanker_refit_cost)
+  return 0 | CB_RESULT_AUTOREFIT;
 }
 
 // paiment for cleaning for cargo
-switch (FEAT_TRAINS, SELF, boxcar_refit_cost,
-  ((cargo_type_in_veh != CERE) && (cargo_type_in_veh != GRAI) &&
-   (cargo_type_in_veh != WHEA) && (cargo_type_in_veh != MAIZ) &&
-   (cargo_type_in_veh != OLSD) && (cargo_type_in_veh != TOFF) &&
-   (cargo_type_in_veh != CTCD)) &&
-  ((getbits(extra_callback_info1, 0, 8) == CERE) || (getbits(extra_callback_info1, 0, 8) == GRAI) ||
-   (getbits(extra_callback_info1, 0, 8) == WHEA) || (getbits(extra_callback_info1, 0, 8) == MAIZ) ||
-   (getbits(extra_callback_info1, 0, 8) == OLSD) || (getbits(extra_callback_info1, 0, 8) == TOFF) ||
-   (getbits(extra_callback_info1, 0, 8) == CTCD)) )
+switch (FEAT_TRAINS, SELF, grain_boxcar_refit_cost, getbits(extra_callback_info1, 0, 8)) { cargo_check_grain_hopperlist(return 0 | CB_RESULT_AUTOREFIT) return 1; }
+switch (FEAT_TRAINS, SELF, boxcar_refit_cost, cargo_type_in_veh)
 {
-  1: return 1;
-     return 0 | CB_RESULT_AUTOREFIT;
+  cargo_check_grain_hopperlist(grain_boxcar_refit_cost)
+  return 0 | CB_RESULT_AUTOREFIT;
 }
 
 // allow autorefit for containers
