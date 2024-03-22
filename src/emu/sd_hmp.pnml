@@ -23,8 +23,6 @@ EMU_head_middle_sp2_sprites(12, emu_sd_hmp_v1_mu, 32, 40)
 #define IMAGEFILE  "src/emu/sm_hmp.png"
 EMU_head_middle_sp2_sprites(12, emu_sm_hmp_v1_mu, 32, 40)
 #undef IMAGEFILE
-map_sprites(emu_sd_hmp_mu_notpowered_sprites_left, emu_sd_hmp_v1_mu_notpowered_sprites_left)
-map_sprites(emu_sd_hmp_mu_notpowered_sprites_right, emu_sd_hmp_v1_mu_notpowered_sprites_right)
 
 switch (FEAT_TRAINS, SELF, emu_sd_hmp_mu_sprites_left,
   (cargo_subtype == 0xE0) * 3 +                     // 15/3DC
@@ -48,11 +46,21 @@ switch (FEAT_TRAINS, SELF, emu_sd_hmp_mu_sprites_right,
   3: emu_sm_hmp_v1_mu_sprites_right;
      align_12_sprites; }
 
+switch (FEAT_TRAINS, SELF, emu_sd_hmp_mu_notpowered_sprites_left,
+  cargo_subtype >= 0xE0)
+{ 0: emu_sd_hmp_v1_mu_notpowered_sprites_left;
+     emu_sm_hmp_v1_mu_notpowered_sprites_left; }
+
+switch (FEAT_TRAINS, SELF, emu_sd_hmp_mu_notpowered_sprites_right,
+  cargo_subtype >= 0xE0)
+{ 0: emu_sd_hmp_v1_mu_notpowered_sprites_right;
+     emu_sm_hmp_v1_mu_notpowered_sprites_right; }
+
 // перехватить ветку верных голов и добавить на них доп. проверки
 MU_power_template12(emu_sd_hmp, sr_type1947_h, sr_type1947_hb, sr_type1947_hmp,
-                                         sr_type1951_h, sr_type1951_hb, sr_type1951_hmp,
-                                         emu_sv_h, emu_sv_hb, emu_sv_hmp,
-                                         emu_sd_h, emu_sd_hb, emu_sd_hmp)
+                                sr_type1951_h, sr_type1951_hb, sr_type1951_hmp,
+                                emu_sv_h, emu_sv_hb, emu_sv_hmp,
+                                emu_sd_h, emu_sd_hb, emu_sd_hmp)
 
 engine_direction_template4(emu_sd_hmp, emu_sd_hmp,  sr_type1947_hmp, sr_type1951_hmp, emu_sv_hmp)
 map_sprites(emu_sd_hmp_2_direction_template, emu_sd_hmp_sprites_start)
@@ -69,7 +77,7 @@ MU_attach_wagon_icon_template12(emu_sd_hmp_2,
                                 emu_sd_h, emu_sd_hb, emu_sd_hmp, type_head_motor_pant)
 
 switch (FEAT_TRAINS, SELF, emu_sd_hmp_sprites_left_current,
-  cargo_subtype + 256 * (current_year < 1946) + 256 * (1 - enable_icons))
+  cargo_subtype + 256 * (current_year < 1946) + 256 * (1 - enable_icons) )
 {
   0x00: icon_sprites_15dc;
   0xE0: icon_sprites_ddc;
@@ -78,8 +86,7 @@ switch (FEAT_TRAINS, SELF, emu_sd_hmp_sprites_left_current,
 }
 
 switch (FEAT_TRAINS, SELF, emu_sd_hmp_sprites_left_back,
-[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
-  cargo_subtype + 256 * (current_year < 1946) + 256 * (1 - enable_icons) ])
+  cargo_subtype + 256 * (current_year < 1946) + 256 * (1 - enable_icons) )
 {
   0x00: icon_sprites_back1;
   0xE0: icon_sprites_back2;
@@ -91,9 +98,9 @@ switch (FEAT_TRAINS, SELF, emu_sd_hmp_sprites_left_depot,
 [ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
   getbits(extra_callback_info1, 8, 8) ])
 {
-  0: emu_sd_hmp_2_sprites_start_sp;
-  1: emu_sd_hmp_sprites_left_back;
-  2: emu_sd_hmp_sprites_left_current;
+     1: emu_sd_hmp_sprites_left_back;
+     2: emu_sd_hmp_sprites_left_current;
+  0..7: emu_sd_hmp_2_sprites_start_sp;
      return CB_FAILED;
 }
 switch (FEAT_TRAINS, SELF, emu_sd_hmp_direction_template,
