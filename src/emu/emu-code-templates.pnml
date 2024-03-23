@@ -737,13 +737,17 @@ switch (FEAT_TRAINS, SELF, emu_s_mail_articulated_part4, extra_callback_info1)
 #define PROP_emu_s_mail_AC  20
 #define PROP_emu_s_mail_VC  20
 
-switch (FEAT_TRAINS, SELF, emu_s_mail_compartment_cargo_capacity,
+switch (FEAT_TRAINS, SELF, emu_s_mail_compartment_cargo_capacity2,
 [  STORE_TEMP(round(PROP_emu_s_mail_LC), 0),  // т
    STORE_TEMP(PROP_emu_s_mail_AC, 1),         // м³
    STORE_TEMP(PROP_emu_s_mail_VC, 2),         // м²
    STORE_TEMP(0, 3),                          // палетомест
    STORE_TEMP(2, 4)])                         // шаблон
 { box_cargo_capacity; }
+
+switch (FEAT_TRAINS, PARENT, emu_s_mail_compartment_cargo_capacity, any_emu_s())
+{ 1: emu_s_mail_compartment_cargo_capacity2;
+     return 0; }
 
 switch (FEAT_TRAINS, SELF, emu_s_mail_compartment_loading_speed,
   STORE_TEMP(7, 2))
@@ -757,12 +761,13 @@ item (FEAT_TRAINS, emu_s_mail_compartment, 754) {
      cargo_allow_refit: [MAIL, cargo_all_luggagelist()];
   }
   graphics {
-    cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
-      cargo_capacity: emu_s_mail_compartment_cargo_capacity;
-      colour_mapping: any_cc_colour;
-             default: dummy_sprites;
-       loading_speed: emu_s_mail_compartment_loading_speed;
-          refit_cost: return 0 | CB_RESULT_AUTOREFIT;
+           cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
+             cargo_capacity: emu_s_mail_compartment_cargo_capacity;
+             colour_mapping: any_cc_colour;
+                    default: dummy_sprites;
+              loading_speed: emu_s_mail_compartment_loading_speed;
+    purchase_cargo_capacity: emu_s_mail_compartment_cargo_capacity2;
+                 refit_cost: return 0 | CB_RESULT_AUTOREFIT;
   }
 }
 
