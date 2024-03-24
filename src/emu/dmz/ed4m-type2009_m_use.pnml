@@ -1,0 +1,103 @@
+﻿// ed4m_type2009 uses ed4m_type2012 (PID livery)
+
+#define PROP_ed4m_type2009_m_CF  13
+#define PROP_ed4m_type2009_m_RC  101
+#define PROP_ed4m_type2009_m_SD  130
+#define PROP_ed4m_type2009_m_WT  57.75
+#define PROP_ed4m_type2009_m_TE  104.0
+#define PROP_ed4m_type2009_m_PR  1039
+#define PROP_ed4m_type2009_m_CC  116
+
+#define IMAGEFILE  "src/emu/dmz/ed4m-type2009_m.png"
+purchase_sprites_with_icon(ed4m_type2009_m, 18, 0, 3dc)
+EMU_motor1_sprites(13, ed4m_type2009_m_fac_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_power_dir_template2(ed4m_type2009_m_fac, ed4m_type2009_h, ed4m_type2012_h)
+
+switch (FEAT_TRAINS, SELF, ed4m_type2009_m_direction_left,
+  cargo_subtype)
+{
+           0: ed4m_type2009_m_fac_direction_left;
+  LV_RZD_PID: ed4m_type2012_m_direction_left;
+  align_13_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, ed4m_type2009_m_direction_right,
+  cargo_subtype)
+{
+           0: ed4m_type2009_m_fac_direction_right;
+  LV_RZD_PID: ed4m_type2012_m_direction_right;
+  align_13_sprites;
+}
+
+EMU_4_12_m_template(ed4m_type2009)
+EMU_direction_calculation_template2set(ed4m_type2009_m, ed4m_type2009_h, ed4m_type2009_m, ed4m_type2009_c, ed4m_type2012_h, ed4m_type2012_m, ed4m_type2012_c)
+EMU_46789101112_attach_wagon_icon_template(ed4m_type2009_m)
+EMU_attach_calculation_template2set(ed4m_type2009_m_next, ed4m_type2009_h, ed4m_type2009_m, ed4m_type2009_c, ed4m_type2012_h, ed4m_type2012_m, ed4m_type2012_c)
+MU_attach_wagon_icon_template2(ed4m_type2009_m, ed4m_type2009_h, ed4m_type2012_h, type_car_motor_pant)
+long_vehicle_advanced(ed4m_type2009_m, ed4m_type2009_m_sprites_start_sp)
+
+EMU_4_12_m_create_effect_template(ed4m_type2009, -1, 6)
+EMU_direction_calculation_template2set(ed4m_type2009_m_create_effect, ed4m_type2009_h, ed4m_type2009_m, ed4m_type2009_c, ed4m_type2012_h, ed4m_type2012_m, ed4m_type2012_c)
+engine_effects_MU2(ed4m_type2009_m, _create_effect_direction_template, ed4m_type2009_h, ed4m_type2012_h)
+engine_power_MU2(ed4m_type2009_m, PROP_ed4m_type2009_m_PR, ed4m_type2009_h, ed4m_type2012_h)
+engine_capacity_MU2(ed4m_type2009_m, PROP_ed4m_type2009_m_CC, ed4m_type2009_h, ed4m_type2012_h)
+
+RC_head_check2(ed4m_type2009_m, ed4m_type2009_h, ed4m_type2012_h)
+switch (FEAT_TRAINS, SELF, ed4m_type2009_m_running_cost_factor,
+[  STORE_TEMP(58, 0),  // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(20, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(14, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_ed4m_type2009_m_SD, 6),                                         // Скорость
+   STORE_TEMP(round(PROP_ed4m_type2009_m_WT), 7),                                  // Тара
+   STORE_TEMP(round(PROP_ed4m_type2009_m_WT + PROP_ed4m_type2009_m_CC / 16), 8)])  // Максимальная масса
+{ ed4m_type2009_m_check_running_cost_factor; }                                     // 101
+
+name_in_group_subgroup(ed4m_type2009_m, string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_NAME_ED4M_TYPE2009_M)),
+                                        string(STR_NAME_IN_GROUP, string(STR_NAME_ED4_SERIES), string(STR_LONGNAME_ED4M_TYPE2009_M)),
+                                        string(STR_NAME_ED4M_TYPE2009))
+
+hint_MU_PTE(ed4m_type2009_m,
+     calc_loading(PROP_ed4m_type2009_m_CC / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00075_ACCELERATED,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_MP_DC,
+     STR_SECTIONS_EMU_4_6_7_8_9_10_11_12_M2,
+     2009, 2011,
+     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII),
+     string(STR_NAME_ED4M_TYPE2009), PROP_ed4m_type2009_m_PR, PROP_ed4m_type2009_m_TE)
+
+item (FEAT_TRAINS, ed4m_type2009_m, 802) {
+  property {
+    name: string(STR_NAME_ED4M_TYPE2009_M);
+    vehicle_dates(2009, 2011, 30, 10, 8, PROP_ed4m_type2009_m_CF)
+    vehicle_emu_wagon(dc, PROP_ed4m_type2009_m_WT, PROP_ed4m_type2009_m_CC, 2 * WIDERST_D_DOOR, )
+    vehicle_group_mu(ed4m_type2009_h)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_ed4m_type2009_m_CF, PROP_ed4m_type2009_m_RC, PROP_ed4m_type2009_m_SD, PROP_ed4m_type2009_m_WT, PROP_ed4m_type2009_m_TE, PROP_ed4m_type2009_m_PR, PROP_ed4m_type2009_m_CC)
+                additional_text: ed4m_type2009_m_additional_text;
+               articulated_part: articulated_part_dummy5;
+               can_attach_wagon: ed4m_type2009_can_attach_wagon;
+               cargo_age_period: return CAP_00075_ACCELERATED;
+                 cargo_capacity: ed4m_type2009_m_cargo_capacity;
+             cargo_subtype_text: ed4m_type2009_cargo_subtype_text;
+                 colour_mapping: any_cc_colour;
+                  create_effect: ed4m_type2009_m_create_effect;
+                        default: ed4m_type2009_m_sprites;
+                           name: ed4m_type2009_m_name;
+                          power: ed4m_type2009_m_power;
+                       purchase: ed4m_type2009_m_purchase_sprites;
+            running_cost_factor: ed4m_type2009_m_running_cost_factor;
+                          speed: speed_after30_130to110;
+                     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    tractive_effort_coefficient: return get_tec_int(PROP_ed4m_type2009_m_TE, PROP_ed4m_type2009_m_WT);
+  }
+}
+
+long_name_template(ed4m_type2009_m, STR_LONGNAME_ED4M_TYPE2009_M)
+allow_dcemu(ed4m_type2009_m)
