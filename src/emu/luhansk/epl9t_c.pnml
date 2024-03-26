@@ -1,0 +1,97 @@
+﻿// epl9t
+
+#define PROP_epl9t_c_CF  6
+#define PROP_epl9t_c_RC  45
+#define PROP_epl9t_c_SD  130
+#define PROP_epl9t_c_WT  49
+#define PROP_epl9t_c_TE  0
+#define PROP_epl9t_c_PR  0
+#define PROP_epl9t_c_CC  130
+
+#define IMAGEFILE  "src/emu/luhansk/epl9t_c.png"
+purchase_sprites_with_icon(epl9t_c, 18, 0, 25ac)
+MU_car_sprites(15, epl9t_c_v1_mu, 32, 40)
+MU_car_sprites(15, epl9t_c_v2_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_power_dir_template(epl9t_c_v1, epl9t_h)
+MU_power_dir_template(epl9t_c_v2, epl9t_h)
+
+switch (FEAT_TRAINS, SELF, epl9t_c_direction_left,
+  cargo_subtype)
+{
+                     0: epl9t_c_v1_direction_left;
+  LV_UKRAINIAN_RAILWAY: epl9t_c_v2_direction_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, epl9t_c_direction_right,
+  cargo_subtype)
+{
+                     0: epl9t_c_v1_direction_right;
+  LV_UKRAINIAN_RAILWAY: epl9t_c_v2_direction_right;
+  align_12_sprites;
+}
+
+EMU_4_12_c_template(epl9t)
+EMU_direction_calculation_template(epl9t_c, epl9t_h, epl9t_m, epl9t_c)
+EMU_4681012_attach_wagon_icon_template(epl9t_c)
+EMU_attach_calculation_template(epl9t_c_next, epl9t_h, epl9t_m, epl9t_c)
+MU_attach_wagon_icon_template(epl9t_c, epl9t_h, type_car)
+long_vehicle_advanced(epl9t_c, epl9t_c_sprites_start_sp)
+
+engine_capacity_MU(epl9t_c, PROP_epl9t_c_CC, epl9t_h)
+
+RC_head_check(epl9t_c, epl9t_h)
+switch (FEAT_TRAINS, SELF, epl9t_c_running_cost_factor,
+[  STORE_TEMP(26, 0),  // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(9, 2),   // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(6, 4),   // ТО
+   STORE_TEMP(0, 5),   // Сертификация
+
+   STORE_TEMP(PROP_epl9t_c_SD, 6),                                 // Скорость
+   STORE_TEMP(round(PROP_epl9t_c_WT), 7),                          // Тара
+   STORE_TEMP(round(PROP_epl9t_c_WT + PROP_epl9t_c_CC / 16), 8)])  // Максимальная масса
+{ epl9t_c_check_running_cost_factor; }                             // 45
+
+name_in_group(epl9t_c, string(STR_NAME_IN_GROUP, string(STR_NAME_EPL9T_SERIES), string(STR_NAME_EPL9T_C)),
+                       string(STR_NAME_IN_GROUP, string(STR_NAME_EPL9T_SERIES), string(STR_LONGNAME_EPL9T_C)))
+
+hint_MU(epl9t_c,
+     calc_loading(PROP_epl9t_c_CC / (3 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_CAP_00033_VERY_FAST,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC,
+     STR_SECTIONS_EMU_4_6_8_10_12,
+     2001, 2008,
+     fact_rigacw())
+
+item (FEAT_TRAINS, epl9t_c, 1310) {
+  property {
+    name: string(STR_NAME_EPL9T_C);
+    vehicle_dates(2001, 2008, 30, 10, 8, PROP_epl9t_c_CF)
+    vehicle_emu_wagon(ac, PROP_epl9t_c_WT, PROP_epl9t_c_CC, 3 * DOUBLE_DOOR, )
+    vehicle_group_mu(group_epl9t)
+  }
+  graphics {
+  purchase_menu_wagon(PROP_epl9t_c_CF, PROP_epl9t_c_RC, PROP_epl9t_c_SD, PROP_epl9t_c_WT, PROP_epl9t_c_TE, PROP_epl9t_c_PR, PROP_epl9t_c_CC)
+        additional_text: epl9t_c_additional_text;
+       articulated_part: articulated_part_dummy7;
+       can_attach_wagon: epl9t_can_attach_wagon;
+       cargo_age_period: return CAP_00033_VERY_FAST;
+         cargo_capacity: epl9t_c_cargo_capacity;
+     cargo_subtype_text: epl9t_m_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: epl9t_c_sprites;
+                   name: epl9t_c_name;
+                  power: return 0;
+               purchase: epl9t_c_purchase_sprites;
+    running_cost_factor: epl9t_c_running_cost_factor;
+                  speed: speed_after30_130to110;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(epl9t_c, STR_LONGNAME_EPL9T_C)
+allow_acemu(epl9t_c)

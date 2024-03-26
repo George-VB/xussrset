@@ -1,0 +1,80 @@
+﻿// 4te10s_m
+
+#define PROP_4te10s_m_CF  48
+#define PROP_4te10s_m_RC  430
+#define PROP_4te10s_m_SD  100
+#define PROP_4te10s_m_WT  138
+#define PROP_4te10s_m_TE  398.6
+#define PROP_4te10s_m_PR  2273
+#define PROP_4te10s_m_CC  0
+
+#define IMAGEFILE  "src/diesel/luhansk/4te10s_m.png"
+purchase_sprites_with_icon(_4te10s_m, 18, 0, diesel)
+buster_sprites(10, _4te10s_m, 32, 40)
+#undef IMAGEFILE
+
+engine_direction_template_buster2(_4te10s_m, _4te10s_m)
+buster1_2_notlast_bothsides2(_4te10s_m, _2te10s, _4te10s, _4te10s_m, ,)
+long_vehicle_advanced(_4te10s_m, _4te10s_m_sprites_start_sp)
+
+engine_diesel_1r_effect(_4te10s_m_create_effect_sprites, -1, 2, 12)
+engine_direction_template_buster2(_4te10s_m_create_effect, _4te10s_m)
+engine_speed(_4te10s_m, PROP_4te10s_m_SD)
+engine1_2_notlast_bothsides2(_4te10s_m_bitmask_vehicle_info_advanced, _2te10s, _4te10s, _2te10s_bitmask_vehicle_info)
+
+switch (FEAT_TRAINS, SELF, _4te10s_m_running_cost_factor,
+[  STORE_TEMP(245, 0),  // Моторы
+   STORE_TEMP(9, 1),    // Бригада
+   STORE_TEMP(86, 2),   // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(60, 4),   // ТО
+   STORE_TEMP(4, 5),    // Сертификация
+
+   STORE_TEMP(PROP_4te10s_m_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_4te10s_m_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_4te10s_m_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                 // 430
+
+name_in_group_varsub_subgroup(_4te10s_m, string(STR_NAME_IN_GROUP, string(STR_NAME_TE10_SERIES), string(STR_NAME_4TE10S_M)),
+                                         string(STR_NAME_IN_GROUP, string(STR_NAME_TE10_SERIES), string(STR_LONGNAME_4TE10S_M)),
+                                         fact_luhansk(), string(STR_NAME_4TE10S))
+
+hint_engine_with_sme2_PTE(_4te10s_m,
+     STR_PURCHASE_HINT_ENGINE_TYPE_MS_FREIGHT_DIESEL,
+     STR_PURCHASE_HINT_SECTIONS_MS, STR_NAME_2TE10S, STR_NAME_4TE10S,
+     1983, 1987,
+     fact_luhansk(),
+     string(STR_PURCHASE_HINT_LIST2, string(STR_NAME_2TE10S), string(STR_NAME_4TE10S)),
+     PROP_4te10s_m_PR, PROP_4te10s_m_TE)
+
+item (FEAT_TRAINS, _4te10s_m, 351) {
+  property {
+    name: string(STR_NAME_4TE10S_M);
+    vehicle_dates(1983, 1987, 30, 10, 8, PROP_4te10s_m_CF)
+    vehicle_cargo()
+    vehicle_diesel_wagon(PROP_4te10s_m_WT, )
+    vehicle_group(_4te10s)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_4te10s_m_CF, PROP_4te10s_m_RC, PROP_4te10s_m_SD, PROP_4te10s_m_WT, PROP_4te10s_m_TE, PROP_4te10s_m_PR, PROP_4te10s_m_CC)
+                additional_text: _4te10s_m_additional_text;
+               articulated_part: articulated_part_dummy2;
+           bitmask_vehicle_info: _4te10s_m_bitmask_vehicle_info_advanced;
+               can_attach_wagon: any_can_attach_wagon;
+                 cargo_capacity: return PROP_4te10s_m_CC;
+                 colour_mapping: any_cc_colour;
+                  create_effect: _4te10s_m_create_effect_sprites_start;
+                        default: _4te10s_m_sprites;
+                           name: _4te10s_m_name;
+                          power: return get_power_in_cb(PROP_4te10s_m_PR);
+                       purchase: _4te10s_m_purchase_sprites;
+            running_cost_factor: _4te10s_m_running_cost_factor;
+                          speed: _4te10s_m_speed;
+                     start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+    tractive_effort_coefficient: return get_tec_int(PROP_4te10s_m_TE, PROP_4te10s_m_WT);
+  }
+}
+
+long_name_template(_4te10s_m, STR_LONGNAME_4TE10S_M)
+models_default_cargo_template(_4te10s_m)
+allow_diesel(_4te10s_m)
