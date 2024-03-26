@@ -82,9 +82,9 @@ goto :END
 :GetHgRev
 
 :: определяем текущую ревизию
-for /F %%i in (%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver) do set REPO_REVISION=%%i
+for /F %%i in (%YDPATH%\%NMLNAME%.ver) do set REPO_REVISION=%%i
 set /a REPO_REVISION=%REPO_REVISION%+1
-echo %REPO_REVISION%>%YDPATH%\My\-todelete\xUSSRset\%NMLNAME%.ver
+echo %REPO_REVISION%>%YDPATH%\%NMLNAME%.ver
 
 goto :EOF
 
