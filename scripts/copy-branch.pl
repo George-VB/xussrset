@@ -15,7 +15,7 @@ if(defined($ENV{"YDPATH"}) &&
    	print("Change path to \"$todir\"\n");
 	$todir =~ s/\\/\//g;
 	$todir =~ s/\/$//;
- 	$todir .= '/My/-todelete/xUSSRset/';
+ 	$todir .= '/';
 }
 
 sub MMkdir($)
