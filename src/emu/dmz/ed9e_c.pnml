@@ -1,0 +1,78 @@
+﻿// ed9e
+
+#define PROP_ed9e_c_CF  7
+#define PROP_ed9e_c_RC  52
+#define PROP_ed9e_c_SD  120
+#define PROP_ed9e_c_WT  39.7
+#define PROP_ed9e_c_TE  0
+#define PROP_ed9e_c_PR  0
+#define PROP_ed9e_c_CC  116
+
+#define IMAGEFILE  "src/emu/dmz/ed9e_c.png"
+purchase_sprites_with_icon(ed9e_c, 18, 0, 25ac)
+MU_car_sprites(13, ed9e_c_mu, 32, 40)
+#undef IMAGEFILE
+
+MU_power_dir_template(ed9e_c, ed9e_h)
+EMU_4_12_c_template(ed9e)
+EMU_direction_calculation_template(ed9e_c, ed9e_h, ed9e_m, ed9e_c)
+EMU_467891011_attach_wagon_icon_template(ed9e_c)
+EMU_attach_calculation_template(ed9e_c_next, ed9e_h, ed9e_m, ed9e_c)
+MU_attach_wagon_icon_template(ed9e_c, ed9e_h, type_car)
+long_vehicle_advanced(ed9e_c, ed9e_c_sprites_start_sp)
+
+engine_capacity_MU(ed9e_c, PROP_ed9e_c_CC, ed9e_h)
+
+RC_head_check(ed9e_c, ed9e_h)
+switch (FEAT_TRAINS, SELF, ed9e_c_running_cost_factor,
+[  STORE_TEMP(30, 0),  // Моторы
+   STORE_TEMP(0, 1),   // Бригада
+   STORE_TEMP(10, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(7, 4),   // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_ed9e_c_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_ed9e_c_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_ed9e_c_WT + PROP_ed9e_c_CC / 16), 8)])  // Максимальная масса
+{ ed9e_c_check_running_cost_factor; }                            // 52
+
+name_in_group_subgroup(ed9e_c, string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_NAME_ED9E_C)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ED9_SERIES), string(STR_LONGNAME_ED9E_C)),
+                               string(STR_NAME_ED9E))
+
+hint_MU(ed9e_c,
+     calc_loading(PROP_ed9e_c_CC / (2 * WIDERST_D_DOOR)),
+     STR_PURCHASE_HINT_CAP_00033_VERY_FAST,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_C_AC,
+     STR_SECTIONS_EMU_4_6_7_8_9_10_11_M2,
+     2012, 2016,
+     string(STR_PURCHASE_HINT_FACTORY_DEMIKHOVSKII))
+
+item (FEAT_TRAINS, ed9e_c, 601) {
+  property {
+    name: string(STR_NAME_ED9E_C);
+    vehicle_dates(2012, 2016, 30, 10, 8, PROP_ed9e_c_CF)
+    vehicle_emu_wagon(ac, PROP_ed9e_c_WT, PROP_ed9e_c_CC, 2 * WIDERST_D_DOOR, )
+    vehicle_group_mu(ed9e_h)
+  }
+  graphics {
+    purchase_menu_wagon(PROP_ed9e_c_CF, PROP_ed9e_c_RC, PROP_ed9e_c_SD, PROP_ed9e_c_WT, PROP_ed9e_c_TE, PROP_ed9e_c_PR, PROP_ed9e_c_CC)
+        additional_text: ed9e_c_additional_text;
+       articulated_part: articulated_part_dummy5;
+       can_attach_wagon: ed9e_can_attach_wagon;
+       cargo_age_period: return CAP_00033_VERY_FAST;
+         cargo_capacity: ed9e_c_cargo_capacity;
+         colour_mapping: any_cc_colour;
+                default: ed9e_c_sprites;
+                   name: ed9e_c_name;
+                  power: return 0;
+               purchase: ed9e_c_purchase_sprites;
+    running_cost_factor: ed9e_c_running_cost_factor;
+                  speed: return 120;
+             start_stop: return string(STR_START_STOP_HEAD_REQUIRED);
+  }
+}
+
+long_name_template(ed9e_c, STR_LONGNAME_ED9E_C)
+allow_acemu(ed9e_c)
