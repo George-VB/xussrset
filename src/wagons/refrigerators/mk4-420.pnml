@@ -8,6 +8,7 @@
 #define PROP_refrigerator_mk4_420_PR  0
 #define PROP_refrigerator_mk4_420_CC  48
 #define PROP_refrigerator_mk4_420_LC  39
+#define PROP_refrigerator_mk4_420_LC_LIMIT  29
 #define PROP_refrigerator_mk4_420_AC  0
 #define PROP_refrigerator_mk4_420_VC  100
 
@@ -26,13 +27,21 @@ switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_sprites_start,
 
 long_vehicle(refrigerator_mk4_420)
 
-switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_cargo_capacity,
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_full_cargo_capacity,
 [  STORE_TEMP(round(PROP_refrigerator_mk4_420_LC), 0),  // т
    STORE_TEMP(round(PROP_refrigerator_mk4_420_VC), 1),  // м³
    STORE_TEMP(round(PROP_refrigerator_mk4_420_AC), 2),  // м²
    STORE_TEMP(0, 3),                                    // палетомест
    STORE_TEMP(13, 4)])                                  // шаблон
 { ref_cargo_capacity; }
+switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_limited_cargo_capacity,
+[  STORE_TEMP(round(PROP_refrigerator_mk4_420_LC_LIMIT), 0),  // т
+   STORE_TEMP(round(PROP_refrigerator_mk4_420_VC), 1),        // м³
+   STORE_TEMP(round(PROP_refrigerator_mk4_420_AC), 2),        // м²
+   STORE_TEMP(0, 3),                                          // палетомест
+   STORE_TEMP(13, 4)])                                        // шаблон
+{ ref_cargo_capacity; }
+engine_change_refit(refrigerator_mk4_420_cargo_capacity, refrigerator_mk4_420_full_cargo_capacity, refrigerator_mk4_420_limited_cargo_capacity)
 
 switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_running_cost_factor,
 [  STORE_TEMP(0, 0),   // Моторы
@@ -51,7 +60,8 @@ switch (FEAT_TRAINS, SELF, refrigerator_mk4_420_loading_speed,
   STORE_TEMP(10, 2))
 { all_wagons_box_loading_speed; }
 
-wagon_speed_change_on_load(refrigerator_mk4_420, 140, 120, 29)
+livery_template_simplerefit_f(refrigerator_mk4_420, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_WITH_DECREASED_CAPACITY)
+wagon_speed_change_on_load(refrigerator_mk4_420, 140, 120, PROP_refrigerator_mk4_420_LC_LIMIT)
 
 name_in_group(refrigerator_mk4_420, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_MK4_420)),
                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_LONGNAME_REFRIGERATOR_MK4_420)))
@@ -63,7 +73,7 @@ hint_wagon_chande_speed_on_load(refrigerator_mk4_420,
      STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR_AUTONOMUS,
      1968, 1970,
      string(STR_PURCHASE_HINT_FACTORY_DESSAU_W),
-     120, 29)
+     120, PROP_refrigerator_mk4_420_LC_LIMIT)
 
 item (FEAT_TRAINS, refrigerator_mk4_420, 398) {
   property {
@@ -79,6 +89,7 @@ item (FEAT_TRAINS, refrigerator_mk4_420, 398) {
        articulated_part: articulated_part_dummy5;
        cargo_age_period: return CAP_128_DOESNT;
          cargo_capacity: refrigerator_mk4_420_cargo_capacity;
+     cargo_subtype_text: refrigerator_mk4_420_cargo_subtype_text;
          colour_mapping: any_cc_colour;
                 default: refrigerator_mk4_420_sprites;
           loading_speed: refrigerator_mk4_420_loading_speed;
