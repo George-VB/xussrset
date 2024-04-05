@@ -56,6 +56,7 @@ scripts\change.pl xussr-electric.nml "\s*\}\s*" "\n\}\n"
 scripts\change.pl xussr-electric.nml "\;" "\;\n"
 scripts\change.pl xussr-electric.nml "\n\r*\n" "\n"
 scripts\change.pl xussr-electric.nml "\{\s*([a-z0-9_ ]+);\s*\}" "{ $1; }"
+scripts\CleanCargoesLists.pl xussr-electric.nml
 
 del xussr-electric.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
