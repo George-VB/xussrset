@@ -2,8 +2,8 @@
 
 #define PROP_epl9t_h_num  2
 #define PROP_epl9t_n_num  0
-#define PROP_epl9t_m_num  5
-#define PROP_epl9t_c_num  3
+#define PROP_epl9t_m_num  4
+#define PROP_epl9t_c_num  2
 
 #define PROP_epl9t_h_CF  9
 #define PROP_epl9t_h_RC  66
@@ -21,18 +21,23 @@
 #define PROP_epl9t_n_PR  0
 #define PROP_epl9t_n_CC  0
 
-#define IMAGEFILE  "src/emu/luhansk/EPL9t_h.png"
+#define IMAGEFILE  "src/emu/luhansk/EPL9t_h-part1.png"
 purchase_sprites_with_icon(epl9t_h, 18, 0, 25ac)
 MU_head_sprites(15, epl9t_h_v1_mu, 32, 40)
 MU_head_sprites(15, epl9t_h_v2_mu, 32, 308)
 MU_head_sprites(15, epl9t_h_v3_mu, 32, 576)
 #undef IMAGEFILE
-
+#define IMAGEFILE  "src/emu/luhansk/EPL9t_h-part2.png"
+MU_head_sprites(15, epl9t_h_v4_mu, 32, 40)
+MU_head_sprites(15, epl9t_h_v5_mu, 32, 308)
+#undef IMAGEFILE
 map_sprites(epl9t_purchase_sprites, epl9t_h_purchase_sprites)
 
 MU_power_template(epl9t_h_v1, epl9t_h)
 MU_power_template(epl9t_h_v2, epl9t_h)
 MU_power_template(epl9t_h_v3, epl9t_h)
+MU_power_template(epl9t_h_v4, epl9t_h)
+MU_power_template(epl9t_h_v5, epl9t_h)
 
 switch (FEAT_TRAINS, SELF, epl9t_h_sprites_left,
   cargo_subtype)
@@ -40,6 +45,8 @@ switch (FEAT_TRAINS, SELF, epl9t_h_sprites_left,
                    0: epl9t_h_v1_sprites_left;
     LV_UZ_ARENA_2000: epl9t_h_v2_sprites_left;
   LV_UZ_CITY_EXPRESS: epl9t_h_v3_sprites_left;
+     LV_UZ_EURO_2012: epl9t_h_v4_sprites_left;
+  LV_UZ_KYIVPASTRANS: epl9t_h_v5_sprites_left;
   align_15_sprites;
 }
 
@@ -49,6 +56,8 @@ switch (FEAT_TRAINS, SELF, epl9t_h_sprites_right,
                    0: epl9t_h_v1_sprites_right;
     LV_UZ_ARENA_2000: epl9t_h_v2_sprites_right;
   LV_UZ_CITY_EXPRESS: epl9t_h_v3_sprites_right;
+     LV_UZ_EURO_2012: epl9t_h_v4_sprites_right;
+  LV_UZ_KYIVPASTRANS: epl9t_h_v5_sprites_right;
   align_15_sprites;
 }
 
@@ -76,17 +85,13 @@ switch (FEAT_TRAINS, PARENT, epl9t_can_attach_wagon,
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
-switch (FEAT_TRAINS, PARENT, epl9t_h_start_stop,
-  count_veh_id(epl9t_h))
-{
-  2: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
+  livery_template_base_list(epl9t_b2012, LV_UZ_EURO_2012)
 
-  livery_template_base_list(epl9t_a2012, LV_UZ_ARENA_2000)
+  livery_template_base_list3(epl9t_a2012, LV_UZ_EURO_2012, LV_UZ_ARENA_2000, LV_UZ_KYIVPASTRANS)
 
-  livery_template_base_list2(epl9t_a2022, LV_UZ_ARENA_2000, LV_UZ_CITY_EXPRESS)
-livery_template_service_year2_ao(epl9t, 2012, 2022)
+  livery_template_base_list4(epl9t_a2022, LV_UZ_EURO_2012, LV_UZ_ARENA_2000, LV_UZ_KYIVPASTRANS, LV_UZ_CITY_EXPRESS)
+livery_template_service_year2(epl9t, 2012, 2022)
+MU_start_stop_template_even(epl9t_h, epl9t_h)
 engine_capacity_MU(epl9t_h, PROP_epl9t_h_CC, epl9t_h)
 
 RC_head_check(epl9t_h, epl9t_h)
