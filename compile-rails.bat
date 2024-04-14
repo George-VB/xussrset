@@ -57,6 +57,8 @@ scripts\change.pl xussr-rails.nml "\; " "\;\n"
 
 del xussr-rails.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
+rem -s если нужен trace ошибки 
+
 if /i not %errorlevel% == 0 goto :Error
 :: копируем, если задан путь
 if /i not "%GRFFOLDER%" == "" (
