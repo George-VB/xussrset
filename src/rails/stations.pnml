@@ -15,6 +15,60 @@ template object_advanced_template(x, y, dx, dy)
  (nearby_tile_same_grf(off_len, off_plat) == 1)
  */
 
+ /// railtypetable
+
+// Список меток типов рельсов
+railtypetable {
+  RAIL, ELRL,
+// автономная
+  RLA0, RLA1, RLA2, RLA3, RLA4,
+// переменного тока 25 кВ 50 Гц
+  ERA0, ERA1, ERA2, ERA3, ERA4,
+// переменного тока 15 кВ 50 Гц
+  ERa0, ERa1, ERa2, ERa3, ERa4,
+// постоянного тока 3 кВ
+  ERD0, ERD1, ERD2, ERD3, ERD4,
+// постоянного тока 1,5 кВ
+  ERd0, ERd1, ERd2, ERd3, ERd4,
+// многосистемные
+// 2S = A + D (3 кВ + 25 кВ)
+  ER2S,
+// 2D = D + d (1,5 кВ + 3 кВ)
+  ER2D,
+// метро
+  SW1L, SW1R
+}
+
+switch(FEAT_STATIONS, SELF, calculate_rail_type,
+[ STORE_TEMP(((track_type == railtype("RLA0")) ||
+              (track_type == railtype("ERA0")) ||
+              (track_type == railtype("ERa0")) ||
+              (track_type == railtype("ERD0")) ||
+              (track_type == railtype("ERd0"))) * 1 +
+             ((track_type == railtype("RLA1")) ||
+              (track_type == railtype("ERA1")) ||
+              (track_type == railtype("ERa1")) ||
+              (track_type == railtype("ERD1")) ||
+              (track_type == railtype("ERd1"))) * 2 +
+             ((track_type == railtype("RLA1")) ||
+              (track_type == railtype("ERA1")) ||
+              (track_type == railtype("ERa1")) ||
+              (track_type == railtype("ERD1")) ||
+              (track_type == railtype("ERd1"))) * 3 +
+             ((track_type == railtype("RLA1")) ||
+              (track_type == railtype("ERA1")) ||
+              (track_type == railtype("ERa1")) ||
+              (track_type == railtype("ERD1")) ||
+              (track_type == railtype("ERd1"))) * 4 +
+             ((track_type == railtype("RLA1")) ||
+              (track_type == railtype("ERA1")) ||
+              (track_type == railtype("ERa1")) ||
+              (track_type == railtype("ERD1")) ||
+              (track_type == railtype("ERd1"))) * 5 +
+             (track_type == railtype("SW1L")) * 6 +
+             (track_type == railtype("SW1R")) * 7, 4) ] )
+{ return; }
+
 #include "stations/platform-high.pnml"
 #include "stations/platform-low.pnml"
 #include "stations/crossing.pnml"

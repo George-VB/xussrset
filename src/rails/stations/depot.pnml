@@ -30,6 +30,8 @@ spriteset(depot_fronts, "src/rails/stations/depot.png")
   abstract_template(2 + 80*5, 2 + 55*4, 64, 53, -1,     -22-15)
   abstract_template(2 + 80*6, 2 + 55*4, 64, 53, -31-30, -22-15)
   abstract_template(2 + 80*7, 2 + 55*4, 64, 53, -1,     -22-15)
+
+  abstract_template(2 + 80*9, 2 + 55*1, 64, 53, -31,    -22)  // menu
 }
 spriteset(depot_glasses, "src/rails/stations/depot.png")
 {
@@ -85,11 +87,12 @@ spriteset(depot_doors, "src/rails/stations/depot.png")
   abstract_template(DOORS_X_OFFSET + 9*4, DOORS_Y_OFFSET + 34, 7, 15, -9, -7)
 }
 
-
 // Registers:
 // 0 - depot on Back side / Front side
 // 1 - rails on Back side / Front side (depot + rilas front)
 // 2 - depot on Forvard
+// 3 - purchase
+// 4 - railtype
 
 switch(FEAT_STATIONS, SELF, calculate_depot,
 [ STORE_TEMP( (check_station_id_non_perp(0,-1, depot))  +
@@ -104,8 +107,16 @@ switch(FEAT_STATIONS, SELF, calculate_depot,
                   (check_station_id_non_perp(1,1, depot) &&
                    check_station_id_non_perp(1,0, depot) ) ) &&
                 (check_station_id_non_perp(0,1, depot) ) ) * 2, 1),
-  STORE_TEMP(check_station_id_non_perp(1,0, depot), 2) ] )
-{ return; }
+  STORE_TEMP(check_station_id_non_perp(1,0, depot), 2),
+  STORE_TEMP(0, 3) ] )
+{ calculate_rail_type; }
+
+switch(FEAT_STATIONS, SELF, calculate_depot_menu,
+[ STORE_TEMP(0, 0),
+  STORE_TEMP(0, 1),
+  STORE_TEMP(0, 2),
+  STORE_TEMP(1, 3) ] )
+{ calculate_rail_type; }
 
 spritelayout depot_X {
   ground {
@@ -113,13 +124,31 @@ spritelayout depot_X {
   }
   childsprite {
     hide_sprite: (LOAD_TEMP(1) & 0x01) == 0x00;
-         sprite: double_rails(0);
+         sprite: double_rails(0 + LOAD_TEMP(4) * SPRITE_DOUBLE_RAIL);
     always_draw: 1;
   }
   childsprite {
     hide_sprite: (LOAD_TEMP(1) & 0x02) == 0x00;
-         sprite: double_rails(2);
+         sprite: double_rails(2 + LOAD_TEMP(4) * SPRITE_DOUBLE_RAIL);
     always_draw: 1;
+  }
+  building {  // menu
+          xoffset: 0;
+          yoffset: 0;
+          zoffset: 0;
+          xextent: 16;
+          yextent: 16;
+          zextent: 16;
+      hide_sprite: ! LOAD_TEMP(3);
+           sprite: depot_fronts(26);
+    recolour_mode: RECOLOUR_REMAP;
+          palette: PALETTE_USE_DEFAULT;
+  }
+  childsprite {
+      hide_sprite: ! LOAD_TEMP(3);
+           sprite: depot_glasses(6);
+    recolour_mode: RECOLOUR_TRANSPARENT;
+          palette: PALETTE_TRANSPARENT;
   }
   building {  // back wall
           xoffset: 0;
@@ -128,7 +157,7 @@ spritelayout depot_X {
           xextent: 16;
           yextent: 1;
           zextent: 16;
-      hide_sprite: LOAD_TEMP(2) & ((LOAD_TEMP(0) & 0x01) == 0x01);
+      hide_sprite: LOAD_TEMP(3) || (LOAD_TEMP(2) & ((LOAD_TEMP(0) & 0x01) == 0x01));
            sprite: depot_backs(LOAD_TEMP(2) ? 0                   :
                                (LOAD_TEMP(0) & 0x01) == 0x00 ? 2  :
                                (LOAD_TEMP(1) & 0x01) == 0x00 ? 4  : 6);
@@ -138,7 +167,7 @@ spritelayout depot_X {
   childsprite {
            xoffset: 2;
            yoffset: 4;
-       hide_sprite: LOAD_TEMP(2) || ((LOAD_TEMP(1) & 0x01) == 0x00);
+       hide_sprite: LOAD_TEMP(3) || LOAD_TEMP(2) || ((LOAD_TEMP(1) & 0x01) == 0x00);
             sprite: depot_doors(14);
      recolour_mode: RECOLOUR_REMAP;
            palette: PALETTE_USE_DEFAULT;
@@ -146,7 +175,7 @@ spritelayout depot_X {
   childsprite {
           xoffset: 3 + ((LOAD_TEMP(0) & 0x01) == 0x00) * 6;
           yoffset: 2 + ((LOAD_TEMP(0) & 0x01) == 0x00) * 21;
-      hide_sprite: LOAD_TEMP(2);
+      hide_sprite: LOAD_TEMP(3) || LOAD_TEMP(2);
            sprite: depot_doors(animation_frame >= 10 ? - 5 + animation_frame  : 9 - animation_frame);
     recolour_mode: RECOLOUR_REMAP;
           palette: PALETTE_USE_DEFAULT;
@@ -158,7 +187,7 @@ spritelayout depot_X {
           xextent: 16;
           yextent: 1;
           zextent: 16;
-      hide_sprite: LOAD_TEMP(2);
+      hide_sprite: LOAD_TEMP(3) || LOAD_TEMP(2);
            sprite: depot_fronts(LOAD_TEMP(0) == 0 ? 0                                        :
                                 LOAD_TEMP(0) == 1 ? 2 + ((LOAD_TEMP(1) & 0x01) == 0x01) * 2  :
                                 LOAD_TEMP(0) == 2 ? 6 + ((LOAD_TEMP(1) & 0x02) == 0x02) * 2  :
@@ -167,7 +196,7 @@ spritelayout depot_X {
           palette: PALETTE_USE_DEFAULT;
   }
   childsprite {
-      hide_sprite: LOAD_TEMP(2);
+      hide_sprite: LOAD_TEMP(3) || LOAD_TEMP(2);
            sprite: depot_glasses(0 + LOAD_TEMP(0) * 2);
     recolour_mode: RECOLOUR_TRANSPARENT;
           palette: PALETTE_TRANSPARENT;
@@ -175,6 +204,7 @@ spritelayout depot_X {
   childsprite {
           xoffset: 24;
           yoffset: 32;
+      hide_sprite: LOAD_TEMP(3) || LOAD_TEMP(2);
            sprite: depot_doors(animation_frame >= 10 ? animation_frame  : 14 - animation_frame);
     recolour_mode: RECOLOUR_REMAP;
           palette: PALETTE_USE_DEFAULT;
@@ -182,7 +212,7 @@ spritelayout depot_X {
   childsprite {
            xoffset: 25;
            yoffset: 30;
-       hide_sprite: LOAD_TEMP(2) || ((LOAD_TEMP(1) & 0x02) == 0x00);
+       hide_sprite: LOAD_TEMP(3) || LOAD_TEMP(2) || ((LOAD_TEMP(1) & 0x02) == 0x00);
             sprite: depot_doors(9);
      recolour_mode: RECOLOUR_REMAP;
            palette: PALETTE_USE_DEFAULT;
@@ -194,13 +224,13 @@ spritelayout depot_X {
           xextent: 16;
           yextent: 1;
           zextent: 16;
-      hide_sprite: ! LOAD_TEMP(2);
+      hide_sprite: LOAD_TEMP(3) || (! LOAD_TEMP(2));
            sprite: depot_fronts(18 + LOAD_TEMP(0) * 2);
     recolour_mode: RECOLOUR_REMAP;
           palette: PALETTE_USE_DEFAULT;
   }
   childsprite {
-      hide_sprite: ! LOAD_TEMP(2);
+      hide_sprite: LOAD_TEMP(3) || (! LOAD_TEMP(2));
            sprite: depot_glasses(8 + LOAD_TEMP(0) * 2);
     recolour_mode: RECOLOUR_TRANSPARENT;
           palette: PALETTE_TRANSPARENT;
@@ -213,12 +243,12 @@ spritelayout depot_Y {
   }
   childsprite {
     hide_sprite: (LOAD_TEMP(1) & 0x01) == 0x00;
-         sprite: double_rails(1);
+         sprite: double_rails(1 + LOAD_TEMP(4) * SPRITE_DOUBLE_RAIL);
     always_draw: 1;
   }
   childsprite {
     hide_sprite: (LOAD_TEMP(1) & 0x02) == 0x00;
-         sprite: double_rails(3);
+         sprite: double_rails(3 + LOAD_TEMP(4) * SPRITE_DOUBLE_RAIL);
     always_draw: 1;
   }
   building {  // back wall
@@ -334,9 +364,10 @@ item(FEAT_STATIONS, depot) {
    animation_triggers: bitmask(STAT_ANIM_250_TICKS);
   }
   graphics {
-       anim_control: return CB_RESULT_START_ANIMATION;
-    anim_next_frame: depot_anim_next_frame;
-     prepare_layout: calculate_depot();
-     sprite_layouts: [depot_X, depot_Y];
+               anim_control: return CB_RESULT_START_ANIMATION;
+            anim_next_frame: depot_anim_next_frame;
+             prepare_layout: calculate_depot();
+    purchase_prepare_layout: calculate_depot_menu();
+             sprite_layouts: [depot_X, depot_Y];
   }
 }
