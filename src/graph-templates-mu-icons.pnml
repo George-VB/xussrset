@@ -771,4 +771,22 @@ switch (FEAT_TRAINS, SELF, name,                                                
  18: icon18;                                                                                                                     \
      next; }                                                                                                                     \
 
+// использовать иконку для рефита
+#define MU_attach_wagon_icon_loco(name, base)                                                               \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_loco1,                                                      \
+  (getbits(extra_callback_info1, 0, 8) >= 0x10) &&                                                          \
+  (getbits(extra_callback_info1, 0, 8) < 0x20) &&                                                           \
+   enable_icons )                                                                                           \
+{ 1: icon_sprites_loco;                                                                                     \
+     return CB_FAILED; }                                                                                    \
+switch (FEAT_TRAINS, PARENT, name##_sprites_start_loco0,                                                    \
+[ STORE_TEMP(CB_FLAG_MORE_SPRITES | (is_wrong_combination() ? PALETTE_CC_RED  : PALETTE_CC_GREEN), 0x100),  \
+  getbits(extra_callback_info1, 8, 8)])                                                                     \
+{ 0..6: name##_sprites_start;                                                                               \
+     7: name##_sprites_start_loco1;                                                                         \
+     return CB_FAILED; }                                                                                    \
+switch (FEAT_TRAINS, SELF, name##_sprites_start_loco, cargo_subtype >= 0xE0)                                \
+{ 1: name##_sprites_start_loco0;                                                                            \
+     base; }                                                                                                \
+
 // end
