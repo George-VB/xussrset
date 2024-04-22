@@ -5,7 +5,7 @@ use locale;
 use POSIX qw (locale_h);
 use Encode;
 
-my($todir) = ('c:/YandexDisk/My/-todelete/xUSSRset/'); 
+my($todir) = ('C:/Users/GVBagaev/GoogleDriveMain/NML/xUSSR/'); 
 if(defined($ENV{"YDPATH"}) && 
    ($ENV{"YDPATH"} ne "") &&
    (-e $ENV{"YDPATH"}) &&
