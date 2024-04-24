@@ -9,37 +9,37 @@
 
 // некорректные составы (собранные из разных сетов)
 
-switch (FEAT_TRAINS, PARENT, wrong_consist_start_stop,
+switch (FEAT_TRAINS, PARENT, wrong_consist_start_stop_diesel,
   is_wrong_consist())
 {
   1: return string(STR_START_STOP_WRONG_CONSIST);
      return CB_RESULT_NO_TEXT;
 }
 
-switch (FEAT_TRAINS, PARENT, any_start_stop_mid,
+switch (FEAT_TRAINS, PARENT, any_start_stop_mid_diesel,
 [  set_offset_to(num_vehs_in_consist-2),
    all_mid_section_diesel()])
 {
   1: return string(STR_START_STOP_MIDDLE_MUST_NOT_BE_LAST);
-     wrong_consist_start_stop;
+     wrong_consist_start_stop_diesel;
 }
 
 // некорректные грузы
 
-switch (FEAT_TRAINS, PARENT, any_start_stop,
+switch (FEAT_TRAINS, PARENT, any_start_stop_diesel,
   has_inadmissible_cargo())
 {
   1: return string(STR_START_STOP_INADMISSIBLE_CARGO);
-     return any_start_stop_mid;
+     return any_start_stop_mid_diesel;
 }
 
-switch (FEAT_TRAINS, SELF, any_start_stop_with_lines_only,
+switch (FEAT_TRAINS, SELF, any_start_stop_diesel_with_lines_only,
   (cargo_subtype >= 0xE0) &&
   (current_year >= GREAT_CHANGE_YEAR) &&
   (position_in_consist == 0))
 {
   1: return string(STR_START_STOP_RED_LINES_REQUIRED);
-     any_start_stop;
+     any_start_stop_diesel;
 }
 
 // Специальная проверка для управления присоединением 3ТЭ10М, 3ТЭ10У, 4ТЭ10С, 3М62У и других со средней секцией
@@ -52,7 +52,7 @@ switch (FEAT_TRAINS, PARENT, _4te10s_buster_required,
      return string(STR_CAN_ATTACH_MISS_MIDDLE_UNIT);
 }
 
-switch (FEAT_TRAINS, PARENT, other_can_attach_wagon,
+switch (FEAT_TRAINS, PARENT, other_can_attach_wagon_diesel,
 [  set_offset_to(num_vehs_in_consist-2),
    ( all_mid_section_diesel() +
      ((prev_vehicle_type_id() == _4te10s) * 2)) ])
@@ -204,7 +204,7 @@ switch (FEAT_TRAINS, PARENT, m_3te28_can_attach_wagon_h,
 
 // choose the block to use
 
-switch (FEAT_TRAINS, SELF, any_can_attach_wagon,
+switch (FEAT_TRAINS, SELF, any_can_attach_wagon_diesel,
 [   STORE_TEMP(vehicle_type_id, 5),
    vehicle_type_id])
 {
@@ -232,5 +232,5 @@ switch (FEAT_TRAINS, SELF, any_can_attach_wagon,
     _3te28: m_3te28_can_attach_wagon_h;
   _3te28_m: m_3te28_can_attach_wagon_m;
 
-               other_can_attach_wagon;
+               other_can_attach_wagon_diesel;
 }
