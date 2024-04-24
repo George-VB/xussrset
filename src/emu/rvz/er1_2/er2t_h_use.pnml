@@ -1,0 +1,157 @@
+﻿// er2t uses er2r
+
+#define PROP_er2t_h_num  2
+#define PROP_er2t_n_num  0
+#define PROP_er2t_m_num  5
+#define PROP_er2t_c_num  3
+
+#define PROP_er2t_h_CF  14
+#define PROP_er2t_h_RC  106
+#define PROP_er2t_h_SD  130
+#define PROP_er2t_h_WT  42.3
+#define PROP_er2t_h_TE  0
+#define PROP_er2t_h_PR  0
+#define PROP_er2t_h_CC  85
+
+#define PROP_er2t_n_CF  0
+#define PROP_er2t_n_RC  0
+#define PROP_er2t_n_SD  0
+#define PROP_er2t_n_WT  0
+#define PROP_er2t_n_TE  0
+#define PROP_er2t_n_PR  0
+#define PROP_er2t_n_CC  0
+
+#define IMAGEFILE  "src/emu/rvz/er1_2/er2t_h.png"
+MU_head_sprites(12, er2t_h_v8_mu,  32, 40)
+#undef IMAGEFILE
+
+MU_power_template_reuse(er2t_h_v1, er2r_h_v1, er2t_h)
+MU_power_template_reuse(er2t_h_v2, er2r_h_v2, er2t_h)
+MU_power_template_reuse(er2t_h_v3, er2r_h_v3, er2t_h)
+MU_power_template_reuse(er2t_h_v4, er2r_h_v4, er2t_h)
+MU_power_template_reuse(er2t_h_v5, er2r_h_v5, er2t_h)
+MU_power_template_reuse(er2t_h_v6, er2r_h_v6, er2t_h)
+MU_power_template_reuse(er2t_h_v7, er2r_h_v7, er2t_h)
+MU_power_template(er2t_h_v8, er2t_h)
+map_sprites(er2t_purchase_sprites, er2r_h_purchase_sprites)
+
+switch (FEAT_TRAINS, SELF, er2t_h_sprites_left,
+  cargo_subtype)
+{
+                         0: er2t_h_v1_sprites_left;
+                LV_RAL6002: er2t_h_v1_sprites_left;
+                LV_RAL6020: er2t_h_v2_sprites_left;
+         LV_MOSCOW_RAILWAY: er2t_h_v3_sprites_left;
+        LV_OCTOBER_RAILWAY: er2t_h_v4_sprites_left;
+  LV_WEST_SIBERIAN_RAILWAY: er2t_h_v5_sprites_left;
+      LV_UKRAINIAN_RAILWAY: er2t_h_v6_sprites_left;
+                    LV_LDZ: er2t_h_v7_sprites_left;
+        LV_UZ_CITY_EXPRESS: er2t_h_v8_sprites_left;
+  align_12_sprites;
+}
+
+switch (FEAT_TRAINS, SELF, er2t_h_sprites_right,
+  cargo_subtype)
+{
+                         0: er2t_h_v1_sprites_right;
+                LV_RAL6002: er2t_h_v1_sprites_right;
+                LV_RAL6020: er2t_h_v2_sprites_right;
+         LV_MOSCOW_RAILWAY: er2t_h_v3_sprites_right;
+        LV_OCTOBER_RAILWAY: er2t_h_v4_sprites_right;
+  LV_WEST_SIBERIAN_RAILWAY: er2t_h_v5_sprites_right;
+      LV_UKRAINIAN_RAILWAY: er2t_h_v6_sprites_right;
+                    LV_LDZ: er2t_h_v7_sprites_right;
+        LV_UZ_CITY_EXPRESS: er2t_h_v8_sprites_right;
+  align_12_sprites;
+}
+
+engine_direction_template3m2(er2t_h, er2t_h,  er2t_m, er2t_c)
+MU_attach_wagon_icon_template_only(er2t_h, er2t_h, type_head, type_car_motor_pant_add_mandatory)
+long_vehicle_advanced(er2t_h, er2t_h_sprites_start_sp)
+
+EMU_4681012_can_attach_wagon_template(er2t, er2t_h, er2t_m, er2t_c)
+EMU_attach_calculation_template(er2t, er2t_h, er2t_m, er2t_c)
+
+switch (FEAT_TRAINS, SELF, er2t_can_attach_wagon1,
+  vehicle_type_id)
+{
+  er2t_h: er2t_can_attach_wagon_template;
+  er2t_m: er2t_can_attach_wagon_template;
+  er2t_c: er2t_can_attach_wagon_template;
+          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+}
+
+switch (FEAT_TRAINS, PARENT, er2t_can_attach_wagon,
+  count_veh_id(er2t_h))
+{
+  0: return string(STR_CAN_ATTACH_HEAD_ONLY);
+  1: er2t_can_attach_wagon1;
+     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+}
+
+switch (FEAT_TRAINS, PARENT, er2t_h_start_stop,
+  count_veh_id(er2t_h))
+{
+  2: return CB_RESULT_NO_TEXT;
+     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
+}
+
+livery_template_base_list8(er2t, LV_RAL6020,  LV_RAL6002, LV_MOSCOW_RAILWAY, LV_OCTOBER_RAILWAY, LV_WEST_SIBERIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_LDZ, LV_UZ_CITY_EXPRESS)
+
+engine_capacity_MU(er2t_h, PROP_er2t_h_CC, er2t_h)
+
+RC_head_check(er2t_h, er2t_h)
+switch (FEAT_TRAINS, SELF, er2t_h_running_cost_factor,
+[  STORE_TEMP(60, 0),  // Моторы
+   STORE_TEMP(8, 1),   // Бригада
+   STORE_TEMP(21, 2),  // Износ
+   STORE_TEMP(0, 3),   // Сопровождение
+   STORE_TEMP(15, 4),  // ТО
+   STORE_TEMP(1, 5),   // Сертификация
+
+   STORE_TEMP(PROP_er2t_h_SD, 6),                                // Скорость
+   STORE_TEMP(round(PROP_er2t_h_WT), 7),                         // Тара
+   STORE_TEMP(round(PROP_er2t_h_WT + PROP_er2t_h_CC / 16), 8)])  // Максимальная масса
+{ er2t_h_check_running_cost_factor; }                            // 106
+
+name_in_group_subgroup(er2t_h, string(STR_NAME_IN_GROUP, string(STR_NAME_ER2_SERIES), string(STR_NAME_ER2T_H)),
+                               string(STR_NAME_IN_GROUP, string(STR_NAME_ER2_SERIES), string(STR_LONGNAME_ER2T_H)),
+                               string(STR_NAME_ER2T))
+
+hint_MU(er2t_h,
+     calc_loading(PROP_er2t_h_CC / (2 * DOUBLE_DOOR)),
+     STR_PURCHASE_HINT_CAP_00033_VERY_FAST,
+     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC,
+     STR_SECTIONS_EMU_4_6_8_10_12,
+     1987, 1997,
+     fact_rigacw())
+map_sprites(er2t_additional_text, er2t_h_additional_text)
+
+item (FEAT_TRAINS, er2t_h, 498) {
+  property {
+    name: string(STR_NAME_ER2T_H);
+    vehicle_dates(1987, 1997, 30, 10, 8, PROP_er2t_h_CF)
+    vehicle_emu_c(dc, PROP_er2t_h_WT, PROP_er2t_h_CC, 2 * DOUBLE_DOOR, )
+    vehicle_group(group_er2)
+  }
+  graphics {
+    purchase_menu(PROP_er2t_h_CF, PROP_er2t_h_RC, PROP_er2t_h_SD, PROP_er2t_h_WT, PROP_er2t_h_TE, PROP_er2t_h_PR, PROP_er2t_h_CC)
+        additional_text: er2t_h_additional_text;
+       articulated_part: articulated_part_dummy4;
+       can_attach_wagon: er2t_can_attach_wagon;
+       cargo_age_period: return CAP_00033_VERY_FAST;
+         cargo_capacity: er2t_h_cargo_capacity;
+     cargo_subtype_text: er2t_cargo_subtype_text;
+         colour_mapping: any_cc_colour;
+                default: er2t_h_sprites;
+                   name: er2t_h_name;
+                  power: return 0;
+               purchase: er2r_h_purchase_sprites;
+    running_cost_factor: er2t_h_running_cost_factor;
+                  speed: speed_after30_130to110;
+             start_stop: er2t_h_start_stop;
+  }
+}
+
+long_name_template(er2t_h, STR_LONGNAME_ER2T_H)
+allow_dcemu(er2t_h)

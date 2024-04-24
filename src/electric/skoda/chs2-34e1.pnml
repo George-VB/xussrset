@@ -1,0 +1,115 @@
+﻿// chs2_34e1 (003-004)
+
+#define PROP_chs2_34e1_CF  71
+#define PROP_chs2_34e1_RC  516
+#define PROP_chs2_34e1_SD  160
+#define PROP_chs2_34e1_WT  125
+#define PROP_chs2_34e1_TE  264.7
+#define PROP_chs2_34e1_PR  4917
+#define PROP_chs2_34e1_CC  0
+
+#define IMAGEFILE  "src/electric/skoda/chs2-34e1.png"
+purchase_sprites_with_icon(chs2_34e1, 018, 0, 3dc)
+electric1_2_sprites(11, chs2_34e1_v1, 32,  40)  // factory
+electric1_2_sprites(11, chs2_34e1_v2, 32, 241)  // factory after 1972
+electric1_2_sprites(11, chs2_34e1_v3, 32, 442)  // avrora
+electric1_2_sprites(11, chs2_34e1_v4, 32, 643)  // RAL7010 (62) after 1972
+electric1_2_sprites(11, chs2_34e1_v5, 32, 844)  // RAL5023 (9D) after 1972
+#undef IMAGEFILE
+
+switch (FEAT_TRAINS, SELF, chs2_34e1_sprites_start_green,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: chs2_34e1_v1_sprites_start;
+     chs2_34e1_v2_sprites_start;
+}
+
+switch (FEAT_TRAINS, SELF, chs2_34e1_sprites_start,
+  cargo_subtype)
+{
+          0: chs2_34e1_sprites_start_green;
+          1: chs2_34e1_v4_sprites_start;
+          2: chs2_34e1_v5_sprites_start;
+  LV_AURORA: chs2_34e1_v3_sprites_start;
+       0xE0: chs2_34e1_sprites_start_green;
+       0xE1: chs2_34e1_v3_sprites_start;
+       0xE2: chs2_34e1_v4_sprites_start;
+       0xE3: chs2_34e1_v5_sprites_start;
+             align_10_sprites;
+}
+
+long_vehicle(chs2_34e1)
+
+  livery_template_base_list(chs2_34e1_b1964, LV_AURORA)
+
+  livery_template_refit2(chs2_34e1_a1964, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_SME_SUPPORT, STR_REFIT_FACTORY, STR_REFIT_LV_AURORA, chs2_34e1_b1964_cargo_subtype_text)
+
+      livery_template_base_list(chs2_34e1_aGREAT_CHANGE_YEAR_refit_alt, LV_AURORA)
+    livery_template_alt2(chs2_34e1_aGREAT_CHANGE_YEAR_refit, STR_REFIT_TTD_62, STR_REFIT_TTD_9D)
+  livery_template_refit4(chs2_34e1_aGREAT_CHANGE_YEAR, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_WITH_SME_SUPPORT, STR_REFIT_FACTORY, STR_REFIT_LV_AURORA, STR_REFIT_TTD_62, STR_REFIT_TTD_9D, chs2_34e1_aGREAT_CHANGE_YEAR_refit_cargo_subtype_text)
+livery_template_service_year2(chs2_34e1, 1964, GREAT_CHANGE_YEAR)
+
+engine_electric1_2_effect(chs2_34e1_create_effect, -2, 5)
+engine_speed_with_reduce(chs2_34e1, PROP_chs2_34e1_SD, 130, 30)
+
+switch (FEAT_TRAINS, SELF, chs2_34e1_running_cost_factor,
+[  STORE_TEMP(294, 0),  // Моторы
+   STORE_TEMP(41, 1),   // Бригада
+   STORE_TEMP(103, 2),  // Износ
+   STORE_TEMP(0, 3),    // Сопровождение
+   STORE_TEMP(72, 4),   // ТО
+   STORE_TEMP(5, 5),    // Сертификация
+
+   STORE_TEMP(PROP_chs2_34e1_SD, 6),          // Скорость
+   STORE_TEMP(round(PROP_chs2_34e1_WT), 7),   // Тара
+   STORE_TEMP(round(PROP_chs2_34e1_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }                  // 516
+
+name_in_group(chs2_34e1, string(STR_NAME_IN_GROUP, string(STR_NAME_CHS2_SERIES), string(STR_NAME_CHS2_34E1)),
+                         string(STR_NAME_IN_GROUP, string(STR_NAME_CHS2_SERIES), string(STR_LONGNAME_CHS2_34E1)))
+
+hint_engine_in(chs2_34e1_b1964,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1962,
+     fact_skoda())
+hint_engine_in_comment(chs2_34e1_a1964,
+     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_ELECTRIC_DC,
+     STR_PURCHASE_HINT_SECTIONS_1,
+     1962,
+     fact_skoda(),
+     string(STR_PURCHASE_HINT_EDITION_NEW_SECTIONS,
+            string(STR_PURCHASE_HINT_SECTIONS_1_2)))
+hint_change_pre_after(chs2_34e1, 1964)
+
+item (FEAT_TRAINS, chs2_34e1, 937) {
+  property {
+    name: string(STR_NAME_CHS2_34E1);
+    vehicle_dates(1962, 1962, 30, 10, 8, PROP_chs2_34e1_CF)
+    vehicle_pass()
+    vehicle_dcelectric(PROP_chs2_34e1_PR, PROP_chs2_34e1_WT, PROP_chs2_34e1_TE, _highspeed)
+    vehicle_group(group_chs2)
+  }
+  graphics {
+    purchase_menu(PROP_chs2_34e1_CF, PROP_chs2_34e1_RC, PROP_chs2_34e1_SD, PROP_chs2_34e1_WT, PROP_chs2_34e1_TE, PROP_chs2_34e1_PR, PROP_chs2_34e1_CC)
+         additional_text: chs2_34e1_additional_text;
+        articulated_part: articulated_part_dummy3;
+    bitmask_vehicle_info: chs2_25e0_bitmask_vehicle_info_advanced;
+        can_attach_wagon: any_can_attach_wagon_electric;
+          cargo_capacity: return 0;
+      cargo_subtype_text: chs2_34e1_cargo_subtype_text;
+          colour_mapping: any_cc_colour;
+           create_effect: chs2_34e1_create_effect;
+                 default: chs2_34e1_sprites;
+                    name: chs2_34e1_name;
+                purchase: chs2_34e1_purchase_sprites;
+              refit_cost: chs2_25e0_refit_cost;
+     running_cost_factor: chs2_34e1_running_cost_factor;
+                   speed: chs2_34e1_speed;
+              start_stop: any_start_stop_electric;
+  }
+}
+
+long_name_template(chs2_34e1, STR_LONGNAME_CHS2_34E1)
+models_default_cargo_template_pass(chs2_34e1)
+allow_dcelectric(chs2_34e1)

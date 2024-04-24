@@ -92,7 +92,7 @@ goto :EOF
 :WriteCustomTags
 echo VERSION  :%REPO_REVISION%
 echo MIN_COMPATIBLE_REVISION:%MIN_COMPATIBLE_REVISION%
-echo TITLE    :xUSSR Railway Set 0.9-dev.r%REPO_REVISION%
+echo TITLE    :xUSSR Railway Set 0.8.2.r%REPO_REVISION%
 echo FILENAME :%NMLNAME%.grf
 goto :EOF
 
@@ -151,7 +151,7 @@ set timetot3=0%timetot3%
 set timetot3=%timetot3:~-2%
 rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
-echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
+echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres% %NMLNAME%>>compile.stat
 
 cd src 
 start /min ..\scripts\MonaLisa.pl 

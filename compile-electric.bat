@@ -56,6 +56,7 @@ scripts\change.pl xussr-electric.nml "\s*\}\s*" "\n\}\n"
 scripts\change.pl xussr-electric.nml "\;" "\;\n"
 scripts\change.pl xussr-electric.nml "\n\r*\n" "\n"
 scripts\change.pl xussr-electric.nml "\{\s*([a-z0-9_ ]+);\s*\}" "{ $1; }"
+scripts\CleanCargoesLists.pl xussr-electric.nml
 
 del xussr-electric.bak
 nmlc --grf=%NMLNAME%.grf %NMLCOPTION% %NMLNAME%.nml
@@ -150,7 +151,7 @@ set timetot3=0%timetot3%
 set timetot3=%timetot3:~-2%
 rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
-echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile.stat
+echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres% %NMLNAME%>>compile.stat
 
 cd src 
 start /min ..\scripts\MonaLisa.pl 

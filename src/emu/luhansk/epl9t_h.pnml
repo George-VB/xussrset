@@ -2,8 +2,8 @@
 
 #define PROP_epl9t_h_num  2
 #define PROP_epl9t_n_num  0
-#define PROP_epl9t_m_num  5
-#define PROP_epl9t_c_num  3
+#define PROP_epl9t_m_num  4
+#define PROP_epl9t_c_num  2
 
 #define PROP_epl9t_h_CF  9
 #define PROP_epl9t_h_RC  66
@@ -21,68 +21,83 @@
 #define PROP_epl9t_n_PR  0
 #define PROP_epl9t_n_CC  0
 
-#define IMAGEFILE  "src/emu/luhansk/epl9t_h.png"
+#define IMAGEFILE  "src/emu/luhansk/epl9t_h-part1.png"
 purchase_sprites_with_icon(epl9t_h, 18, 0, 25ac)
 MU_head_sprites(15, epl9t_h_v1_mu, 32, 40)
-MU_head_sprites(15, epl9t_h_v2_mu, 32, 40)
+MU_head_sprites(15, epl9t_h_v2_mu, 32, 308)
+MU_head_sprites(15, epl9t_h_v3_mu, 32, 576)
 #undef IMAGEFILE
-
+#define IMAGEFILE  "src/emu/luhansk/epl9t_h-part2.png"
+MU_head_sprites(15, epl9t_h_v4_mu, 32, 40)
+MU_head_sprites(15, epl9t_h_v5_mu, 32, 308)
+#undef IMAGEFILE
 map_sprites(epl9t_purchase_sprites, epl9t_h_purchase_sprites)
 
-MU_power_template(epl9t_h_v1, epl9t_h)
-MU_power_template(epl9t_h_v2, epl9t_h)
+MU_power_template2(epl9t_h_v1, epl9t_h, epl9t_type2008_h)
+MU_power_template2(epl9t_h_v2, epl9t_h, epl9t_type2008_h)
+MU_power_template2(epl9t_h_v3, epl9t_h, epl9t_type2008_h)
+MU_power_template2(epl9t_h_v4, epl9t_h, epl9t_type2008_h)
+MU_power_template2(epl9t_h_v5, epl9t_h, epl9t_type2008_h)
 
 switch (FEAT_TRAINS, SELF, epl9t_h_sprites_left,
   cargo_subtype)
 {
-                     0: epl9t_h_v1_sprites_left;
-  LV_UKRAINIAN_RAILWAY: epl9t_h_v2_sprites_left;
-  align_12_sprites;
+                   0: epl9t_h_v1_sprites_left;
+    LV_UZ_ARENA_2000: epl9t_h_v2_sprites_left;
+  LV_UZ_CITY_EXPRESS: epl9t_h_v3_sprites_left;
+     LV_UZ_EURO_2012: epl9t_h_v4_sprites_left;
+  LV_UZ_KIEVPASTRANS: epl9t_h_v5_sprites_left;
+  align_15_sprites;
 }
 
 switch (FEAT_TRAINS, SELF, epl9t_h_sprites_right,
   cargo_subtype)
 {
-                     0: epl9t_h_v1_sprites_right;
-  LV_UKRAINIAN_RAILWAY: epl9t_h_v2_sprites_right;
-  align_12_sprites;
+                   0: epl9t_h_v1_sprites_right;
+    LV_UZ_ARENA_2000: epl9t_h_v2_sprites_right;
+  LV_UZ_CITY_EXPRESS: epl9t_h_v3_sprites_right;
+     LV_UZ_EURO_2012: epl9t_h_v4_sprites_right;
+  LV_UZ_KIEVPASTRANS: epl9t_h_v5_sprites_right;
+  align_15_sprites;
 }
 
-engine_direction_template3m2(epl9t_h, epl9t_h,  epl9t_m, epl9t_c)
-MU_attach_wagon_icon_template_only(epl9t_h, epl9t_h, type_head, type_car_motor_pant_add_mandatory)
+engine_direction_template4m2(epl9t_h, epl9t_h, epl9t_type2008_h,  epl9t_m, epl9t_c)
+MU_attach_wagon_icon_template2_only(epl9t_h, epl9t_h, epl9t_type2008_h, type_head, type_car_motor_pant_add_mandatory)
 long_vehicle_advanced(epl9t_h, epl9t_h_sprites_start_sp)
 
-EMU_4681012_can_attach_wagon_template(epl9t)
-EMU_attach_calculation_template(epl9t, epl9t_h, epl9t_m, epl9t_c)
+EMU_4681012_can_attach_wagon_template2set(epl9t, epl9t_h, epl9t_m, epl9t_c, epl9t_type2008_h, epl9t_type2008_m, epl9t_type2008_c)
+EMU_attach_calculation_template2set(epl9t, epl9t_h, epl9t_m, epl9t_c, epl9t_type2008_h, epl9t_type2008_m, epl9t_type2008_c)
 
 switch (FEAT_TRAINS, SELF, epl9t_can_attach_wagon1,
   vehicle_type_id)
 {
-  epl9t_h: epl9t_can_attach_wagon_template;
-  epl9t_m: epl9t_can_attach_wagon_template;
-  epl9t_c: epl9t_can_attach_wagon_template;
+           epl9t_h: epl9t_can_attach_wagon_template;
+  epl9t_type2008_h: epl9t_can_attach_wagon_template;
+           epl9t_m: epl9t_can_attach_wagon_template;
+  epl9t_type2008_m: epl9t_can_attach_wagon_template;
+           epl9t_c: epl9t_can_attach_wagon_template;
+  epl9t_type2008_c: epl9t_can_attach_wagon_template;
           return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, epl9t_can_attach_wagon,
-  count_veh_id(epl9t_h))
+  count_veh_id(epl9t_h) + count_veh_id(epl9t_type2008_h))
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
   1: epl9t_can_attach_wagon1;
      return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
-switch (FEAT_TRAINS, PARENT, epl9t_h_start_stop,
-  count_veh_id(epl9t_h))
-{
-  2: return CB_RESULT_NO_TEXT;
-     return string(STR_START_STOP_NUMBER_OF_HEAD_CAR_MUST_BE_EVEN);
-}
+  livery_template_base_list(epl9t_b2012, LV_UZ_EURO_2012)
 
-livery_template_base_list(epl9t, LV_UKRAINIAN_RAILWAY)
-engine_capacity_MU(epl9t_h, PROP_epl9t_h_CC, epl9t_h)
+  livery_template_base_list3(epl9t_a2012, LV_UZ_EURO_2012, LV_UZ_ARENA_2000, LV_UZ_KIEVPASTRANS)
 
-RC_head_check(epl9t_h, epl9t_h)
+  livery_template_base_list4(epl9t_a2022, LV_UZ_EURO_2012, LV_UZ_ARENA_2000, LV_UZ_KIEVPASTRANS, LV_UZ_CITY_EXPRESS)
+livery_template_service_year2(epl9t, 2012, 2022)
+MU_start_stop_template2_even(epl9t_h, epl9t_h, epl9t_type2008_h)
+engine_capacity_MU2(epl9t_h, PROP_epl9t_h_CC, epl9t_h, epl9t_type2008_h)
+
+RC_head_check2(epl9t_h, epl9t_h, epl9t_type2008_h)
 switch (FEAT_TRAINS, SELF, epl9t_h_running_cost_factor,
 [  STORE_TEMP(38, 0),  // Моторы
    STORE_TEMP(0, 1),   // Бригада
@@ -105,7 +120,7 @@ hint_MU(epl9t_h,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_AC,
      STR_SECTIONS_EMU_4_6_8_10_12,
      2001, 2008,
-     fact_rigacw())
+     fact_luhansk())
 map_sprites(epl9t_additional_text, epl9t_h_additional_text)
 
 item (FEAT_TRAINS, epl9t_h, 1308) {
