@@ -148,7 +148,7 @@ set timetot3=0%timetot3%
 set timetot3=%timetot3:~-2%
 rem более 24 часов не считает
 echo Total time: %timetot3%:%timetot2%:%timetot1%
-echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres%>>compile-rails.stat
+echo %datebeg% %timefin% - %timetot3%:%timetot2%:%timetot1% %compres% %NMLNAME%>>compile.stat
 
 cd src 
 start /min ..\scripts\MonaLisa.pl 
