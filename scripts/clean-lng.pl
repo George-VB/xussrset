@@ -69,6 +69,8 @@ sub wdirectory($)
 		closedir DIR;
 	}
 	foreach $t (@dirs) {
+		rename("$tt/$t", "$tt/".lc($t));
+		$t = lc($t);
 		if(not exists $nameallpngs{"$tt/$t"}) {
 			$nameallpngs{"$tt/$t"} = "";
 		} 
@@ -79,6 +81,8 @@ sub wdirectory($)
 	}
 
 	foreach $t (@dirs) {
+		rename("$tt/$t", "$tt/".lc($t));
+		$t = lc($t);
 		open(FFILE, "<:encoding(UTF-8)", "$dir/$t") || die "Can\'t read from $t\n";
 		if(not exists $nameallpnmls{"$tt/$t"}) {
 			$nameallpnmls{"$tt/$t"} = "";
