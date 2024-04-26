@@ -73,8 +73,9 @@ sub get_key_values($$$@) {
 # this function collects the key values from all the sections
 	my($search_key, $separator_master, $separator_slave, @sections) = (@_);
 	$search_key =~ s/$separator_master$//igs;
-	$search_key =~ s/^(\/\/|\#)//igs;
+	$search_key =~ s/^(\/\/|\#)\s*//igs;
 	$search_key =~ s/^\s*//igs;
+	$search_key =~ s/^UNUSED_//igs;
 	$search_key =~ s/\s*$//igs;
 	my($section, $key, $key2, @results, %keys);
 	my($has_comments, $result_key) = (0, "");
@@ -85,8 +86,9 @@ sub get_key_values($$$@) {
                         my($has_comments2) = (0);
 	                $key2 = $key;
 			$key2 =~ s/$separator_slave$//igs;
-			$has_comments2 = 1 if ($key2 =~ s/^(\/\/|\#)//igs);
+			$has_comments2 = 1 if ($key2 =~ s/^(\/\/|\#)\s*//igs);
 			$key2 =~ s/^\s*//igs;
+			$key2 =~ s/^UNUSED_//igs;
 			$key2 =~ s/\s*$//igs;
 			if($key2 eq $search_key) {
 		        	@results = (@results, @{$keys{$key}});
