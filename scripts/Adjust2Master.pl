@@ -105,7 +105,7 @@ sub parse_files($$) {
 	my($header_master, $footer_master, @sections_master) = (read_file($from_file, $key_separator_master));
 	my($header_slave, $footer_slave, @sections_slave) = (read_file($to_file, $key_separator_slave));
 # TODO because sections of the slave file are not used, transform slave sections into a single hash and use it, should be much faster
-	my($sec_number, $result, $section, %keys, $key, @values) = (1, "");
+	my($sec_number, $result, $dispaly_not_represented, $section, %keys, $key, @values) = (1, "", 1);
 	$result .= $header_slave;
 	foreach $section (@sections_master) {
 		%keys = %{$section};
@@ -141,7 +141,8 @@ sub parse_files($$) {
 			if($key ne "-Section-Header-") {
 				@values = get_key_values($key, $key_separator_slave, $key_separator_master, @sections_master);
 				if(scalar(@values) == 2) {
-					$result .= "$comment_format Value is not represented in the master file\n";
+					$result .= "$comment_format Value is not represented in the master file\n" if ($dispaly_not_represented == 1);
+					$dispaly_not_represented = 0;
 					$result .= "$key" . join("\n$key", @{$keys{$key}}) . "\n";
 				} 
 			}
