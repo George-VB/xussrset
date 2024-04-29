@@ -73,8 +73,9 @@ sub get_key_values($$$@) {
 # this function collects the key values from all the sections
 	my($search_key, $separator_master, $separator_slave, @sections) = (@_);
 	$search_key =~ s/$separator_master$//igs;
-	$search_key =~ s/^(\/\/|\#)//igs;
+	$search_key =~ s/^(\/\/|\#)\s*//igs;
 	$search_key =~ s/^\s*//igs;
+	$search_key =~ s/^UNUSED_//igs;
 	$search_key =~ s/\s*$//igs;
 	my($section, $key, $key2, @results, %keys);
 	my($has_comments, $result_key) = (0, "");
@@ -85,8 +86,9 @@ sub get_key_values($$$@) {
                         my($has_comments2) = (0);
 	                $key2 = $key;
 			$key2 =~ s/$separator_slave$//igs;
-			$has_comments2 = 1 if ($key2 =~ s/^(\/\/|\#)//igs);
+			$has_comments2 = 1 if ($key2 =~ s/^(\/\/|\#)\s*//igs);
 			$key2 =~ s/^\s*//igs;
+			$key2 =~ s/^UNUSED_//igs;
 			$key2 =~ s/\s*$//igs;
 			if($key2 eq $search_key) {
 		        	@results = (@results, @{$keys{$key}});
@@ -103,7 +105,7 @@ sub parse_files($$) {
 	my($header_master, $footer_master, @sections_master) = (read_file($from_file, $key_separator_master));
 	my($header_slave, $footer_slave, @sections_slave) = (read_file($to_file, $key_separator_slave));
 # TODO because sections of the slave file are not used, transform slave sections into a single hash and use it, should be much faster
-	my($sec_number, $result, $section, %keys, $key, @values) = (1, "");
+	my($sec_number, $result, $dispaly_not_represented, $section, %keys, $key, @values) = (1, "", 1);
 	$result .= $header_slave;
 	foreach $section (@sections_master) {
 		%keys = %{$section};
@@ -139,7 +141,8 @@ sub parse_files($$) {
 			if($key ne "-Section-Header-") {
 				@values = get_key_values($key, $key_separator_slave, $key_separator_master, @sections_master);
 				if(scalar(@values) == 2) {
-					$result .= "$comment_format Value is not represented in the master file\n";
+					$result .= "$comment_format Value is not represented in the master file\n" if ($dispaly_not_represented == 1);
+					$dispaly_not_represented = 0;
 					$result .= "$key" . join("\n$key", @{$keys{$key}}) . "\n";
 				} 
 			}
