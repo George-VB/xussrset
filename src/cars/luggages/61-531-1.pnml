@@ -21,19 +21,49 @@ pass_wagon_sprites(14, mail_61_531_1_v3, 32, 844)
 pass_wagon_sprites(14, mail_61_531_1_v4, 32, 40)
 pass_wagon_sprites(14, mail_61_531_1_v5, 32, 308)
 pass_wagon_sprites(14, mail_61_531_1_v6, 32, 576)
-pass_wagon_sprites(14, mail_61_531_1_v7, 32, 844)  // Never used. TODO make liveries to choose
+pass_wagon_sprites(14, mail_61_531_1_v7, 32, 844)
 #undef IMAGEFILE
 #define IMAGEFILE  "src/cars/luggages/61-531-1-part3.png"
 pass_wagon_sprites(14, mail_61_531_1_v8, 32, 40)
 pass_wagon_sprites(14, mail_61_531_1_v9, 32, 308)
 #undef IMAGEFILE
 
+switch (FEAT_TRAINS, SELF, mail_61_531_1_calculate_livery, company_colour1)
+{
+   0: return 2;    // DARK_BLUE
+   1: return  1;   // PALE_GREEN
+   2: return   0;  // PINK
+   3: return   0;  // YELLOW
+   4: return  1;   // RED
+   5: return   0;  // LIGHT_BLUE
+   6: return  1;   // GREEN
+   7: return 2;    // DARK_GREEN
+   8: return   0;  // BLUE
+   9: return  1;   // CREAM
+  10: return 2;    // MAUVE
+  11: return  1;   // PURPLE
+  12: return   0;  // ORANGE
+  13: return 2;    // BROWN
+  14: return 2;    // GREY
+  15: return   0;  // WHITE
+      return 0;
+}
+
+switch (FEAT_TRAINS, SELF, mail_61_531_1_sprites_start_group,
+   mail_61_531_1_calculate_livery())
+{
+  0: mail_61_531_1_v7_sprites_start;
+  1: mail_61_531_1_v8_sprites_start;
+     mail_61_531_1_v9_sprites_start;
+}
+
 switch (FEAT_TRAINS, SELF, mail_61_531_1_sprites_start_rnd,
 [  set_offset_to(1),
-   prev_vehicle_randombits() & 0x01])
+   prev_vehicle_randombits()])
 {
-  0: mail_61_531_1_v8_sprites_start;
-     mail_61_531_1_v9_sprites_start;
+   0..31: mail_61_531_1_v7_sprites_start;
+ 32..143: mail_61_531_1_v8_sprites_start;
+          mail_61_531_1_v9_sprites_start;
 }
 
 switch (FEAT_TRAINS, SELF, mail_61_531_1_sprites_start,
@@ -47,6 +77,7 @@ switch (FEAT_TRAINS, SELF, mail_61_531_1_sprites_start,
      LV_NORTHERN_RAILWAY: mail_61_531_1_v5_sprites_start;
   LV_KALININGRAD_RAILWAY: mail_61_531_1_v6_sprites_start;
              LV_POST_RUS: mail_61_531_1_sprites_start_rnd;
+                    0xF0: mail_61_531_1_sprites_start_group;
                           align_14_sprites;
 }
 long_vehicle(mail_61_531_1)
@@ -76,7 +107,9 @@ switch (FEAT_TRAINS, SELF, mail_61_531_1_running_cost_factor,
    STORE_TEMP(round(PROP_mail_61_531_1_WT + PROP_mail_61_531_1_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }                                              // 168
 
-livery_template_base_list7(mail_61_531_1, LV_RAL6002, LV_RAL6020, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_NORTHERN_RAILWAY, LV_KALININGRAD_RAILWAY, LV_POST_RUS)
+  livery_template_base_list7(mail_61_531_1_refit, LV_RAL6002, LV_RAL6020, LV_BELARUSSIAN_RAILWAY, LV_UKRAINIAN_RAILWAY, LV_NORTHERN_RAILWAY, LV_KALININGRAD_RAILWAY, LV_POST_RUS)
+livery_template_refit_shifted(mail_61_531_1, 0xF0, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_LV_POST_RUS, STR_REFIT_LIVERY_TYPE_GROUP, mail_61_531_1_refit_cargo_subtype_text)
+
 name_in_wagon_group(mail_61_531_1, string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_MODEL_NUMBER3, 61, 531, 1)),
                              string(STR_NAME_IN_GROUP, string(STR_NAME_MAIL_SERIES), string(STR_LONGNAME_MAIL_61_531_1)))
 
