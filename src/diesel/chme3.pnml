@@ -18,6 +18,29 @@ diesel1r_sprites(10, chme3_v4, 32, 643)
 #undef IMAGEFILE
 purchase_sprites_select(chme3, GREAT_CHANGE_YEAR)
 
+switch (FEAT_TRAINS, SELF, chme3_calculate_body, company_colour1)
+// bit 0 - RAL 6020/Ral 6002
+// bit 1,2 - before 1972 / Red line / no line
+{
+   0: return  2  +          0;   // DARK_BLUE
+   1: return       0   +     1;  // PALE_GREEN
+   2: return         4 +     1;  // PINK
+   3: return        2  +     1;  // YELLOW
+   4: return  2  +          0;   // RED
+   5: return         4 +     1;  // LIGHT_BLUE
+   6: return 0   +          0;   // GREEN
+   7: return 0   +          0;   // DARK_GREEN
+   8: return       0   +     1;  // BLUE
+   9: return        2  +     1;  // CREAM
+  10: return   4 +          0;   // MAUVE
+  11: return   4 +          0;   // PURPLE
+  12: return        2  +     1;  // ORANGE
+  13: return  2  +          0;   // BROWN
+  14: return 0   +          0;   // GREY
+  15: return       0   +     1;  // WHITE
+      return 0;
+}
+
 switch (FEAT_TRAINS, SELF, chme3_sprites_left_RND,
 [  set_offset_to(1),
    prev_vehicle_randombits() & 0x01])
@@ -33,14 +56,33 @@ switch (FEAT_TRAINS, SELF, chme3_year_sprites_left,
      chme3_sprites_left_RND;
 }
 
+switch (FEAT_TRAINS, SELF, chme3_year_sprites_left_noRND,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: chme3_v1_sprites_left;
+     chme3_v3_sprites_left;
+}
+
+switch (FEAT_TRAINS, SELF, chme3_year_sprites_left_group,
+  chme3_calculate_body())
+{
+  0: chme3_v1_sprites_left;
+  1: chme3_v1_sprites_left;
+  2: chme3_v2_sprites_left;
+  3: chme3_v2_sprites_left;
+  4: chme3_v3_sprites_left;
+     chme3_v3_sprites_left;
+}
+
 switch (FEAT_TRAINS, SELF, chme3_sprites_right,  // TODO fix graphics, not code!!
   cargo_subtype)
 {
                      0: chme3_year_sprites_left;
-            LV_RAL6002: chme3_year_sprites_left;
-            LV_RAL6020: chme3_year_sprites_left;
+            LV_RAL6002: chme3_year_sprites_left_noRND;
+            LV_RAL6020: chme3_year_sprites_left_noRND;
   LV_UKRAINIAN_RAILWAY: chme3_v2_sprites_left;
             LV_RZD_PID: chme3_v4_sprites_left;
+                  0xF0: chme3_year_sprites_left_group;
   align_10_sprites;
 }
 
@@ -59,20 +101,62 @@ switch (FEAT_TRAINS, SELF, chme3_year_sprites_right,
      chme3_sprites_right_RND;
 }
 
+switch (FEAT_TRAINS, SELF, chme3_year_sprites_right_noRDND,
+  check_year(GREAT_CHANGE_YEAR))
+{
+  0: chme3_v1_sprites_right;
+     chme3_v2_sprites_right;
+}
+
+switch (FEAT_TRAINS, SELF, chme3_year_sprites_right_group,
+  chme3_calculate_body())
+{
+  0: chme3_v1_sprites_right;
+  1: chme3_v1_sprites_right;
+  2: chme3_v2_sprites_right;
+  3: chme3_v2_sprites_right;
+  4: chme3_v3_sprites_right;
+     chme3_v3_sprites_right;
+}
+
 switch (FEAT_TRAINS, SELF, chme3_sprites_left,  // TODO fix graphics, not code!!
   cargo_subtype)
 {
                      0: chme3_year_sprites_right;
-            LV_RAL6002: chme3_year_sprites_right;
-            LV_RAL6020: chme3_year_sprites_right;
+            LV_RAL6002: chme3_year_sprites_right_noRDND;
+            LV_RAL6020: chme3_year_sprites_right_noRDND;
   LV_UKRAINIAN_RAILWAY: chme3_v2_sprites_right;
             LV_RZD_PID: chme3_v4_sprites_right;
+                  0xF0: chme3_year_sprites_right_group;
   align_10_sprites;
 }
 
 engine_direction_template(chme3, chme3)
 engine_RND_direction_template(chme3, chme3, 1, 1)
 long_vehicle_advanced(chme3, chme3_sprites_start_sp)
+
+switch (FEAT_TRAINS, SELF, chme3_colour_mapping_CC_group,
+[  STORE_TEMP(company_colour2, 0),
+  chme3_calculate_body() * 2 +
+  calculate_colour3() ])
+{
+// before 1972
+  0: return ttd_cc2 + 0x49;
+  1: return ttd_cc2 + 0x46;
+  2: return ttd_cc2 + 0x4A;
+  3: return ttd_cc2 + 0x47;
+// with red line
+  4: return ttd_cc2 + 0x49;
+  5: return ttd_cc2 + 0x46;
+  6: return ttd_cc2 + 0x4A;
+  7: return ttd_cc2 + 0x47;
+// without red line
+  8: return ttd_cc2 + 0x49;
+  9: return ttd_cc2 + 0x46;
+ 10: return ttd_cc2 + 0x4A;
+ 11: return ttd_cc2 + 0x47;
+  return CB_FAILED;
+}
 
 switch (FEAT_TRAINS, SELF, chme3_colour_mapping_CC,
   cargo_subtype)
@@ -81,7 +165,8 @@ switch (FEAT_TRAINS, SELF, chme3_colour_mapping_CC,
             LV_RAL6002: return ttd_cc2 + 0x49;
             LV_RAL6020: return ttd_cc2 + 0x4A;
   LV_UKRAINIAN_RAILWAY: return ttd_cc2 + 0x3E;
-     return CB_FAILED;
+                  0xF0: chme3_colour_mapping_CC_group;
+  return CB_FAILED;
 }
 
 switch (FEAT_TRAINS, SELF, chme3_colour_mapping_2CC,
@@ -91,7 +176,8 @@ switch (FEAT_TRAINS, SELF, chme3_colour_mapping_2CC,
             LV_RAL6002: return ttd_cc2 + 0x46;
             LV_RAL6020: return ttd_cc2 + 0x47;
   LV_UKRAINIAN_RAILWAY: return ttd_cc2 + 0x48;
-     return CB_FAILED;
+                  0xF0: chme3_colour_mapping_CC_group;
+  return CB_FAILED;
 }
 
 switch (FEAT_TRAINS, SELF, chme3_colour_mapping,
@@ -102,7 +188,8 @@ switch (FEAT_TRAINS, SELF, chme3_colour_mapping,
      chme3_colour_mapping_2CC;
 }
 
-livery_template_base_list4(chme3, LV_RAL6020, LV_RAL6002, LV_UKRAINIAN_RAILWAY, LV_RZD_PID)
+  livery_template_base_list4(chme3_refit, LV_RAL6020, LV_RAL6002, LV_UKRAINIAN_RAILWAY, LV_RZD_PID)
+livery_template_simplerefit_shifted(chme3, 0xF0, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP, chme3_refit_cargo_subtype_text)
 
 engine_diesel_1r_effect(chme3_create_effect_sprites, 0, 2, 12)
 engine_direction_template(chme3_create_effect, chme3)

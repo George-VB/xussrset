@@ -19,44 +19,23 @@ combo_layout_boxcartop_template(boxcar_11_2135_v2, 11, 32, 308)
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_calculate_random, LOAD_TEMP(0))
 {
-   0: return 0x9C;  // DARK_BLUE
-   1: return 0x63;  // PALE_GREEN
-   2: return 0x73;  // PINK
-   3: return 0xCE;  // YELLOW
-   4: return 0x73;  // RED
-   5: return 0x9C;  // LIGHT_BLUE
-   6: return 0x5C;  // GREEN
-   7: return 0x62;  // DARK_GREEN
-   8: return 0x9C;  // BLUE
-   9: return 0x73;  // CREAM
-  10: return 0x83;  // MAUVE
-  11: return 0x83;  // PURPLE
-  12: return 0x73;  // ORANGE
-  13: return 0x73;  // BROWN
-  14: return 0x83;  // GREY
-  15: return 0xCE;  // WHITE
-      return 0x62;
-}
-
-switch (FEAT_TRAINS, SELF, boxcar_11_2135_calculate_random_brown, LOAD_TEMP(0))
-{
-   0: return 0x71;    // DARK_BLUE
-   1: return  0x72;   // PALE_GREEN
-   2: return   0x73;  // PINK
-   3: return   0x73;  // YELLOW
-   4: return  0x72;   // RED
-   5: return   0x73;  // LIGHT_BLUE
-   6: return  0x72;   // GREEN
-   7: return 0x71;    // DARK_GREEN
-   8: return   0x73;  // BLUE
-   9: return  0x72;   // CREAM
-  10: return 0x71;    // MAUVE
-  11: return  0x72;   // PURPLE
-  12: return   0x73;  // ORANGE
-  13: return 0x71;    // BROWN
-  14: return 0x71;    // GREY
-  15: return   0x73;  // WHITE
-      return 0x72;
+   0: return 0x5B;  // DARK_BLUE
+   1: return 0x5C;  // PALE_GREEN
+   2: return 0x5D;  // PINK
+   3: return 0x61;  // YELLOW
+   4: return 0x62;  // RED
+   5: return 0x63;  // LIGHT_BLUE
+   6: return 0x72;  // GREEN
+   7: return 0x73;  // DARK_GREEN
+   8: return 0x74;  // BLUE
+   9: return 0x49;  // CREAM
+  10: return 0x4A;  // MAUVE
+  11: return 0x4B;  // PURPLE
+  12: return 0x83;  // ORANGE
+  13: return 0x9C;  // BROWN
+  14: return 0xC0;  // GREY
+  15: return 0x05;  // WHITE
+      return 0x05;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_cc1,
@@ -76,13 +55,21 @@ switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_cc4,
 { boxcar_11_2135_v1_sprites_top; }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_brown,
-[  set_offset_to(1),
-   (prev_vehicle_randombits() >> 4 & 0x03) ] )
+  random_bits >> 1 & 0x03)
 {
   0: boxcar_11_2135_v1_sprites_top_cc1;
   1: boxcar_11_2135_v1_sprites_top_cc2;
   2: boxcar_11_2135_v1_sprites_top_cc2;
      boxcar_11_2135_v1_sprites_top_cc3;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_allbrown,
+  random_bits >> 1 & 0x03)
+{
+  0: boxcar_11_2135_v1_sprites_top_cc1;
+  1: boxcar_11_2135_v1_sprites_top_cc2;
+  2: boxcar_11_2135_v1_sprites_top_cc3;
+     boxcar_11_2135_v1_sprites_top_cc4;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_cc_group,
@@ -92,12 +79,11 @@ switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_cc_group,
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_brown_group,
 [  STORE_TEMP(company_colour2, 0),
-   STORE_TEMP(ttdall_cc + boxcar_11_2135_calculate_random_brown(), 0x100) ])
+   STORE_TEMP(ttdall_cc + 0x71 + calculate_colour3(), 0x100) ])
 { boxcar_11_2135_v1_sprites_top; }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_v1_sprites_top_rnd,
-[  set_offset_to(1),
-   (prev_vehicle_randombits() >> 4 & 0x0F) ] )
+  random_bits >> 1 & 0x0F)
 {
   0: boxcar_11_2135_v1_sprites_top_cc1;
   1: boxcar_11_2135_v1_sprites_top_cc2;
@@ -158,6 +144,16 @@ switch (FEAT_TRAINS, SELF, boxcar_11_2135_v5_sprites_start,
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_v6_sprites_start,
   getbits(extra_callback_info1, 8, 8))
 {
+  0: boxcar_11_2135_v1_sprites_back;
+  1: cargo11_good_bc_sprites;
+  2: boxcar_11_2135_v1_sprites_front;
+  3: boxcar_11_2135_v1_sprites_top_allbrown;
+     return CB_FAILED;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_2135_v7_sprites_start,
+  getbits(extra_callback_info1, 8, 8))
+{
   0: boxcar_11_2135_v2_sprites_back;
   1: cargo11_good_bc_sprites;
   2: boxcar_11_2135_v2_sprites_front;
@@ -168,58 +164,120 @@ switch (FEAT_TRAINS, SELF, boxcar_11_2135_v6_sprites_start,
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_sprites_start,
   cargo_subtype)
 {
-        1..7: boxcar_11_2135_v2_sprites_start;
-  LV_RZD_PID: boxcar_11_2135_v6_sprites_start;
-        0xF0: boxcar_11_2135_v3_sprites_start;
-        0xF1: boxcar_11_2135_v4_sprites_start;
-        0xF2: boxcar_11_2135_v5_sprites_start;
-  boxcar_11_2135_v1_sprites_start;
+           0: boxcar_11_2135_v1_sprites_start;
+  LV_RZD_PID: boxcar_11_2135_v7_sprites_start;
+        0xF8: boxcar_11_2135_v3_sprites_start;
+        0xF9: boxcar_11_2135_v4_sprites_start;
+        0xFA: boxcar_11_2135_v5_sprites_start;
+        0xFB: boxcar_11_2135_v6_sprites_start;
+  boxcar_11_2135_v2_sprites_start;
 }
 
 long_vehicle(boxcar_11_2135)
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_random,
 [  set_offset_to(1),
-   prev_vehicle_randombits() & 0x0F])
+   prev_vehicle_randombits()])
 {
-   0..1: return ttdall_cc + 0x5C;
-   2..3: return ttdall_cc + 0x62;
-   4..5: return ttdall_cc + 0x63;
-  6..12: return ttdall_cc + 0x73;
-     13: return ttdall_cc + 0x83;
-     14: return ttdall_cc + 0x9C;
-         return ttdall_cc + 0xCE;
+    0..10: return ttdall_cc + 0x5B;
+   11..27: return ttdall_cc + 0x5C;
+   28..38: return ttdall_cc + 0x5D;
+   39..56: return ttdall_cc + 0x61;
+   57..88: return ttdall_cc + 0x62;
+  89..106: return ttdall_cc + 0x63;
+ 107..131: return ttdall_cc + 0x72;
+ 132..177: return ttdall_cc + 0x73;
+ 178..202: return ttdall_cc + 0x74;
+ 203..216: return ttdall_cc + 0x49;
+ 217..241: return ttdall_cc + 0x4A;
+           return ttdall_cc + 0x4B;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_2135_random_56,
+[  set_offset_to(1),
+   prev_vehicle_randombits()])
+{
+   0..69: return ttdall_cc + 0x5B;
+ 70..185: return ttdall_cc + 0x5C;
+          return ttdall_cc + 0x5D;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_2135_random_62,
+[  set_offset_to(1),
+   prev_vehicle_randombits()])
+{
+   0..69: return ttdall_cc + 0x61;
+ 70..185: return ttdall_cc + 0x62;
+         return ttdall_cc + 0x63;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_2135_random_73,
+[  set_offset_to(1),
+   prev_vehicle_randombits()])
+{
+   0..69: return ttdall_cc + 0x72;
+ 70..185: return ttdall_cc + 0x73;
+         return ttdall_cc + 0x74;
+}
+
+switch (FEAT_TRAINS, SELF, boxcar_11_2135_random_4A,
+[  set_offset_to(1),
+   prev_vehicle_randombits()])
+{
+   0..69: return ttdall_cc + 0x49;
+ 70..185: return ttdall_cc + 0x4A;
+         return ttdall_cc + 0x4B;
 }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_random_group,
  STORE_TEMP(company_colour1, 0))
-{
-  return ttdall_cc + boxcar_11_2135_calculate_random();
-}
+{ return ttdall_cc + boxcar_11_2135_calculate_random(); }
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_colour_mapping,
   cargo_subtype)
 {
            0: boxcar_11_2135_random;
-           1: return ttdall_cc + 0x5C;
-           2: return ttdall_cc + 0x62;
-           3: return ttdall_cc + 0x63;
-           4: return ttdall_cc + 0x73;
-           5: return ttdall_cc + 0x83;
-           6: return ttdall_cc + 0x9C;
-           7: return ttdall_cc + 0xCE;
+           1: return ttdall_cc + 0x5B;
+           2: return ttdall_cc + 0x5C;
+           3: return ttdall_cc + 0x5D;
+           4: return ttdall_cc + 0x61;
+           5: return ttdall_cc + 0x62;
+           6: return ttdall_cc + 0x63;
+           7: return ttdall_cc + 0x72;
+           8: return ttdall_cc + 0x73;
+           9: return ttdall_cc + 0x74;
+          10: return ttdall_cc + 0x49;
+          11: return ttdall_cc + 0x4A;
+          12: return ttdall_cc + 0x4B;
+          13: return ttdall_cc + 0x83;
+          14: return ttdall_cc + 0x9C;
+          15: return ttdall_cc + 0xCE;
   LV_RZD_PID: return ttdall_cc + 0x05;
-        0xF0: boxcar_11_2135_random_group;
-        0xF1: boxcar_11_2135_random_group;
-        0xF2: boxcar_11_2135_random_group;
+        0xF0: boxcar_11_2135_random_56;
+        0xF1: boxcar_11_2135_random_62;
+        0xF2: boxcar_11_2135_random_73;
+        0xF3: boxcar_11_2135_random_4A;
+        0xF8: boxcar_11_2135_random_group;
+        0xF9: boxcar_11_2135_random_group;
+        0xFA: boxcar_11_2135_random_group;
+        0xFB: boxcar_11_2135_random_group;
      return CB_FAILED;
 }
 
-        livery_template_FP(boxcar_11_2135_3_alt)
-      livery_template_alt7(boxcar_11_2135_3, STR_REFIT_TTD_5C, STR_REFIT_TTD_62, STR_REFIT_TTD_63, STR_REFIT_TTD_73, STR_REFIT_TTD_83, STR_REFIT_TTD_9C, STR_REFIT_TTD_CE)
-    livery_template_simplerefit_shifted(boxcar_11_2135_2, 0xF0, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_2CC, boxcar_11_2135_3_cargo_subtype_text)
-  livery_template_simplerefit_shifted(boxcar_11_2135_1, 0xF1, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_ROOF, boxcar_11_2135_2_cargo_subtype_text)
-livery_template_simplerefit_shifted(boxcar_11_2135,  0xF2, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_RNDROOF, boxcar_11_2135_1_cargo_subtype_text)
+                  livery_template_FP(boxcar_11_2135_C_alt)
+                livery_template_alt15(boxcar_11_2135_C, STR_REFIT_TTD_5B, STR_REFIT_TTD_5C, STR_REFIT_TTD_5D,
+                                                        STR_REFIT_TTD_61, STR_REFIT_TTD_62, STR_REFIT_TTD_63,
+                                                        STR_REFIT_TTD_72, STR_REFIT_TTD_73, STR_REFIT_TTD_74,
+                                                        STR_REFIT_TTD_49, STR_REFIT_TTD_4A, STR_REFIT_TTD_4B,
+                                                        STR_REFIT_TTD_83, STR_REFIT_TTD_9C, STR_REFIT_TTD_CE)
+              livery_template_simplerefit_shifted(boxcar_11_2135_B, 0xFB, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_ALLRNDROOF, boxcar_11_2135_C_cargo_subtype_text)
+            livery_template_simplerefit_shifted(boxcar_11_2135_A, 0xFA, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_RNDROOF, boxcar_11_2135_B_cargo_subtype_text)
+          livery_template_simplerefit_shifted(boxcar_11_2135_9, 0xF9, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_ROOFSHADE, boxcar_11_2135_A_cargo_subtype_text)
+        livery_template_simplerefit_shifted(boxcar_11_2135_8, 0xF8, STR_REFIT_FACTORY_GENERAL_TYPE_SIMPLE_SP, STR_REFIT_LIVERY_TYPE_GROUP_2CC, boxcar_11_2135_9_cargo_subtype_text)
+      livery_template_refit_shifted(boxcar_11_2135_3, 0xF3, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_TTD_4A, STR_REFIT_WITH_SHADES, boxcar_11_2135_8_cargo_subtype_text)
+    livery_template_refit_shifted(boxcar_11_2135_2, 0xF2, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_TTD_73, STR_REFIT_WITH_SHADES, boxcar_11_2135_3_cargo_subtype_text)
+  livery_template_refit_shifted(boxcar_11_2135_1, 0xF1, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_TTD_62, STR_REFIT_WITH_SHADES, boxcar_11_2135_2_cargo_subtype_text)
+livery_template_refit_shifted(boxcar_11_2135,  0xF0, STR_REFIT_FACTORY_GENERAL_TYPE_SP, STR_REFIT_TTD_56, STR_REFIT_WITH_SHADES, boxcar_11_2135_1_cargo_subtype_text)
 
 switch (FEAT_TRAINS, SELF, boxcar_11_2135_cargo_capacity,
 [  STORE_TEMP(round(PROP_boxcar_11_2135_LC), 0),  // т
