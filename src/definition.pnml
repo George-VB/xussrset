@@ -9,7 +9,7 @@ traininfo_y_offset = 3;
 #define NEW_TRAIN_AGE 5
 
 // Разница в базе цены вагона и локомотива
-#define ENGINE_WAGON_CF 50
+#define ENGINE_WAGON_CF 50*4
 
 // Мощность ПС / скорость, который не имеет мощности (чтобы он смог доехать до других рельсов, так как в игре нельзя послать за ним буксир.
 #define NO_POWER             5
@@ -651,39 +651,30 @@ delta_age = 1;
   variant_group: disable_groups == 0 ? group_id  : INVALID_ENGINE;                                                                                                                               \
     extra_flags: bitmask(VEHICLE_FLAG_DISABLE_NEW_VEHICLE_MESSAGE, VEHICLE_FLAG_DISABLE_EXCLUSIVE_PREVIEW, VEHICLE_FLAG_SYNC_VARIANT_EXCLUSIVE_PREVIEW, VEHICLE_FLAG_SYNC_VARIANT_RELIABILITY);  \
 
-#define purchase_menu(CF, RC, SD, WT, TE, PR, CC)                    \
-                           cost_factor: return CF;                   \
-          purchase_running_cost_factor: return RC;                   \
-                        purchase_speed: return SD;                   \
-                       purchase_weight: return round(WT);            \
-  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);  \
-                        purchase_power: return get_power_in_cb(PR);  \
-               purchase_cargo_capacity: return CC;                   \
+#define purchase_menu(CF, RC, SD, WT, TE, PR, CC)                                           \
+                           cost_factor: return min(32767, (CF) * costs_multiplier / 100);   \
+          purchase_running_cost_factor: return min(32767, (RC) * rcosts_multiplier / 100);  \
+                        purchase_speed: return SD;                                          \
+                       purchase_weight: return round(WT);                                   \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);                         \
+                        purchase_power: return get_power_in_cb(PR);                         \
+               purchase_cargo_capacity: return CC;                                          \
 
-#define purchase_menu_nocc(CF, RC, SD, WT, TE, PR)                   \
-                           cost_factor: return CF;                   \
-          purchase_running_cost_factor: return RC;                   \
-                        purchase_speed: return SD;                   \
-                       purchase_weight: return round(WT);            \
-  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);  \
-                        purchase_power: return get_power_in_cb(PR);  \
+#define purchase_menu_nocc(CF, RC, SD, WT, TE, PR)                                          \
+                           cost_factor: return min(32767, (CF) * costs_multiplier / 100);   \
+          purchase_running_cost_factor: return min(32767, (RC) * rcosts_multiplier / 100);  \
+                        purchase_speed: return SD;                                          \
+                       purchase_weight: return round(WT);                                   \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);                         \
+                        purchase_power: return get_power_in_cb(PR);                         \
 
-#define purchase_menu_wagon(CF, RC, SD, WT, TE, PR, CC)                        \
-                           cost_factor: return round((CF) * ENGINE_WAGON_CF);  \
-          purchase_running_cost_factor: return RC;                             \
-                        purchase_speed: return SD;                             \
-                       purchase_weight: return round(WT);                      \
-  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);            \
-                        purchase_power: return get_power_in_cb(PR);            \
-               purchase_cargo_capacity: return CC;                             \
-
-#define purchase_menu_calc(CF, RC, SD, WT, TE, PR, CC)  \
-                           cost_factor: CF;             \
-          purchase_running_cost_factor: RC;             \
-                        purchase_speed: SD;             \
-                       purchase_weight: WT;             \
-  purchase_tractive_effort_coefficient: TE;             \
-                        purchase_power: PR;             \
-               purchase_cargo_capacity: CC;             \
+#define purchase_menu_wagon(CF, RC, SD, WT, TE, PR, CC)                                                      \
+                           cost_factor: return min(32767, (CF) * ENGINE_WAGON_CF * costs_multiplier / 100);  \
+          purchase_running_cost_factor: return min(32767, (RC) * rcosts_multiplier / 100);                   \
+                        purchase_speed: return SD;                                                           \
+                       purchase_weight: return round(WT);                                                    \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);                                          \
+                        purchase_power: return get_power_in_cb(PR);                                          \
+               purchase_cargo_capacity: return CC;                                                           \
 
 // end

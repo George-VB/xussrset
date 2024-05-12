@@ -1,5 +1,42 @@
 ﻿// epg
 
+#define PROP_epg_h_num  2
+#define PROP_epg_n_num  1  // car with pantograph
+#define PROP_epg_m_num  1  // car with pantograph
+#define PROP_epg_c_num  0
+
+#define PROP_epg_h_CF  96
+#define PROP_epg_h_RC  436
+#define PROP_epg_h_SD  160
+#define PROP_epg_h_WT  40
+#define PROP_epg_h_TE  100
+#define PROP_epg_h_PR  1359.5
+#define PROP_epg_h_CC  68
+
+#define PROP_epg_n_CF  41
+#define PROP_epg_n_RC  186
+#define PROP_epg_n_SD  PROP_epg_h_SD
+#define PROP_epg_n_WT  26
+#define PROP_epg_n_TE  0
+#define PROP_epg_n_PR  0
+#define PROP_epg_n_CC  57
+
+#define PROP_epg_m_CF  41
+#define PROP_epg_m_RC  186
+#define PROP_epg_m_SD  PROP_epg_h_SD
+#define PROP_epg_m_WT  26
+#define PROP_epg_m_TE  0
+#define PROP_epg_m_PR  0
+#define PROP_epg_m_CC  67
+
+#define PROP_epg_c_CF  0
+#define PROP_epg_c_RC  0
+#define PROP_epg_c_SD  0
+#define PROP_epg_c_WT  0
+#define PROP_epg_c_TE  0
+#define PROP_epg_c_PR  0
+#define PROP_epg_c_CC  0
+
 #define IMAGEFILE  "src/emu/epg_h.png"
 purchase_sprites_with_icon(epg, 18, 0, 25ac)
 MU_head_middle_sprites(11, epg_h, 32, 40)
@@ -116,8 +153,8 @@ switch (FEAT_TRAINS, SELF, epg_create_effect,
      return disable_create_effect();
 }
 
-engine_power_MU3(epg, 2719, epr, eprii, epg)
-engine_capacity_MU3(epg, 260, epr, eprii, epg)
+engine_power_MU3(epg, (PROP_epg_h_PR * 2 + PROP_epg_m_PR + PROP_epg_n_PR + PROP_epg_c_PR), epr, eprii, epg)
+engine_capacity_MU3(epg, (PROP_epg_h_CC * 2 + PROP_epg_m_CC + PROP_epg_n_CC + PROP_epg_c_CC), epr, eprii, epg)
 
 RC_head_check3(epg, epr, eprii, epg)
 switch (FEAT_TRAINS, SELF, epg_running_cost_factor,
@@ -128,16 +165,16 @@ switch (FEAT_TRAINS, SELF, epg_running_cost_factor,
    STORE_TEMP(175, 4),  // ТО
    STORE_TEMP(13, 5),   // Сертификация
 
-   STORE_TEMP(160, 6),                 // Скорость
-   STORE_TEMP(132, 7),                 // Тара
-   STORE_TEMP(LOAD_TEMP(7) + 35, 8)])  // Максимальная масса
-{ epg_check_running_cost_factor; }     // 439 * 2+187 * 2
+   STORE_TEMP(PROP_epg_h_SD, 6),                                                                                                                                         // Скорость
+   STORE_TEMP(round(PROP_epg_h_WT * 2 + PROP_epg_m_WT + PROP_epg_n_WT + PROP_epg_c_WT), 7),                                                                              // Тара
+   STORE_TEMP(round(PROP_epg_h_WT * 2 + PROP_epg_m_WT + PROP_epg_n_WT + PROP_epg_c_WT + (PROP_epg_h_CC * 2 + PROP_epg_m_CC + PROP_epg_n_CC + PROP_epg_c_CC) / 16), 8)])  // Максимальная масса
+{ epg_check_running_cost_factor; }                                                                                                                                       // 439 * 2+187 * 2
 
 name_in_group(epg, string(STR_NAME_IN_GROUP, string(STR_NAME_EP_SERIES), string(STR_NAME_EPG)),
                    string(STR_NAME_IN_GROUP, string(STR_NAME_EP_SERIES), string(STR_LONGNAME_EPG)))
 
 hint_MU_with_subtype_sme2(epg,
-     calc_loading(260 / (6 * WIDERST_D_DOOR)),
+     calc_loading((PROP_epg_h_CC * 2 + PROP_epg_m_CC + PROP_epg_n_CC + PROP_epg_c_CC) / (6 * WIDERST_D_DOOR)),
      STR_PURCHASE_HINT_CAP_0005_FAST,
      STR_PURCHASE_HINT_ENGINE_TYPE_EMU_SI_AC_WITH_SUBTYPE, STR_PURCHASE_HINT_FLIRT,
      STR_SECTIONS_MU_S1_3of4_WITH_ATTACH, STR_NAME_EPR, STR_NAME_EPRII,
@@ -147,26 +184,34 @@ hint_MU_with_subtype_sme2(epg,
 item (FEAT_TRAINS, epg, 225) {
   property {
     name: string(STR_NAME_EPG);
-    vehicle_dates(2011, 2012, 30, 10, 8, 274)
-    vehicle_emu(ac, 2719, 132, 200.0, 260, 6 * WIDERST_D_DOOR, )
+    vehicle_dates(2011, 2012, 30, 10, 8, (PROP_epg_h_CF * 2 + PROP_epg_m_CF + PROP_epg_n_CF + PROP_epg_c_CF))
+    vehicle_emu(ac, (PROP_epg_h_PR * 2 + PROP_epg_m_PR + PROP_epg_n_PR + PROP_epg_c_PR),
+                    (PROP_epg_h_WT * 2 + PROP_epg_m_WT + PROP_epg_n_WT + PROP_epg_c_WT),
+                    (PROP_epg_h_TE * 2 + PROP_epg_m_TE + PROP_epg_n_TE + PROP_epg_c_TE),
+                    (PROP_epg_h_CC * 2 + PROP_epg_m_CC + PROP_epg_n_CC + PROP_epg_c_CC), 6 * WIDERST_D_DOOR, )
     vehicle_group(group_ep)
   }
   graphics {
+    purchase_menu((PROP_epg_h_CF * 2 + PROP_epg_m_CF + PROP_epg_n_CF + PROP_epg_c_CF),
+                  (PROP_epg_h_RC * 2 + PROP_epg_m_RC + PROP_epg_n_RC + PROP_epg_c_RC),
+                  PROP_epg_h_SD,
+                  (PROP_epg_h_WT * 2 + PROP_epg_m_WT + PROP_epg_n_WT + PROP_epg_c_WT),
+                  (PROP_epg_h_TE * 2 + PROP_epg_m_TE + PROP_epg_n_TE + PROP_epg_c_TE),
+                  (PROP_epg_h_PR * 2 + PROP_epg_m_PR + PROP_epg_n_PR + PROP_epg_c_PR),
+                  (PROP_epg_h_CC * 2 + PROP_epg_m_CC + PROP_epg_n_CC + PROP_epg_c_CC))
         additional_text: epg_additional_text;
        articulated_part: epg_articulated_part;
        can_attach_wagon: epg_can_attach_wagon;
        cargo_age_period: return get_CAP_in_cb(CAP_0005_FAST);
          cargo_capacity: epg_cargo_capacity;
          colour_mapping: any_cc_colour;
-            cost_factor: return 274;
           create_effect: epg_create_effect;
                 default: epg_sprites;
                    name: epg_name;
                   power: epg_power;
                purchase: epg_purchase_sprites;
-         purchase_speed: return 160;
     running_cost_factor: epg_running_cost_factor;
-                  speed: return 160;
+                  speed: return PROP_epg_h_SD;
   }
 }
 
