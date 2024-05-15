@@ -50,7 +50,8 @@ switch (FEAT_TRAINS, SELF, all_running_cost_power,  // расход топлив
                 ((LOAD_TEMP(11) < (LOAD_TEMP(12) * RC_RACE_LIMIT)) * RC_RACE + 100) / 100 /
                 (RC_STOP * (LOAD_TEMP(11) < 2) + 1), 10))
 {
-  return min(32767, (LOAD_TEMP(10)) * rcosts_multiplier / 100);
+  return rcosts_multiplier == 0 ? min(32767, (LOAD_TEMP(10)))  :
+                                  min(32767, (LOAD_TEMP(10)) * rcosts_multiplier / 100) ;
 }
 
 switch (FEAT_TRAINS, SELF, all_running_cost_usage,  // износ по скорости считается линейным в процентах от максимальной скорости ПС
@@ -70,9 +71,12 @@ switch (FEAT_TRAINS, PARENT, all_running_cost_factor_unused,
    STORE_TEMP(current_max_speed, 12),
    vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed) ])
 {
-     1: return min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)) * rcosts_multiplier / 100);                                   // ПС в депо не используется
-  2..3: return min(32767, (vehicle_is_potentially_powered * RC_BROKEN * LOAD_TEMP(4) + LOAD_TEMP(10)) * rcosts_multiplier / 100);  // ПС сломано в пути - дорогое ТО
-  4..7: return min(32767, (RC_CRASHED * LOAD_TEMP(2) + 2000 + LOAD_TEMP(10)) * rcosts_multiplier / 100);                           // ПС разрушено
+     1: return rcosts_multiplier == 0 ? min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)))  :
+                                        min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)) * rcosts_multiplier / 100);  // ПС в депо не используется
+  2..3: return rcosts_multiplier == 0 ? min(32767, (vehicle_is_potentially_powered * RC_BROKEN * LOAD_TEMP(4) + LOAD_TEMP(10)))  :
+                                        min(32767, (vehicle_is_potentially_powered * RC_BROKEN * LOAD_TEMP(4) + LOAD_TEMP(10)) * rcosts_multiplier / 100) ;  // ПС сломано в пути - дорогое ТО
+  4..7: return rcosts_multiplier == 0 ? min(32767, (RC_CRASHED * LOAD_TEMP(2) + 2000 + LOAD_TEMP(10)))  :
+                                        min(32767, (RC_CRASHED * LOAD_TEMP(2) + 2000 + LOAD_TEMP(10)) * rcosts_multiplier / 100) ;  // ПС разрушено
         all_running_cost_usage;
 }
 
@@ -92,7 +96,8 @@ switch (FEAT_TRAINS, SELF, all_running_cost_factor_lic,  // В регистре 
 switch (FEAT_TRAINS, PARENT, all_running_cost_factor_justbuilt,
   age_in_days)  // в момент постройки RC - совокупный. Смысл - показать при покупке потолок расхода
 {
-  0: return min(32767, (LOAD_TEMP(0) + LOAD_TEMP(1) + LOAD_TEMP(2) + LOAD_TEMP(3) + LOAD_TEMP(4) + LOAD_TEMP(5)) * rcosts_multiplier / 100);
+  0: return rcosts_multiplier == 0 ? min(32767, (LOAD_TEMP(0) + LOAD_TEMP(1) + LOAD_TEMP(2) + LOAD_TEMP(3) + LOAD_TEMP(4) + LOAD_TEMP(5)))  :
+                                     min(32767, (LOAD_TEMP(0) + LOAD_TEMP(1) + LOAD_TEMP(2) + LOAD_TEMP(3) + LOAD_TEMP(4) + LOAD_TEMP(5)) * rcosts_multiplier / 100) ;
      all_running_cost_factor_lic;
 }
 
