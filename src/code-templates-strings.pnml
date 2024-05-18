@@ -1,5 +1,11 @@
  /// code definition
 
+#define get_containers_hint()                                        \
+(current_year < 1972 ? string(STR_EMPTY)                         :   \
+(current_year < 1988 ? string(STR_PURCHASE_HINT_CONTAINERS1972)  :   \
+(current_year < 1995 ? string(STR_PURCHASE_HINT_CONTAINERS1988)  :   \
+                       string(STR_PURCHASE_HINT_CONTAINERS1995) )))  \
+
 // шаблон выбора по году
 #define hint_change_after(name, year)                                     \
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year >= year)  \
@@ -422,6 +428,24 @@ switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)          
 { 1: name##_additional_text_hidden;                                                            \
      name##_additional_text_shown; }                                                           \
 
+// Описание вагона-платформы c примечанием
+#define hint_wagon_flat_comment(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, to, factory, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                       \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                        \
+  STORE_TEMP(lspeed | ((18500 / cargo_ageing) << 16), 0x101),                                                  \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO, from, to) << 16), 0x102),                  \
+  STORE_TEMP(factory | (comment << 16), 0x103) ])                                                              \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED_COMMENT); }                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                      \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                        \
+  STORE_TEMP(lspeed | ((18500 / cargo_ageing) << 16), 0x101),                                                  \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM, from) << 16), 0x102),                        \
+  STORE_TEMP(factory | (comment << 16), 0x103) ])                                                              \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED_COMMENT); }                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                         \
+{ 1: name##_additional_text_hidden;                                                                            \
+     name##_additional_text_shown; }                                                                           \
+
 // Описание вагона-платформы c 2 производителями
 #define hint_wagon_flat_2fact(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, to, factory, factory2)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                      \
@@ -441,6 +465,26 @@ switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                       
 switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                        \
 { 1: name##_additional_text_hidden;                                                                           \
      name##_additional_text_shown; }                                                                          \
+
+// Описание вагона-платформы c 2 производителями c примечанием
+#define hint_wagon_flat_2fact_comment(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, to, factory, factory2, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text_shown,                                                                       \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                        \
+  STORE_TEMP(lspeed | ((18500 / cargo_ageing) << 16), 0x101),                                                                  \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROMTO, from, to) << 16), 0x102),                                  \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                        \
+  STORE_TEMP(factory2 | (comment << 16), 0x104) ])                                                                             \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED_COMMENT); }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text_hidden,                                                                      \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                        \
+  STORE_TEMP(lspeed | ((18500 / cargo_ageing) << 16), 0x101),                                                                  \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM, from) << 16), 0x102),                                        \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                        \
+  STORE_TEMP(factory2 | (comment << 16), 0x104)  ])                                                                            \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED_COMMENT); }                                                                    \
+switch (FEAT_TRAINS, SELF, name##_additional_text, current_year <= to)                                                         \
+{ 1: name##_additional_text_hidden;                                                                                            \
+     name##_additional_text_shown; }                                                                                           \
 
 // Описание вагона-платформы c 3 производителями
 #define hint_wagon_flat_3fact(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, to, factory, factory2, factory3)  \
@@ -471,6 +515,15 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(factory, 0x103) ])                                                                \
 { return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                            \
 
+// Описание вагона-платформы без окончания срока доступности c примечанием
+#define hint_wagon_flat_noto_comment(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, factory, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                              \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                         \
+  STORE_TEMP(lspeed | ((18500 / cargo_ageing) << 16), 0x101),                                                   \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM, from) << 16), 0x102),                         \
+  STORE_TEMP(factory | (comment << 16), 0x103) ])                                                               \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED_COMMENT); }                                                     \
+
 // Описание вагона-платформы без окончания срока доступности c 2 производителями
 #define hint_wagon_flat_noto_2fact(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, factory, factory2)  \
 switch (FEAT_TRAINS, SELF, name##_additional_text,                                                             \
@@ -480,6 +533,16 @@ switch (FEAT_TRAINS, SELF, name##_additional_text,                              
   STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                        \
   STORE_TEMP(factory2, 0x104)  ])                                                                              \
 { return string(STR_PURCHASE_HINT_WAGON_FLATBED); }                                                            \
+
+// Описание вагона-платформы без окончания срока доступности c 2 производителями c примечанием
+#define hint_wagon_flat_noto_2fact_comment(name, cap, vol, lspeed, cargo_ageing, strwagtype, from, factory, factory2, comment)  \
+switch (FEAT_TRAINS, SELF, name##_additional_text,                                                                              \
+[ STORE_TEMP(cap | (vol << 16), 0x100),                                                                                         \
+  STORE_TEMP(lspeed | ((18500 / cargo_ageing) << 16), 0x101),                                                                   \
+  STORE_TEMP(string(strwagtype) | (string(STR_PURCHASE_HINT_FROM, from) << 16), 0x102),                                         \
+  STORE_TEMP(string(STR_PURCHASE_HINT_LIST2) | (factory << 16), 0x103),                                                         \
+  STORE_TEMP(factory2 | (comment << 16), 0x104)  ])                                                                             \
+{ return string(STR_PURCHASE_HINT_WAGON_FLATBED_COMMENT); }                                                                     \
 
 // Описание пассажирского вагона
 #define hint_wagon_coach(name, lspeed, cargo_ageing, strwagtype, from, to, factory)            \
