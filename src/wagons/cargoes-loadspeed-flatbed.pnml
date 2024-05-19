@@ -1,8 +1,8 @@
 // Определение скорости погрузки бункерной засыпкой. Скорость выгрузки задана в регистре 1
 // Для штучного груза считается скорость погрузки равной скорости выгрузки
 switch (FEAT_TRAINS, SELF, all_wagons_bulk_station_loading_speed,
-[ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255  : LOAD_TEMP(0), 0),
-  cargo_type_in_veh])
+  [ STORE_TEMP(LOAD_TEMP(0) == 0 ? 255  : LOAD_TEMP(0), 0),
+    cargo_type_in_veh])
 {
 //                                     <1910 >1910 >1930 >1950 >1990
 // begin main block
@@ -170,7 +170,7 @@ switch (FEAT_TRAINS, SELF, all_wagons_bulk_station_loading_speed,
 //   NWST,
 //   URAN,
 // end main block
-        return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
+  return min(calculate_loading_speed(9, 13, 17, 21, 25), LOAD_TEMP(0));
 }
 
 switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed2,
@@ -185,21 +185,21 @@ switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed2,
 }
 
 switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed1,
-[ STORE_TEMP((LOAD_TEMP(1) == 0) + LOAD_TEMP(1), 1),                    // интерпритируем 0 как 1
-  STORE_TEMP(min((LOAD_TEMP(3) == 0) * 255 + LOAD_TEMP(3), 255), 3),    // интерпритируем 0 как 255
-  STORE_TEMP(min(cargo_capacity / LOAD_TEMP(1) + 1, LOAD_TEMP(3)), 1),  // переводим тики в 1 груза, берем минимум по объёму и тикам
-  vehicle_is_unloading])
+  [ STORE_TEMP((LOAD_TEMP(1) == 0) + LOAD_TEMP(1), 1),                    // интерпритируем 0 как 1
+    STORE_TEMP(min((LOAD_TEMP(3) == 0) * 255 + LOAD_TEMP(3), 255), 3),    // интерпритируем 0 как 255
+    STORE_TEMP(min(cargo_capacity / LOAD_TEMP(1) + 1, LOAD_TEMP(3)), 1),  // переводим тики в 1 груза, берем минимум по объёму и тикам
+    vehicle_is_unloading])
 {
   1: all_wagons_bulk_loading_speed2;
-     all_wagons_bulk_station_loading_speed;
+  all_wagons_bulk_station_loading_speed;
 }
 
 switch (FEAT_TRAINS, SELF, all_wagons_bulk_loading_speed,
-[ STORE_TEMP((LOAD_TEMP(0) == 0) + LOAD_TEMP(0), 0),                    // интерпритируем 0 как 1
-  STORE_TEMP(min((LOAD_TEMP(2) == 0) * 255 + LOAD_TEMP(2), 255), 2),    // интерпритируем 0 как 255
-  STORE_TEMP(min(cargo_capacity / LOAD_TEMP(0) + 1, LOAD_TEMP(2)), 0),  // переводим тики в 1 груза, берем минимум по объёму и тикам
-  (LOAD_TEMP(1) == 0) && (LOAD_TEMP(3) == 0)])                          // Глуходонные вагоны, выгрузка сваливанием не допускается, считается по скорости погрузки
+  [ STORE_TEMP((LOAD_TEMP(0) == 0) + LOAD_TEMP(0), 0),                    // интерпритируем 0 как 1
+    STORE_TEMP(min((LOAD_TEMP(2) == 0) * 255 + LOAD_TEMP(2), 255), 2),    // интерпритируем 0 как 255
+    STORE_TEMP(min(cargo_capacity / LOAD_TEMP(0) + 1, LOAD_TEMP(2)), 0),  // переводим тики в 1 груза, берем минимум по объёму и тикам
+    (LOAD_TEMP(1) == 0) && (LOAD_TEMP(3) == 0)])                          // Глуходонные вагоны, выгрузка сваливанием не допускается, считается по скорости погрузки
 {
   1: all_wagons_bulk_station_loading_speed;
-     all_wagons_bulk_loading_speed1;
+  all_wagons_bulk_loading_speed1;
 }

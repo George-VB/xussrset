@@ -46,18 +46,18 @@
 
 switch (FEAT_TRAINS, SELF, all_running_cost_power,  // расход топлива считается от разгона
   STORE_TEMP(LOAD_TEMP(10) +
-             vehicle_is_powered * LOAD_TEMP(0) *
-                ((LOAD_TEMP(11) < (LOAD_TEMP(12) * RC_RACE_LIMIT)) * RC_RACE + 100) / 100 /
-                (RC_STOP * (LOAD_TEMP(11) < 2) + 1), 10))
+    vehicle_is_powered * LOAD_TEMP(0) *
+    ((LOAD_TEMP(11) < (LOAD_TEMP(12) * RC_RACE_LIMIT)) * RC_RACE + 100) / 100 /
+    (RC_STOP * (LOAD_TEMP(11) < 2) + 1), 10))
 {
   return rcosts_multiplier == 0 ? min(32767, (LOAD_TEMP(10)))  :
-                                  min(32767, (LOAD_TEMP(10)) * rcosts_multiplier / 100) ;
+  min(32767, (LOAD_TEMP(10)) * rcosts_multiplier / 100) ;
 }
 
 switch (FEAT_TRAINS, SELF, all_running_cost_usage,  // износ по скорости считается линейным в процентах от максимальной скорости ПС
   STORE_TEMP(LOAD_TEMP(10) +
-             LOAD_TEMP(2) * (LOAD_TEMP(11) + 1) / (LOAD_TEMP(6) * 5 / 18 + 1) *
-             (LOAD_TEMP(7) + cargo_count * cargo_unit_weight / 16) / LOAD_TEMP(8), 10))
+    LOAD_TEMP(2) * (LOAD_TEMP(11) + 1) / (LOAD_TEMP(6) * 5 / 18 + 1) *
+    (LOAD_TEMP(7) + cargo_count * cargo_unit_weight / 16) / LOAD_TEMP(8), 10))
 {
   all_running_cost_power;
 }
@@ -67,104 +67,104 @@ switch (FEAT_TRAINS, SELF, all_running_cost_usage,  // износ по скор�
 #define RC_CRASHED 5
 
 switch (FEAT_TRAINS, PARENT, all_running_cost_factor_unused,
-[  STORE_TEMP(current_speed, 11),
-   STORE_TEMP(current_max_speed, 12),
-   vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed) ])
+  [ STORE_TEMP(current_speed, 11),
+    STORE_TEMP(current_max_speed, 12),
+    vehicle_is_in_depot + (2 * vehicle_is_broken) + (4 * vehicle_is_crashed) ])
 {
-     1: return rcosts_multiplier == 0 ? min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)))  :
-                                        min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)) * rcosts_multiplier / 100);  // ПС в депо не используется
+  1: return rcosts_multiplier == 0 ? min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)))  :
+  min(32767, (RC_UNUSED * LOAD_TEMP(2) + LOAD_TEMP(10)) * rcosts_multiplier / 100);  // ПС в депо не используется
   2..3: return rcosts_multiplier == 0 ? min(32767, (vehicle_is_potentially_powered * RC_BROKEN * LOAD_TEMP(4) + LOAD_TEMP(10)))  :
-                                        min(32767, (vehicle_is_potentially_powered * RC_BROKEN * LOAD_TEMP(4) + LOAD_TEMP(10)) * rcosts_multiplier / 100) ;  // ПС сломано в пути - дорогое ТО
+  min(32767, (vehicle_is_potentially_powered * RC_BROKEN * LOAD_TEMP(4) + LOAD_TEMP(10)) * rcosts_multiplier / 100) ;  // ПС сломано в пути - дорогое ТО
   4..7: return rcosts_multiplier == 0 ? min(32767, (RC_CRASHED * LOAD_TEMP(2) + 2000 + LOAD_TEMP(10)))  :
-                                        min(32767, (RC_CRASHED * LOAD_TEMP(2) + 2000 + LOAD_TEMP(10)) * rcosts_multiplier / 100) ;  // ПС разрушено
-        all_running_cost_usage;
+  min(32767, (RC_CRASHED * LOAD_TEMP(2) + 2000 + LOAD_TEMP(10)) * rcosts_multiplier / 100) ;  // ПС разрушено
+  all_running_cost_usage;
 }
 
 switch (FEAT_TRAINS, SELF, all_running_cost_factor_lic,  // В регистре 10 собираем стоимость на данный тик
   STORE_TEMP(                                            // оплата бригады идёт всегда
 // TODO Учесть СМЕ нормально - если штраф, то бригада в каждой секции??
 // TODO что делать с ПС не под током - куда исчезает команда?
-  (LOAD_TEMP(1) * (1 - ((is_penalise_speed() == 0) && (position_in_consist > 0)) * (vehicle_is_powered))) +
-  (LOAD_TEMP(3) * (cargo_count > 0)) +          // оплата сопровождения зависит от наличия груза
-  (LOAD_TEMP(5) * (current_day_of_year < 1)) +  // оплата лицензий и налогов - раз в год, 1 января.
-  (LOAD_TEMP(4) * ((current_date > date_of_last_service) &&
-                   (current_date < date_of_last_service + 2))), 10))  // Оплата ТО - на выходе из депо
+    (LOAD_TEMP(1) * (1 - ((is_penalise_speed() == 0) && (position_in_consist > 0)) * (vehicle_is_powered))) +
+    (LOAD_TEMP(3) * (cargo_count > 0)) +          // оплата сопровождения зависит от наличия груза
+    (LOAD_TEMP(5) * (current_day_of_year < 1)) +  // оплата лицензий и налогов - раз в год, 1 января.
+    (LOAD_TEMP(4) * ((current_date > date_of_last_service) &&
+        (current_date < date_of_last_service + 2))), 10))  // Оплата ТО - на выходе из депо
 {
-     all_running_cost_factor_unused;
+  all_running_cost_factor_unused;
 }
 
 switch (FEAT_TRAINS, PARENT, all_running_cost_factor_justbuilt,
   age_in_days)  // в момент постройки RC - совокупный. Смысл - показать при покупке потолок расхода
 {
   0: return rcosts_multiplier == 0 ? min(32767, (LOAD_TEMP(0) + LOAD_TEMP(1) + LOAD_TEMP(2) + LOAD_TEMP(3) + LOAD_TEMP(4) + LOAD_TEMP(5)))  :
-                                     min(32767, (LOAD_TEMP(0) + LOAD_TEMP(1) + LOAD_TEMP(2) + LOAD_TEMP(3) + LOAD_TEMP(4) + LOAD_TEMP(5)) * rcosts_multiplier / 100) ;
-     all_running_cost_factor_lic;
+  min(32767, (LOAD_TEMP(0) + LOAD_TEMP(1) + LOAD_TEMP(2) + LOAD_TEMP(3) + LOAD_TEMP(4) + LOAD_TEMP(5)) * rcosts_multiplier / 100) ;
+  all_running_cost_factor_lic;
 }
 
 switch (FEAT_TRAINS, SELF, all_running_cost_factor,
   position_in_articulated_veh)  // Расчёт ведётся только для головного элемента ARV
 {
   0: all_running_cost_factor_justbuilt;
-     return 0;
+  return 0;
 }
 
 // Определение стоимости обслуживания МВПС
 #define RC_head_check(name, vehid)                               \
 switch (FEAT_TRAINS, PARENT, name##_check3_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
+  [ STORE_TEMP(0, 0),                                            \
+    STORE_TEMP(0, 1),                                            \
+    STORE_TEMP(0, 3),                                            \
+    STORE_TEMP(LOAD_TEMP(7), 8)])                                \
 { all_running_cost_factor; }                                     \
 switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
   vehicle_type_id == vehid)                                      \
 { 1: all_running_cost_factor;                                    \
-     name##_check3_running_cost_factor; }                        \
+  name##_check3_running_cost_factor; }                           \
 switch (FEAT_TRAINS, SELF, name##_check_running_cost_factor,     \
   position_in_consist == 0)                                      \
 { 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+  name##_check2_running_cost_factor; }                           \
 
 #define RC_head_check2(name, vehid1, vehid2)                     \
 switch (FEAT_TRAINS, PARENT, name##_check3_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
+  [ STORE_TEMP(0, 0),                                            \
+    STORE_TEMP(0, 1),                                            \
+    STORE_TEMP(0, 3),                                            \
+    STORE_TEMP(LOAD_TEMP(7), 8)])                                \
 { all_running_cost_factor; }                                     \
 switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
   (vehicle_type_id == vehid1) || (vehicle_type_id == vehid2))    \
 { 1: all_running_cost_factor;                                    \
-     name##_check3_running_cost_factor; }                        \
+  name##_check3_running_cost_factor; }                           \
 switch (FEAT_TRAINS, SELF, name##_check_running_cost_factor,     \
   position_in_consist == 0)                                      \
 { 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+  name##_check2_running_cost_factor; }                           \
 
 #define RC_head_check3(name, vehid1, vehid2, vehid3)             \
 switch (FEAT_TRAINS, PARENT, name##_check3_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
+  [ STORE_TEMP(0, 0),                                            \
+    STORE_TEMP(0, 1),                                            \
+    STORE_TEMP(0, 3),                                            \
+    STORE_TEMP(LOAD_TEMP(7), 8)])                                \
 { all_running_cost_factor; }                                     \
 switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
   (vehicle_type_id == vehid1) ||                                 \
   (vehicle_type_id == vehid2) ||                                 \
   (vehicle_type_id == vehid3))                                   \
 { 1: all_running_cost_factor;                                    \
-     name##_check3_running_cost_factor; }                        \
+  name##_check3_running_cost_factor; }                           \
 switch (FEAT_TRAINS, SELF, name##_check_running_cost_factor,     \
   position_in_consist == 0)                                      \
 { 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+  name##_check2_running_cost_factor; }                           \
 
 #define RC_head_check4(name, vehid1, vehid2, vehid3, vehid4)     \
 switch (FEAT_TRAINS, PARENT, name##_check3_running_cost_factor,  \
-[  STORE_TEMP(0, 0),                                             \
-   STORE_TEMP(0, 1),                                             \
-   STORE_TEMP(0, 3),                                             \
-   STORE_TEMP(LOAD_TEMP(7), 8)])                                 \
+  [ STORE_TEMP(0, 0),                                            \
+    STORE_TEMP(0, 1),                                            \
+    STORE_TEMP(0, 3),                                            \
+    STORE_TEMP(LOAD_TEMP(7), 8)])                                \
 { all_running_cost_factor; }                                     \
 switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
   (vehicle_type_id == vehid1) ||                                 \
@@ -172,10 +172,10 @@ switch (FEAT_TRAINS, PARENT, name##_check2_running_cost_factor,  \
   (vehicle_type_id == vehid3) ||                                 \
   (vehicle_type_id == vehid4))                                   \
 { 1: all_running_cost_factor;                                    \
-     name##_check3_running_cost_factor; }                        \
+  name##_check3_running_cost_factor; }                           \
 switch (FEAT_TRAINS, SELF, name##_check_running_cost_factor,     \
   position_in_consist == 0)                                      \
 { 1: all_running_cost_factor;                                    \
-     name##_check2_running_cost_factor; }                        \
+  name##_check2_running_cost_factor; }                           \
 
 // end
