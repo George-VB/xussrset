@@ -8,5 +8,5 @@ call  compile-steam.bat
 call  compile-wagons.bat
 call  compile-cars.bat
 call  compile-rails.bat
-call  compile-stations.bat
+rem call  compile-stations.bat
 call  compile.bat
