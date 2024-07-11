@@ -1,6 +1,6 @@
 // vl23
 
-#define PROP_vl23_CF  50
+#define PROP_vl23_CF  2 * 50
 #define PROP_vl23_RC  392
 #define PROP_vl23_SD  100
 #define PROP_vl23_WT  137
@@ -22,14 +22,14 @@ switch (FEAT_TRAINS, SELF, vl23_sprites_start_green,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl23_v2_sprites_start;
-     vl23_v3_sprites_start;
+  vl23_v3_sprites_start;
 }
 
 switch (FEAT_TRAINS, SELF, vl23_sprites_start_szhd,
   check_year(GREAT_CHANGE_YEAR))
 {
   0: vl23_v4_sprites_start;
-     vl23_v5_sprites_start;
+  vl23_v5_sprites_start;
 }
 
 switch (FEAT_TRAINS, SELF, vl23_sprites_start,
@@ -43,7 +43,7 @@ switch (FEAT_TRAINS, SELF, vl23_sprites_start,
   0xE0: vl23_v3_sprites_start;
   0xE1: vl23_v6_sprites_start;
   0xE2: vl23_v3_sprites_start;
-        align_10_sprites;
+  align_10_sprites;
 }
 
 long_vehicle(vl23)
@@ -53,7 +53,7 @@ long_vehicle(vl23)
   livery_template_base_list2(vl23_a1962, LV_RAL6002, LV_SOUTHERN_RAILWAY)
 
   livery_template_refit3_diff(vl23_a1987, STR_REFIT_FACTORY_GENERAL_TYPE, STR_NAME_2VL23,
-                                          STR_REFIT_RAL_6002, STR_NAME_2VL23, STR_REFIT_TTD_B5, STR_NAME_3VL23, STR_REFIT_TTD_53, vl23_a1962_cargo_subtype_text)
+  STR_REFIT_RAL_6002, STR_NAME_2VL23, STR_REFIT_TTD_B5, STR_NAME_3VL23, STR_REFIT_TTD_53, vl23_a1962_cargo_subtype_text)
 livery_template_service_year2(vl23, 1962, 1987)
 
 engine_speed_with_reduce(vl23, PROP_vl23_SD, 90, 40)
@@ -61,79 +61,80 @@ engine_electric1_2_effect(vl23_create_effect, -2, 4)
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced_p4,
   (((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
-   ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2))) &&
+    ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2))) &&
   (LOAD_TEMP(2)) &&
   ((LOAD_TEMP(0) - count_veh_id(vl23) +
-    LOAD_TEMP(1) - count_veh_id(vl23_pre)) == 2))
+      LOAD_TEMP(1) - count_veh_id(vl23_pre)) == 2))
 { 1: return 0;
-     return bitmask(FLAG_PENALISE_SPEED); }
+  return bitmask(FLAG_PENALISE_SPEED); }
 
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced_p2,
   ((vehicle_type_id != vl23_pre) || (cargo_subtype >= 0xE0) ) &&
   ((LOAD_TEMP(0) + LOAD_TEMP(1) <= 2) ||
-  (((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
-   ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2)))))
+    (((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
+      ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2)))))
 { 0: return bitmask(FLAG_PENALISE_SPEED);
-     return 0; }
+  return 0; }
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced2,
   position_in_consist)
 { 2: vl23_bitmask_vehicle_info_advanced_p2;
   4: vl23_bitmask_vehicle_info_advanced_p4;
-     return bitmask(FLAG_PENALISE_SPEED); }
+  return bitmask(FLAG_PENALISE_SPEED); }
 
 switch (FEAT_TRAINS, PARENT, vl23_bitmask_vehicle_info_advanced1,
-[ STORE_TEMP(count_veh_id(vl23), 0),
-  STORE_TEMP(count_veh_id(vl23_pre), 1),
-  STORE_TEMP( ((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
-              ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2)), 2),  // head supports 3 units
-  (vehicle_type_id == vl23) ||
-  ((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE0)) ])
+  [ STORE_TEMP(count_veh_id(vl23), 0),
+    STORE_TEMP(count_veh_id(vl23_pre), 1),
+    STORE_TEMP( ((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE1)) ||
+      ((vehicle_type_id == vl23) && (cargo_subtype >= 0xE2)), 2),  // head supports 3 units
+    (vehicle_type_id == vl23) ||
+    ((vehicle_type_id == vl23_pre) && (cargo_subtype >= 0xE0)) ])
 {
   1: vl23_bitmask_vehicle_info_advanced2;
-     return bitmask(FLAG_PENALISE_SPEED);
+  return bitmask(FLAG_PENALISE_SPEED);
 }
 
 switch (FEAT_TRAINS, SELF, vl23_bitmask_vehicle_info_advanced,
   (position_in_consist) * (vehicle_is_powered) * (position_in_articulated_veh == 0))
 {
   0: return 0;
-     vl23_bitmask_vehicle_info_advanced1;
+  vl23_bitmask_vehicle_info_advanced1;
 }
 
-name_in_group(vl23, string(STR_NAME_IN_GROUP, string(STR_NAME_VL23_SERIES), string(STR_NAME_VL23_TYPE1958)),
-                    string(STR_NAME_IN_GROUP, string(STR_NAME_VL23_SERIES), string(STR_LONGNAME_VL23_TYPE1958)))
+name_in_group(vl23,
+  string(STR_NAME_IN_GROUP, string(STR_NAME_VL23_SERIES), string(STR_NAME_VL23_TYPE1958)),
+  string(STR_NAME_IN_GROUP, string(STR_NAME_VL23_SERIES), string(STR_LONGNAME_VL23_TYPE1958)))
 
 switch (FEAT_TRAINS, SELF, vl23_running_cost_factor,
-[  STORE_TEMP(223, 0),  // Моторы
-   STORE_TEMP(31, 1),   // Бригада
-   STORE_TEMP(78, 2),   // Износ
-   STORE_TEMP(0, 3),    // Сопровождение
-   STORE_TEMP(55, 4),   // ТО
-   STORE_TEMP(4, 5),    // Сертификация
+  [ STORE_TEMP(223, 0),  // Моторы
+    STORE_TEMP(31, 1),   // Бригада
+    STORE_TEMP(78, 2),   // Износ
+    STORE_TEMP(0, 3),    // Сопровождение
+    STORE_TEMP(55, 4),   // ТО
+    STORE_TEMP(4, 5),    // Сертификация
 
-   STORE_TEMP(PROP_vl23_SD, 6),          // Скорость
-   STORE_TEMP(round(PROP_vl23_WT), 7),   // Тара
-   STORE_TEMP(round(PROP_vl23_WT), 8)])  // Максимальная масса
-{ all_running_cost_factor; }             // 392
+    STORE_TEMP(PROP_vl23_SD, 6),          // Скорость
+    STORE_TEMP(round(PROP_vl23_WT), 7),   // Тара
+    STORE_TEMP(round(PROP_vl23_WT), 8)])  // Максимальная масса
+{ all_running_cost_factor; }              // 392
 
     engine_refit_cost_for_livery_change2(vl23_3, 1, 1)
   engine_refit_cost_for_range_livery_change(vl23_2, 0xE0, 0xE1, 1, vl23_3_refit_cost)
 engine_refit_cost_for_range_livery_change(vl23, 0xE2, 0xE2, 1, vl23_2_refit_cost)
 
 hint_engine(vl23_b1987,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
-     STR_PURCHASE_HINT_SECTIONS_1_2,
-     1958, 1961,
-     fact_novocherkassk())
+  STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
+  STR_PURCHASE_HINT_SECTIONS_1_2,
+  1958, 1961,
+  fact_novocherkassk())
 hint_engine_comment(vl23_a1987,
-     STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
-     STR_PURCHASE_HINT_SECTIONS_1_2,
-     1958, 1961,
-     fact_novocherkassk(),
-     string(STR_PURCHASE_HINT_EDITION_NEW_SECTIONS,
-            string(STR_PURCHASE_HINT_SECTIONS_1_3)))
+  STR_PURCHASE_HINT_ENGINE_TYPE_PASSENGER_FREIGHT_ELECTRIC_DC,
+  STR_PURCHASE_HINT_SECTIONS_1_2,
+  1958, 1961,
+  fact_novocherkassk(),
+  string(STR_PURCHASE_HINT_EDITION_NEW_SECTIONS,
+    string(STR_PURCHASE_HINT_SECTIONS_1_3)))
 hint_change_after(vl23, 1987)
 
 item (FEAT_TRAINS, vl23, 180) {

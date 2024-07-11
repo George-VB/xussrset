@@ -4,20 +4,20 @@
 #define engine_change_service_year(name, old_prop, new_prop, year)  \
 switch (FEAT_TRAINS, SELF, name, check_year(year))                  \
 { 1: new_prop;                                                      \
-     old_prop; }                                                    \
+  old_prop; }                                                       \
 
 #define engine_change_service_year2(name, old_prop, new_prop, year, new_prop2, year2)  \
 switch (FEAT_TRAINS, SELF, name, check_year(year) + check_year(year2))                 \
 { 1: new_prop;                                                                         \
   2: new_prop2;                                                                        \
-     old_prop; }                                                                       \
+  old_prop; }                                                                          \
 
 #define engine_change_service_year3(name, old_prop, new_prop, year, new_prop2, year2, new_prop3, year3)  \
 switch (FEAT_TRAINS, SELF, name, check_year(year) + check_year(year2) + check_year(year3))               \
 { 1: new_prop;                                                                                           \
   2: new_prop2;                                                                                          \
   3: new_prop3;                                                                                          \
-     old_prop; }                                                                                         \
+  old_prop; }                                                                                            \
 
 // Общее изменение по Текущему году
 #define engine_change_year(name, old_prop_name, new_prop_name, year)  \
@@ -40,441 +40,441 @@ switch (FEAT_TRAINS, SELF, name, (cargo_subtype >= 0xE0 + shift))             \
 // Общее изменение по рефиту предыдущего ПС
 #define engine_change_refit_prev(name, old_prop_name, new_prop_name, offset)  \
 switch (FEAT_TRAINS, SELF, name,                                              \
-[ set_offset_to(offset), (prev_vehicle_cargo_subtype()>= 0xE0) ])             \
+  [ set_offset_to(offset), (prev_vehicle_cargo_subtype()>= 0xE0) ])           \
 { 1: new_prop_name; old_prop_name; }                                          \
 
 #define engine_change_refit_shift_prev(name, old_prop_name, new_prop_name, shift, offset)  \
 switch (FEAT_TRAINS, SELF, name,                                                           \
-[ set_offset_to(offset), (prev_vehicle_cargo_subtype()>= 0xE0 + shift) ])                  \
+  [ set_offset_to(offset), (prev_vehicle_cargo_subtype()>= 0xE0 + shift) ])                \
 { 1: new_prop_name; old_prop_name; }                                                       \
 
 // Определение пенальти на скорость (схема без СМЕ)
 #define engine_penalise_speed0(name)                         \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,      \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||  \
-   (position_in_articulated_veh > 0))                        \
+  (position_in_articulated_veh > 0))                         \
 { 1: return 0;                                               \
-     return bitmask(FLAG_PENALISE_SPEED); }                  \
+  return bitmask(FLAG_PENALISE_SPEED); }                     \
 
 // Определение пенальти на скорость (схема без альтернатив в СМЕ)
-#define engine_penalise_speed(name, num)                         \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name), 0),              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
-    LOAD_TEMP(0) < num)])                                        \
-{ 1: return 0;                                                   \
-     return bitmask(FLAG_PENALISE_SPEED); }                      \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
-[ STORE_TEMP(count_veh_id(name), 0),                             \
-  STORE_TEMP(vehicle_type_id == name, 1) ])                      \
-{ name##_bitmask_vehicle_info3; }                                \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
-   (position_in_articulated_veh > 0))                            \
-{ 1: return 0;                                                   \
-     name##_bitmask_vehicle_info2; }                             \
+#define engine_penalise_speed(name, num)                           \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,           \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(name), 0),              \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+      LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                     \
+  return bitmask(FLAG_PENALISE_SPEED); }                           \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,         \
+  [ STORE_TEMP(count_veh_id(name), 0),                             \
+    STORE_TEMP(vehicle_type_id == name, 1) ])                      \
+{ name##_bitmask_vehicle_info3; }                                  \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,            \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||        \
+  (position_in_articulated_veh > 0))                               \
+{ 1: return 0;                                                     \
+  name##_bitmask_vehicle_info2; }                                  \
 
 // Определение пенальти на скорость (схема c 1 альтернативой в СМЕ)
-#define engine_penalise_speed2(name, vehid1, vehid2, num)        \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,         \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -               \
-                            count_veh_id(vehid2), 0),            \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
-    LOAD_TEMP(0) < num)])                                        \
-{ 1: return 0;                                                   \
-     return bitmask(FLAG_PENALISE_SPEED); }                      \
-switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,       \
-[ STORE_TEMP(count_veh_id(vehid1) +                              \
-             count_veh_id(vehid2), 0),                           \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                      \
-             (vehicle_type_id == vehid2), 1) ])                  \
-{ name##_bitmask_vehicle_info3; }                                \
-switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,          \
-  (position_in_consist == 0) || (vehicle_is_not_powered) ||      \
-   (position_in_articulated_veh > 0))                            \
-{ 1: return 0;                                                   \
-     name##_bitmask_vehicle_info2; }                             \
+#define engine_penalise_speed2(name, vehid1, vehid2, num)          \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,           \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -               \
+      count_veh_id(vehid2), 0),                                    \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+      LOAD_TEMP(0) < num)])                                        \
+{ 1: return 0;                                                     \
+  return bitmask(FLAG_PENALISE_SPEED); }                           \
+switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,         \
+  [ STORE_TEMP(count_veh_id(vehid1) +                              \
+      count_veh_id(vehid2), 0),                                    \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                      \
+      (vehicle_type_id == vehid2), 1) ])                           \
+{ name##_bitmask_vehicle_info3; }                                  \
+switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,            \
+  (position_in_consist == 0) || (vehicle_is_not_powered) ||        \
+  (position_in_articulated_veh > 0))                               \
+{ 1: return 0;                                                     \
+  name##_bitmask_vehicle_info2; }                                  \
 
 // Определение пенальти на скорость (схема c 2 альтернативами в СМЕ)
 #define engine_penalise_speed3(name, vehid1, vehid2, vehid3, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,           \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                 \
-                            count_veh_id(vehid2) -                 \
-                            count_veh_id(vehid3), 0),              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&    \
-    LOAD_TEMP(0) < num)])                                          \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -               \
+      count_veh_id(vehid2) -                                       \
+      count_veh_id(vehid3), 0),                                    \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&  \
+      LOAD_TEMP(0) < num)])                                        \
 { 1: return 0;                                                     \
-     return bitmask(FLAG_PENALISE_SPEED); }                        \
+  return bitmask(FLAG_PENALISE_SPEED); }                           \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,         \
-[ STORE_TEMP(count_veh_id(vehid1) +                                \
-             count_veh_id(vehid2) +                                \
-             count_veh_id(vehid3), 0),                             \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                        \
-             (vehicle_type_id == vehid2) ||                        \
-             (vehicle_type_id == vehid3), 1) ])                    \
+  [ STORE_TEMP(count_veh_id(vehid1) +                              \
+      count_veh_id(vehid2) +                                       \
+      count_veh_id(vehid3), 0),                                    \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                      \
+      (vehicle_type_id == vehid2) ||                               \
+      (vehicle_type_id == vehid3), 1) ])                           \
 { name##_bitmask_vehicle_info3; }                                  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,            \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||        \
-   (position_in_articulated_veh > 0))                              \
+  (position_in_articulated_veh > 0))                               \
 { 1: return 0;                                                     \
-     name##_bitmask_vehicle_info2; }                               \
+  name##_bitmask_vehicle_info2; }                                  \
 
 // Определение пенальти на скорость (схема c 3 альтернативами в СМЕ)
 #define engine_penalise_speed4(name, vehid1, vehid2, vehid3, vehid4, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                   \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                         \
-                            count_veh_id(vehid2) -                         \
-                            count_veh_id(vehid3) -                         \
-                            count_veh_id(vehid4), 0),                      \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&            \
-    LOAD_TEMP(0) < num)])                                                  \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                       \
+      count_veh_id(vehid2) -                                               \
+      count_veh_id(vehid3) -                                               \
+      count_veh_id(vehid4), 0),                                            \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&          \
+      LOAD_TEMP(0) < num)])                                                \
 { 1: return 0;                                                             \
-     return bitmask(FLAG_PENALISE_SPEED); }                                \
+  return bitmask(FLAG_PENALISE_SPEED); }                                   \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                 \
-[ STORE_TEMP(count_veh_id(vehid1) +                                        \
-             count_veh_id(vehid2) +                                        \
-             count_veh_id(vehid3) +                                        \
-             count_veh_id(vehid4), 0),                                     \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                \
-             (vehicle_type_id == vehid2) ||                                \
-             (vehicle_type_id == vehid3) ||                                \
-             (vehicle_type_id == vehid4), 1) ])                            \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                      \
+      count_veh_id(vehid2) +                                               \
+      count_veh_id(vehid3) +                                               \
+      count_veh_id(vehid4), 0),                                            \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                              \
+      (vehicle_type_id == vehid2) ||                                       \
+      (vehicle_type_id == vehid3) ||                                       \
+      (vehicle_type_id == vehid4), 1) ])                                   \
 { name##_bitmask_vehicle_info3; }                                          \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                    \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                \
-   (position_in_articulated_veh > 0))                                      \
+  (position_in_articulated_veh > 0))                                       \
 { 1: return 0;                                                             \
-     name##_bitmask_vehicle_info2; }                                       \
+  name##_bitmask_vehicle_info2; }                                          \
 
 // Определение пенальти на скорость (схема c 4 альтернативами в СМЕ)
 #define engine_penalise_speed5(name, vehid1, vehid2, vehid3, vehid4, vehid5, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                           \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                 \
-                            count_veh_id(vehid2) -                                 \
-                            count_veh_id(vehid3) -                                 \
-                            count_veh_id(vehid4) -                                 \
-                            count_veh_id(vehid5), 0),                              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                    \
-    LOAD_TEMP(0) < num)])                                                          \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                               \
+      count_veh_id(vehid2) -                                                       \
+      count_veh_id(vehid3) -                                                       \
+      count_veh_id(vehid4) -                                                       \
+      count_veh_id(vehid5), 0),                                                    \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                  \
+      LOAD_TEMP(0) < num)])                                                        \
 { 1: return 0;                                                                     \
-     return bitmask(FLAG_PENALISE_SPEED); }                                        \
+  return bitmask(FLAG_PENALISE_SPEED); }                                           \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                         \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                \
-             count_veh_id(vehid2) +                                                \
-             count_veh_id(vehid3) +                                                \
-             count_veh_id(vehid4) +                                                \
-             count_veh_id(vehid5), 0),                                             \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                        \
-             (vehicle_type_id == vehid2) ||                                        \
-             (vehicle_type_id == vehid3) ||                                        \
-             (vehicle_type_id == vehid4) ||                                        \
-             (vehicle_type_id == vehid5), 1) ])                                    \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                              \
+      count_veh_id(vehid2) +                                                       \
+      count_veh_id(vehid3) +                                                       \
+      count_veh_id(vehid4) +                                                       \
+      count_veh_id(vehid5), 0),                                                    \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                      \
+      (vehicle_type_id == vehid2) ||                                               \
+      (vehicle_type_id == vehid3) ||                                               \
+      (vehicle_type_id == vehid4) ||                                               \
+      (vehicle_type_id == vehid5), 1) ])                                           \
 { name##_bitmask_vehicle_info3; }                                                  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                            \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                        \
-   (position_in_articulated_veh > 0))                                              \
+  (position_in_articulated_veh > 0))                                               \
 { 1: return 0;                                                                     \
-     name##_bitmask_vehicle_info2; }                                               \
+  name##_bitmask_vehicle_info2; }                                                  \
 
 // Определение пенальти на скорость (схема c 5 альтернативами в СМЕ)
 #define engine_penalise_speed6(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                   \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                         \
-                            count_veh_id(vehid2) -                                         \
-                            count_veh_id(vehid3) -                                         \
-                            count_veh_id(vehid4) -                                         \
-                            count_veh_id(vehid5) -                                         \
-                            count_veh_id(vehid6), 0),                                      \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                            \
-    LOAD_TEMP(0) < num)])                                                                  \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                       \
+      count_veh_id(vehid2) -                                                               \
+      count_veh_id(vehid3) -                                                               \
+      count_veh_id(vehid4) -                                                               \
+      count_veh_id(vehid5) -                                                               \
+      count_veh_id(vehid6), 0),                                                            \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                          \
+      LOAD_TEMP(0) < num)])                                                                \
 { 1: return 0;                                                                             \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                   \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                 \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                        \
-             count_veh_id(vehid2) +                                                        \
-             count_veh_id(vehid3) +                                                        \
-             count_veh_id(vehid4) +                                                        \
-             count_veh_id(vehid5) +                                                        \
-             count_veh_id(vehid6), 0),                                                     \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                \
-             (vehicle_type_id == vehid2) ||                                                \
-             (vehicle_type_id == vehid3) ||                                                \
-             (vehicle_type_id == vehid4) ||                                                \
-             (vehicle_type_id == vehid5) ||                                                \
-             (vehicle_type_id == vehid6), 1) ])                                            \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                      \
+      count_veh_id(vehid2) +                                                               \
+      count_veh_id(vehid3) +                                                               \
+      count_veh_id(vehid4) +                                                               \
+      count_veh_id(vehid5) +                                                               \
+      count_veh_id(vehid6), 0),                                                            \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                              \
+      (vehicle_type_id == vehid2) ||                                                       \
+      (vehicle_type_id == vehid3) ||                                                       \
+      (vehicle_type_id == vehid4) ||                                                       \
+      (vehicle_type_id == vehid5) ||                                                       \
+      (vehicle_type_id == vehid6), 1) ])                                                   \
 { name##_bitmask_vehicle_info3; }                                                          \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                    \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                \
-   (position_in_articulated_veh > 0))                                                      \
+  (position_in_articulated_veh > 0))                                                       \
 { 1: return 0;                                                                             \
-     name##_bitmask_vehicle_info2; }                                                       \
+  name##_bitmask_vehicle_info2; }                                                          \
 
 // Определение пенальти на скорость (схема c 6 альтернативами в СМЕ)
 #define engine_penalise_speed7(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                           \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                 \
-                            count_veh_id(vehid2) -                                                 \
-                            count_veh_id(vehid3) -                                                 \
-                            count_veh_id(vehid4) -                                                 \
-                            count_veh_id(vehid5) -                                                 \
-                            count_veh_id(vehid6) -                                                 \
-                            count_veh_id(vehid7), 0),                                              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                    \
-    LOAD_TEMP(0) < num)])                                                                          \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                               \
+      count_veh_id(vehid2) -                                                                       \
+      count_veh_id(vehid3) -                                                                       \
+      count_veh_id(vehid4) -                                                                       \
+      count_veh_id(vehid5) -                                                                       \
+      count_veh_id(vehid6) -                                                                       \
+      count_veh_id(vehid7), 0),                                                                    \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                  \
+      LOAD_TEMP(0) < num)])                                                                        \
 { 1: return 0;                                                                                     \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                        \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                           \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                         \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                                \
-             count_veh_id(vehid2) +                                                                \
-             count_veh_id(vehid3) +                                                                \
-             count_veh_id(vehid4) +                                                                \
-             count_veh_id(vehid5) +                                                                \
-             count_veh_id(vehid6) +                                                                \
-             count_veh_id(vehid7), 0),                                                             \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                        \
-             (vehicle_type_id == vehid2) ||                                                        \
-             (vehicle_type_id == vehid3) ||                                                        \
-             (vehicle_type_id == vehid4) ||                                                        \
-             (vehicle_type_id == vehid5) ||                                                        \
-             (vehicle_type_id == vehid6) ||                                                        \
-             (vehicle_type_id == vehid7), 1) ])                                                    \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                              \
+      count_veh_id(vehid2) +                                                                       \
+      count_veh_id(vehid3) +                                                                       \
+      count_veh_id(vehid4) +                                                                       \
+      count_veh_id(vehid5) +                                                                       \
+      count_veh_id(vehid6) +                                                                       \
+      count_veh_id(vehid7), 0),                                                                    \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                                      \
+      (vehicle_type_id == vehid2) ||                                                               \
+      (vehicle_type_id == vehid3) ||                                                               \
+      (vehicle_type_id == vehid4) ||                                                               \
+      (vehicle_type_id == vehid5) ||                                                               \
+      (vehicle_type_id == vehid6) ||                                                               \
+      (vehicle_type_id == vehid7), 1) ])                                                           \
 { name##_bitmask_vehicle_info3; }                                                                  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                            \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                        \
-   (position_in_articulated_veh > 0))                                                              \
+  (position_in_articulated_veh > 0))                                                               \
 { 1: return 0;                                                                                     \
-     name##_bitmask_vehicle_info2; }                                                               \
+  name##_bitmask_vehicle_info2; }                                                                  \
 
 // Определение пенальти на скорость (схема c 7 альтернативами в СМЕ)
 #define engine_penalise_speed8(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, vehid8, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                                   \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                         \
-                            count_veh_id(vehid2) -                                                         \
-                            count_veh_id(vehid3) -                                                         \
-                            count_veh_id(vehid4) -                                                         \
-                            count_veh_id(vehid5) -                                                         \
-                            count_veh_id(vehid6) -                                                         \
-                            count_veh_id(vehid7) -                                                         \
-                            count_veh_id(vehid8), 0),                                                      \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                            \
-    LOAD_TEMP(0) < num)])                                                                                  \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                       \
+      count_veh_id(vehid2) -                                                                               \
+      count_veh_id(vehid3) -                                                                               \
+      count_veh_id(vehid4) -                                                                               \
+      count_veh_id(vehid5) -                                                                               \
+      count_veh_id(vehid6) -                                                                               \
+      count_veh_id(vehid7) -                                                                               \
+      count_veh_id(vehid8), 0),                                                                            \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                          \
+      LOAD_TEMP(0) < num)])                                                                                \
 { 1: return 0;                                                                                             \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                                   \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                                 \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                                        \
-             count_veh_id(vehid2) +                                                                        \
-             count_veh_id(vehid3) +                                                                        \
-             count_veh_id(vehid4) +                                                                        \
-             count_veh_id(vehid5) +                                                                        \
-             count_veh_id(vehid6) +                                                                        \
-             count_veh_id(vehid7) +                                                                        \
-             count_veh_id(vehid8), 0),                                                                     \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                                \
-             (vehicle_type_id == vehid2) ||                                                                \
-             (vehicle_type_id == vehid3) ||                                                                \
-             (vehicle_type_id == vehid4) ||                                                                \
-             (vehicle_type_id == vehid5) ||                                                                \
-             (vehicle_type_id == vehid6) ||                                                                \
-             (vehicle_type_id == vehid7) ||                                                                \
-             (vehicle_type_id == vehid8), 1) ])                                                            \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                                      \
+      count_veh_id(vehid2) +                                                                               \
+      count_veh_id(vehid3) +                                                                               \
+      count_veh_id(vehid4) +                                                                               \
+      count_veh_id(vehid5) +                                                                               \
+      count_veh_id(vehid6) +                                                                               \
+      count_veh_id(vehid7) +                                                                               \
+      count_veh_id(vehid8), 0),                                                                            \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                                              \
+      (vehicle_type_id == vehid2) ||                                                                       \
+      (vehicle_type_id == vehid3) ||                                                                       \
+      (vehicle_type_id == vehid4) ||                                                                       \
+      (vehicle_type_id == vehid5) ||                                                                       \
+      (vehicle_type_id == vehid6) ||                                                                       \
+      (vehicle_type_id == vehid7) ||                                                                       \
+      (vehicle_type_id == vehid8), 1) ])                                                                   \
 { name##_bitmask_vehicle_info3; }                                                                          \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                    \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                                \
-   (position_in_articulated_veh > 0))                                                                      \
+  (position_in_articulated_veh > 0))                                                                       \
 { 1: return 0;                                                                                             \
-     name##_bitmask_vehicle_info2; }                                                                       \
+  name##_bitmask_vehicle_info2; }                                                                          \
 
 // Определение пенальти на скорость (схема c 8 альтернативами в СМЕ)
 #define engine_penalise_speed9(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, vehid8, vehid9, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                                           \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                 \
-                            count_veh_id(vehid2) -                                                                 \
-                            count_veh_id(vehid3) -                                                                 \
-                            count_veh_id(vehid4) -                                                                 \
-                            count_veh_id(vehid5) -                                                                 \
-                            count_veh_id(vehid6) -                                                                 \
-                            count_veh_id(vehid7) -                                                                 \
-                            count_veh_id(vehid8) -                                                                 \
-                            count_veh_id(vehid9), 0),                                                              \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                    \
-    LOAD_TEMP(0) < num)])                                                                                          \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                               \
+      count_veh_id(vehid2) -                                                                                       \
+      count_veh_id(vehid3) -                                                                                       \
+      count_veh_id(vehid4) -                                                                                       \
+      count_veh_id(vehid5) -                                                                                       \
+      count_veh_id(vehid6) -                                                                                       \
+      count_veh_id(vehid7) -                                                                                       \
+      count_veh_id(vehid8) -                                                                                       \
+      count_veh_id(vehid9), 0),                                                                                    \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                  \
+      LOAD_TEMP(0) < num)])                                                                                        \
 { 1: return 0;                                                                                                     \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                        \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                                           \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                                         \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                                                \
-             count_veh_id(vehid2) +                                                                                \
-             count_veh_id(vehid3) +                                                                                \
-             count_veh_id(vehid4) +                                                                                \
-             count_veh_id(vehid5) +                                                                                \
-             count_veh_id(vehid6) +                                                                                \
-             count_veh_id(vehid7) +                                                                                \
-             count_veh_id(vehid8) +                                                                                \
-             count_veh_id(vehid9), 0),                                                                             \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                                        \
-             (vehicle_type_id == vehid2) ||                                                                        \
-             (vehicle_type_id == vehid3) ||                                                                        \
-             (vehicle_type_id == vehid4) ||                                                                        \
-             (vehicle_type_id == vehid5) ||                                                                        \
-             (vehicle_type_id == vehid6) ||                                                                        \
-             (vehicle_type_id == vehid7) ||                                                                        \
-             (vehicle_type_id == vehid8) ||                                                                        \
-             (vehicle_type_id == vehid9), 1) ])                                                                    \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                                              \
+      count_veh_id(vehid2) +                                                                                       \
+      count_veh_id(vehid3) +                                                                                       \
+      count_veh_id(vehid4) +                                                                                       \
+      count_veh_id(vehid5) +                                                                                       \
+      count_veh_id(vehid6) +                                                                                       \
+      count_veh_id(vehid7) +                                                                                       \
+      count_veh_id(vehid8) +                                                                                       \
+      count_veh_id(vehid9), 0),                                                                                    \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                                                      \
+      (vehicle_type_id == vehid2) ||                                                                               \
+      (vehicle_type_id == vehid3) ||                                                                               \
+      (vehicle_type_id == vehid4) ||                                                                               \
+      (vehicle_type_id == vehid5) ||                                                                               \
+      (vehicle_type_id == vehid6) ||                                                                               \
+      (vehicle_type_id == vehid7) ||                                                                               \
+      (vehicle_type_id == vehid8) ||                                                                               \
+      (vehicle_type_id == vehid9), 1) ])                                                                           \
 { name##_bitmask_vehicle_info3; }                                                                                  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                            \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                                        \
-   (position_in_articulated_veh > 0))                                                                              \
+  (position_in_articulated_veh > 0))                                                                               \
 { 1: return 0;                                                                                                     \
-     name##_bitmask_vehicle_info2; }                                                                               \
+  name##_bitmask_vehicle_info2; }                                                                                  \
 
 // Определение пенальти на скорость (схема c 9 альтернативами в СМЕ)
 #define engine_penalise_speed10(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, vehid8, vehid9, vehid10, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                                                     \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                           \
-                            count_veh_id(vehid2) -                                                                           \
-                            count_veh_id(vehid3) -                                                                           \
-                            count_veh_id(vehid4) -                                                                           \
-                            count_veh_id(vehid5) -                                                                           \
-                            count_veh_id(vehid6) -                                                                           \
-                            count_veh_id(vehid7) -                                                                           \
-                            count_veh_id(vehid8) -                                                                           \
-                            count_veh_id(vehid9) -                                                                           \
-                            count_veh_id(vehid10), 0),                                                                       \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                              \
-    LOAD_TEMP(0) < num)])                                                                                                    \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                         \
+      count_veh_id(vehid2) -                                                                                                 \
+      count_veh_id(vehid3) -                                                                                                 \
+      count_veh_id(vehid4) -                                                                                                 \
+      count_veh_id(vehid5) -                                                                                                 \
+      count_veh_id(vehid6) -                                                                                                 \
+      count_veh_id(vehid7) -                                                                                                 \
+      count_veh_id(vehid8) -                                                                                                 \
+      count_veh_id(vehid9) -                                                                                                 \
+      count_veh_id(vehid10), 0),                                                                                             \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                            \
+      LOAD_TEMP(0) < num)])                                                                                                  \
 { 1: return 0;                                                                                                               \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                                  \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                                                     \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                                                   \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                                                          \
-             count_veh_id(vehid2) +                                                                                          \
-             count_veh_id(vehid3) +                                                                                          \
-             count_veh_id(vehid4) +                                                                                          \
-             count_veh_id(vehid5) +                                                                                          \
-             count_veh_id(vehid6) +                                                                                          \
-             count_veh_id(vehid7) +                                                                                          \
-             count_veh_id(vehid8) +                                                                                          \
-             count_veh_id(vehid9) +                                                                                          \
-             count_veh_id(vehid10), 0),                                                                                      \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                                                  \
-             (vehicle_type_id == vehid2) ||                                                                                  \
-             (vehicle_type_id == vehid3) ||                                                                                  \
-             (vehicle_type_id == vehid4) ||                                                                                  \
-             (vehicle_type_id == vehid5) ||                                                                                  \
-             (vehicle_type_id == vehid6) ||                                                                                  \
-             (vehicle_type_id == vehid7) ||                                                                                  \
-             (vehicle_type_id == vehid8) ||                                                                                  \
-             (vehicle_type_id == vehid9) ||                                                                                  \
-             (vehicle_type_id == vehid10), 1) ])                                                                             \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                                                        \
+      count_veh_id(vehid2) +                                                                                                 \
+      count_veh_id(vehid3) +                                                                                                 \
+      count_veh_id(vehid4) +                                                                                                 \
+      count_veh_id(vehid5) +                                                                                                 \
+      count_veh_id(vehid6) +                                                                                                 \
+      count_veh_id(vehid7) +                                                                                                 \
+      count_veh_id(vehid8) +                                                                                                 \
+      count_veh_id(vehid9) +                                                                                                 \
+      count_veh_id(vehid10), 0),                                                                                             \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                                                                \
+      (vehicle_type_id == vehid2) ||                                                                                         \
+      (vehicle_type_id == vehid3) ||                                                                                         \
+      (vehicle_type_id == vehid4) ||                                                                                         \
+      (vehicle_type_id == vehid5) ||                                                                                         \
+      (vehicle_type_id == vehid6) ||                                                                                         \
+      (vehicle_type_id == vehid7) ||                                                                                         \
+      (vehicle_type_id == vehid8) ||                                                                                         \
+      (vehicle_type_id == vehid9) ||                                                                                         \
+      (vehicle_type_id == vehid10), 1) ])                                                                                    \
 { name##_bitmask_vehicle_info3; }                                                                                            \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                                      \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                                                  \
-   (position_in_articulated_veh > 0))                                                                                        \
+  (position_in_articulated_veh > 0))                                                                                         \
 { 1: return 0;                                                                                                               \
-     name##_bitmask_vehicle_info2; }                                                                                         \
+  name##_bitmask_vehicle_info2; }                                                                                            \
 
 // Определение пенальти на скорость (схема c 10 альтернативами в СМЕ)
 #define engine_penalise_speed11(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, vehid8, vehid9, vehid10, vehid11, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                                                              \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                                    \
-                            count_veh_id(vehid2) -                                                                                    \
-                            count_veh_id(vehid3) -                                                                                    \
-                            count_veh_id(vehid4) -                                                                                    \
-                            count_veh_id(vehid5) -                                                                                    \
-                            count_veh_id(vehid6) -                                                                                    \
-                            count_veh_id(vehid7) -                                                                                    \
-                            count_veh_id(vehid8) -                                                                                    \
-                            count_veh_id(vehid9) -                                                                                    \
-                            count_veh_id(vehid10) -                                                                                   \
-                            count_veh_id(vehid11), 0),                                                                                \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                                       \
-    LOAD_TEMP(0) < num)])                                                                                                             \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                                  \
+      count_veh_id(vehid2) -                                                                                                          \
+      count_veh_id(vehid3) -                                                                                                          \
+      count_veh_id(vehid4) -                                                                                                          \
+      count_veh_id(vehid5) -                                                                                                          \
+      count_veh_id(vehid6) -                                                                                                          \
+      count_veh_id(vehid7) -                                                                                                          \
+      count_veh_id(vehid8) -                                                                                                          \
+      count_veh_id(vehid9) -                                                                                                          \
+      count_veh_id(vehid10) -                                                                                                         \
+      count_veh_id(vehid11), 0),                                                                                                      \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                                     \
+      LOAD_TEMP(0) < num)])                                                                                                           \
 { 1: return 0;                                                                                                                        \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                                           \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                                                              \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                                                            \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                                                                   \
-             count_veh_id(vehid2) +                                                                                                   \
-             count_veh_id(vehid3) +                                                                                                   \
-             count_veh_id(vehid4) +                                                                                                   \
-             count_veh_id(vehid5) +                                                                                                   \
-             count_veh_id(vehid6) +                                                                                                   \
-             count_veh_id(vehid7) +                                                                                                   \
-             count_veh_id(vehid8) +                                                                                                   \
-             count_veh_id(vehid9) +                                                                                                   \
-             count_veh_id(vehid10) +                                                                                                  \
-             count_veh_id(vehid11), 0),                                                                                               \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                                                           \
-             (vehicle_type_id == vehid2) ||                                                                                           \
-             (vehicle_type_id == vehid3) ||                                                                                           \
-             (vehicle_type_id == vehid4) ||                                                                                           \
-             (vehicle_type_id == vehid5) ||                                                                                           \
-             (vehicle_type_id == vehid6) ||                                                                                           \
-             (vehicle_type_id == vehid7) ||                                                                                           \
-             (vehicle_type_id == vehid8) ||                                                                                           \
-             (vehicle_type_id == vehid9) ||                                                                                           \
-             (vehicle_type_id == vehid10) ||                                                                                          \
-             (vehicle_type_id == vehid11), 1) ])                                                                                      \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                                                                 \
+      count_veh_id(vehid2) +                                                                                                          \
+      count_veh_id(vehid3) +                                                                                                          \
+      count_veh_id(vehid4) +                                                                                                          \
+      count_veh_id(vehid5) +                                                                                                          \
+      count_veh_id(vehid6) +                                                                                                          \
+      count_veh_id(vehid7) +                                                                                                          \
+      count_veh_id(vehid8) +                                                                                                          \
+      count_veh_id(vehid9) +                                                                                                          \
+      count_veh_id(vehid10) +                                                                                                         \
+      count_veh_id(vehid11), 0),                                                                                                      \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                                                                         \
+      (vehicle_type_id == vehid2) ||                                                                                                  \
+      (vehicle_type_id == vehid3) ||                                                                                                  \
+      (vehicle_type_id == vehid4) ||                                                                                                  \
+      (vehicle_type_id == vehid5) ||                                                                                                  \
+      (vehicle_type_id == vehid6) ||                                                                                                  \
+      (vehicle_type_id == vehid7) ||                                                                                                  \
+      (vehicle_type_id == vehid8) ||                                                                                                  \
+      (vehicle_type_id == vehid9) ||                                                                                                  \
+      (vehicle_type_id == vehid10) ||                                                                                                 \
+      (vehicle_type_id == vehid11), 1) ])                                                                                             \
 { name##_bitmask_vehicle_info3; }                                                                                                     \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                                               \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                                                           \
-   (position_in_articulated_veh > 0))                                                                                                 \
+  (position_in_articulated_veh > 0))                                                                                                  \
 { 1: return 0;                                                                                                                        \
-     name##_bitmask_vehicle_info2; }                                                                                                  \
+  name##_bitmask_vehicle_info2; }                                                                                                     \
 
 // Определение пенальти на скорость (схема c 13 альтернативами в СМЕ)
 #define engine_penalise_speed14(name, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, vehid8, vehid9, vehid10, vehid11, vehid12, vehid13, vehid14, num)  \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info3,                                                                                                         \
-[ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                                                               \
-                            count_veh_id(vehid2) -                                                                                                               \
-                            count_veh_id(vehid3) -                                                                                                               \
-                            count_veh_id(vehid4) -                                                                                                               \
-                            count_veh_id(vehid5) -                                                                                                               \
-                            count_veh_id(vehid6) -                                                                                                               \
-                            count_veh_id(vehid7) -                                                                                                               \
-                            count_veh_id(vehid8) -                                                                                                               \
-                            count_veh_id(vehid9) -                                                                                                               \
-                            count_veh_id(vehid10) -                                                                                                              \
-                            count_veh_id(vehid11) -                                                                                                              \
-                            count_veh_id(vehid12) -                                                                                                              \
-                            count_veh_id(vehid13) -                                                                                                              \
-                            count_veh_id(vehid14), 0),                                                                                                           \
-  (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                                                                  \
-    LOAD_TEMP(0) < num)])                                                                                                                                        \
+  [ STORE_TEMP(LOAD_TEMP(0) - count_veh_id(vehid1) -                                                                                                             \
+      count_veh_id(vehid2) -                                                                                                                                     \
+      count_veh_id(vehid3) -                                                                                                                                     \
+      count_veh_id(vehid4) -                                                                                                                                     \
+      count_veh_id(vehid5) -                                                                                                                                     \
+      count_veh_id(vehid6) -                                                                                                                                     \
+      count_veh_id(vehid7) -                                                                                                                                     \
+      count_veh_id(vehid8) -                                                                                                                                     \
+      count_veh_id(vehid9) -                                                                                                                                     \
+      count_veh_id(vehid10) -                                                                                                                                    \
+      count_veh_id(vehid11) -                                                                                                                                    \
+      count_veh_id(vehid12) -                                                                                                                                    \
+      count_veh_id(vehid13) -                                                                                                                                    \
+      count_veh_id(vehid14), 0),                                                                                                                                 \
+    (LOAD_TEMP(1) && (position_in_consist == 2 * LOAD_TEMP(0)) &&                                                                                                \
+      LOAD_TEMP(0) < num)])                                                                                                                                      \
 { 1: return 0;                                                                                                                                                   \
-     return bitmask(FLAG_PENALISE_SPEED); }                                                                                                                      \
+  return bitmask(FLAG_PENALISE_SPEED); }                                                                                                                         \
 switch (FEAT_TRAINS, PARENT, name##_bitmask_vehicle_info2,                                                                                                       \
-[ STORE_TEMP(count_veh_id(vehid1) +                                                                                                                              \
-             count_veh_id(vehid2) +                                                                                                                              \
-             count_veh_id(vehid3) +                                                                                                                              \
-             count_veh_id(vehid4) +                                                                                                                              \
-             count_veh_id(vehid5) +                                                                                                                              \
-             count_veh_id(vehid6) +                                                                                                                              \
-             count_veh_id(vehid7) +                                                                                                                              \
-             count_veh_id(vehid8) +                                                                                                                              \
-             count_veh_id(vehid9) +                                                                                                                              \
-             count_veh_id(vehid10) +                                                                                                                             \
-             count_veh_id(vehid11) +                                                                                                                             \
-             count_veh_id(vehid12) +                                                                                                                             \
-             count_veh_id(vehid13) +                                                                                                                             \
-             count_veh_id(vehid14), 0),                                                                                                                          \
-  STORE_TEMP((vehicle_type_id == vehid1) ||                                                                                                                      \
-             (vehicle_type_id == vehid2) ||                                                                                                                      \
-             (vehicle_type_id == vehid3) ||                                                                                                                      \
-             (vehicle_type_id == vehid4) ||                                                                                                                      \
-             (vehicle_type_id == vehid5) ||                                                                                                                      \
-             (vehicle_type_id == vehid6) ||                                                                                                                      \
-             (vehicle_type_id == vehid7) ||                                                                                                                      \
-             (vehicle_type_id == vehid8) ||                                                                                                                      \
-             (vehicle_type_id == vehid9) ||                                                                                                                      \
-             (vehicle_type_id == vehid10) ||                                                                                                                     \
-             (vehicle_type_id == vehid11) ||                                                                                                                     \
-             (vehicle_type_id == vehid12) ||                                                                                                                     \
-             (vehicle_type_id == vehid13) ||                                                                                                                     \
-             (vehicle_type_id == vehid14), 1) ])                                                                                                                 \
+  [ STORE_TEMP(count_veh_id(vehid1) +                                                                                                                            \
+      count_veh_id(vehid2) +                                                                                                                                     \
+      count_veh_id(vehid3) +                                                                                                                                     \
+      count_veh_id(vehid4) +                                                                                                                                     \
+      count_veh_id(vehid5) +                                                                                                                                     \
+      count_veh_id(vehid6) +                                                                                                                                     \
+      count_veh_id(vehid7) +                                                                                                                                     \
+      count_veh_id(vehid8) +                                                                                                                                     \
+      count_veh_id(vehid9) +                                                                                                                                     \
+      count_veh_id(vehid10) +                                                                                                                                    \
+      count_veh_id(vehid11) +                                                                                                                                    \
+      count_veh_id(vehid12) +                                                                                                                                    \
+      count_veh_id(vehid13) +                                                                                                                                    \
+      count_veh_id(vehid14), 0),                                                                                                                                 \
+    STORE_TEMP((vehicle_type_id == vehid1) ||                                                                                                                    \
+      (vehicle_type_id == vehid2) ||                                                                                                                             \
+      (vehicle_type_id == vehid3) ||                                                                                                                             \
+      (vehicle_type_id == vehid4) ||                                                                                                                             \
+      (vehicle_type_id == vehid5) ||                                                                                                                             \
+      (vehicle_type_id == vehid6) ||                                                                                                                             \
+      (vehicle_type_id == vehid7) ||                                                                                                                             \
+      (vehicle_type_id == vehid8) ||                                                                                                                             \
+      (vehicle_type_id == vehid9) ||                                                                                                                             \
+      (vehicle_type_id == vehid10) ||                                                                                                                            \
+      (vehicle_type_id == vehid11) ||                                                                                                                            \
+      (vehicle_type_id == vehid12) ||                                                                                                                            \
+      (vehicle_type_id == vehid13) ||                                                                                                                            \
+      (vehicle_type_id == vehid14), 1) ])                                                                                                                        \
 { name##_bitmask_vehicle_info3; }                                                                                                                                \
 switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                                                                                                          \
   (position_in_consist == 0) || (vehicle_is_not_powered) ||                                                                                                      \
-   (position_in_articulated_veh > 0))                                                                                                                            \
+  (position_in_articulated_veh > 0))                                                                                                                             \
 { 1: return 0;                                                                                                                                                   \
-     name##_bitmask_vehicle_info2; }                                                                                                                             \
+  name##_bitmask_vehicle_info2; }                                                                                                                                \
 
 // запрет на последнюю секцию
 // TODO CB 36 is not allowed to use var 61 (other vehicle), so the code of engine_has_before and engine_has_after is not added. Add when it would be possible
@@ -483,136 +483,136 @@ switch (FEAT_TRAINS, SELF, name##_bitmask_vehicle_info,                         
 #define engine_notlast_bothsides(namefull, vehid, basename)              \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
-     basename; }                                                         \
+  basename; }                                                            \
 
 // 1 или 2 секции + секции по краям
 #define engine1_2_notlast_bothsides(namefull, vehid, basename)           \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
-     basename; }                                                         \
+  basename; }                                                            \
 
 // 1 секция + секции по краям с 1 альтернативой
 #define engine_notlast_bothsides2(namefull, vehid1, vehid2, basename)    \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
-     basename; }                                                         \
+  basename; }                                                            \
 
 // 1 или 2 секции + секции по краям с 1 альтернативой
 #define engine1_2_notlast_bothsides2(namefull, vehid1, vehid2, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)   \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                  \
-     basename; }                                                          \
+  basename; }                                                             \
 
 // 1 секция + секции по краям с 2 альтернативами
 #define engine_notlast_bothsides3(namefull, vehid1, vehid2, vehid3, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)        \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                       \
-     basename; }                                                               \
+  basename; }                                                                  \
 
 // 1 секция + секции по краям с 3 альтернативами
 #define engine_notlast_bothsides4(namefull, vehid1, vehid2, vehid3, vehid4, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)                \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                               \
-     basename; }                                                                       \
+  basename; }                                                                          \
 
 // 1 или 2 секции + секции по краям с 3 альтернативами
 #define engine1_2_notlast_bothsides4(namefull, vehid1, vehid2, vehid3, vehid4, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)                   \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                                  \
-     basename; }                                                                          \
+  basename; }                                                                             \
 
 // 1 секция + секции по краям с 4 альтернативами
 #define engine_notlast_bothsides5(namefull, vehid1, vehid2, vehid3, vehid4, vehid5, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)                        \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                                       \
-     basename; }                                                                               \
+  basename; }                                                                                  \
 
 // 1 секция + секции по краям с 5 альтернативами
 #define engine_notlast_bothsides6(namefull, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)                                \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                                               \
-     basename; }                                                                                       \
+  basename; }                                                                                          \
 
 // 1 секция + секции по краям с 9 альтернативами
 #define engine_notlast_bothsides10(namefull, vehid1, vehid2, vehid3, vehid4, vehid5, vehid6, vehid7, vehid8, vehid9, vehid10, basename)  \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)                                                                  \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                                                                                 \
-     basename; }                                                                                                                         \
+  basename; }                                                                                                                            \
 
 // запрет на последнюю секцию
 
 #define engine_notlast(namefull, basename)                               \
 switch (FEAT_TRAINS, SELF, namefull, position_in_consist_from_end == 1)  \
 { 1: return bitmask(FLAG_WRONG_CONSIST);                                 \
-     basename; }                                                         \
+  basename; }                                                            \
 
 #define engine_has_before(namefull, vehid, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                  \
-[ set_offset_to(-2),                                  \
-  prev_vehicle_type_id() == vehid])                   \
+  [ set_offset_to(-2),                                \
+    prev_vehicle_type_id() == vehid])                 \
 { 0: return bitmask(FLAG_WRONG_CONSIST);              \
-     basename; }                                      \
+  basename; }                                         \
 
 #define engine_has_after(namefull, vehid, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                 \
-[ set_offset_to(2),                                  \
-  prev_vehicle_type_id() == vehid])                  \
+  [ set_offset_to(2),                                \
+    prev_vehicle_type_id() == vehid])                \
 { 0: return bitmask(FLAG_WRONG_CONSIST);             \
-     basename; }                                     \
+  basename; }                                        \
 
 #define engine_has_before2(namefull, vehid1, vehid2, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                            \
-[ set_offset_to(-2),                                            \
-  (prev_vehicle_type_id() == vehid1) ||                         \
-  (prev_vehicle_type_id() == vehid2) ])                         \
+  [ set_offset_to(-2),                                          \
+    (prev_vehicle_type_id() == vehid1) ||                       \
+    (prev_vehicle_type_id() == vehid2) ])                       \
 { 0: return bitmask(FLAG_WRONG_CONSIST);                        \
-     basename; }                                                \
+  basename; }                                                   \
 
 #define engine_has_after2(namefull, vehid1, vehid2, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                           \
-[ set_offset_to(2),                                            \
-  (prev_vehicle_type_id() == vehid1) ||                        \
-  (prev_vehicle_type_id() == vehid2) ])                        \
+  [ set_offset_to(2),                                          \
+    (prev_vehicle_type_id() == vehid1) ||                      \
+    (prev_vehicle_type_id() == vehid2) ])                      \
 { 0: return bitmask(FLAG_WRONG_CONSIST);                       \
-     basename; }                                               \
+  basename; }                                                  \
 
 #define engine_has_before3(namefull, vehid1, vehid2, vehid3, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                                    \
-[ set_offset_to(-2),                                                    \
-  (prev_vehicle_type_id() == vehid1) ||                                 \
-  (prev_vehicle_type_id() == vehid2) ||                                 \
-  (prev_vehicle_type_id() == vehid3) ])                                 \
+  [ set_offset_to(-2),                                                  \
+    (prev_vehicle_type_id() == vehid1) ||                               \
+    (prev_vehicle_type_id() == vehid2) ||                               \
+    (prev_vehicle_type_id() == vehid3) ])                               \
 { 0: return bitmask(FLAG_WRONG_CONSIST);                                \
-     basename; }                                                        \
+  basename; }                                                           \
 
 #define engine_has_after3(namefull, vehid1, vehid2, vehid3, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                                   \
-[ set_offset_to(2),                                                    \
-  (prev_vehicle_type_id() == vehid1) ||                                \
-  (prev_vehicle_type_id() == vehid2) ||                                \
-  (prev_vehicle_type_id() == vehid3) ])                                \
+  [ set_offset_to(2),                                                  \
+    (prev_vehicle_type_id() == vehid1) ||                              \
+    (prev_vehicle_type_id() == vehid2) ||                              \
+    (prev_vehicle_type_id() == vehid3) ])                              \
 { 0: return bitmask(FLAG_WRONG_CONSIST);                               \
-     basename; }                                                       \
+  basename; }                                                          \
 
 #define engine_has_before4(namefull, vehid1, vehid2, vehid3, vehid4, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                                            \
-[ set_offset_to(-2),                                                            \
-  (prev_vehicle_type_id() == vehid1) ||                                         \
-  (prev_vehicle_type_id() == vehid2) ||                                         \
-  (prev_vehicle_type_id() == vehid3) ||                                         \
-  (prev_vehicle_type_id() == vehid4) ])                                         \
+  [ set_offset_to(-2),                                                          \
+    (prev_vehicle_type_id() == vehid1) ||                                       \
+    (prev_vehicle_type_id() == vehid2) ||                                       \
+    (prev_vehicle_type_id() == vehid3) ||                                       \
+    (prev_vehicle_type_id() == vehid4) ])                                       \
 { 0: return bitmask(FLAG_WRONG_CONSIST);                                        \
-     basename; }                                                                \
+  basename; }                                                                   \
 
 #define engine_has_after4(namefull, vehid1, vehid2, vehid3, vehid4, basename)  \
 switch (FEAT_TRAINS, SELF, namefull,                                           \
-[ set_offset_to(2),                                                            \
-  (prev_vehicle_type_id() == vehid1) ||                                        \
-  (prev_vehicle_type_id() == vehid2) ||                                        \
-  (prev_vehicle_type_id() == vehid3) ||                                        \
-  (prev_vehicle_type_id() == vehid4) ])                                        \
+  [ set_offset_to(2),                                                          \
+    (prev_vehicle_type_id() == vehid1) ||                                      \
+    (prev_vehicle_type_id() == vehid2) ||                                      \
+    (prev_vehicle_type_id() == vehid3) ||                                      \
+    (prev_vehicle_type_id() == vehid4) ])                                      \
 { 0: return bitmask(FLAG_WRONG_CONSIST);                                       \
-     basename; }                                                               \
+  basename; }                                                                  \
 
 // Определение скорости без вариантов
 #define engine_speed(name, speed)                             \
@@ -623,54 +623,54 @@ switch (FEAT_TRAINS, SELF, name##_speed,                      \
 // Определение скорости с изменением в заданный год
 #define engine_speed_change_after(name, speed, new_speed, year)  \
 switch (FEAT_TRAINS, SELF, name##_speed,                         \
-[ STORE_TEMP(check_year(year) ? new_speed:                       \
-                                speed, 0),                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :     \
-                        LOAD_TEMP(0) ])                          \
+  [ STORE_TEMP(check_year(year) ? new_speed:                     \
+      speed, 0),                                                 \
+    is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :   \
+    LOAD_TEMP(0) ])                                              \
 { return; }                                                      \
 
 #define wagon_speed_change_after(name, speed, new_speed, year)  \
 switch (FEAT_TRAINS, SELF, name##_speed, check_year(year))      \
 { 1: return new_speed;                                          \
-     return speed; }                                            \
+  return speed; }                                               \
 
 // Определение скорости с изменением в 2 заданных года
 #define engine_speed_change_after2(name, speed, new_speed, year, new_speed2, year2)  \
 switch (FEAT_TRAINS, SELF, name##_speed,                                             \
-[ STORE_TEMP(check_year(year) ?                                                      \
-              (check_year(year2) ? new_speed2:                                       \
-                                   new_speed):                                       \
-                                speed, 0),                                           \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :                         \
-                        LOAD_TEMP(0) ])                                              \
+  [ STORE_TEMP(check_year(year) ?                                                    \
+      (check_year(year2) ? new_speed2:                                               \
+        new_speed):                                                                  \
+      speed, 0),                                                                     \
+    is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :                       \
+    LOAD_TEMP(0) ])                                                                  \
 { return; }                                                                          \
 
 // Определение скорости с изменением в 3 заданных года
 #define engine_speed_change_after3(name, speed, new_speed, year, new_speed2, year2, new_speed3, year3)  \
 switch (FEAT_TRAINS, SELF, name##_speed,                                                                \
-[ STORE_TEMP(check_year(year) ?                                                                         \
-              (check_year(year2) ?                                                                      \
-                (check_year(year3) ? new_speed3:                                                        \
-                                     new_speed2):                                                       \
-                                   new_speed):                                                          \
-                                 speed, 0),                                                             \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :                                            \
-                        LOAD_TEMP(0) ])                                                                 \
+  [ STORE_TEMP(check_year(year) ?                                                                       \
+      (check_year(year2) ?                                                                              \
+        (check_year(year3) ? new_speed3:                                                                \
+          new_speed2):                                                                                  \
+        new_speed):                                                                                     \
+      speed, 0),                                                                                        \
+    is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  :                                          \
+    LOAD_TEMP(0) ])                                                                                     \
 { return; }                                                                                             \
 
 // Определение скорости со снижением для старых
-#define engine_speed_with_reduce(name, speed, speed_red, life)                \
-switch (FEAT_TRAINS, SELF, name##_speed,                                      \
-[ STORE_TEMP(get_max_speed(life, speed_red, speed), 0),                       \
-  is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])  \
-{ return; }                                                                   \
+#define engine_speed_with_reduce(name, speed, speed_red, life)                  \
+switch (FEAT_TRAINS, SELF, name##_speed,                                        \
+  [ STORE_TEMP(get_max_speed(life, speed_red, speed), 0),                       \
+    is_penalise_speed() ? get_penalised_speed(LOAD_TEMP(0))  : LOAD_TEMP(0) ])  \
+{ return; }                                                                     \
 
 // Определение скорости с загрузкой
 #define wagon_speed_change_on_load(name, speed, loaded_speed, loaded_amount)  \
 switch (FEAT_TRAINS, SELF, name##_speed,                                      \
   cargo_count * cargo_unit_weight / 16 > loaded_amount)                       \
 { 1: return loaded_speed;                                                     \
-     return speed; }                                                          \
+  return speed; }                                                             \
 
 // Определение скорости в зависимости от типа пути
 #define engine_speed_change_AC_DC(name)                       \
@@ -689,25 +689,25 @@ is_ER25AC_ds(name##_speed, name##_AC_speed, name##_2_speed)      \
 #define engine_power_change_after(name, power, new_power, year)  \
 switch (FEAT_TRAINS, SELF, name##_power, check_year(year))       \
 { 1: return get_power_in_cb(new_power);                          \
-     return get_power_in_cb(power); }                            \
+  return get_power_in_cb(power); }                               \
 
 // Определение мощности МВПС
 #define engine_power_MU(name, power, vehid)                            \
 switch (FEAT_TRAINS, PARENT, name##_power2, vehicle_type_id == vehid)  \
 { 1: return get_power_in_cb(power);                                    \
-     return 0; }                                                       \
+  return 0; }                                                          \
 switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)     \
 { 1: return get_power_in_cb(power);                                    \
-     name##_power2; }                                                  \
+  name##_power2; }                                                     \
 
 #define engine_power_MU2(name, power, vehid1, vehid2)               \
 switch (FEAT_TRAINS, PARENT, name##_power2,                         \
   (vehicle_type_id == vehid1) || (vehicle_type_id == vehid2))       \
 { 1: return get_power_in_cb(power);                                 \
-     return 0; }                                                    \
+  return 0; }                                                       \
 switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)  \
 { 1: return get_power_in_cb(power);                                 \
-     name##_power2; }                                               \
+  name##_power2; }                                                  \
 
 #define engine_power_MU3(name, power, vehid1, vehid2, vehid3)       \
 switch (FEAT_TRAINS, PARENT, name##_power2,                         \
@@ -715,10 +715,10 @@ switch (FEAT_TRAINS, PARENT, name##_power2,                         \
   (vehicle_type_id == vehid2) ||                                    \
   (vehicle_type_id == vehid3))                                      \
 { 1: return get_power_in_cb(power);                                 \
-     return 0; }                                                    \
+  return 0; }                                                       \
 switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)  \
 { 1: return get_power_in_cb(power);                                 \
-     name##_power2; }                                               \
+  name##_power2; }                                                  \
 
 #define engine_power_MU4(name, power, vehid1, vehid2, vehid3, vehid4)  \
 switch (FEAT_TRAINS, PARENT, name##_power2,                            \
@@ -727,10 +727,10 @@ switch (FEAT_TRAINS, PARENT, name##_power2,                            \
   (vehicle_type_id == vehid3) ||                                       \
   (vehicle_type_id == vehid4))                                         \
 { 1: return get_power_in_cb(power);                                    \
-     return 0; }                                                       \
+  return 0; }                                                          \
 switch (FEAT_TRAINS, SELF, name##_power, position_in_consist == 0)     \
 { 1: return get_power_in_cb(power);                                    \
-     name##_power2; }                                                  \
+  name##_power2; }                                                     \
 
 // Определение мощности в зависимости от типа пути
 
@@ -786,51 +786,51 @@ is_ER25AC_ds(name##_power, name##_AC_power, name##_2_power)      \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
   ((extra_callback_info1 & 0xFF00) >= (0xE0 << 8)) + ((cargo_subtype >= 0xE0) * 2))  \
 { 1: return cost;                                                                    \
-     return 0 | CB_RESULT_AUTOREFIT; }                                               \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                  \
 
 #define engine_refit_cost_for_livery_change_shifted(name, num, cost)               \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
 { 1: return cost;                                                                  \
-     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                \
 
 #define engine_refit_cost_for_livery_change2(name, cost, cost2)                      \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
   ((extra_callback_info1 & 0xFF00) >= (0xE0 << 8)) + ((cargo_subtype >= 0xE0) * 2))  \
 { 1: return cost;                                                                    \
   2: return cost2;                                                                   \
-     return 0 | CB_RESULT_AUTOREFIT; }                                               \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                  \
 
 #define engine_refit_cost_for_livery_change2_shifted(name, num, cost, cost2)       \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) >= (num << 8)) + ((cargo_subtype >= num) * 2))  \
 { 1: return cost;                                                                  \
   2: return cost2;                                                                 \
-     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                \
 
 // exact liveries
 #define engine_refit_cost_for_exact_livery_change_shifted(name, num, cost)         \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                      \
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))  \
 { 1: return cost;                                                                  \
-     return 0 | CB_RESULT_AUTOREFIT; }                                             \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                \
 
 #define engine_refit_cost_for_exact_livery_change2_shifted(name, num, cost, cost2)  \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                       \
   ((extra_callback_info1 & 0xFF00) == (num << 8)) + ((cargo_subtype == num) * 2))   \
 { 1: return cost;                                                                   \
   2: return cost2;                                                                  \
-     return 0 | CB_RESULT_AUTOREFIT; }                                              \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                 \
 
 // range liveries
 #define engine_refit_cost_for_range_livery_change(name, num, num2, cost, base_name)  \
 switch (FEAT_TRAINS, SELF, name##_refit_cost,                                        \
   (((extra_callback_info1 & 0xFF00) >= (num << 8)) &&                                \
-   ((extra_callback_info1 & 0xFF00) <= (num2 << 8))) * 2 +                           \
+    ((extra_callback_info1 & 0xFF00) <= (num2 << 8))) * 2 +                          \
   ((cargo_subtype >= num) && (cargo_subtype <= num2)))                               \
 { 0..1: base_name;                                                                   \
      2: return cost;                                                                 \
-     return 0 | CB_RESULT_AUTOREFIT; }                                               \
+  return 0 | CB_RESULT_AUTOREFIT; }                                                  \
 
 // Двухсекционный ПС
 #define engine_ARVs(name, length)                                          \
@@ -838,7 +838,7 @@ switch (FEAT_TRAINS, SELF, name##_articulated_part, extra_callback_info1)  \
 { 1: return dummy##length;                                                 \
   2: return name;                                                          \
   3: return dummy##length;                                                 \
-     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                         \
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                            \
 
 // Трёхсекционный ПС
 #define engine_ARVs3(name, length)                                         \
@@ -848,40 +848,40 @@ switch (FEAT_TRAINS, SELF, name##_articulated_part, extra_callback_info1)  \
   3: return dummy##length;                                                 \
   4: return name;                                                          \
   5: return dummy##length;                                                 \
-     return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                         \
+  return CB_RESULT_NO_MORE_ARTICULATED_PARTS; }                            \
 
 // Определение вместимости только для корректной сборки
 #define engine_capacity_wrongcomb(name, capacity)    \
 switch (FEAT_TRAINS, PARENT, name##_cargo_capacity,  \
   ! is_wrong_combination())                          \
 { 1: return capacity;                                \
-     return 0; }                                     \
+  return 0; }                                        \
 
 // Определение вместимости только для головной части ARV
 #define engine_capacity_arv0(name, name2)          \
 switch (FEAT_TRAINS, SELF, name##_cargo_capacity,  \
-position_in_articulated_veh == 0)                  \
+  position_in_articulated_veh == 0)                \
 { 1: name2##_cargo_capacity;                       \
-     return 0; }                                   \
+  return 0; }                                      \
 
 // Определение вместимости МВПС
 #define engine_capacity_MU(name, capacity, vehid)                               \
 switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2, vehicle_type_id == vehid)  \
 { 1: return capacity;                                                           \
-     return 0; }                                                                \
+  return 0; }                                                                   \
 switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)     \
 { 1: return capacity;                                                           \
-     name##_cargo_capacity2; }                                                  \
+  name##_cargo_capacity2; }                                                     \
 
 #define engine_capacity_MU2(name, capacity, vehid1, vehid2)                  \
 switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2,                         \
   (vehicle_type_id == vehid1) ||                                             \
   (vehicle_type_id == vehid2))                                               \
 { 1: return capacity;                                                        \
-     return 0; }                                                             \
+  return 0; }                                                                \
 switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)  \
 { 1: return capacity;                                                        \
-     name##_cargo_capacity2; }                                               \
+  name##_cargo_capacity2; }                                                  \
 
 #define engine_capacity_MU3(name, capacity, vehid1, vehid2, vehid3)          \
 switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2,                         \
@@ -889,10 +889,10 @@ switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2,                         \
   (vehicle_type_id == vehid2) ||                                             \
   (vehicle_type_id == vehid3))                                               \
 { 1: return capacity;                                                        \
-     return 0; }                                                             \
+  return 0; }                                                                \
 switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)  \
 { 1: return capacity;                                                        \
-     name##_cargo_capacity2; }                                               \
+  name##_cargo_capacity2; }                                                  \
 
 #define engine_capacity_MU4(name, capacity, vehid1, vehid2, vehid3, vehid4)  \
 switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2,                         \
@@ -901,9 +901,9 @@ switch (FEAT_TRAINS, PARENT, name##_cargo_capacity2,                         \
   (vehicle_type_id == vehid3) ||                                             \
   (vehicle_type_id == vehid4))                                               \
 { 1: return capacity;                                                        \
-     return 0; }                                                             \
+  return 0; }                                                                \
 switch (FEAT_TRAINS, SELF, name##_cargo_capacity, position_in_consist == 0)  \
 { 1: return capacity;                                                        \
-     name##_cargo_capacity2; }                                               \
+  name##_cargo_capacity2; }                                                  \
 
 // end

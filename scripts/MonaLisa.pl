@@ -103,20 +103,60 @@ sub FixBlockLeft($$) {
 
 sub ChangeFile($) {
 	my($name) = @_;
-	my($bak, $s, $s_old);
-	my(@strs);
+	my($bak, $s, $s_old, $count, $tmp, $i, $mode, $comment_mode);
+	my(@strs, @pos, @chars);
 	my($s_buff, $s_total, $str);
 
 	open(FROMFILE, "<:encoding(UTF-8)", $name) || return "Can't open: ".$name;
 #	binmode(FROMFILE);
-
-	$s = join("", <FROMFILE>);
-	$s_old = $s;
-
-	WPrint("Changing $name");
-
+        $s = "";
+        $count = 0;
+        $comment_mode = 0;
+	$s_old = "";
+        while(<FROMFILE>) {
+		$s_old .= $_;
+        	chomp ();
+        	$tmp = $_;
 # Заменить все табы на пробелы
-        $s =~ s/\t/        /g;
+	        $tmp =~ s/\t/        /g;
+       		if ($count > 0) {
+        		$tmp =~ s/^ +//;
+#        		$tmp = PrintNSpaces($pos[$count - 1] + 1) . $tmp;
+        		$tmp = PrintNSpaces($count * 2) . $tmp;
+        	}
+        	$i = $tmp;
+        	$mode = 0;
+        	$i =~ s/\/\/.*$//; # убрать коменты //
+        	@chars = split (//, $i);
+ 		for($i = 0; $i < scalar(@chars); $i ++) {
+ 			if((($i + 1) < scalar(@chars)) && ($chars[$i] eq '/') && ($chars[$i + 1] eq '*')) {
+ 				$comment_mode = 1;
+ 			}
+ 			if((($i + 1) < scalar(@chars)) && ($chars[$i] eq '*') && ($chars[$i + 1] eq '/')) {
+ 				$comment_mode = 0;
+ 			}
+ 			if($chars[$i] eq '"') {
+ 				$mode = 1 - $mode;
+ 			}                         		
+ 			if(($mode == 0) && ($comment_mode == 0) &&
+ 			   (($chars[$i] eq '(') || ($chars[$i] eq '[') || ($chars[$i] eq '{'))) {
+ 				$pos[$count] = $i;
+				$count ++;
+ 			}
+ 			if(($mode == 0) && ($comment_mode == 0) &&
+ 			   (($chars[$i] eq ')') || ($chars[$i] eq ']') || ($chars[$i] eq '}'))) {
+ 				$count --;
+ 				$count = 0 if ($count < 0);
+				undef($pos[$count]);
+				if($i == ($count + 1) * 2) {
+					$tmp =~ s/^  //;
+				}
+ 			}
+ 		}
+		$s .= $tmp; #
+		$s .= "\n";
+        }
+	WPrint("Changing $name");
 # не использовать \r
         $s =~ s/\r//g;
 # переупорядочить блок graphics {}
@@ -165,7 +205,7 @@ sub ChangeFile($) {
 # Поставить ровно 1 пробел в начале перед ///
         $s =~ s#( )*\/\/\/# \/\/\/#g;
 # схлопнуть {   return 1; }
-        $s =~ s#\)\s*\{\s*(return\s*[0-9a-z_])\;\s*\}#\) \{ $1; \}#g;
+        $s =~ s#\)\s*\{\s*(return\s*[0-9a-z_]+)\;\s*\}#\) \{ $1; \}#g;
 # выравнивать блоки с : в начале, например свойства ПС в graphics
 	@strs = split(/\n/, $s);
 	$s_buff = "";

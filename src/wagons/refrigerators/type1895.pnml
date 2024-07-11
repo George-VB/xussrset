@@ -1,6 +1,6 @@
 ﻿// refrigerator_type1895
 
-#define PROP_refrigerator_type1895_CF  20
+#define PROP_refrigerator_type1895_CF  2 * 20
 #define PROP_refrigerator_type1895_RC  8
 #define PROP_refrigerator_type1895_SD  60
 #define PROP_refrigerator_type1895_WT  7
@@ -22,7 +22,7 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1895_sprites_start,
   0: refrigerator_type1895_sprites_back;
 //  1: cargo4_frut_bc_sprites;
   2: refrigerator_type1895_sprites_front;
-     return CB_FAILED;
+  return CB_FAILED;
 }
 
 long_vehicle(refrigerator_type1895)
@@ -31,44 +31,45 @@ switch (FEAT_TRAINS, SELF, refrigerator_type1895_weight,
   cargo_count > 0)
 {
   1: return 7+3;
-     return 7;
+  return 7;
 }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1895_cargo_capacity,
-[  STORE_TEMP(round(PROP_refrigerator_type1895_LC), 0),  // т
-   STORE_TEMP(round(PROP_refrigerator_type1895_VC), 1),  // м³
-   STORE_TEMP(round(PROP_refrigerator_type1895_AC), 2),  // м²
-   STORE_TEMP(0, 3),                                     // палетомест
-   STORE_TEMP(4, 4)])                                    // шаблон
+  [ STORE_TEMP(round(PROP_refrigerator_type1895_LC), 0),  // т
+    STORE_TEMP(round(PROP_refrigerator_type1895_VC), 1),  // м³
+    STORE_TEMP(round(PROP_refrigerator_type1895_AC), 2),  // м²
+    STORE_TEMP(0, 3),                                     // палетомест
+    STORE_TEMP(4, 4)])                                    // шаблон
 { ref_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1895_running_cost_factor,
-[  STORE_TEMP(0, 0),  // Моторы
-   STORE_TEMP(0, 1),  // Бригада
-   STORE_TEMP(4, 2),  // Износ
-   STORE_TEMP(2, 3),  // Сопровождение (лёд)
-   STORE_TEMP(2, 4),  // ТО
-   STORE_TEMP(0, 5),  // Сертификация
+  [ STORE_TEMP(0, 0),  // Моторы
+    STORE_TEMP(0, 1),  // Бригада
+    STORE_TEMP(4, 2),  // Износ
+    STORE_TEMP(2, 3),  // Сопровождение (лёд)
+    STORE_TEMP(2, 4),  // ТО
+    STORE_TEMP(0, 5),  // Сертификация
 
-   STORE_TEMP(PROP_refrigerator_type1895_SD, 6),                                          // Скорость
-   STORE_TEMP(round(PROP_refrigerator_type1895_WT), 7),                                   // Тара
-   STORE_TEMP(round(PROP_refrigerator_type1895_WT + PROP_refrigerator_type1895_LC), 8)])  // Максимальная масса
+    STORE_TEMP(PROP_refrigerator_type1895_SD, 6),                                          // Скорость
+    STORE_TEMP(round(PROP_refrigerator_type1895_WT), 7),                                   // Тара
+    STORE_TEMP(round(PROP_refrigerator_type1895_WT + PROP_refrigerator_type1895_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, refrigerator_type1895_loading_speed,
   STORE_TEMP(6, 2))
 { all_wagons_box_loading_speed; }
 
-name_in_wagon_group(refrigerator_type1895, string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1895)),
-                                     string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1895)))
+name_in_wagon_group(refrigerator_type1895,
+  string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1895)),
+  string(STR_NAME_IN_GROUP, string(STR_NAME_REFRIGERATORS_SERIES), string(STR_NAME_REFRIGERATOR_TYPE1895)))
 
 hint_wagon(refrigerator_type1895,
-           round(PROP_refrigerator_type1895_LC), round(PROP_refrigerator_type1895_VC),
-           string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
-           STR_PURCHASE_HINT_CAP_002_SLIGHTLY_SLOW,
-           STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
-           1895, 1905,
-           string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
+  round(PROP_refrigerator_type1895_LC), round(PROP_refrigerator_type1895_VC),
+  string(STR_PURCHASE_HINT_LOADING_SPEED_2TIC),
+  get_CAP_in_cb(CAP_002_SLIGHTLY_SLOW),
+  STR_PURCHASE_HINT_WAGON_TYPE_REFRIGERATOR,
+  1895, 1905,
+  string(STR_PURCHASE_HINT_FACTORY_PUTILOVSKY))
 
 item (FEAT_TRAINS, refrigerator_type1895, 305) {
   property {
@@ -82,7 +83,7 @@ item (FEAT_TRAINS, refrigerator_type1895, 305) {
     purchase_menu_nocc(PROP_refrigerator_type1895_CF, PROP_refrigerator_type1895_RC, PROP_refrigerator_type1895_SD, PROP_refrigerator_type1895_WT, PROP_refrigerator_type1895_TE, PROP_refrigerator_type1895_PR)
         additional_text: refrigerator_type1895_additional_text;
        articulated_part: articulated_part_dummy1;
-       cargo_age_period: return CAP_002_SLIGHTLY_SLOW;
+       cargo_age_period: return get_CAP_in_cb(CAP_002_SLIGHTLY_SLOW);
          cargo_capacity: refrigerator_type1895_cargo_capacity;
          colour_mapping: any_cc_colour;
                 default: refrigerator_type1895_sprites;

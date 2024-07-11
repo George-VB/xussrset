@@ -5,7 +5,7 @@
 #define PROP_epl2t_m_num  4
 #define PROP_epl2t_c_num  2
 
-#define PROP_epl2t_h_CF  9
+#define PROP_epl2t_h_CF  2 * 9
 #define PROP_epl2t_h_RC  66
 #define PROP_epl2t_h_SD  130
 #define PROP_epl2t_h_WT  51
@@ -66,7 +66,7 @@ switch (FEAT_TRAINS, SELF, epl2t_can_attach_wagon1,
   epl2t_type2006_h: epl2t_can_attach_wagon_template;
            epl2t_m: epl2t_can_attach_wagon_template;
            epl2t_c: epl2t_can_attach_wagon_template;
-          return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, PARENT, epl2t_can_attach_wagon,
@@ -74,7 +74,7 @@ switch (FEAT_TRAINS, PARENT, epl2t_can_attach_wagon,
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
   1: epl2t_can_attach_wagon1;
-     return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
+  return string(STR_CAN_ATTACH_NO_AFTER_REAR_HEAD);
 }
 
 livery_template_base_list2(epl2t, LV_UZ_CITY_EXPRESS, LV_DONETSK_RAILWAY)
@@ -83,28 +83,29 @@ engine_capacity_MU2(epl2t_h, PROP_epl2t_h_CC, epl2t_h, epl2t_type2006_h)
 
 RC_head_check2(epl2t_h, epl2t_h, epl2t_type2006_h)
 switch (FEAT_TRAINS, SELF, epl2t_h_running_cost_factor,
-[  STORE_TEMP(38, 0),  // Моторы
-   STORE_TEMP(0, 1),   // Бригада
-   STORE_TEMP(13, 2),  // Износ
-   STORE_TEMP(0, 3),   // Сопровождение
-   STORE_TEMP(9, 4),   // ТО
-   STORE_TEMP(1, 5),   // Сертификация
+  [ STORE_TEMP(38, 0),  // Моторы
+    STORE_TEMP(0, 1),   // Бригада
+    STORE_TEMP(13, 2),  // Износ
+    STORE_TEMP(0, 3),   // Сопровождение
+    STORE_TEMP(9, 4),   // ТО
+    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(PROP_epl2t_h_SD, 6),                                 // Скорость
-   STORE_TEMP(round(PROP_epl2t_h_WT), 7),                          // Тара
-   STORE_TEMP(round(PROP_epl2t_h_WT + PROP_epl2t_h_CC / 16), 8)])  // Максимальная масса
-{ epl2t_h_check_running_cost_factor; }                             // 66
+    STORE_TEMP(PROP_epl2t_h_SD, 6),                                 // Скорость
+    STORE_TEMP(round(PROP_epl2t_h_WT), 7),                          // Тара
+    STORE_TEMP(round(PROP_epl2t_h_WT + PROP_epl2t_h_CC / 16), 8)])  // Максимальная масса
+{ epl2t_h_check_running_cost_factor; }                              // 66
 
-name_in_group(epl2t_h, string(STR_NAME_IN_GROUP, string(STR_NAME_EPL2T_SERIES), string(STR_NAME_EPL2T_H)),
-                       string(STR_NAME_IN_GROUP, string(STR_NAME_EPL2T_SERIES), string(STR_LONGNAME_EPL2T_H)))
+name_in_group(epl2t_h,
+  string(STR_NAME_IN_GROUP, string(STR_NAME_EPL2T_SERIES), string(STR_NAME_EPL2T_H)),
+  string(STR_NAME_IN_GROUP, string(STR_NAME_EPL2T_SERIES), string(STR_LONGNAME_EPL2T_H)))
 
 hint_MU(epl2t_h,
-     calc_loading(PROP_epl2t_h_CC / (2 * DOUBLE_DOOR)),
-     STR_PURCHASE_HINT_CAP_00033_VERY_FAST,
-     STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC,
-     STR_SECTIONS_EMU_4_6_8_10_12,
-     2000, 2006,
-     fact_luhansk())
+  calc_loading(PROP_epl2t_h_CC / (2 * DOUBLE_DOOR)),
+  get_CAP_in_cb(CAP_00033_VERY_FAST),
+  STR_PURCHASE_HINT_ENGINE_TYPE_EMU_H_DC,
+  STR_SECTIONS_EMU_4_6_8_10_12,
+  2000, 2006,
+  fact_luhansk())
 map_sprites(epl2t_additional_text, epl2t_h_additional_text)
 
 item (FEAT_TRAINS, epl2t_h, 1312) {
@@ -115,11 +116,11 @@ item (FEAT_TRAINS, epl2t_h, 1312) {
     vehicle_group(group_epl2t)
   }
   graphics {
-  purchase_menu(PROP_epl2t_h_CF, PROP_epl2t_h_RC, PROP_epl2t_h_SD, PROP_epl2t_h_WT, PROP_epl2t_h_TE, PROP_epl2t_h_PR, PROP_epl2t_h_CC)
+    purchase_menu(PROP_epl2t_h_CF, PROP_epl2t_h_RC, PROP_epl2t_h_SD, PROP_epl2t_h_WT, PROP_epl2t_h_TE, PROP_epl2t_h_PR, PROP_epl2t_h_CC)
         additional_text: epl2t_h_additional_text;
        articulated_part: articulated_part_dummy7;
        can_attach_wagon: epl2t_can_attach_wagon;
-       cargo_age_period: return CAP_00033_VERY_FAST;
+       cargo_age_period: return get_CAP_in_cb(CAP_00033_VERY_FAST);
          cargo_capacity: epl2t_h_cargo_capacity;
      cargo_subtype_text: epl2t_cargo_subtype_text;
          colour_mapping: any_cc_colour;

@@ -151,12 +151,15 @@ delta_age = 1;
 #define steam_create_effect_dy(offsetx, offsety, height) STORE_TEMP(create_effect(EFFECT_SPRITE_STEAM, offsetx, offsety, height), 0x100)
 #define steam_create_effect_dy2(offsetx, offsety, height) STORE_TEMP(create_effect(EFFECT_SPRITE_STEAM, offsetx, offsety, height), 0x101)
 
+#define get_multiplier(value) (value == 4 ? 8                  : value == 3 ? 4 : value == 5 ? 16 : value == 2 ? 2 : value == 6 ? 32 : value == 1 ? 1 : value == 7 ? 64 : 8)
+#define get_CAP_in_cb(value2) (new_cargo_ageing == 0 ? value2  : max(1, min(100 * value2 / new_cargo_ageing, 32767)))
+#define get_CF_in_cb(value) (costs_multiplier == 0 ? value     : max(1, min((value) * costs_multiplier / 100, 32767)))
 #define recalc_capacity(total, seats, factory_amount) round(4 * (total - seats) / factory_amount + seats)
 #define EFFORT_MULT  1000
 // поправка для функции мощности (power cb)
 // задаваемое в свойстве отличается от возвращаемого функцией
 #define POWER_MULT  9865 / 10000
-#define get_power_in_cb(value) int (value * POWER_MULT)
+#define get_power_in_cb(value) int (value * POWER_MULT + 0.45)
 // kW -> hp
 #define KW_MULT  13596 / 10000
 #define kw2hp(power_kw) int (power_kw * KW_MULT)
@@ -218,17 +221,17 @@ delta_age = 1;
        retire_early: get_retire_early(start, finish);           \
        vehicle_life: life;                                      \
   reliability_decay: rd;                                        \
-        cost_factor: vcost > 255 ? 255  : vcost;                \
+        cost_factor: /* vcost > 255 ? 255  : vcost; */ 1;       \
              length: vlength;                                   \
 
 #define vehicle_no_dates(start, finish, life, rd, vlength, vcost)  \
  climates_available: NO_CLIMATE;                                   \
   introduction_date: date(get_all_year(start), 1, 1);              \
-         model_life: get_model_life(start, finish);                \
-       retire_early: get_retire_early(start, finish);              \
-       vehicle_life: life;                                         \
+         model_life: 255;                                          \
+       retire_early: 0;                                            \
+       vehicle_life: 255;                                          \
   reliability_decay: rd;                                           \
-        cost_factor: vcost > 255 ? 255  : vcost;                   \
+        cost_factor: 0;                                            \
              length: vlength;                                      \
 
 #define vehicle_steam(powerhpm, weigthton, TE, speedtype)                                                                  \
@@ -648,39 +651,30 @@ delta_age = 1;
   variant_group: disable_groups == 0 ? group_id  : INVALID_ENGINE;                                                                                                                               \
     extra_flags: bitmask(VEHICLE_FLAG_DISABLE_NEW_VEHICLE_MESSAGE, VEHICLE_FLAG_DISABLE_EXCLUSIVE_PREVIEW, VEHICLE_FLAG_SYNC_VARIANT_EXCLUSIVE_PREVIEW, VEHICLE_FLAG_SYNC_VARIANT_RELIABILITY);  \
 
-#define purchase_menu(CF, RC, SD, WT, TE, PR, CC)                    \
-                           cost_factor: return CF;                   \
-          purchase_running_cost_factor: return RC;                   \
-                        purchase_speed: return SD;                   \
-                       purchase_weight: return round(WT);            \
-  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);  \
-                        purchase_power: return get_power_in_cb(PR);  \
-               purchase_cargo_capacity: return CC;                   \
+#define purchase_menu(CF, RC, SD, WT, TE, PR, CC)                                                                                    \
+                           cost_factor: return costs_multiplier == 0 ? (CF)   : max(1, min(32767, (CF) * costs_multiplier / 100));   \
+          purchase_running_cost_factor: return rcosts_multiplier == 0 ? (RC)  : max(1, min(32767, (RC) * rcosts_multiplier / 100));  \
+                        purchase_speed: return SD;                                                                                   \
+                       purchase_weight: return round(WT);                                                                            \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);                                                                  \
+                        purchase_power: return get_power_in_cb(PR);                                                                  \
+               purchase_cargo_capacity: return CC;                                                                                   \
 
-#define purchase_menu_nocc(CF, RC, SD, WT, TE, PR)                   \
-                           cost_factor: return CF;                   \
-          purchase_running_cost_factor: return RC;                   \
-                        purchase_speed: return SD;                   \
-                       purchase_weight: return round(WT);            \
-  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);  \
-                        purchase_power: return get_power_in_cb(PR);  \
+#define purchase_menu_nocc(CF, RC, SD, WT, TE, PR)                                                                                   \
+                           cost_factor: return costs_multiplier == 0 ? (CF)   : max(1, min(32767, (CF) * costs_multiplier / 100));   \
+          purchase_running_cost_factor: return rcosts_multiplier == 0 ? (RC)  : max(1, min(32767, (RC) * rcosts_multiplier / 100));  \
+                        purchase_speed: return SD;                                                                                   \
+                       purchase_weight: return round(WT);                                                                            \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);                                                                  \
+                        purchase_power: return get_power_in_cb(PR);                                                                  \
 
-#define purchase_menu_wagon(CF, RC, SD, WT, TE, PR, CC)                        \
-                           cost_factor: return round((CF) * ENGINE_WAGON_CF);  \
-          purchase_running_cost_factor: return RC;                             \
-                        purchase_speed: return SD;                             \
-                       purchase_weight: return round(WT);                      \
-  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);            \
-                        purchase_power: return get_power_in_cb(PR);            \
-               purchase_cargo_capacity: return CC;                             \
-
-#define purchase_menu_calc(CF, RC, SD, WT, TE, PR, CC)  \
-                           cost_factor: CF;             \
-          purchase_running_cost_factor: RC;             \
-                        purchase_speed: SD;             \
-                       purchase_weight: WT;             \
-  purchase_tractive_effort_coefficient: TE;             \
-                        purchase_power: PR;             \
-               purchase_cargo_capacity: CC;             \
+#define purchase_menu_wagon(CF, RC, SD, WT, TE, PR, CC)                                                                                                                            \
+                           cost_factor: return costs_multiplier == 0 ? min(32767, (CF) * ENGINE_WAGON_CF)  : max(1, min(32767, (CF) * ENGINE_WAGON_CF * costs_multiplier / 100));  \
+          purchase_running_cost_factor: return rcosts_multiplier == 0 ? (RC)                               : max(1, min(32767, (RC) * rcosts_multiplier / 100));                   \
+                        purchase_speed: return SD;                                                                                                                                 \
+                       purchase_weight: return round(WT);                                                                                                                          \
+  purchase_tractive_effort_coefficient: return get_tec_int(TE, WT);                                                                                                                \
+                        purchase_power: return get_power_in_cb(PR);                                                                                                                \
+               purchase_cargo_capacity: return CC;                                                                                                                                 \
 
 // end

@@ -1,6 +1,6 @@
 ﻿// 11_740_hopper
 
-#define PROP_hopper_11_740_CF  78
+#define PROP_hopper_11_740_CF  2 * 78
 #define PROP_hopper_11_740_RC  30
 #define PROP_hopper_11_740_SD  120
 #define PROP_hopper_11_740_WT  22
@@ -18,44 +18,45 @@ tanker_layout_template(hopper_11_740, 8, 32, 40)
 long_vehicle(hopper_11_740)
 
 switch (FEAT_TRAINS, SELF, hopper_11_740_cargo_capacity,
-[  STORE_TEMP(round(PROP_hopper_11_740_LC), 0),  // т
-   STORE_TEMP(round(PROP_hopper_11_740_VC), 1),  // м³
-   STORE_TEMP(round(PROP_hopper_11_740_AC), 2),  // м²
-   STORE_TEMP(0, 3),                             // палетомест
-   STORE_TEMP(8, 4)])                            // шаблон
+  [ STORE_TEMP(round(PROP_hopper_11_740_LC), 0),  // т
+    STORE_TEMP(round(PROP_hopper_11_740_VC), 1),  // м³
+    STORE_TEMP(round(PROP_hopper_11_740_AC), 2),  // м²
+    STORE_TEMP(0, 3),                             // палетомест
+    STORE_TEMP(8, 4)])                            // шаблон
 { hopper_cargo_capacity; }
 
 switch (FEAT_TRAINS, SELF, hopper_11_740_running_cost_factor,
-[  STORE_TEMP(0, 0),   // Моторы
-   STORE_TEMP(0, 1),   // Бригада
-   STORE_TEMP(20, 2),  // Износ
-   STORE_TEMP(0, 3),   // Сопровождение
-   STORE_TEMP(10, 4),  // ТО
-   STORE_TEMP(0, 5),   // Сертификация
+  [ STORE_TEMP(0, 0),   // Моторы
+    STORE_TEMP(0, 1),   // Бригада
+    STORE_TEMP(20, 2),  // Износ
+    STORE_TEMP(0, 3),   // Сопровождение
+    STORE_TEMP(10, 4),  // ТО
+    STORE_TEMP(0, 5),   // Сертификация
 
-   STORE_TEMP(PROP_hopper_11_740_SD, 6),                                  // Скорость
-   STORE_TEMP(round(PROP_hopper_11_740_WT), 7),                           // Тара
-   STORE_TEMP(round(PROP_hopper_11_740_WT + PROP_hopper_11_740_LC), 8)])  // Максимальная масса
+    STORE_TEMP(PROP_hopper_11_740_SD, 6),                                  // Скорость
+    STORE_TEMP(round(PROP_hopper_11_740_WT), 7),                           // Тара
+    STORE_TEMP(round(PROP_hopper_11_740_WT + PROP_hopper_11_740_LC), 8)])  // Максимальная масса
 { all_running_cost_factor; }
 
 switch (FEAT_TRAINS, SELF, hopper_11_740_loading_speed,
-[  STORE_TEMP(0, 0),
-   STORE_TEMP(0, 1),
-   STORE_TEMP(4 * LARGE_HATCH, 2),   // 4 больших погрузочных люка
-   STORE_TEMP(4 * LARGE_HATCH, 3)])  // 4 больших разгрузочных люка
+  [ STORE_TEMP(0, 0),
+    STORE_TEMP(0, 1),
+    STORE_TEMP(4 * LARGE_HATCH, 2),   // 4 больших погрузочных люка
+    STORE_TEMP(4 * LARGE_HATCH, 3)])  // 4 больших разгрузочных люка
 { all_wagons_hopper_loading_speed; }
 
-name_in_wagon_group(hopper_11_740, string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_FERT_SERIES), string(STR_MODEL_NUMBER2, 11, 740)),
-                             string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_FERT_SERIES), string(STR_LONGNAME_HOPPER_11_740)))
+name_in_wagon_group(hopper_11_740,
+  string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_FERT_SERIES), string(STR_MODEL_NUMBER2, 11, 740)),
+  string(STR_NAME_IN_GROUP, string(STR_NAME_HOPPERS_FERT_SERIES), string(STR_LONGNAME_HOPPER_11_740)))
 
 hint_wagon_with_uspeed(hopper_11_740,
-     round(PROP_hopper_11_740_LC), round(PROP_hopper_11_740_VC),
-     calc_loading(PROP_hopper_11_740_LC / (4 * LARGE_HATCH)),
-     calc_loading(PROP_hopper_11_740_LC / (4 * NORMAL_HATCH)),
-     STR_PURCHASE_HINT_CAP_001_NORMAL,
-     STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
-     1976, 1990,
-     string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW))
+  round(PROP_hopper_11_740_LC), round(PROP_hopper_11_740_VC),
+  calc_loading(PROP_hopper_11_740_LC / (4 * LARGE_HATCH)),
+  calc_loading(PROP_hopper_11_740_LC / (4 * NORMAL_HATCH)),
+  get_CAP_in_cb(CAP_001_NORMAL),
+  STR_PURCHASE_HINT_WAGON_TYPE_HOPPER,
+  1976, 1990,
+  string(STR_PURCHASE_HINT_FACTORY_KRYUKOVO_WW))
 
 item (FEAT_TRAINS, hopper_11_740, 568) {
   property {
@@ -69,6 +70,7 @@ item (FEAT_TRAINS, hopper_11_740, 568) {
     purchase_menu_nocc(PROP_hopper_11_740_CF, PROP_hopper_11_740_RC, PROP_hopper_11_740_SD, PROP_hopper_11_740_WT, PROP_hopper_11_740_TE, PROP_hopper_11_740_PR)
         additional_text: hopper_11_740_additional_text;
        articulated_part: articulated_part_dummy1;
+       cargo_age_period: return get_CAP_in_cb(CAP_001_NORMAL);
          cargo_capacity: hopper_11_740_cargo_capacity;
      cargo_subtype_text: fert_hopper_cargo_subtype_text;
          colour_mapping: fert_hopper_colour_mapping;

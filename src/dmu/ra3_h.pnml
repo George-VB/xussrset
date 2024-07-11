@@ -5,7 +5,7 @@
 #define PROP_ra3_m_num  0
 #define PROP_ra3_c_num  1
 
-#define PROP_ra3_h_CF  10
+#define PROP_ra3_h_CF  2 * 10
 #define PROP_ra3_h_RC  81
 #define PROP_ra3_h_SD  120
 #define PROP_ra3_h_WT  51
@@ -60,30 +60,30 @@ engine_direction_template2m(ra3_h, ra3_h,  ra3_c)
 switch (FEAT_TRAINS, PARENT, ra3_h_sprites_start_add3,
   count_veh_id(ra3_h) +
   count_veh_id(ra3_c) * 10)
-{ 1: type_head_motor_car_add_mandatory;
-  2: type_head_motor_add_optional;
-  3: type_head_motor_car_add_mandatory;
-  4: type_head_motor_add_optional;
-  5: type_head_motor_car_add_mandatory;
- 11: type_head_motor_car_add_mandatory;
- 12: type_head_motor_add_optional;
- 13: type_head_motor_car_add_mandatory;
-      dummy_sprites; }
+ { 1: type_head_motor_car_add_mandatory;
+   2: type_head_motor_add_optional;
+   3: type_head_motor_car_add_mandatory;
+   4: type_head_motor_add_optional;
+   5: type_head_motor_car_add_mandatory;
+  11: type_head_motor_car_add_mandatory;
+  12: type_head_motor_add_optional;
+  13: type_head_motor_car_add_mandatory;
+  dummy_sprites; }
 switch (FEAT_TRAINS, SELF, ra3_h_sprites_start_add2,
   (position_in_consist_from_end == 1) )
 { 1: ra3_h_sprites_start_add3;
-     dummy_sprites; }
+  dummy_sprites; }
 switch (FEAT_TRAINS, PARENT, ra3_h_sprites_start_add,
   vehicle_type_id != ra3_h)
 { 1: type_head_motor;
-     ra3_h_sprites_start_add2; }
+  ra3_h_sprites_start_add2; }
 switch (FEAT_TRAINS, SELF, ra3_h_sprites_start_sp,
-[ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
-  (getbits(extra_callback_info1, 0, 8) == 0x10) &&
-  (getbits(extra_callback_info1, 8, 8) > 0) &&
-  (disable_icons == 0) ])
+  [ STORE_TEMP(CB_FLAG_MORE_SPRITES | PALETTE_USE_DEFAULT, 0x100),
+    (getbits(extra_callback_info1, 0, 8) == 0x10) &&
+    (getbits(extra_callback_info1, 8, 8) > 0) &&
+    (disable_icons == 0) ])
 { 1: ra3_h_sprites_start_add;
-     ra3_h_sprites_start; }
+  ra3_h_sprites_start; }
 
 long_vehicle_advanced(ra3_h, ra3_h_sprites_start_sp)
 
@@ -94,24 +94,24 @@ switch (FEAT_TRAINS, PARENT, ra3_can_attach_wagon_length,
   ((count_veh_id(ra3_h) > 3) && (count_veh_id(ra3_c) > 0)) )
 {
   0: CB_RESULT_ATTACH_ALLOW;
-     return string(STR_CAN_ATTACH_NO_MORE);
+  return string(STR_CAN_ATTACH_NO_MORE);
 }
 
 switch (FEAT_TRAINS, PARENT, ra3_c_can_attach_wagon_h,
   count_veh_id(ra3_h) % 2)
 {
   0: return string(STR_CAN_ATTACH_HEAD_ONLY);
-     return CB_RESULT_ATTACH_ALLOW;
+  return CB_RESULT_ATTACH_ALLOW;
 }
 
 switch (FEAT_TRAINS, PARENT, ra3_c_can_attach_wagon,
-[
-  set_offset_to(num_vehs_in_consist-2),
-  prev_vehicle_type_id() ])
+  [
+    set_offset_to(num_vehs_in_consist-2),
+    prev_vehicle_type_id() ])
 {
   ra3_c: return string(STR_CAN_ATTACH_HEAD_ONLY);
   ra3_h: ra3_c_can_attach_wagon_h;
-                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, SELF, ra3_can_attach_wagon,
@@ -119,7 +119,7 @@ switch (FEAT_TRAINS, SELF, ra3_can_attach_wagon,
 {
   ra3_h: ra3_can_attach_wagon_length;
   ra3_c: ra3_c_can_attach_wagon;
-                  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
+  return string(STR_CAN_ATTACH_SAME_MU_ONLY);
 }
 
 switch (FEAT_TRAINS, SELF, ra3_h_create_effect_sprites_left,
@@ -136,30 +136,31 @@ MU_start_stop_template_even(ra3_h, ra3_h)
 
 RC_head_check(ra3_h, ra3_h)
 switch (FEAT_TRAINS, SELF, ra3_h_running_cost_factor,
-[  STORE_TEMP(46, 0),  // Моторы
-   STORE_TEMP(6, 1),   // Бригада
-   STORE_TEMP(16, 2),  // Износ
-   STORE_TEMP(0, 3),   // Сопровождение
-   STORE_TEMP(11, 4),  // ТО
-   STORE_TEMP(1, 5),   // Сертификация
+  [ STORE_TEMP(46, 0),  // Моторы
+    STORE_TEMP(6, 1),   // Бригада
+    STORE_TEMP(16, 2),  // Износ
+    STORE_TEMP(0, 3),   // Сопровождение
+    STORE_TEMP(11, 4),  // ТО
+    STORE_TEMP(1, 5),   // Сертификация
 
-   STORE_TEMP(PROP_ra3_h_SD, 6),                               // Скорость
-   STORE_TEMP(round(PROP_ra3_h_WT), 7),                        // Тара
-   STORE_TEMP(round(PROP_ra3_h_WT + PROP_ra3_h_CC / 16), 8)])  // Максимальная масса
-{ ra3_h_check_running_cost_factor; }                           // 81
+    STORE_TEMP(PROP_ra3_h_SD, 6),                               // Скорость
+    STORE_TEMP(round(PROP_ra3_h_WT), 7),                        // Тара
+    STORE_TEMP(round(PROP_ra3_h_WT + PROP_ra3_h_CC / 16), 8)])  // Максимальная масса
+{ ra3_h_check_running_cost_factor; }                            // 81
 
 livery_template_base_list(ra3, LV_RZD_PID)
 
-name_in_group(ra3_h, string(STR_NAME_IN_GROUP, string(STR_NAME_RA3_SERIES), string(STR_NAME_RA3_H)),
-                     string(STR_NAME_IN_GROUP, string(STR_NAME_RA3_SERIES), string(STR_LONGNAME_RA3_H)))
+name_in_group(ra3_h,
+  string(STR_NAME_IN_GROUP, string(STR_NAME_RA3_SERIES), string(STR_NAME_RA3_H)),
+  string(STR_NAME_IN_GROUP, string(STR_NAME_RA3_SERIES), string(STR_LONGNAME_RA3_H)))
 
 hint_MU_noto(ra3_h,
-     calc_loading(PROP_ra3_h_CC / DOUBLE_DOOR),
-     STR_PURCHASE_HINT_CAP_00075_ACCELERATED,
-     STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC,
-     STR_SECTIONS_DMU_RA3,
-     2019,
-     fact_mytishchi())
+  calc_loading(PROP_ra3_h_CC / DOUBLE_DOOR),
+  get_CAP_in_cb(CAP_00075_ACCELERATED),
+  STR_PURCHASE_HINT_ENGINE_TYPE_DMU_HWC,
+  STR_SECTIONS_DMU_RA3,
+  2019,
+  fact_mytishchi())
 map_sprites(ra3_additional_text, ra3_h_additional_text)
 
 item (FEAT_TRAINS, ra3_h, 994) {
@@ -174,7 +175,7 @@ item (FEAT_TRAINS, ra3_h, 994) {
         additional_text: ra3_h_additional_text;
        articulated_part: articulated_part_dummy5;
        can_attach_wagon: ra3_can_attach_wagon;
-       cargo_age_period: return CAP_00075_ACCELERATED;
+       cargo_age_period: return get_CAP_in_cb(CAP_00075_ACCELERATED);
          cargo_capacity: ra3_h_cargo_capacity;
      cargo_subtype_text: ra3_cargo_subtype_text;
          colour_mapping: any_cc_colour;
