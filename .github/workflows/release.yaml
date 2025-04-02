@@ -1,0 +1,92 @@
+name: Build and publish a release
+
+on: push
+
+jobs:
+  build_newgrf:
+    runs-on: ubuntu-latest
+    name: 'Build xUSSR NewGRFs'
+    permissions:
+      contents: write
+    steps:
+      - name: Git describe
+        id: describe
+        uses: proudust/gh-describe@v2
+      - name: Build xUSSR Addon
+        id: xussr-addon
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-addon
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway Set addon ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR Diesels
+        id: xussr-diesel
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-diesel
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway Diesels Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR DMUs
+        id: xussr-dmu
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-dmu
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway DMUs Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR Electrics
+        id: xussr-electric
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-electric
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway Electrics Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR EMUs
+        id: xussr-emu
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-emu
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway EMUs Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR Rails
+        id: xussr-rails
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-rails
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Rails Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR Steamers
+        id: xussr-steam
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-steam
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway Steamers Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR Wagons
+        id: xussr-wagons
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-wagons
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway Wagons Set ${{ steps.describe.outputs.describe }}
+      - name: Build xUSSR Cars
+        id: xussr-cars
+        uses: Nik-mmzd/nml-compile@v1
+        with:
+          nml_basename: xussr-cars
+          min_compatible_revision: 1
+          grf_revision: 1
+          grf_title: xUSSR Railway Cars Set ${{ steps.describe.outputs.describe }}
+      - name: Publish release
+        id: publish
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: 'build/*.grf'
