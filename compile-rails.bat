@@ -82,6 +82,7 @@ goto :END
 for /F %%i in (%YDPATH%\%NMLNAME%.ver) do set REPO_REVISION=%%i
 set /a REPO_REVISION=%REPO_REVISION%+1
 echo %REPO_REVISION%>%YDPATH%\%NMLNAME%.ver
+copy %YDPATH%\%NMLNAME%.ver versions\%NMLNAME%.ver /y
 
 goto :EOF
 
