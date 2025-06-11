@@ -98,7 +98,8 @@ grf_compile() {
         NMLNAME="$NML_BASENAME-$1"
     fi
     if [ -f "versions/xussr-$1.ver" ]; then
-        GRF_REVISION=$(cat "versions/xussr-$1.ver")
+        GRF_REVISION=$(cat "versions/$NMLNAME.ver")
+        [ $BUMP_REVISION -eq 1 ] && ((GRF_REVISION++))
     else
         GRF_REVISION=1
     fi
@@ -129,6 +130,7 @@ grf_compile() {
         "${NMLCOPTIONS[@]}" \
         "$NMLNAME.nml"
 
+    [ $BUMP_REVISION -eq 1 ] && echo $GRF_REVISION > "versions/$NMLNAME.ver"
     rm -f "$NMLNAME.nml"
 }
 
