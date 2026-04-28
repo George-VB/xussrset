@@ -14,6 +14,10 @@ jobs:
       - name: Git describe
         id: describe
         uses: proudust/gh-describe@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
       - name: Read revision numbers
         id: revisions
         run: |
@@ -104,6 +108,16 @@ jobs:
           name: xUSSR GRFs
           path: build/*.grf
           if-no-files-found: error
+      - name: Publish nightly release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly/${{ steps.extract_branch.outputs.branch }}
+          name: ${{ steps.extract_branch.outputs.branch }}-nightly
+          body: Nighly build for branch `${{ steps.extract_branch.outputs.branch }}` (commit ${{ github.sha }})
+          files: build/*.grf
+          prerelease: true
       - name: Publish release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
