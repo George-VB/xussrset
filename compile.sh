@@ -47,7 +47,7 @@ while [ : ]; do
             shift
             ;;
         -M | --min-revision)
-            MIN_COMPATIBLE_REVISION=${2}
+            MIN_REV_FROM_CLI=${2}
             shift 2
             ;;
         -B | --basename)
@@ -97,22 +97,27 @@ grf_compile() {
     else
         NMLNAME="$NML_BASENAME-$1"
     fi
-    if [ -f "versions/xussr-$1.ver" ]; then
+    if [ -f "versions/$NMLNAME.ver" ]; then
         GRF_REVISION=$(cat "versions/$NMLNAME.ver")
         [ $BUMP_REVISION -eq 1 ] && ((GRF_REVISION++))
     else
         GRF_REVISION=1
     fi
 
+    # resolve minimal compatible revision:
+    # explicit -M wins, else per-module override, else global default
+    local mod_key="${1:-combined}"
+    local min_rev="${MIN_REV_FROM_CLI:-${XUSSR_MODULE_MIN_REV[$mod_key]:-$MIN_COMPATIBLE_REVISION}}"
+
     # create tags
     echo "VERSION: $GRF_REVISION" > "$CUSTOM_TAGS_FILE"
     echo "TITLE: ${2:-xUSSR Set} ${GRF_VERSION}.r${GRF_REVISION}" >> "$CUSTOM_TAGS_FILE"
-    echo "MIN_COMPATIBLE_REVISION: $MIN_COMPATIBLE_REVISION" >> "$CUSTOM_TAGS_FILE"
+    echo "MIN_COMPATIBLE_REVISION: $min_rev" >> "$CUSTOM_TAGS_FILE"
     echo "FILENAME: $NMLNAME" >> "$CUSTOM_TAGS_FILE"
 
     # gcc
     gcc -D REPO_REVISION="$GRF_REVISION" \
-    -D MIN_COMPATIBLE_REVISION="$MIN_COMPATIBLE_REVISION" \
+    -D MIN_COMPATIBLE_REVISION="$min_rev" \
     -E -C -P -x c \
     -o "$NMLNAME.nml" \
     "$NMLNAME.pnml"
@@ -131,7 +136,8 @@ grf_compile() {
         "$NMLNAME.nml"
 
     [ $BUMP_REVISION -eq 1 ] && echo $GRF_REVISION > "versions/$NMLNAME.ver"
-    rm -f "$NMLNAME.nml"
+    [ $DELETE_NML_FILE -eq 1 ] && rm -f "$NMLNAME.nml"
+    return 0
 }
 
 declare -A XUSSR_MODULE_NAMES=(
@@ -144,6 +150,27 @@ declare -A XUSSR_MODULE_NAMES=(
     ["steam"]="xUSSR Railway Steamers Set"
     ["wagons"]="xUSSR Railway Wagons Set"
     ["cars"]="xUSSR Railway Cars Set"
+    ["subway"]="xUSSR Subways Set"
+    ["stationratings"]="xUSSR Station ratings modifier"
+)
+# if module is missing or false => do not compile on "all"
+declare -A XUSSR_MODULE_ENABLED=(
+    ["rails"]="true"
+    ["addon"]="true"
+    ["diesel"]="true"
+    ["dmu"]="true"
+    ["electric"]="true"
+    ["emu"]="true"
+    ["steam"]="true"
+    ["wagons"]="true"
+    ["cars"]="true"
+    ["subway"]="true"
+    ["stationratings"]="false"
+)
+# per-module minimal compatible revision; "combined" is the suffix-less base grf.
+# explicit -M/--min-revision overrides these; modules not listed use the global default.
+declare -A XUSSR_MODULE_MIN_REV=(
+    ["combined"]="496"
 )
 
 for grf_module in "$@"; do
@@ -156,6 +183,10 @@ for grf_module in "$@"; do
     if [[ "$grf_module" == "all" ]]; then
         echo "Compiling all known modules"
         for known_module in "${!XUSSR_MODULE_NAMES[@]}"; do
+            if [[ "${XUSSR_MODULE_ENABLED[$known_module]:-false}" != "true" ]]; then
+                echo "Module $known_module is disabled. Compile manually if required."
+                continue
+            fi
             echo "Compiling $NML_BASENAME-$known_module..."
             grf_compile "$known_module" "${XUSSR_MODULE_NAMES["$known_module"]}"
         done
